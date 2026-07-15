@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "file": "Veilfarers_Corebook_10_94.pdf",
+      "label": "Veilfarers Corebook 10.94",
+      "note": "Latest core rules PDF."
+    },
+    {
+      "file": "Veilfarers_Keepers_Companion_10_31.pdf",
+      "label": "Veilfarers Keeper's Companion 10.31",
+      "note": "Keeper tools, guidance and adventures."
+    },
+    {
+      "file": "veilfarers_rust_and_steel_10.22.pdf",
+      "label": "Veilfarers: Rust and Steel 10.22",
+      "note": "Optional gear, drones, cybernetics and advanced systems."
+    },
+    {
+      "file": "veilfarers_charsheet_v4_form.pdf",
+      "label": "Veilfarers Character Sheet V4 - two-sided fillable PDF",
+      "note": "Blank editable two-page sheet with drones, augmentations, ancestry gifts, community advantages and inventory fields."
+    },
+    {
+      "file": "veilfarers_charsheet_fillable.pdf",
+      "label": "Veilfarers Character Sheet - app template",
+      "note": "The template used by Editable Sheet and Flat Sheet exports."
+    }
+  ]
+}
