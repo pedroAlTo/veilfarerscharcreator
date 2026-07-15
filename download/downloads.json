@@ -1,29 +1,44 @@
 {
-  "files": [
+  "schema": "veilfarers.downloads/2",
+  "release": "11.1-RC2-draft6",
+  "generatedAt": "2026-07-15",
+  "items": [
     {
-      "file": "Veilfarers_Corebook_10_94.pdf",
-      "label": "Veilfarers Corebook 10.94",
-      "note": "Latest core rules PDF."
+      "id": "corebook",
+      "title": "VeilFarers Corebook",
+      "version": "11.1 RC2",
+      "type": "rulebook",
+      "file": "/download/VeilFarers_Corebook_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 3238108,
+      "status": "PDF Candidate"
     },
     {
-      "file": "Veilfarers_Keepers_Companion_10_31.pdf",
-      "label": "Veilfarers Keeper's Companion 10.31",
-      "note": "Keeper tools, guidance and adventures."
+      "id": "keepers-companion",
+      "title": "VeilFarers Keeper's Companion",
+      "version": "11.1 RC2",
+      "type": "rulebook",
+      "file": "/download/VeilFarers_Keepers_Companion_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 2155273,
+      "status": "PDF Candidate"
     },
     {
-      "file": "veilfarers_rust_and_steel_10.22.pdf",
-      "label": "Veilfarers: Rust and Steel 10.22",
-      "note": "Optional gear, drones, cybernetics and advanced systems."
+      "id": "rust-and-steel",
+      "title": "VeilFarers: Rust & Steel",
+      "version": "11.1 RC2",
+      "type": "supplement",
+      "file": "/download/VeilFarers_Rust_and_Steel_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 3764561,
+      "status": "PDF Candidate"
     },
     {
-      "file": "veilfarers_charsheet_v4_form.pdf",
-      "label": "Veilfarers Character Sheet V4 - two-sided fillable PDF",
-      "note": "Blank editable two-page sheet with drones, augmentations, ancestry gifts, community advantages and inventory fields."
-    },
-    {
-      "file": "veilfarers_charsheet_fillable.pdf",
-      "label": "Veilfarers Character Sheet - app template",
-      "note": "The template used by Editable Sheet and Flat Sheet exports."
+      "id": "alien-species",
+      "title": "VeilFarers: Alien Species",
+      "version": "11.1 RC2",
+      "type": "supplement",
+      "file": "/download/VeilFarers_Alien_Species_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 2073404,
+      "status": "PDF Candidate"
     }
-  ]
+  ],
+  "pdfCandidateStatus": "RC2 PDF candidates generated from the synchronized Draft 6 canonical sources."
 }

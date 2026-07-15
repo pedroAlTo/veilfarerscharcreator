@@ -1,0 +1,696 @@
+[
+  {
+    "id": "vf.core.class.diplomat",
+    "type": "class",
+    "name": "Diplomat",
+    "slug": "diplomat",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "diplomat"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 765,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Social",
+      "Lux"
+    ],
+    "spellcastTrait": "Presence",
+    "statistics": {
+      "evasion": 10,
+      "hitPoints": 6
+    },
+    "rules": {
+      "id": "diplomat",
+      "name": "Diplomat",
+      "color": "#D6588A",
+      "domains": "Social & Lux",
+      "domainList": [
+        "Social",
+        "Lux"
+      ],
+      "spellcastTrait": "Presence",
+      "evasion": 10,
+      "hp": 6,
+      "items": [
+        "Encrypted Datapad",
+        "Treasured Token"
+      ],
+      "desc": "Diplomats weave peace in a galaxy of shattered trust. They read tiny expressions, broker treaties, and know when to flatter and when to threaten. Charm is their armor. Words are their weapons.",
+      "hopeFeature": {
+        "name": "The Power of Suggestion (3 Hope)",
+        "text": "Spend 3 Hope: Plant an Idea (ally's next Presence/Knowledge/Finesse roll has Advantage), Create an Opening (ally's next attack or stealth roll has Advantage), or Gather Intelligence (Keeper gives you one secret Clue about the scene)."
+      },
+      "classFeature": {
+        "name": "Cultural Lens",
+        "text": "Advantage on all Social tests. Succeed on Persuasion or Deception to gain 1 Favor Token (max 4). Gain 1 Favor Token each long rest."
+      },
+      "bgQuestion": "What secret compelled you to trust words over weapons?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.diplomat.cultural-attache",
+      "vf.core.subclass.diplomat.the-icon",
+      "vf.core.subclass.diplomat.political-operative"
+    ]
+  },
+  {
+    "id": "vf.core.class.engineer",
+    "type": "class",
+    "name": "Engineer",
+    "slug": "engineer",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "engineer"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 85,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Tech",
+      "Synthesis"
+    ],
+    "spellcastTrait": "Knowledge",
+    "statistics": {
+      "evasion": 9,
+      "hitPoints": 7
+    },
+    "rules": {
+      "id": "engineer",
+      "name": "Engineer",
+      "color": "#0E8A8E",
+      "domains": "Tech & Synthesis",
+      "domainList": [
+        "Tech",
+        "Synthesis"
+      ],
+      "spellcastTrait": "Knowledge",
+      "evasion": 9,
+      "hp": 7,
+      "items": [
+        "Alien-etched Multi-Tool",
+        "Universal Lubricant"
+      ],
+      "desc": "Engineers thrive in chaos. Whether hacking rogue AIs or grafting cybernetics onto wounded crewmates, their genius turns duct tape and guts into miracles — just long enough.",
+      "hopeFeature": {
+        "name": "Scrap Genius (3 Hope)",
+        "text": "Spend 3 Hope to create one functional improvised device from available materials. It works perfectly for one scene, then breaks. The Keeper cannot declare it fails during that scene."
+      },
+      "classFeature": {
+        "name": "Field Engineering",
+        "text": "Once per short rest, repair any technology without tools using what's on hand. Mark 1 Stress; the repair holds for the scene. Advantage on rolls to sabotage or interface with technology."
+      },
+      "bgQuestion": "What machine do you carry guilt for building — or for failing to build?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.engineer.tech-specialist",
+      "vf.core.subclass.engineer.xenotech-savant",
+      "vf.core.subclass.engineer.medical-technician"
+    ]
+  },
+  {
+    "id": "vf.core.class.explorer",
+    "type": "class",
+    "name": "Explorer",
+    "slug": "explorer",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "explorer"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 123,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Synthesis",
+      "Lux"
+    ],
+    "spellcastTrait": "Instinct",
+    "statistics": {
+      "evasion": 11,
+      "hitPoints": 6
+    },
+    "rules": {
+      "id": "explorer",
+      "name": "Explorer",
+      "color": "#3E8945",
+      "domains": "Synthesis & Lux",
+      "domainList": [
+        "Synthesis",
+        "Lux"
+      ],
+      "spellcastTrait": "Instinct",
+      "evasion": 11,
+      "hp": 6,
+      "items": [
+        "Advanced Survival Kit",
+        "Encrypted Star Chart (1 free Intel Token per exploration)"
+      ],
+      "desc": "Explorers are the eyes and ears of post-Silence civilization, pushing boundaries of what is known and turning whispers of legend into tangible truths.",
+      "hopeFeature": {
+        "name": "Pathfinder's Insight (3 Hope)",
+        "text": "When making a Travel or Scan roll during a Void Crawl, spend 3 Hope to automatically find a safe route. You also discover one piece of hidden information about the destination."
+      },
+      "classFeature": {
+        "name": "Terrain Mastery",
+        "text": "You cannot be surprised in wilderness or unexplored environments. Advantage on all rolls to track, navigate, or survive in the field. Once per long rest, identify any substance, creature, or phenomenon you can observe."
+      },
+      "bgQuestion": "What is the one place you have not gone back to — and why haven't you?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.explorer.cartographer",
+      "vf.core.subclass.explorer.wilderness",
+      "vf.core.subclass.explorer.the-stalker"
+    ]
+  },
+  {
+    "id": "vf.core.class.mystic",
+    "type": "class",
+    "name": "Mystic",
+    "slug": "mystic",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "mystic"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 121,
+        "collection": "classes"
+      },
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "chapter": 7,
+        "collection": "classes",
+        "note": "Sleeping Mystic total redesign",
+        "line": 121
+      }
+    ],
+    "domains": [
+      "Neural",
+      "Lux",
+      "Void"
+    ],
+    "spellcastTrait": "Instinct",
+    "statistics": {
+      "evasion": 10,
+      "hitPoints": 6
+    },
+    "rules": {
+      "id": "mystic",
+      "name": "Mystic",
+      "color": "#7C3F9E",
+      "domains": "Neural & Lux/Void",
+      "domainList": [
+        "Neural",
+        "Lux",
+        "Void"
+      ],
+      "spellcastTrait": "Instinct",
+      "evasion": 10,
+      "hp": 6,
+      "items": [
+        "Whispering Veil-Crystal",
+        "Starlight Blindfold"
+      ],
+      "desc": "Mystics walk through realities where physics crumbles. Caution defines them — one wrong step in the Veil might unravel their mind. They feel the room's substrate shift before anyone else.",
+      "hopeFeature": {
+        "name": "Reality Unfold (3 Hope)",
+        "text": "Spend 3 Hope to briefly pierce the substrate: ask the Keeper one question about the true nature of a person, object, or location in the scene. The Keeper answers with the deepest truth accessible."
+      },
+      "classFeature": {
+        "name": "Veil Alignment (Lux or Void)",
+        "text": "Choose at creation. Lux Mystics gain Advantage on rolls involving light, clarity, revelation, healing substrate. Void Mystics gain Advantage on rolls involving shadow, entropy, erasure, substrate disruption."
+      },
+      "bgQuestion": "What have you perceived in the Veil that you cannot tell anyone?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.mystic.veil-walker",
+      "vf.core.subclass.mystic.mind-touched",
+      "vf.core.subclass.mystic.precursor-touched"
+    ],
+    "sleepingRules": {
+      "name": "Sleeping Mystic",
+      "spellcastTrait": "Knowledge",
+      "startingDomains": {
+        "choose": 2,
+        "different": true,
+        "level": 1,
+        "unlock": "all powers at that level"
+      },
+      "evasion": 10,
+      "hp": 6,
+      "items": [
+        "Veil-Crystal Recorder",
+        "Bound Notebook of Annotations"
+      ],
+      "desc": "A ritualist and occult scholar who cannot perceive the Veil, but reconstructs procedures that force it to answer. Their Archive can eventually contain paths from every Domain.",
+      "effortFeature": {
+        "name": "The Reading (2 Effort)",
+        "text": "Study a person, place, object, active Power, or Veil phenomenon. Ask one question about its Veil exposure, Domain signature, history, instability, likely behavior, or required procedure. The Keeper answers truthfully from the available evidence."
+      },
+      "classFeature": {
+        "name": "Uncanny Archive",
+        "text": "Begin with every Level 1 Power from two chosen Domains. Research a Domain level with a 4 + level clock. To research Level N, first unlock at least two different Domains at Level N-1. The researched Domain need not continue either prerequisite Domain."
+      },
+      "resolveMoves": [
+        {
+          "name": "Calibrated Minor Ritual",
+          "cost": "spend and roll 1 Resolve Die",
+          "time": "10 minutes",
+          "fear": 0,
+          "duration": "Resolve Die result in hours",
+          "targets": "level + Spellcast Trait modifier, minimum 1",
+          "effects": [
+            {
+              "name": "Group Calibration",
+              "effect": "All targets gain +1 to rolls with one chosen Trait."
+            },
+            {
+              "name": "Group Adaptation",
+              "effect": "All targets gain Advantage against one specific environmental hazard."
+            },
+            {
+              "name": "Sustained Restoration",
+              "effect": "All targets clear 1 HP after each complete hour; all remaining duration may be consumed to stabilize one affected Dying creature."
+            }
+          ]
+        },
+        {
+          "name": "Uncanny Power",
+          "cost": "spend and roll 1+ Resolve Dice",
+          "access": "sum Effort Dice + Knowledge once, capped by character level",
+          "fear": "1 per Resolve spent",
+          "dc": "10 + Domain level",
+          "timing": "full Action; no Reaction or Passive Powers",
+          "hopeCost": "ignored",
+          "otherCosts": "retained",
+          "critical": "regain all Resolve spent on this invocation; Fear and non-Resolve costs remain"
+        }
+      ],
+      "subclasses": {
+        "Veil Walker": {
+          "epithet": "the architect of shared conditions",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Layered Working",
+            "type": "Passive",
+            "desc": "Choose two different Calibrated Minor Ritual effects instead of one; every target receives both."
+          },
+          "specialization": {
+            "name": "Enduring Formula",
+            "type": "Passive",
+            "desc": "Double ritual duration and unlock Protective Geometry: +1 Evasion or +1 to all damage thresholds for the whole group."
+          },
+          "mastery": {
+            "name": "Shared Lattice",
+            "type": "Passive",
+            "desc": "Double numerical ritual benefits; Group Adaptation protects against two hazards; all affected creatures gain group telepathy for the duration."
+          }
+        },
+        "Mind-Touched": {
+          "epithet": "the impossible conduit",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Perfect Invocation",
+            "type": "Special",
+            "desc": "Once per Short Rest, manifest one known Power at or below your level with no Resolve, access roll, or Spellcast Roll. Keeper gains 1 Fear. Retain non-Hope costs and restrictions."
+          },
+          "specialization": {
+            "name": "Reach Beyond",
+            "type": "Action",
+            "desc": "Once per session, attempt an unknown Power exactly one level above you from a Domain you have studied. Keeper gains 1 Fear; roll Knowledge against DC 10 + level. The Power is not learned."
+          },
+          "mastery": {
+            "name": "Impossible Efficiency",
+            "type": "Special",
+            "desc": "Once per session, each Resolve spent on Uncanny Power contributes two Effort Dice instead of one; Fear is based on Resolve actually spent."
+          }
+        },
+        "Precursor Touched": {
+          "epithet": "the patient reconstructionist",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Persistent Inquiry",
+            "type": "Passive",
+            "desc": "Advance one Domain Study Project by 1 segment during every Long Rest without consuming a Long Rest move."
+          },
+          "specialization": {
+            "name": "Pattern Recognition",
+            "type": "Passive",
+            "desc": "Reduce a new Domain Study clock by the Spellcast Trait modifier, minimum 2 segments."
+          },
+          "mastery": {
+            "name": "Parallel Reconstruction",
+            "type": "Passive",
+            "desc": "Research two Domain Paths simultaneously and apply each progress gain to both. Parallel projects do not receive Pattern Recognition's clock reduction."
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "vf.core.class.pilot",
+    "type": "class",
+    "name": "Pilot",
+    "slug": "pilot",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "pilot"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 834,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Void",
+      "Tech"
+    ],
+    "spellcastTrait": "Instinct",
+    "statistics": {
+      "evasion": 11,
+      "hitPoints": 6
+    },
+    "rules": {
+      "id": "pilot",
+      "name": "Pilot",
+      "color": "#2A2A3E",
+      "domains": "Void & Tech",
+      "domainList": [
+        "Void",
+        "Tech"
+      ],
+      "spellcastTrait": "Instinct",
+      "evasion": 11,
+      "hp": 6,
+      "items": [
+        "Frayed Star Chart",
+        "Veil-Energy Control Crystal"
+      ],
+      "desc": "Pilots are not just button-pushers. They dance with stardust. Whether chasing Void routes or outmaneuvering pirates, they blend gut instinct with sharp reflexes.",
+      "hopeFeature": {
+        "name": "Veil Surge (3 Hope)",
+        "text": "Spend 3 Hope to gain Advantage on all ship maneuver rolls for the next hour. During this time, your ship cannot be targeted by standard weapon locks — only specialized systems can track you."
+      },
+      "classFeature": {
+        "name": "Neural Interface",
+        "text": "Pilot any vehicle or vessel without penalty, regardless of make or origin. Once per session, declare you know a hidden route — a shortcut, a smuggler's lane — that no one else knows."
+      },
+      "bgQuestion": "What ship did you lose, and how do you carry that loss?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.pilot.void-runner",
+      "vf.core.subclass.pilot.combat-ace",
+      "vf.core.subclass.pilot.system-jockey"
+    ]
+  },
+  {
+    "id": "vf.core.class.scholar",
+    "type": "class",
+    "name": "Scholar",
+    "slug": "scholar",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "scholar"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1251,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Tech",
+      "Social"
+    ],
+    "spellcastTrait": "Knowledge",
+    "statistics": {
+      "evasion": 10,
+      "hitPoints": 5
+    },
+    "rules": {
+      "id": "scholar",
+      "name": "Scholar",
+      "color": "#0E8A8E",
+      "domains": "Tech & Social",
+      "domainList": [
+        "Tech",
+        "Social"
+      ],
+      "spellcastTrait": "Knowledge",
+      "evasion": 10,
+      "hp": 5,
+      "items": [
+        "Cracked Data-Slate",
+        "Vial of Alien Sample"
+      ],
+      "desc": "Scholars are the crew's lens onto everything the Pearl Era did not preserve. Where others see anomalies, they see breakthroughs. Knowledge is oxygen in the post-Silence galaxy.",
+      "hopeFeature": {
+        "name": "Eureka Moment (3 Hope)",
+        "text": "Spend 3 Hope to automatically succeed on one research or analysis test. You also uncover a hidden connection — the Keeper provides one piece of unexpected information that reframes the situation."
+      },
+      "classFeature": {
+        "name": "Academic Edge",
+        "text": "Once per scene, when you succeed on a Knowledge roll, ask the Keeper one additional question about the subject. Advantage on all rolls to recall historical, scientific, or cultural information."
+      },
+      "bgQuestion": "What piece of knowledge are you looking for — and what will you do when you find it?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.scholar.xenobiologist",
+      "vf.core.subclass.scholar.precursor-archaeologist",
+      "vf.core.subclass.scholar.information-theorist"
+    ]
+  },
+  {
+    "id": "vf.core.class.scoundrel",
+    "type": "class",
+    "name": "Scoundrel",
+    "slug": "scoundrel",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "scoundrel"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1252,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Social",
+      "Void"
+    ],
+    "spellcastTrait": "Finesse",
+    "statistics": {
+      "evasion": 12,
+      "hitPoints": 6
+    },
+    "rules": {
+      "id": "scoundrel",
+      "name": "Scoundrel",
+      "color": "#D6588A",
+      "domains": "Social & Void",
+      "domainList": [
+        "Social",
+        "Void"
+      ],
+      "spellcastTrait": "Finesse",
+      "evasion": 12,
+      "hp": 6,
+      "items": [
+        "Morphic Skeleton Key",
+        "Influential Holo-Mask"
+      ],
+      "desc": "Scoundrels are the rats in the walls — always listening, stealing, surviving. Charm is their lockpick. Paranoia is their armor. The crew's professional liars.",
+      "hopeFeature": {
+        "name": "Vanishing Act (3 Hope)",
+        "text": "Spend 3 Hope to disappear from sight and sound for 1 minute. Immune to all tracking (visual, audio, thermal, network, psionic). Reappear wherever you choose within the scene."
+      },
+      "classFeature": {
+        "name": "Shadow Step",
+        "text": "Once per encounter, move through difficult terrain or past an obstacle without a roll. Advantage on all rolls to pick locks, bypass security, or blend into crowds."
+      },
+      "bgQuestion": "Who are you running from — and do they know you're running?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.scoundrel.assassin",
+      "vf.core.subclass.scoundrel.ghost",
+      "vf.core.subclass.scoundrel.contrabandist"
+    ]
+  },
+  {
+    "id": "vf.core.class.soldier",
+    "type": "class",
+    "name": "Soldier",
+    "slug": "soldier",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "soldier"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1236,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Kinetic",
+      "Synthesis"
+    ],
+    "spellcastTrait": "Strength",
+    "statistics": {
+      "evasion": 9,
+      "hitPoints": 7
+    },
+    "rules": {
+      "id": "soldier",
+      "name": "Soldier",
+      "color": "#B8323E",
+      "domains": "Kinetic & Synthesis",
+      "domainList": [
+        "Kinetic",
+        "Synthesis"
+      ],
+      "spellcastTrait": "Strength",
+      "evasion": 9,
+      "hp": 7,
+      "items": [
+        "Dented Riot Shield",
+        "Fallen Comrade's Dog-tag"
+      ],
+      "desc": "A Soldier's expertise is not just in fighting — it is in reading threats before they strike, turning a panicked crowd into a disciplined unit, knowing when to break bones to save lives.",
+      "hopeFeature": {
+        "name": "Combat Surge (2 Hope)",
+        "text": "After you hit with an attack, spend 2 Hope to immediately make a second attack against the same or a different target. You may also move up to Close range as part of this action."
+      },
+      "classFeature": {
+        "name": "Tactical Presence",
+        "text": "Allies within Close range gain +1 to attack rolls. Once per encounter, issue a tactical command as a free action: the chosen ally may immediately take a move action out of turn."
+      },
+      "bgQuestion": "What order did you follow — or refuse to follow — that you still think about?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.soldier.guardian",
+      "vf.core.subclass.soldier.military-officer",
+      "vf.core.subclass.soldier.peacekeeper"
+    ]
+  },
+  {
+    "id": "vf.core.class.vanguard",
+    "type": "class",
+    "name": "Vanguard",
+    "slug": "vanguard",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "vanguard"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1254,
+        "collection": "classes"
+      }
+    ],
+    "domains": [
+      "Neural",
+      "Void",
+      "Kinetic",
+      "Lux"
+    ],
+    "spellcastTrait": "Presence",
+    "statistics": {
+      "evasion": 11,
+      "hitPoints": 6
+    },
+    "rules": {
+      "id": "vanguard",
+      "name": "Vanguard",
+      "color": "#7C3F9E",
+      "domains": "Neural & branch",
+      "domainList": [
+        "Neural",
+        "Void",
+        "Kinetic",
+        "Lux"
+      ],
+      "spellcastTrait": "Presence",
+      "evasion": 11,
+      "hp": 6,
+      "items": [
+        "Light Staff (Melee)",
+        "Meditation Orb",
+        "Spiced Tea Mix"
+      ],
+      "desc": "Vanguards use their minds to anticipate movements, augment kinetic reflexes, and project will onto the battlefield. The crew's centered presence whose stillness in a crisis steadies everyone.",
+      "hopeFeature": {
+        "name": "Path to Nirvana (3 Hope)",
+        "text": "Spend 3 Hope to project a psychic burst: all enemies within Close range must succeed on an Instinct check (DC = your Presence + 10) or be briefly stunned — no actions on their next turn."
+      },
+      "classFeature": {
+        "name": "Mind Over Matter",
+        "text": "Once per scene, reduce incoming damage to you by your Presence modifier (min 1) through force of will. Advantage on rolls to resist mental influence, fear, and substrate-based attacks."
+      },
+      "bgQuestion": "What moment taught you that the mind could do what the body could not?"
+    },
+    "subclassIds": [
+      "vf.core.subclass.vanguard.ghost-blade",
+      "vf.core.subclass.vanguard.kinetic-echo",
+      "vf.core.subclass.vanguard.pure-conduit"
+    ]
+  }
+]

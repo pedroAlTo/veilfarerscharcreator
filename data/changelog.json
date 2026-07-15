@@ -1,0 +1,41 @@
+{
+  "schema": "veilfarers.changelog/1",
+  "currentVersion": "v59.3",
+  "entries": [
+    {
+      "version": "v59.3",
+      "date": "2026-07-15",
+      "changes": [
+        "Migrated Player Tool domain cards to the shared 11.1-RC2-draft6 powers collection and removed the embedded Corebook 10.x rules file.",
+        "Added direct import and persistent local continuity between the RC2 Character Creator draft and Player Tool.",
+        "Replaced Keeper Tool embedded equipment tables with live canonical RC2 weapons, armor, augmentations and feature definitions from /rules-data.",
+        "Replaced the Keeper Tool hardcoded client password with a Netlify Identity gate accepting keeper or admin roles.",
+        "Added canonical-runtime.js as the shared asynchronous adapter for Player Tool and Keeper Tool.",
+        "Validated canonical runtime counts and Creator-to-Player mapping; removed the now-unused veilfarers-data.js legacy asset."
+      ]
+    },
+    {
+      "version": "v59.2",
+      "date": "2026-07-15",
+      "changes": [
+        "Added the normalized RC2 data bundle under /rules-data as the shared canonical application layer.",
+        "Implemented functional Weapon & Armory and Item Inventory catalogues with filters, stable IDs, shared local inventory, and JSON import/export.",
+        "Removed obsolete 11.0.3 download links and published only the four 11.1 RC2 PDF candidates.",
+        "Moved account and RC2 character vault management to the dedicated Netlify Identity Log-in page.",
+        "Added a character-sheet bridge that reads the RC2 creator draft and shared equipment inventory.",
+        "Activated Netlify Forms feedback intake and expanded the role-gated administrator diagnostics.",
+        "Preserved Firebase runtime configuration through /api/firebase-config without embedding environment values."
+      ]
+    },
+    {
+      "version": "v59.1",
+      "date": "2026-07-15",
+      "changes": [
+        "Replaced provisional homepage with the RC2 Draft 5 Character Creator.",
+        "Kept the RC2 Card Library integrated in the same canonical application.",
+        "Preserved RC2 creator data and artwork as the canonical source.",
+        "Added portal navigation and RC2 PDF downloads."
+      ]
+    }
+  ]
+}

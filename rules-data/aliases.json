@@ -1,0 +1,736 @@
+[
+  {
+    "alias": "Assault Armor (R&S)",
+    "entityId": "vf.rs.armor.breacher-armor",
+    "canonicalName": "Breacher Armor",
+    "pack": "rust-and-steel",
+    "collection": "armor"
+  },
+  {
+    "alias": "Assault Rifle (R&S)",
+    "entityId": "vf.rs.weapon.tactical-assault-rifle",
+    "canonicalName": "Tactical Assault Rifle",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Battle Rifle (R&S)",
+    "entityId": "vf.rs.weapon.long-range-battle-rifle",
+    "canonicalName": "Long-Range Battle Rifle",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Combat Knife (R&S)",
+    "entityId": "vf.rs.weapon.service-combat-knife",
+    "canonicalName": "Service Combat Knife",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Continuous (R&S)",
+    "entityId": "vf.rs.feature.sustained-fire",
+    "canonicalName": "Sustained Fire",
+    "pack": "rust-and-steel",
+    "collection": "features"
+  },
+  {
+    "alias": "Fortified Construction",
+    "entityId": "vf.rs.modification.reactive-plating-retrofit",
+    "canonicalName": "Reactive Plating Retrofit",
+    "pack": "rust-and-steel",
+    "collection": "modifications"
+  },
+  {
+    "alias": "Gravity Hammer (R&S)",
+    "entityId": "vf.rs.weapon.gravitic-breach-hammer",
+    "canonicalName": "Gravitic Breach Hammer",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Ion Rifle",
+    "entityId": "vf.rs.weapon.ion-disruptor-rifle",
+    "canonicalName": "Ion Disruptor Rifle",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Mesh Armor (R&S)",
+    "entityId": "vf.rs.armor.flexible-mesh-armor",
+    "canonicalName": "Flexible Mesh Armor",
+    "pack": "rust-and-steel",
+    "collection": "armor"
+  },
+  {
+    "alias": "PORTABLE FABRICATOR",
+    "entityId": "vf.core.gear.portable-fabricator",
+    "canonicalName": "Portable Fabricator",
+    "pack": "core",
+    "collection": "gear"
+  },
+  {
+    "alias": "Phase Blade (BLACK)",
+    "entityId": "vf.rs.weapon.phase-reaver",
+    "canonicalName": "Phase Reaver",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Phase Blade (R&S)",
+    "entityId": "vf.rs.weapon.phase-sabre",
+    "canonicalName": "Phase Sabre",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Plasma Pistol (R&S)",
+    "entityId": "vf.rs.weapon.thermal-plasma-pistol",
+    "canonicalName": "Thermal Plasma Pistol",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Plasma Rifle (R&S)",
+    "entityId": "vf.rs.weapon.thermal-plasma-rifle",
+    "canonicalName": "Thermal Plasma Rifle",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Security Armor (R&S)",
+    "entityId": "vf.rs.armor.patrol-armor",
+    "canonicalName": "Patrol Armor",
+    "pack": "rust-and-steel",
+    "collection": "armor"
+  },
+  {
+    "alias": "Sniper Rifle (R&S)",
+    "entityId": "vf.rs.weapon.heavy-sniper-rifle",
+    "canonicalName": "Heavy Sniper Rifle",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "Suppression Rifle (R&S)",
+    "entityId": "vf.rs.weapon.volkov-suppression-rifle",
+    "canonicalName": "Volkov Suppression Rifle",
+    "pack": "rust-and-steel",
+    "collection": "weapons"
+  },
+  {
+    "alias": "TOXIN FILTER",
+    "entityId": "vf.rs.augment.active-toxin-purger",
+    "canonicalName": "Active Toxin Purger",
+    "pack": "rust-and-steel",
+    "collection": "augments"
+  },
+  {
+    "alias": "TRAUMA KIT",
+    "entityId": "vf.rs.gear.advanced-trauma-kit",
+    "canonicalName": "Advanced Trauma Kit",
+    "pack": "rust-and-steel",
+    "collection": "gear"
+  },
+  {
+    "alias": "agrisynth",
+    "entityId": "vf.core.community.agrisynth",
+    "canonicalName": "AgriSynth",
+    "pack": "core",
+    "collection": "communities"
+  },
+  {
+    "alias": "ailuran",
+    "entityId": "vf.alien-species.ancestry-lore.ailuran",
+    "canonicalName": "Ailuran",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "ailuran",
+    "entityId": "vf.core.ancestry.ailuran",
+    "canonicalName": "Ailuran",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "apex stalker",
+    "entityId": "vf.alien-species.adversary.apex-stalker",
+    "canonicalName": "APEX STALKER",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "apex-stalker",
+    "entityId": "vf.alien-species.adversary.apex-stalker",
+    "canonicalName": "APEX STALKER",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "biomancer abomination",
+    "entityId": "vf.alien-species.adversary.biomancer-abomination",
+    "canonicalName": "BIOMANCER ABOMINATION",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "biomancer-abomination",
+    "entityId": "vf.alien-species.adversary.biomancer-abomination",
+    "canonicalName": "BIOMANCER ABOMINATION",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "bloomstrider",
+    "entityId": "vf.alien-species.ancestry-lore.bloomstrider",
+    "canonicalName": "Bloomstrider",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "bloomstrider",
+    "entityId": "vf.core.ancestry.bloomstrider",
+    "canonicalName": "Bloomstrider",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "celestiari",
+    "entityId": "vf.alien-species.ancestry-lore.celestiari",
+    "canonicalName": "Celestiari",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "celestiari",
+    "entityId": "vf.core.ancestry.celestiari",
+    "canonicalName": "Celestiari",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "church-veil",
+    "entityId": "vf.core.affiliation.church-of-the-eternal-veil",
+    "canonicalName": "Church of the Eternal Veil",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "commerce-guild",
+    "entityId": "vf.core.affiliation.stellar-commerce-guild",
+    "canonicalName": "Stellar Commerce Guild",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "core-world",
+    "entityId": "vf.core.community.core-world",
+    "canonicalName": "Core World",
+    "pack": "core",
+    "collection": "communities"
+  },
+  {
+    "alias": "cult zealot",
+    "entityId": "vf.alien-species.adversary.cult-zealot",
+    "canonicalName": "CULT ZEALOT",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "cult-zealot",
+    "entityId": "vf.alien-species.adversary.cult-zealot",
+    "canonicalName": "CULT ZEALOT",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "diplomat",
+    "entityId": "vf.core.class.diplomat",
+    "canonicalName": "Diplomat",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "displaced-enclave",
+    "entityId": "vf.core.community.the-displaced-enclave",
+    "canonicalName": "The Displaced Enclave",
+    "pack": "core",
+    "collection": "communities"
+  },
+  {
+    "alias": "elder leviathan",
+    "entityId": "vf.alien-species.adversary.elder-leviathan",
+    "canonicalName": "ELDER LEVIATHAN",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "elder-leviathan",
+    "entityId": "vf.alien-species.adversary.elder-leviathan",
+    "canonicalName": "ELDER LEVIATHAN",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "engineer",
+    "entityId": "vf.core.class.engineer",
+    "canonicalName": "Engineer",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "ethereal",
+    "entityId": "vf.alien-species.ancestry-lore.ethereal",
+    "canonicalName": "Ethereal",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "ethereal",
+    "entityId": "vf.core.ancestry.ethereal",
+    "canonicalName": "Ethereal",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "explorer",
+    "entityId": "vf.core.class.explorer",
+    "canonicalName": "Explorer",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "explorers-guild",
+    "entityId": "vf.core.affiliation.explorers-guild",
+    "canonicalName": "Explorers' Guild",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "ferro-beast",
+    "entityId": "vf.alien-species.adversary.ferro-beast",
+    "canonicalName": "FERRO-BEAST",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "free-fleet",
+    "entityId": "vf.core.affiliation.free-fleet",
+    "canonicalName": "Free Fleet",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "free-fleet",
+    "entityId": "vf.core.community.free-fleet",
+    "canonicalName": "Free Fleet",
+    "pack": "core",
+    "collection": "communities"
+  },
+  {
+    "alias": "frontier-colony",
+    "entityId": "vf.core.community.frontier-colony",
+    "canonicalName": "Frontier Colony",
+    "pack": "core",
+    "collection": "communities"
+  },
+  {
+    "alias": "gloomfang",
+    "entityId": "vf.alien-species.adversary.gloomfang",
+    "canonicalName": "GLOOMFANG",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "house-amaranth",
+    "entityId": "vf.core.affiliation.house-amaranth",
+    "canonicalName": "House Amaranth",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "house-joric",
+    "entityId": "vf.core.affiliation.house-joric",
+    "canonicalName": "House Joric",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "house-kurogane",
+    "entityId": "vf.core.affiliation.house-kurogane",
+    "canonicalName": "House Kurogane",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "house-solari",
+    "entityId": "vf.core.affiliation.house-solari",
+    "canonicalName": "House Solari",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "house-valerius",
+    "entityId": "vf.core.affiliation.house-valerius",
+    "canonicalName": "House Valerius",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "house-volkov",
+    "entityId": "vf.core.affiliation.house-volkov",
+    "canonicalName": "House Volkov",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "human",
+    "entityId": "vf.alien-species.ancestry-lore.human",
+    "canonicalName": "Human",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "human",
+    "entityId": "vf.core.ancestry.human",
+    "canonicalName": "Human",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "independent",
+    "entityId": "vf.core.affiliation.independent",
+    "canonicalName": "Independent",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "kryllian",
+    "entityId": "vf.alien-species.ancestry-lore.kryllian",
+    "canonicalName": "Kryllian",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "kryllian",
+    "entityId": "vf.core.ancestry.kryllian",
+    "canonicalName": "Kryllian",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "kryx",
+    "entityId": "vf.alien-species.ancestry-lore.kryx",
+    "canonicalName": "Kryx",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "kryx",
+    "entityId": "vf.core.ancestry.kryx",
+    "canonicalName": "Kryx",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "mystic",
+    "entityId": "vf.core.class.mystic",
+    "canonicalName": "Mystic",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "pilot",
+    "entityId": "vf.core.class.pilot",
+    "canonicalName": "Pilot",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "precursor warden",
+    "entityId": "vf.alien-species.adversary.precursor-warden",
+    "canonicalName": "PRECURSOR WARDEN",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "precursor-warden",
+    "entityId": "vf.alien-species.adversary.precursor-warden",
+    "canonicalName": "PRECURSOR WARDEN",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "rift spinner",
+    "entityId": "vf.alien-species.ancestry-lore.rift-spinner",
+    "canonicalName": "Rift Spinner",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "rift-spinner",
+    "entityId": "vf.alien-species.ancestry-lore.rift-spinner",
+    "canonicalName": "Rift Spinner",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "rift-spinner",
+    "entityId": "vf.core.ancestry.rift-spinner",
+    "canonicalName": "Rift Spinner",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "rust hulk",
+    "entityId": "vf.alien-species.adversary.rust-hulk",
+    "canonicalName": "RUST HULK",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "rust-hulk",
+    "entityId": "vf.alien-species.adversary.rust-hulk",
+    "canonicalName": "RUST HULK",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "scholar",
+    "entityId": "vf.core.class.scholar",
+    "canonicalName": "Scholar",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "scoundrel",
+    "entityId": "vf.core.class.scoundrel",
+    "canonicalName": "Scoundrel",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "scrap drone",
+    "entityId": "vf.alien-species.adversary.scrap-drone",
+    "canonicalName": "SCRAP DRONE",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "scrap-drone",
+    "entityId": "vf.alien-species.adversary.scrap-drone",
+    "canonicalName": "SCRAP DRONE",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "seraph",
+    "entityId": "vf.alien-species.adversary.seraph",
+    "canonicalName": "SERAPH",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "skitter-rat swarm",
+    "entityId": "vf.alien-species.adversary.skitter-rat-swarm",
+    "canonicalName": "SKITTER-RAT SWARM",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "skitter-rat-swarm",
+    "entityId": "vf.alien-species.adversary.skitter-rat-swarm",
+    "canonicalName": "SKITTER-RAT SWARM",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "solara-compact",
+    "entityId": "vf.core.affiliation.solara-compact",
+    "canonicalName": "Solara Compact",
+    "pack": "core",
+    "collection": "affiliations"
+  },
+  {
+    "alias": "soldier",
+    "entityId": "vf.core.class.soldier",
+    "canonicalName": "Soldier",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "synthetic",
+    "entityId": "vf.alien-species.ancestry-lore.synthetic",
+    "canonicalName": "Synthetic",
+    "pack": "alien-species",
+    "collection": "ancestry-lore"
+  },
+  {
+    "alias": "synthetic",
+    "entityId": "vf.core.ancestry.synthetic",
+    "canonicalName": "Synthetic",
+    "pack": "core",
+    "collection": "ancestries"
+  },
+  {
+    "alias": "the hollow prophet",
+    "entityId": "vf.alien-species.adversary.the-hollow-prophet",
+    "canonicalName": "THE HOLLOW PROPHET",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "the-hollow-prophet",
+    "entityId": "vf.alien-species.adversary.the-hollow-prophet",
+    "canonicalName": "THE HOLLOW PROPHET",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "trade-hub",
+    "entityId": "vf.core.community.trade-hub",
+    "canonicalName": "Trade Hub",
+    "pack": "core",
+    "collection": "communities"
+  },
+  {
+    "alias": "vanguard",
+    "entityId": "vf.core.class.vanguard",
+    "canonicalName": "Vanguard",
+    "pack": "core",
+    "collection": "classes"
+  },
+  {
+    "alias": "veil witch",
+    "entityId": "vf.alien-species.adversary.veil-witch",
+    "canonicalName": "VEIL WITCH",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "veil-witch",
+    "entityId": "vf.alien-species.adversary.veil-witch",
+    "canonicalName": "VEIL WITCH",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void kraken",
+    "entityId": "vf.alien-species.adversary.void-kraken",
+    "canonicalName": "VOID KRAKEN",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void leech swarm",
+    "entityId": "vf.alien-species.adversary.void-leech-swarm",
+    "canonicalName": "VOID LEECH SWARM",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void mite cluster",
+    "entityId": "vf.alien-species.adversary.void-mite-cluster",
+    "canonicalName": "VOID MITE CLUSTER",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void stalker",
+    "entityId": "vf.alien-species.adversary.void-stalker",
+    "canonicalName": "VOID STALKER",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void-kraken",
+    "entityId": "vf.alien-species.adversary.void-kraken",
+    "canonicalName": "VOID KRAKEN",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void-leech-swarm",
+    "entityId": "vf.alien-species.adversary.void-leech-swarm",
+    "canonicalName": "VOID LEECH SWARM",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void-mite-cluster",
+    "entityId": "vf.alien-species.adversary.void-mite-cluster",
+    "canonicalName": "VOID MITE CLUSTER",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void-stalker",
+    "entityId": "vf.alien-species.adversary.void-stalker",
+    "canonicalName": "VOID STALKER",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "void-station",
+    "entityId": "vf.core.community.void-station",
+    "canonicalName": "Void Station",
+    "pack": "core",
+    "collection": "communities"
+  },
+  {
+    "alias": "wraith-touched",
+    "entityId": "vf.alien-species.adversary.wraith-touched",
+    "canonicalName": "WRAITH-TOUCHED",
+    "pack": "alien-species",
+    "collection": "adversaries"
+  },
+  {
+    "alias": "pilot",
+    "target": "vf.core.subtrait.pilot-navigate"
+  },
+  {
+    "alias": "piloting",
+    "target": "vf.core.subtrait.pilot-navigate"
+  },
+  {
+    "alias": "navigate",
+    "target": "vf.core.subtrait.pilot-navigate"
+  },
+  {
+    "alias": "navigation",
+    "target": "vf.core.subtrait.pilot-navigate"
+  },
+  {
+    "alias": "technology",
+    "target": "vf.core.subtrait.tech"
+  },
+  {
+    "alias": "engineering systems",
+    "target": "vf.core.subtrait.tech"
+  },
+  {
+    "alias": "hacking",
+    "target": "vf.core.subtrait.tech"
+  },
+  {
+    "alias": "medical",
+    "target": "vf.core.subtrait.medicine"
+  },
+  {
+    "alias": "medic",
+    "target": "vf.core.subtrait.medicine"
+  },
+  {
+    "alias": "house-kaelen",
+    "target": "vf.core.affiliation.house-kaelen"
+  },
+  {
+    "alias": "kaelen",
+    "target": "vf.core.affiliation.house-kaelen"
+  },
+  {
+    "alias": "border-arbiters",
+    "target": "vf.core.affiliation.house-kaelen"
+  }
+]

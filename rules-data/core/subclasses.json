@@ -1,0 +1,980 @@
+[
+  {
+    "id": "vf.core.subclass.diplomat.cultural-attache",
+    "type": "subclass",
+    "name": "Cultural Attaché",
+    "slug": "cultural-attache",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1382,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.diplomat",
+    "className": "Diplomat",
+    "rules": {
+      "name": "Cultural Attaché",
+      "epithet": "the soft-power reader",
+      "intro": "You are a master of soft power, reading the hidden language of fear, desire, and secret agendas. You do not just hear words; you perceive the truth beneath them.",
+      "trait": "Presence",
+      "themeColor": "#D6588A",
+      "foundation": {
+        "name": "The Unmasking Gaze",
+        "type": "Action",
+        "desc": "Spend 1 Hope and make a Presence check against a target's Presence or Instinct (defender chooses the higher). On a success, ask the Keeper one question about the target's true intentions, fears, or loyalties, which they must answer honestly."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.diplomat.political-operative",
+    "type": "subclass",
+    "name": "Political Operative",
+    "slug": "political-operative",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1372,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.diplomat",
+    "className": "Diplomat",
+    "rules": {
+      "name": "Political Operative",
+      "epithet": "the player of the great game",
+      "intro": "You are a player in the great game of factions. You trade in favors, secrets, and influence, understanding that true power is not held, it is wielded from the shadows.",
+      "trait": "Instinct",
+      "themeColor": "#D6588A",
+      "foundation": {
+        "name": "Web of Favors",
+        "type": "Passive",
+        "desc": "You start each session with 2 Favor Tokens. You can spend a Favor to introduce a helpful NPC contact or to produce a piece of common (Tier 1) gear as a \"gift\" from a contact."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.diplomat.the-icon",
+    "type": "subclass",
+    "name": "The Icon",
+    "slug": "the-icon",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1391,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.diplomat",
+    "className": "Diplomat",
+    "rules": {
+      "name": "The Icon",
+      "epithet": "the cultural force",
+      "intro": "You are a cultural force. You generate and spend Favors by shaping public opinion. You can hold a maximum of 5 Favor Tokens.",
+      "trait": "Presence",
+      "themeColor": "#D6588A",
+      "foundation": {
+        "name": "Control the Narrative",
+        "type": "Action",
+        "desc": "Make a Presence check (DC 15) to perform or report; on success, gain 1 Favor Token."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.engineer.medical-technician",
+    "type": "subclass",
+    "name": "Medical Technician",
+    "slug": "medical-technician",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1487,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.engineer",
+    "className": "Engineer",
+    "rules": {
+      "name": "Medical Technician",
+      "epithet": "the field surgeon",
+      "intro": "Where flesh fails, you improvise. A battlefield surgeon who is as comfortable installing a cybernetic limb as stitching a wound, you are the master of both biological and synthetic repair.",
+      "trait": "Instinct",
+      "themeColor": "#0E8A8E",
+      "foundation": {
+        "name": "Field Surgery",
+        "type": "Action",
+        "desc": "Mark 1 Stress to perform emergency medical aid. You can either heal a target for 2 HP plus 1 HP for 1d4 rounds, *or* stabilize a dying creature, *or* remove a level of Degradation from an augmentation."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.engineer.tech-specialist",
+    "type": "subclass",
+    "name": "Tech Specialist",
+    "slug": "tech-specialist",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1467,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.engineer",
+    "className": "Engineer",
+    "rules": {
+      "name": "Tech Specialist",
+      "epithet": "the digital phantom",
+      "intro": "You are a digital phantom, moving through secure networks as if they were open doors. You dismantle firewalls, steal data, and turn an enemy's own systems against them with elegant lines of code.",
+      "trait": "Knowledge",
+      "themeColor": "#0E8A8E",
+      "foundation": {
+        "name": "Digital Ghost",
+        "type": "Action",
+        "desc": "You have Advantage on all hacking and technology rolls. When you successfully hack a system, you leave no trace of your intrusion unless you choose to."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.engineer.xenotech-savant",
+    "type": "subclass",
+    "name": "Xenotech Savant",
+    "slug": "xenotech-savant",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1476,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.engineer",
+    "className": "Engineer",
+    "rules": {
+      "name": "Xenotech Savant",
+      "epithet": "the alien-tech translator",
+      "intro": "Fascinated by the galaxy's forgotten marvels. You interface with alien artifacts and recovered tech of vanished civilizations, jury-rigging impossible devices from wreckage.",
+      "trait": "Knowledge",
+      "themeColor": "#0E8A8E",
+      "foundation": {
+        "name": "Adaptive Interface",
+        "type": "Action",
+        "desc": "You have become an expert in alien technology. You can operate any xenotech without penalties, and you have Advantage when trying to understand or modify its functions."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.explorer.cartographer",
+    "type": "subclass",
+    "name": "Cartographer",
+    "slug": "cartographer",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1552,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.explorer",
+    "className": "Explorer",
+    "rules": {
+      "name": "Cartographer",
+      "epithet": "the void's reader",
+      "intro": "You see the void as pathways and puzzles, mapping safe routes and uncovering hidden truths in the stars.",
+      "trait": "Instinct",
+      "themeColor": "#3E8945",
+      "foundation": {
+        "name": "Cosmic Cartography",
+        "type": "Passive",
+        "desc": "You have Advantage on long-distance Piloting and astrogation rolls. You also have Advantage on *Chart a Safe Route* during a Void Crawl."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.explorer.the-stalker",
+    "type": "subclass",
+    "name": "The Stalker",
+    "slug": "the-stalker",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1572,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.explorer",
+    "className": "Explorer",
+    "rules": {
+      "name": "The Stalker",
+      "epithet": "the perfect pursuer",
+      "intro": "You are the ultimate pursuer. To you, every target leaves a trail, and every trail leads to its end. You thrive on the thrill of the hunt, turning any environment into your personal hunting ground.",
+      "trait": "Instinct",
+      "themeColor": "#3E8945",
+      "foundation": {
+        "name": "Mark Quarry",
+        "type": "Action",
+        "desc": "As an action, mark a single target. Until your next long rest, you have Advantage on Instinct rolls to track them, and your first successful attack each round against the marked quarry deals an extra **1d6 damage**."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.explorer.wilderness",
+    "type": "subclass",
+    "name": "Wilderness",
+    "slug": "wilderness",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1561,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.explorer",
+    "className": "Explorer",
+    "rules": {
+      "name": "Wilderness",
+      "epithet": "the world's friend",
+      "intro": "You are a true survivor, at home in the most hostile and untamed natural environments. You read the land, understand its creatures, and channel its resources to endure.",
+      "trait": "Synthesis",
+      "themeColor": "#3E8945",
+      "foundation": {
+        "name": "Naturalist's Eye",
+        "type": "Passive",
+        "desc": "Gain Advantage on Knowledge rolls to identify flora and fauna, and on Instinct rolls to track creatures or find natural resources."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.mystic.mind-touched",
+    "type": "subclass",
+    "name": "Mind-Touched",
+    "slug": "mind-touched",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1662,
+        "collection": "subclasses"
+      },
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "chapter": 7,
+        "collection": "subclasses",
+        "note": "Sleeping path redesign",
+        "line": 1662
+      }
+    ],
+    "classId": "vf.core.class.mystic",
+    "className": "Mystic",
+    "rules": {
+      "name": "Mind-Touched",
+      "epithet": "the conduit of thought",
+      "intro": "You are a telepath, a living conduit for thoughts and emotions. You forge psychic links, share skills, and can shield your allies' minds from the horrors of the void.",
+      "trait": "Presence",
+      "themeColor": "#7C3F9E",
+      "foundation": {
+        "name": "Thought Tide",
+        "type": "Action",
+        "desc": "Spend 1 Hope to allow an ally to use your Presence or Instinct modifier for one roll. Once per rest, you can spend 1 Stress to grant your entire crew a mental shield, giving them Advantage on rolls to resist fear or psychic influence for one scene."
+      }
+    },
+    "sleepingRules": {
+      "epithet": "the impossible conduit",
+      "trait": "Knowledge",
+      "foundation": {
+        "name": "Perfect Invocation",
+        "type": "Special",
+        "desc": "Once per Short Rest, manifest one known Power at or below your level with no Resolve, access roll, or Spellcast Roll. Keeper gains 1 Fear. Retain non-Hope costs and restrictions."
+      },
+      "specialization": {
+        "name": "Reach Beyond",
+        "type": "Action",
+        "desc": "Once per session, attempt an unknown Power exactly one level above you from a Domain you have studied. Keeper gains 1 Fear; roll Knowledge against DC 10 + level. The Power is not learned."
+      },
+      "mastery": {
+        "name": "Impossible Efficiency",
+        "type": "Special",
+        "desc": "Once per session, each Resolve spent on Uncanny Power contributes two Effort Dice instead of one; Fear is based on Resolve actually spent."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.mystic.precursor-touched",
+    "type": "subclass",
+    "name": "Precursor Touched",
+    "slug": "precursor-touched",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1673,
+        "collection": "subclasses"
+      },
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "chapter": 7,
+        "collection": "subclasses",
+        "note": "Sleeping path redesign",
+        "line": 1673
+      }
+    ],
+    "classId": "vf.core.class.mystic",
+    "className": "Mystic",
+    "rules": {
+      "name": "Precursor Touched",
+      "epithet": "the artifact-listener",
+      "intro": "You hear the whispers of ancient machines. Your mind connects with relics of vanished civilizations — awakening, interpreting, sometimes controlling tech that defies physics.",
+      "trait": "Presence",
+      "themeColor": "#7C3F9E",
+      "foundation": {
+        "name": "Ancient Echo",
+        "type": "Action",
+        "desc": "Spend 1 Hope to open your mind to a Precursor artifact or site. The Keeper will give you a cryptic, dream-like vision related to its purpose or history. You gain Advantage on all rolls to interact with it for the scene."
+      }
+    },
+    "sleepingRules": {
+      "epithet": "the patient reconstructionist",
+      "trait": "Knowledge",
+      "foundation": {
+        "name": "Persistent Inquiry",
+        "type": "Passive",
+        "desc": "Advance one Domain Study Project by 1 segment during every Long Rest without consuming a Long Rest move."
+      },
+      "specialization": {
+        "name": "Pattern Recognition",
+        "type": "Passive",
+        "desc": "Reduce a new Domain Study clock by the Spellcast Trait modifier, minimum 2 segments."
+      },
+      "mastery": {
+        "name": "Parallel Reconstruction",
+        "type": "Passive",
+        "desc": "Research two Domain Paths simultaneously and apply each progress gain to both. Parallel projects do not receive Pattern Recognition's clock reduction."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.mystic.veil-walker",
+    "type": "subclass",
+    "name": "Veil Walker",
+    "slug": "veil-walker",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1653,
+        "collection": "subclasses"
+      },
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "chapter": 7,
+        "collection": "subclasses",
+        "note": "Sleeping path redesign",
+        "line": 1653
+      }
+    ],
+    "classId": "vf.core.class.mystic",
+    "className": "Mystic",
+    "rules": {
+      "name": "Veil Walker",
+      "epithet": "the unseen-paths walker",
+      "intro": "You walk the unseen paths between realities. By bending space and time, you can step through walls, evade attacks, and find sanctuary in dimensions that exist only for you.",
+      "trait": "Instinct",
+      "themeColor": "#7C3F9E",
+      "foundation": {
+        "name": "Phase Step",
+        "type": "Reaction",
+        "desc": "When you are the target of an attack or need to move through an obstacle, you can spend 1 Stress to \"blink\" to a location in Close range, evading the attack or obstacle. Once per short rest, you can create a pocket dimensional sanctuary that lasts 10 minutes, invisible and inaccessible."
+      }
+    },
+    "sleepingRules": {
+      "epithet": "the architect of shared conditions",
+      "trait": "Knowledge",
+      "foundation": {
+        "name": "Layered Working",
+        "type": "Passive",
+        "desc": "Choose two different Calibrated Minor Ritual effects instead of one; every target receives both."
+      },
+      "specialization": {
+        "name": "Enduring Formula",
+        "type": "Passive",
+        "desc": "Double ritual duration and unlock Protective Geometry: +1 Evasion or +1 to all damage thresholds for the whole group."
+      },
+      "mastery": {
+        "name": "Shared Lattice",
+        "type": "Passive",
+        "desc": "Double numerical ritual benefits; Group Adaptation protects against two hazards; all affected creatures gain group telepathy for the duration."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.pilot.combat-ace",
+    "type": "subclass",
+    "name": "Combat Ace",
+    "slug": "combat-ace",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1749,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.pilot",
+    "className": "Pilot",
+    "rules": {
+      "name": "Combat Ace",
+      "epithet": "the kinetic dueler",
+      "intro": "For you, a starship is a weapon, and the void is your arena. You thrive in the chaos of battle, executing aggressive, high-G maneuvers that turn your vessel into a deadly extension of your will.",
+      "trait": "Agility",
+      "themeColor": "#2A2A3E",
+      "foundation": {
+        "name": "Tactical Grace",
+        "type": "Reaction",
+        "desc": "When you or your ship is the target of an attack, you can spend 1 Stress to add your Agility modifier to the ship's Evasion for that attack."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.pilot.system-jockey",
+    "type": "subclass",
+    "name": "System Jockey",
+    "slug": "system-jockey",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1760,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.pilot",
+    "className": "Pilot",
+    "rules": {
+      "name": "System Jockey",
+      "epithet": "the ghost in the machine",
+      "intro": "A starship is a complex instrument; the void, a symphony you conduct. You don't just fly — you interface, tweaking power, spoofing sensors, pushing the ship beyond design limits.",
+      "trait": "Finesse",
+      "themeColor": "#2A2A3E",
+      "foundation": {
+        "name": "Orbital Whisperer",
+        "type": "Action",
+        "desc": "When attempting to dock, land, or navigate in tight spaces, you can spend 1 Stress to automatically succeed. You can also spend 1 Hope to obtain a complete and detailed map of all defenses and active security systems in the area."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.pilot.void-runner",
+    "type": "subclass",
+    "name": "Void Runner",
+    "slug": "void-runner",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1740,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.pilot",
+    "className": "Pilot",
+    "rules": {
+      "name": "Void Runner",
+      "epithet": "the Veil dancer",
+      "intro": "You do not just fly a ship; you dance with the Veil's impossible currents. Relying on pure instinct, you see paths where others see only chaos, navigating the unnavigable.",
+      "trait": "Instinct",
+      "themeColor": "#2A2A3E",
+      "foundation": {
+        "name": "Pathfinder's Sense",
+        "type": "Action",
+        "desc": "Mark 1 Stress to sense the safest or fastest route through a dangerous area (asteroid field, nebula, contested system). You and your ship gain Advantage on all Piloting and Evasion rolls while following this route during the scene."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.scholar.information-theorist",
+    "type": "subclass",
+    "name": "Information Theorist",
+    "slug": "information-theorist",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1845,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.scholar",
+    "className": "Scholar",
+    "rules": {
+      "name": "Information Theorist",
+      "epithet": "the data-stream analyst",
+      "intro": "You study patterns, networks, and how information moves through systems and societies. Every faction is a network, every economy a graph, every secret a node waiting to be reached.",
+      "trait": "Knowledge",
+      "themeColor": "#0E8A8E",
+      "foundation": {
+        "name": "Data Storm",
+        "type": "Reaction",
+        "desc": "When you fail a decryption or hacking roll, you can spend 1 Stress to reroll the dice. If you succeed, you can also create a temporary firewall that protects that system for one scene."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.scholar.precursor-archaeologist",
+    "type": "subclass",
+    "name": "Precursor Archaeologist",
+    "slug": "precursor-archaeologist",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1834,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.scholar",
+    "className": "Scholar",
+    "rules": {
+      "name": "Precursor Archaeologist",
+      "epithet": "the relic-reader",
+      "intro": "You study what no one else can read — dead languages, silent sites, artifacts filed away as inert. The Precursors were trying to communicate, and you intend to listen.",
+      "trait": "Knowledge",
+      "themeColor": "#0E8A8E",
+      "foundation": {
+        "name": "Artifact Whisper",
+        "type": "Action",
+        "desc": "Spend 1 Hope to attune to a Precursor artifact. The Keeper will reveal a fragment of its history or a clue about how to use it. You have Advantage on all rolls to activate Precursor technology for the scene."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.scholar.xenobiologist",
+    "type": "subclass",
+    "name": "Xenobiologist",
+    "slug": "xenobiologist",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1825,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.scholar",
+    "className": "Scholar",
+    "rules": {
+      "name": "Xenobiologist",
+      "epithet": "the alien-life student",
+      "intro": "You are a student of alien life in its purest form. By studying strange ecosystems and bizarre biologies, you access the secrets of adaptation and survival in the galaxy's harshest corners.",
+      "trait": "Instinct",
+      "themeColor": "#0E8A8E",
+      "foundation": {
+        "name": "Life Reader",
+        "type": "Action",
+        "desc": "Spend 1 Hope to study an organism (living or dead) and learn its biology, behavior, and weaknesses. The Keeper will reveal a mechanical weakness (e.g., Vulnerable to an energy type) or a narrative weakness (e.g., afraid of light)."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.scoundrel.assassin",
+    "type": "subclass",
+    "name": "Assassin",
+    "slug": "assassin",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1908,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.scoundrel",
+    "className": "Scoundrel",
+    "rules": {
+      "name": "Assassin",
+      "epithet": "the disguised killer",
+      "intro": "You are a deadly ghost who wears faces like masks. A master of disguise and lethal precision, you can become anyone and get anywhere, ensuring your target never sees the end coming.",
+      "trait": "Finesse",
+      "themeColor": "#D6588A",
+      "foundation": {
+        "name": "Deadly Masquerade",
+        "type": "Action",
+        "desc": "Spend 1 Stress to create a flawless disguise and identity for one scene. You can spend 1 Hope to make this identity stand up to any level of scrutiny for 24 hours."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.scoundrel.contrabandist",
+    "type": "subclass",
+    "name": "Contrabandist",
+    "slug": "contrabandist",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1928,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.scoundrel",
+    "className": "Scoundrel",
+    "rules": {
+      "name": "Contrabandist",
+      "epithet": "the rogue with the cargo hold",
+      "intro": "The charming rogue with a fast ship and a hidden cargo hold. You know the price of everything and every crooked port official. A master of logistics, bluffing, and improvisation.",
+      "trait": "Presence",
+      "themeColor": "#D6588A",
+      "foundation": {
+        "name": "Hidden Cargo",
+        "type": "Action",
+        "desc": "Spend 1 Stress to declare you have a small, useful, or contraband item secreted on your person or ship that you have not previously mentioned. The Keeper has final say on what is plausible. Once per session, you can spend 1 Hope to upgrade this declaration to a Tier 1 piece of gear or a small quantity of valuable contraband."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.scoundrel.ghost",
+    "type": "subclass",
+    "name": "Ghost",
+    "slug": "ghost",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 863,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.scoundrel",
+    "className": "Scoundrel",
+    "rules": {
+      "name": "Ghost",
+      "epithet": "the silent infiltrator",
+      "intro": "You are a whisper in the dark, a true master of infiltration. You move without a sound and leave no trace, bypassing the most advanced security systems as if they were not there.",
+      "trait": "Agility",
+      "themeColor": "#D6588A",
+      "foundation": {
+        "name": "Ghost",
+        "type": "Action",
+        "desc": "Mark 1 Stress to become invisible for one round, or to remove all traces of your passage through an area. If you succeed with Hope on a Stealth roll while invisible, you remain invisible."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.soldier.guardian",
+    "type": "subclass",
+    "name": "Guardian",
+    "slug": "guardian",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 413,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.soldier",
+    "className": "Soldier",
+    "rules": {
+      "name": "Guardian",
+      "epithet": "the unbreakable shield",
+      "intro": "You are the crew's unbreakable shield. Standing between your allies and harm, you absorb punishment with sheer will and grit. Where you stand is where the line is drawn, and it will not break.",
+      "trait": "Strength",
+      "themeColor": "#B8323E",
+      "foundation": {
+        "name": "Bodyguard Protocol",
+        "type": "Reaction",
+        "desc": "When an ally within Close range is hit by an attack, you can spend 1 Stress to intercept it, taking the damage yourself. When you do, you gain Advantage on your next Melee attack against that attacker."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.soldier.military-officer",
+    "type": "subclass",
+    "name": "Military Officer",
+    "slug": "military-officer",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2006,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.soldier",
+    "className": "Soldier",
+    "rules": {
+      "name": "Military Officer",
+      "epithet": "the battlefield conductor",
+      "intro": "A battlefield conductor orchestrating victory through superior tactics and decisive commands. You don't just fight — you lead, turning chaos into a symphony of coordinated destruction.",
+      "trait": "Finesse",
+      "themeColor": "#B8323E",
+      "foundation": {
+        "name": "Call the Shot",
+        "type": "Action",
+        "desc": "Mark 1 Stress to grant an ally one of the following benefits on their next action: gain Advantage, their attack ignores cover, or their action does not draw the spotlight."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.soldier.peacekeeper",
+    "type": "subclass",
+    "name": "Peacekeeper",
+    "slug": "peacekeeper",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2017,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.soldier",
+    "className": "Soldier",
+    "rules": {
+      "name": "Peacekeeper",
+      "epithet": "the order without violence",
+      "intro": "You believe true strength lies in control, not destruction. You enforce order with an intimidating presence and non-lethal tactics, proving that a firm word can be far mightier than a plasma rifle.",
+      "trait": "Presence",
+      "themeColor": "#B8323E",
+      "foundation": {
+        "name": "Unspoken Authority",
+        "type": "Action",
+        "desc": "Spend 1 Hope to halt a conflict for a single, tense moment. No one can take hostile action until you speak or act. This gives you a key window to negotiate, intimidate, or create an escape route."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.vanguard.ghost-blade",
+    "type": "subclass",
+    "name": "Ghost Blade",
+    "slug": "ghost-blade",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1276,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.vanguard",
+    "className": "Vanguard",
+    "rules": {
+      "name": "Ghost Blade",
+      "epithet": "the deadly grace",
+      "intro": "Your body is a weapon honed to impossible sharpness. Every deflection and strike, a perfect synthesis of psionic anticipation and physical execution. *Second Domain: Void.*",
+      "trait": "Finesse",
+      "themeColor": "#7C3F9E",
+      "foundation": {
+        "name": "Perfect Deflection",
+        "type": "Reaction",
+        "desc": "Spend 1 Stress to gain +3 Evasion against one incoming attack. If the attack misses due to this bonus, you gain Advantage on your next Melee attack against that attacker."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.vanguard.kinetic-echo",
+    "type": "subclass",
+    "name": "Kinetic Echo",
+    "slug": "kinetic-echo",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1276,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.vanguard",
+    "className": "Vanguard",
+    "rules": {
+      "name": "Kinetic Echo",
+      "epithet": "the precognitive dodger",
+      "intro": "You don't react — you anticipate. Sensing echoes of what's to come, you alter fate, forcing attacks to miss and positioning for the perfect counter. *Second Domain: Kinetic.*",
+      "trait": "Instinct",
+      "themeColor": "#7C3F9E",
+      "foundation": {
+        "name": "Precog Dodge",
+        "type": "Reaction",
+        "desc": "Spend 1 Hope when targeted by an attack. You force the attacker to **reroll the attack roll** (the Keeper must accept the new result)."
+      }
+    }
+  },
+  {
+    "id": "vf.core.subclass.vanguard.pure-conduit",
+    "type": "subclass",
+    "name": "Pure Conduit",
+    "slug": "pure-conduit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1276,
+        "collection": "subclasses"
+      }
+    ],
+    "classId": "vf.core.class.vanguard",
+    "className": "Vanguard",
+    "rules": {
+      "name": "Pure Conduit",
+      "epithet": "the channeled will",
+      "intro": "A channel for raw psionic will — you project focus outward, creating kinetic barriers, shielding allies' minds, shaping the battlefield without throwing a punch. *Second Domain: Lux.*",
+      "trait": "Knowledge",
+      "themeColor": "#7C3F9E",
+      "foundation": {
+        "name": "Force Projection",
+        "type": "Action",
+        "desc": "Spend 1 Stress. Choose one: push one object or creature up to Far Range, *or* create a wall of force that provides cover until your next turn, *or* deal 1d6 Kinetic damage to everything in Close Range (no effect on creatures)."
+      }
+    }
+  }
+]

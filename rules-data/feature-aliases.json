@@ -1,0 +1,54 @@
+{
+  "version": "11.1-RC2-draft6",
+  "scope": "personal equipment",
+  "aliases": [
+    {
+      "alias": "Light",
+      "canonical": "Lightweight",
+      "canonicalId": "vf.feature.personal.weapon.lightweight"
+    },
+    {
+      "alias": "Energy Tag",
+      "canonical": "Energy",
+      "canonicalId": "vf.feature.personal.weapon.energy"
+    },
+    {
+      "alias": "Piercing",
+      "canonical": "Armor Piercing",
+      "canonicalId": "vf.feature.personal.weapon.armor-piercing",
+      "parameters": {
+        "rating": 1
+      }
+    },
+    {
+      "alias": "Reach 2m",
+      "canonical": "Reach",
+      "canonicalId": "vf.feature.personal.weapon.reach",
+      "parameters": {
+        "distanceMeters": 2,
+        "rangeBand": "Very Close"
+      }
+    },
+    {
+      "alias": "Paired+1",
+      "canonical": "Paired",
+      "canonicalId": "vf.feature.personal.weapon.paired",
+      "parameters": {
+        "bonus": 1
+      }
+    },
+    {
+      "alias": "Paired+2",
+      "canonical": "Paired",
+      "canonicalId": "vf.feature.personal.weapon.paired",
+      "parameters": {
+        "bonus": 2
+      }
+    },
+    {
+      "alias": "Medium range",
+      "canonical": "Close range",
+      "note": "Legacy R&S range label normalized in structured parameters."
+    }
+  ]
+}

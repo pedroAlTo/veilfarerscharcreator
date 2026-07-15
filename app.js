@@ -3530,238 +3530,35 @@ function init() {
 // Start the app when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
 
-// ==================== EQUIPMENT LIBRARY (CORE RULES) ====================
-const EQUIPMENT_DATA = {
-  weapons: {
-    melee: [
-      { name: "Combat Knife", range: "Melee", trait: "Finesse", damage: "d6 Phys", burden: 1, features: "Concealable", prof: "Common", tier: 1, cost: 1 },
-      { name: "Vibro-Blade", range: "Melee", trait: "Finesse", damage: "d8 Phys", burden: 1, features: "Armor Piercing", prof: "Common", tier: 2, cost: 4 },
-      { name: "Power Fist", range: "Melee", trait: "Strength", damage: "d10 Phys", burden: 1, features: "Powerful, Heavy", prof: "Military", tier: 2, cost: 4 },
-      { name: "Mono-Blade", range: "Melee", trait: "Finesse", damage: "d8+2 Phys", burden: 1, features: "Armor Piercing, Accurate", prof: "Military", tier: 3, cost: 9 },
-      { name: "Shock Baton", range: "Melee", trait: "Strength", damage: "d6 Phys", burden: 1, features: "Stun, Non-Lethal", prof: "Common", tier: 1, cost: 1 },
-      { name: "Chain-Sword", range: "Melee", trait: "Strength", damage: "d10 Phys", burden: 2, features: "Messy, Loud", prof: "Military", tier: 2, cost: 4 },
-      { name: "Energy Lance", range: "Melee", trait: "Agility", damage: "d8+3 Magic", burden: 2, features: "Reach, Elegant", prof: "Military", tier: 3, cost: 9 },
-      { name: "Dueling Saber", range: "Melee", trait: "Finesse", damage: "d8 Phys", burden: 1, features: "Parrying, Elegant", prof: "Military", tier: 2, cost: 4 },
-      { name: "Heavy Maul", range: "Melee", trait: "Strength", damage: "d12 Phys", burden: 2, features: "Heavy, Knockdown", prof: "Common", tier: 2, cost: 4 },
-      { name: "Plasma-Infused Katana", range: "Melee", trait: "Agility", damage: "d8+6 Magic", burden: 1, features: "Energy Surge", prof: "Experimental", tier: 3, cost: 9 },
-      { name: "Nano-Edge Scalpel", range: "Melee", trait: "Agility", damage: "d6+6 Phys", burden: 1, features: "Adaptive", prof: "Experimental", tier: 3, cost: 9 }
-    ],
-    pistols: [
-      { name: "Slug Pistol", range: "Close", trait: "Finesse", damage: "d6 Phys", burden: 1, features: "Reliable", prof: "Common", tier: 1, cost: 1 },
-      { name: "Flechette Pistol", range: "Close", trait: "Finesse", damage: "d6 Phys", burden: 1, features: "Armor Piercing", prof: "Common", tier: 1, cost: 1 },
-      { name: "Plasma Pistol", range: "Close", trait: "Instinct", damage: "d8 Magic", burden: 1, features: "Overheating", prof: "Common", tier: 2, cost: 4 },
-      { name: "Needle Gun", range: "Close", trait: "Finesse", damage: "d4 Phys", burden: 1, features: "Poison, Silent", prof: "Common", tier: 2, cost: 4 },
-      { name: "Sonic Pistol", range: "Close", trait: "Presence", damage: "d6 Sonic", burden: 1, features: "Stun, Non-Lethal", prof: "Common", tier: 2, cost: 4 },
-      { name: "Holdout Blaster", range: "Close", trait: "Finesse", damage: "d6 Magic", burden: 1, features: "Concealable", prof: "Common", tier: 1, cost: 1 },
-      { name: "Heavy Revolver", range: "Medium", trait: "Strength", damage: "d8 Phys", burden: 1, features: "Reliable, Powerful", prof: "Common", tier: 2, cost: 4 },
-      { name: "Auto-Pistol", range: "Close", trait: "Finesse", damage: "d6 Phys", burden: 1, features: "Automatic", prof: "Common", tier: 2, cost: 4 },
-      { name: "Disruptor Pistol", range: "Close", trait: "Instinct", damage: "d8 Ion", burden: 1, features: "Disruptor", prof: "Military", tier: 2, cost: 4 },
-      { name: "Mag-Revolver", range: "Medium", trait: "Strength", damage: "d10 Phys", burden: 1, features: "High-Recoil, AP", prof: "Military", tier: 2, cost: 4 },
-      { name: "Phase Pistol", range: "Close", trait: "Knowledge", damage: "d8+6 Magic", burden: 1, features: "Phasing", prof: "Experimental", tier: 2, cost: 4 },
-      { name: "Quantum Sidearm", range: "Close", trait: "Instinct", damage: "d6+6 Magic", burden: 1, features: "Probability Shift", prof: "Experimental", tier: 3, cost: 9 },
-      { name: "Veil Pistol", range: "Close", trait: "Presence", damage: "d8+6 Magic", burden: 1, features: "Reality Shift", prof: "Experimental", tier: 3, cost: 9 },
-      { name: "Thought Caster", range: "Close", trait: "Presence", damage: "d8+9 Magic", burden: 1, features: "Mind Link", prof: "Precursor", tier: 4, cost: "Priceless" }
-    ],
-    rifles: [
-      { name: "Assault Rifle", range: "Close", trait: "Strength", damage: "d8+1 Phys", burden: 2, features: "Automatic", prof: "Common", tier: 2, cost: 4 },
-      { name: "Sniper Rifle", range: "Far", trait: "Finesse", damage: "d8+1 Phys", burden: 2, features: "Accurate", prof: "Common", tier: 2, cost: 4 },
-      { name: "Plasma Rifle", range: "Close", trait: "Instinct", damage: "d8 Magic", burden: 2, features: "Overheating", prof: "Common", tier: 2, cost: 4 },
-      { name: "Gauss Rifle", range: "Far", trait: "Agility", damage: "d6+1 Phys", burden: 2, features: "Armor Piercing, Silent", prof: "Common", tier: 2, cost: 4 },
-      { name: "Pulse Rifle", range: "Close", trait: "Strength", damage: "d8+1 Phys", burden: 2, features: "Burst Fire", prof: "Common", tier: 2, cost: 4 },
-      { name: "Battle Rifle", range: "Far", trait: "Strength", damage: "d6+3 Phys", burden: 2, features: "Powerful", prof: "Military", tier: 2, cost: 4 },
-      { name: "Sniper System", range: "Very Far", trait: "Finesse", damage: "d6+3 Phys", burden: 2, features: "Smart Scope", prof: "Military", tier: 2, cost: 4 },
-      { name: "Adv. Plasma Rifle", range: "Close", trait: "Instinct", damage: "d10+3 Magic", burden: 2, features: "Stable", prof: "Military", tier: 3, cost: 9 },
-      { name: "Modular Rifle", range: "Variable", trait: "Agility", damage: "d8+3 Phys", burden: 2, features: "Configurable", prof: "Military", tier: 3, cost: 9 },
-      { name: "Smart Rifle", range: "Far", trait: "Knowledge", damage: "d6+3 Phys", burden: 2, features: "Guided Rounds", prof: "Military", tier: 3, cost: 9 },
-      { name: "Beam Rifle", range: "Far", trait: "Instinct", damage: "d8+2 Energy", burden: 2, features: "Continuous, Charge-Up", prof: "Experimental", tier: 3, cost: 9 }
-    ],
-    heavy: [
-      { name: "Pump Shotgun", range: "Close", trait: "Strength", damage: "d10 Phys", burden: 2, features: "Scatter, Loud", prof: "Common", tier: 2, cost: 4 },
-      { name: "Heavy Bolter", range: "Far", trait: "Strength", damage: "d10+2 Expl", burden: 3, features: "Blast, Heavy, Knockdown", prof: "Military", tier: 3, cost: 9 },
-      { name: "Scrap-Cannon", range: "Close", trait: "Strength", damage: "d12 Phys", burden: 2, features: "Scatter, Unstable, High-Recoil", prof: "Common", tier: 2, cost: 4 },
-      { name: "Ion Blaster", range: "Medium", trait: "Instinct", damage: "d6+2 Ion", burden: 2, features: "Disruptor, Arc", prof: "Military", tier: 2, cost: 4 },
-      { name: "Cryo-Caster", range: "Cone", trait: "Instinct", damage: "d6 Cold", burden: 2, features: "Anchoring, Spray", prof: "Experimental", tier: 3, cost: 9 },
-      { name: "Street-Sweeper", range: "Close", trait: "Strength", damage: "2d8 Phys", burden: 2, features: "Blast, Knockdown, Messy", prof: "Military", tier: 3, cost: 10 },
-      { name: "Flechette SMG", range: "Close", trait: "Finesse", damage: "d6+1 Phys", burden: 2, features: "Spray, Automatic", prof: "Military", tier: 3, cost: 9 }
-    ],
-    special: [
-      { name: "Tranquility Dart-Gun", range: "Medium", trait: "Finesse", damage: "1 Phys", burden: 1, features: "Silent, Stun, Non-Lethal", prof: "Common", tier: 2, cost: 4 },
-      { name: "Silencer Needle-Rifle", range: "Far", trait: "Finesse", damage: "d6 Phys", burden: 2, features: "Silent, Collapsible, Poison", prof: "Military", tier: 3, cost: 9 },
-      { name: "Laser Pistol", range: "Medium", trait: "Finesse", damage: "d6 Energy", burden: 1, features: "Accurate, No Recoil", prof: "Common", tier: 1, cost: 1 },
-      { name: "Neur-Whip", range: "Melee", trait: "Finesse", damage: "d6 Psionic", burden: 1, features: "Reach, Stun, Biometric", prof: "Experimental", tier: 4, cost: 16 },
-      { name: "Liberator Revolver", range: "Medium", trait: "Strength", damage: "d10 Phys", burden: 1, features: "High-Recoil, Reliable, Brutal", prof: "Military", tier: 2, cost: 5 },
-      { name: "Frontier Lever-Action", range: "Far", trait: "Finesse", damage: "d10+1 Phys", burden: 2, features: "Accurate, Anchoring", prof: "Common", tier: 2, cost: 4 }
-    ]
-  },
-  armor: {
-    light: [
-      { name: "Frontier Vest", slots: 3, thresholds: "5/11", armorScore: 3, features: "Flexible", prof: "Common", tier: 1, cost: 1 },
-      { name: "Environmental Suit", slots: 3, thresholds: "4/8", armorScore: 3, features: "Life Support", prof: "Common", tier: 1, cost: 1 },
-      { name: "Mesh Armor", slots: 4, thresholds: "5/10", armorScore: 3, features: "Self-Repair", prof: "Common", tier: 2, cost: 4 },
-      { name: "Pilot's Jacket", slots: 3, thresholds: "5/11", armorScore: 4, features: "Life Support", prof: "Common", tier: 2, cost: 4 },
-      { name: "Stealth Armor", slots: 4, thresholds: "7/16", armorScore: 4, features: "Cloaking", prof: "Military", tier: 3, cost: 9 },
-      { name: "Smart Fabric Armor", slots: 5, thresholds: "8/16", armorScore: 4, features: "Self-Repair", prof: "Military", tier: 3, cost: 9 },
-      { name: "Infiltrator Suit", slots: 4, thresholds: "7/14", armorScore: 4, features: "Cloaking", prof: "Military", tier: 2, cost: 4 },
-      { name: "Special Forces Suit", slots: 5, thresholds: "9/18", armorScore: 5, features: "Resilient", prof: "Military", tier: 3, cost: 9 },
-      { name: "Spacer's Jumpsuit", slots: 2, thresholds: "4/8", armorScore: 0, features: "Environmental, Pocketed", prof: "Common", tier: 1, cost: 1 },
-      { name: "Synth-Weave Vest", slots: 2, thresholds: "5/10", armorScore: 1, features: "Concealable, Social", prof: "Common", tier: 1, cost: 2 },
-      { name: "Courier's Duster", slots: 3, thresholds: "5/11", armorScore: 1, features: "Weather-Proof, Pocketed", prof: "Common", tier: 2, cost: 4 },
-      { name: "Chameleon Suit", slots: 3, thresholds: "6/12", armorScore: 1, features: "Active Camo, Light", prof: "Military", tier: 3, cost: 9 },
-      { name: "Gravity-Suit", slots: 3, thresholds: "6/12", armorScore: 2, features: "Flight, Environmental", prof: "Experimental", tier: 4, cost: 16 }
-    ],
-    medium: [
-      { name: "Combat Armor", slots: 5, thresholds: "10/22", armorScore: 4, features: "Resilient", prof: "Common", tier: 2, cost: 4 },
-      { name: "Composite Armor", slots: 5, thresholds: "9/20", armorScore: 4, features: "Flexible", prof: "Common", tier: 2, cost: 4 },
-      { name: "Security Armor", slots: 5, thresholds: "10/21", armorScore: 4, features: "Resilient", prof: "Common", tier: 2, cost: 4 },
-      { name: "Colony Defense Armor", slots: 5, thresholds: "9/19", armorScore: 4, features: "Fortified", prof: "Common", tier: 2, cost: 4 },
-      { name: "Tactical Armor", slots: 6, thresholds: "11/23", armorScore: 5, features: "Tactical", prof: "Military", tier: 3, cost: 9 },
-      { name: "Powered Armor", slots: 6, thresholds: "12/25", armorScore: 5, features: "Powered, Heavy", prof: "Military", tier: 3, cost: 9 },
-      { name: "Aegis Duelist Coat", slots: 4, thresholds: "6/12", armorScore: 1, features: "Parry Field", prof: "Military", tier: 3, cost: 12 },
-      { name: "Synapse Tech-Suit", slots: 5, thresholds: "7/14", armorScore: 2, features: "Uplink", prof: "Experimental", tier: 3, cost: 14 }
-    ],
-    heavy: [
-      { name: "Riot Armor", slots: 6, thresholds: "8/17", armorScore: 4, features: "Heavy, Fortified", prof: "Common", tier: 1, cost: 1 },
-      { name: "Industrial Exosuit", slots: 7, thresholds: "8/16", armorScore: 4, features: "V. Heavy, Powered", prof: "Common", tier: 2, cost: 4 },
-      { name: "Salvage Armor", slots: 6, thresholds: "7/15", armorScore: 4, features: "Heavy, Jury-rigged", prof: "Common", tier: 2, cost: 4 },
-      { name: "Battle Armor", slots: 7, thresholds: "13/27", armorScore: 5, features: "Heavy, Fortified", prof: "Military", tier: 3, cost: 9 },
-      { name: "Power Armor", slots: 8, thresholds: "15/30", armorScore: 6, features: "V. Heavy, Powered", prof: "Military", tier: 4, cost: 16 },
-      { name: "Siege Armor", slots: 8, thresholds: "16/32", armorScore: 6, features: "V. Heavy, Massive", prof: "Military", tier: 5, cost: 25 },
-      { name: "Warlord Scrap-Plate", slots: 6, thresholds: "8/16", armorScore: 3, features: "Terror, Ablative", prof: "Common", tier: 2, cost: 6 },
-      { name: "Ghost Shroud", slots: 4, thresholds: "5/10", armorScore: 1, features: "Displacement", prof: "Experimental", tier: 4, cost: 20 },
-      { name: "Void-Walker", slots: 7, thresholds: "12/24", armorScore: 5, features: "Void-Sealed, Environmental", prof: "Experimental", tier: 4, cost: 20 }
-    ]
-  },
-  augmentations: {
-    neural: [
-      { name: "Memory Chip", benefit: "+1 Knowledge, perfect recall", drawback: "Data overload on Fear 10+", stress: "-", prof: "Common", tier: 2, cost: 4, strain: 1 },
-      { name: "Reflex Booster", benefit: "+1 Evasion", drawback: "Hypervigilance (disadv. social)", stress: "1", prof: "Common", tier: 4, cost: 16, strain: 2 },
-      { name: "Comm Implant", benefit: "Internal communication", drawback: "EMP vulnerability", stress: "-", prof: "Common", tier: 2, cost: 4, strain: 1 },
-      { name: "Pain Suppressor", benefit: "Ignore wound penalties", drawback: "Cannot detect injury severity", stress: "1", prof: "Common", tier: 4, cost: 16, strain: 2 },
-      { name: "Neural Interface", benefit: "Operate thought-controlled tech", drawback: "Mental feedback on malfunction", stress: "-", prof: "Common", tier: 1, cost: 1, strain: 1 },
-      { name: "Combat Reflexes", benefit: "+2 Evasion, extra reaction/turn", drawback: "Neural strain when stressed", stress: "2", prof: "Military", tier: 3, cost: 9, strain: 2 },
-      { name: "Tactical Computer", benefit: "Analyze battlefield tactics", drawback: "Information overload Fear 8+", stress: "1", prof: "Military", tier: 4, cost: 16, strain: 2 },
-      { name: "Battle Network", benefit: "Share info with allies", drawback: "Hacking vulnerability", stress: "1", prof: "Military", tier: 3, cost: 9, strain: 1 },
-      { name: "Combat Precognition", benefit: "Predict enemy actions", drawback: "False positives (disadv. social)", stress: "2", prof: "Military", tier: 4, cost: 16, strain: 3 },
-      { name: "Neural Firewall", benefit: "Immunity to mental intrusion", drawback: "Reduced empathy", stress: "1", prof: "Military", tier: 1, cost: 1, strain: 1 },
-      { name: "Quantum Consciousness", benefit: "Access parallel timeline memories", drawback: "Reality confusion", stress: "3", prof: "Experimental", tier: 3, cost: 9, strain: 3 },
-      { name: "Veil Interface", benefit: "Direct connection to Stellar Veil", drawback: "Madness risk", stress: "3", prof: "Experimental", tier: 2, cost: 4, strain: 3 },
-      { name: "Probability Calculator", benefit: "Predict likely outcomes", drawback: "Paralysis from possibilities", stress: "2", prof: "Experimental", tier: 4, cost: 16, strain: 2 },
-      { name: "Data-Jack", benefit: "Direct computer interface", drawback: "Hacking vulnerability", stress: "-", prof: "Common", tier: 1, cost: 3, strain: 1 },
-      { name: "Skill-Soft Slot", benefit: "Slot skill chips for proficiency", drawback: "One chip at a time", stress: "-", prof: "Common", tier: 2, cost: 8, strain: 2 },
-      { name: "Reaction Booster", benefit: "+2 Initiative, extra Reaction", drawback: "Twitchy when damaged", stress: "-", prof: "Military", tier: 3, cost: 14, strain: 3 },
-      { name: "Dead-Switch", benefit: "Body fights 1 round at 0 HP", drawback: "No control", stress: "-", prof: "Military", tier: 2, cost: 7, strain: 2 }
-    ],
-    physical: [
-      { name: "Prosthetic Limb", benefit: "Replace lost limb, +1 Strength", drawback: "Maintenance required", stress: "-", prof: "Common", tier: 2, cost: 4, strain: 1 },
-      { name: "Reinforced Bones", benefit: "+2 Hit Points", drawback: "Heavier body (-1 swim/climb)", stress: "-", prof: "Common", tier: 3, cost: 9, strain: 2 },
-      { name: "Subdermal Armor", benefit: "+1 Armor Score", drawback: "Obvious appearance", stress: "-", prof: "Common", tier: 3, cost: 9, strain: 2 },
-      { name: "Toxin Filter", benefit: "Immunity to poisons", drawback: "Reduced natural healing", stress: "-", prof: "Common", tier: 1, cost: 1, strain: 1 },
-      { name: "Enhanced Muscles", benefit: "+1 Strength", drawback: "Increased caloric needs", stress: "-", prof: "Common", tier: 3, cost: 9, strain: 2 },
-      { name: "Combat Chassis", benefit: "+2 Strength, +1 Armor", drawback: "Social stigma", stress: "1", prof: "Military", tier: 4, cost: 16, strain: 3 },
-      { name: "Enhanced Reflexes", benefit: "+2 Agility", drawback: "Difficulty with fine motor", stress: "1", prof: "Military", tier: 4, cost: 16, strain: 2 },
-      { name: "Weapon Integration", benefit: "Built-in weapons", drawback: "Legal issues", stress: "1", prof: "Military", tier: 2, cost: 4, strain: 2 },
-      { name: "Life Support System", benefit: "Survive hostile environments", drawback: "Tech dependence", stress: "-", prof: "Military", tier: 1, cost: 1, strain: 1 },
-      { name: "Phase Shifter", benefit: "Become intangible briefly", drawback: "Energy drain", stress: "3", prof: "Experimental", tier: 4, cost: 16, strain: 4 },
-      { name: "Adaptive Biology", benefit: "Environmental immunity", drawback: "Unpredictable mutations", stress: "2", prof: "Experimental", tier: 4, cost: 16, strain: 3 },
-      { name: "Myomer Muscle Weave", benefit: "+1 to Strength checks", drawback: "Maintenance required", stress: "-", prof: "Common", tier: 2, cost: 6, strain: 1 },
-      { name: "Cyber-Arm", benefit: "Store items inside, d6 unarmed", drawback: "Obvious", stress: "-", prof: "Common", tier: 2, cost: 5, strain: 1 },
-      { name: "Mag-Grip Palms", benefit: "Climb metal, Adv. grapple", drawback: "Always magnetized", stress: "-", prof: "Common", tier: 1, cost: 3, strain: 1 },
-      { name: "Hydraulic Skeleton", benefit: "2x carrying, no Heavy penalty", drawback: "Heavy", stress: "-", prof: "Military", tier: 3, cost: 12, strain: 3 }
-    ],
-    sensory: [
-      { name: "Low-Light Optics", benefit: "See in dim light", drawback: "Glare sensitivity", stress: "-", prof: "Common", tier: 1, cost: 2, strain: 1 },
-      { name: "Thermal Overlay", benefit: "See heat signatures", drawback: "Visual artifacts", stress: "-", prof: "Common", tier: 2, cost: 5, strain: 1 },
-      { name: "Targeting Suite", benefit: "Accurate on all ranged", drawback: "HUD distraction", stress: "-", prof: "Military", tier: 3, cost: 10, strain: 2 },
-      { name: "Truth-Seer", benefit: "Advantage on detecting lies", drawback: "Social distance", stress: "-", prof: "Military", tier: 4, cost: 15, strain: 2 },
-      { name: "Sensory Package", benefit: "+2 Instinct", drawback: "Overload in crowds", stress: "1", prof: "Military", tier: 4, cost: 16, strain: 2 }
-    ],
-    bioware: [
-      { name: "Filtration Lungs", benefit: "Breathe toxic air 1 hour", drawback: "Reduced capacity", stress: "-", prof: "Common", tier: 1, cost: 3, strain: 1 },
-      { name: "Synth-Heart", benefit: "+2 Death Saves", drawback: "Tech dependence", stress: "-", prof: "Common", tier: 2, cost: 6, strain: 2 },
-      { name: "Platelet Factory", benefit: "Blood clots instantly", drawback: "Clot risks", stress: "-", prof: "Military", tier: 3, cost: 8, strain: 2 }
-    ]
-  },
-  features: {
-    weapons: [
-      { name: "Accurate", desc: "+1 to Attack Rolls when targeting at Far or Very Far range." },
-      { name: "Adaptive", desc: "Once per scene, change the weapon's damage type (physical to magic, fire to cold, etc.)." },
-      { name: "Armor Piercing (AP)", desc: "Target's Armor Score is reduced by 1 until repaired. Can stack." },
-      { name: "Automatic", desc: "Mark 1 Stress to target a second creature within Very Close range with the same attack." },
-      { name: "Burst Fire", desc: "When you roll max on a damage die, roll it again and add to total." },
-      { name: "Cleave", desc: "On a hit, make a second attack against a different target in melee reach." },
-      { name: "Concealable", desc: "Doesn't count toward equipment burden when concealed. DC 15+ to find in search." },
-      { name: "Reliable", desc: "+1 to Attack Rolls. Simple and dependable." },
-      { name: "Powerful", desc: "Roll damage dice twice, take the higher result." },
-      { name: "Heavy", desc: "-1 to Evasion while wielded. Requires 2 hands." },
-      { name: "Overheating", desc: "On Fear Die 1-3, weapon overheats and cannot fire next turn." },
-      { name: "Poison", desc: "Target marks Stress as toxins course through their system." },
-      { name: "Stun", desc: "Target must make DC 12 Strength check or be Stunned until end of next turn." },
-      { name: "Non-Lethal", desc: "Cannot reduce target below 1 HP. For capture, not killing." },
-      { name: "Silent", desc: "Firing does not break stealth or alert nearby enemies." },
-      { name: "High-Recoil", desc: "If Strength 0 or lower, suffer 1 Stress after firing." },
-      { name: "Scatter", desc: "At Close range, affects all targets in a small area. Reduced damage at longer ranges." },
-      { name: "Unstable", desc: "On Fear Die 1-5, wielder takes 1 Stress (radiation/feedback/recoil)." },
-      { name: "Knockdown", desc: "On hit, target DC 12+Tier Agility/Strength check or knocked Prone." },
-      { name: "Arc", desc: "On hit, arcs to second target within Very Close range. Second target takes half damage." },
-      { name: "Continuous", desc: "If attacker hits and doesn't move next turn, auto-hit same target again." },
-      { name: "Charge-Up", desc: "Requires 1 Action to build energy before firing. Cannot fire turn drawn." },
-      { name: "Disruptor", desc: "2x damage to Shields and Synthetics. Half damage to biological HP." },
-      { name: "Phasing", desc: "Attacks ignore cover and can hit targets through thin walls." },
-      { name: "Guided Rounds", desc: "Ignores cover bonuses enemies might have." },
-      { name: "Reach", desc: "Can attack targets up to 2 meters away in melee." },
-      { name: "Messy", desc: "Leaves obvious evidence. Difficult to clean up." },
-      { name: "Loud", desc: "Alerts everyone in the area. Cannot be silenced." },
-      { name: "Elegant", desc: "+1 to social rolls when openly worn in high society." }
-    ],
-    armor: [
-      { name: "Flexible", desc: "+1 bonus to Evasion score while wearing this armor." },
-      { name: "Self-Repair", desc: "During any rest, armor repairs one marked Armor Slot automatically." },
-      { name: "Life Support", desc: "Protects from vacuum of space for up to 24 hours on full charge." },
-      { name: "Cloaking", desc: "Mark 1 Stress to become invisible until end of next turn or until you attack." },
-      { name: "Resilient", desc: "Before marking last Armor Slot, roll d6. On 6, ignore the hit." },
-      { name: "Tactical", desc: "+1 to all Instinct rolls for perceiving surroundings or initiative." },
-      { name: "Powered", desc: "Negates Evasion penalties from Heavy or Very Heavy. Requires power." },
-      { name: "Heavy", desc: "-1 penalty to Evasion score while wearing." },
-      { name: "Very Heavy", desc: "-2 penalty to Evasion and -1 to all Agility-based rolls." },
-      { name: "Massive", desc: "-2 Evasion, but roll d6 on hit - on 5-6, reduce severity by one threshold." },
-      { name: "Fortified", desc: "When marking Armor Slot, reduce severity by two thresholds instead of one." },
-      { name: "Jury-rigged", desc: "Repair without workshop. But on marking slot, roll d6 - on 1, extra malfunction." },
-      { name: "Environmental", desc: "Full immunity to vacuum, toxic atmospheres, extreme temperatures." },
-      { name: "Assault", desc: "+1 to attack rolls when using weapons with Automatic feature." },
-      { name: "Pocketed", desc: "Carry 2 extra Small items without increasing Burden." },
-      { name: "Social", desc: "Accepted in high-society settings where visible armor would be inappropriate." },
-      { name: "Active Camo", desc: "Advantage on Stealth checks. Light-bending technology." },
-      { name: "Flight", desc: "Grants ability to fly in zero-G or low-gravity environments." },
-      { name: "Parry Field", desc: "Once per round, Reaction to gain +4 AC against a single melee attack." },
-      { name: "Uplink", desc: "Control drones/ship systems via thought (Hands Free). Requires Neural Interface." },
-      { name: "Terror", desc: "Enemies in Close range suffer -1 to Morale/Fear saves." },
-      { name: "Ablative", desc: "Sacrifice 1 AC to ignore 5 damage (armor flies off). Up to 3 times." },
-      { name: "Displacement", desc: "Ranged attacks beyond Close have 50% miss chance (d6, 1-3 miss)." },
-      { name: "Void-Sealed", desc: "Immune to Psionic and Void damage. Wearer is mentally isolated." }
-    ]
-  }
-};
-
+// ==================== EQUIPMENT LIBRARY (CANONICAL RC2 DATA) ====================
 let currentEquipmentTab = 'weapons';
 let equipmentSearchTerm = '';
+let keeperRules = null;
 
-function showEquipmentModal() {
+async function ensureKeeperRules() {
+  if (keeperRules) return keeperRules;
+  if (!window.VeilFarersCanonical) throw new Error('Canonical rules runtime is unavailable.');
+  keeperRules = await window.VeilFarersCanonical.ready;
+  return keeperRules;
+}
+
+async function showEquipmentModal() {
   $('#equipmentModal').classList.remove('hidden');
   currentEquipmentTab = 'weapons';
   equipmentSearchTerm = '';
   $('#equipmentSearch').value = '';
   updateEquipmentTabButtons();
-  renderEquipment();
+  await renderEquipment();
 }
 
 function hideEquipmentModal() {
   $('#equipmentModal').classList.add('hidden');
 }
 
-function switchEquipmentTab(category) {
+async function switchEquipmentTab(category) {
   currentEquipmentTab = category;
   updateEquipmentTabButtons();
-  renderEquipment();
+  await renderEquipment();
 }
 
 function updateEquipmentTabButtons() {
@@ -3770,244 +3567,134 @@ function updateEquipmentTabButtons() {
   });
 }
 
-function filterEquipment() {
+async function filterEquipment() {
   equipmentSearchTerm = $('#equipmentSearch').value.toLowerCase().trim();
-  renderEquipment();
+  await renderEquipment();
 }
 
-function renderEquipment() {
+function canonicalSearch(item, search) {
+  if (!search) return true;
+  return [item.name, item.pack, item.damage, item.trait, item.range, item.benefit, item.drawback, item.definition]
+    .concat(item.features || [])
+    .filter(Boolean).join(' ').toLowerCase().includes(search);
+}
+
+function canonicalTier(item) {
+  return item && item.tier && item.tier.name ? item.tier.name : 'Unrated';
+}
+
+function canonicalCost(item) {
+  const value = item && item.cost ? item.cost.credits : null;
+  return value === 0 || value ? value : '—';
+}
+
+function canonicalPack(item) {
+  return item && item.pack === 'rust-and-steel' ? 'Rust & Steel' : 'Core';
+}
+
+function groupBy(items, keyFn) {
+  return items.reduce((groups, item) => {
+    const key = keyFn(item) || 'other';
+    (groups[key] || (groups[key] = [])).push(item);
+    return groups;
+  }, {});
+}
+
+async function renderEquipment() {
   const container = $('#equipmentContent');
-  const search = equipmentSearchTerm;
-  
-  let html = '';
-  
-  if (currentEquipmentTab === 'weapons') {
-    html = renderWeaponsTab(search);
-  } else if (currentEquipmentTab === 'armor') {
-    html = renderArmorTab(search);
-  } else if (currentEquipmentTab === 'augmentations') {
-    html = renderAugmentationsTab(search);
-  } else if (currentEquipmentTab === 'features') {
-    html = renderFeaturesTab(search);
+  if (!container) return;
+  container.innerHTML = '<p class="text-gray text-center">Loading canonical RC2 equipment…</p>';
+  try {
+    const rules = await ensureKeeperRules();
+    let html = '';
+    if (currentEquipmentTab === 'weapons') html = renderWeaponsTab(rules.weapons, equipmentSearchTerm);
+    else if (currentEquipmentTab === 'armor') html = renderArmorTab(rules.armor, equipmentSearchTerm);
+    else if (currentEquipmentTab === 'augmentations') html = renderAugmentationsTab(rules.augments, equipmentSearchTerm);
+    else if (currentEquipmentTab === 'features') html = renderFeaturesTab(rules.features, equipmentSearchTerm);
+    container.innerHTML = html;
+  } catch (error) {
+    console.error(error);
+    container.innerHTML = '<p class="text-center" style="color:#fca5a5">Could not load <code>/rules-data</code>. The Keeper reference is unavailable.</p>';
   }
-  
-  container.innerHTML = html;
 }
 
-function renderWeaponsTab(search) {
+function renderWeaponsTab(allItems, search) {
+  const labels = {
+    'melee-one-handed': '⚔️ One-Handed Melee',
+    'melee-two-handed': '🗡️ Two-Handed Melee',
+    sidearm: '🔫 Sidearms',
+    longarm: '🎯 Longarms',
+    'heavy-or-special': '💥 Heavy & Special'
+  };
+  const order = ['melee-one-handed','melee-two-handed','sidearm','longarm','heavy-or-special'];
+  const grouped = groupBy((allItems || []).filter(item => canonicalSearch(item, search)), item => item.weaponFamily);
   let html = '';
-  const categories = [
-    { key: 'melee', title: '⚔️ Melee Weapons' },
-    { key: 'pistols', title: '🔫 Pistols' },
-    { key: 'rifles', title: '🎯 Rifles' },
-    { key: 'heavy', title: '💥 Heavy Weapons' },
-    { key: 'special', title: '✨ Special Weapons' }
-  ];
-  
-  categories.forEach(cat => {
-    let items = EQUIPMENT_DATA.weapons[cat.key];
-    if (search) {
-      items = items.filter(item => 
-        item.name.toLowerCase().includes(search) ||
-        item.features.toLowerCase().includes(search) ||
-        item.prof.toLowerCase().includes(search)
-      );
-    }
-    if (items.length === 0) return;
-    
-    html += `<div class="equip-category"><h3>${cat.title}</h3>`;
-    html += `<div class="equip-table-wrapper"><table class="equip-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Range</th>
-          <th>Trait</th>
-          <th>Damage</th>
-          <th>B.</th>
-          <th>Features</th>
-          <th>Prof.</th>
-          <th>Tier</th>
-          <th>Cost</th>
-        </tr>
-      </thead>
-      <tbody>`;
-    
+  order.forEach(key => {
+    const items = (grouped[key] || []).slice().sort((a,b) => (a.tier?.rank || 99) - (b.tier?.rank || 99) || a.name.localeCompare(b.name));
+    if (!items.length) return;
+    html += `<div class="equip-category"><h3>${labels[key]}</h3><div class="equip-table-wrapper"><table class="equip-table"><thead><tr>
+      <th>Name</th><th>Range</th><th>Trait</th><th>Damage</th><th>B.</th><th>Features</th><th>Source</th><th>Tier</th><th>Cost</th>
+      </tr></thead><tbody>`;
     items.forEach(item => {
-      html += `<tr>
-        <td class="equip-name">${escapeHtml(item.name)}</td>
-        <td>${escapeHtml(item.range)}</td>
-        <td>${escapeHtml(item.trait)}</td>
-        <td class="equip-damage">${escapeHtml(item.damage)}</td>
-        <td>${item.burden}</td>
-        <td class="equip-features">${escapeHtml(item.features)}</td>
-        <td><span class="prof-badge ${item.prof.toLowerCase()}">${escapeHtml(item.prof)}</span></td>
-        <td>${item.tier}</td>
-        <td>${item.cost}</td>
-      </tr>`;
+      html += `<tr><td class="equip-name">${escapeHtml(item.name)}</td><td>${escapeHtml(item.range || '—')}</td><td>${escapeHtml(item.trait || '—')}</td>
+        <td class="equip-damage">${escapeHtml(item.damage || '—')}</td><td>${item.burden ?? '—'}</td><td class="equip-features">${escapeHtml((item.features || []).join(', ') || '—')}</td>
+        <td>${escapeHtml(canonicalPack(item))}</td><td>${escapeHtml(canonicalTier(item))}</td><td>${escapeHtml(canonicalCost(item))}</td></tr>`;
     });
-    
-    html += `</tbody></table></div></div>`;
+    html += '</tbody></table></div></div>';
   });
-  
-  return html || '<p class="text-gray text-center">No weapons match your search.</p>';
+  return html || '<p class="text-gray text-center">No canonical weapons match your search.</p>';
 }
 
-function renderArmorTab(search) {
+function renderArmorTab(allItems, search) {
+  const labels = { light:'🪶 Light Armor', medium:'⚖️ Medium Armor', heavy:'🛡️ Heavy Armor' };
+  const order = ['light','medium','heavy'];
+  const grouped = groupBy((allItems || []).filter(item => canonicalSearch(item, search)), item => item.weightClass);
   let html = '';
-  const categories = [
-    { key: 'light', title: '🪶 Light Armor' },
-    { key: 'medium', title: '⚖️ Medium Armor' },
-    { key: 'heavy', title: '🛡️ Heavy Armor' }
-  ];
-  
-  categories.forEach(cat => {
-    let items = EQUIPMENT_DATA.armor[cat.key];
-    if (search) {
-      items = items.filter(item => 
-        item.name.toLowerCase().includes(search) ||
-        item.features.toLowerCase().includes(search) ||
-        item.prof.toLowerCase().includes(search)
-      );
-    }
-    if (items.length === 0) return;
-    
-    html += `<div class="equip-category"><h3>${cat.title}</h3>`;
-    html += `<div class="equip-table-wrapper"><table class="equip-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Slots</th>
-          <th>Thresholds</th>
-          <th>A.S.</th>
-          <th>Features</th>
-          <th>Prof.</th>
-          <th>Tier</th>
-          <th>Cost</th>
-        </tr>
-      </thead>
-      <tbody>`;
-    
+  order.forEach(key => {
+    const items = (grouped[key] || []).slice().sort((a,b) => (a.tier?.rank || 99) - (b.tier?.rank || 99) || a.name.localeCompare(b.name));
+    if (!items.length) return;
+    html += `<div class="equip-category"><h3>${labels[key]}</h3><div class="equip-table-wrapper"><table class="equip-table"><thead><tr>
+      <th>Name</th><th>Slots</th><th>Thresholds</th><th>Capacity</th><th>Features</th><th>Source</th><th>Tier</th><th>Cost</th>
+      </tr></thead><tbody>`;
     items.forEach(item => {
-      html += `<tr>
-        <td class="equip-name">${escapeHtml(item.name)}</td>
-        <td>${item.slots}</td>
-        <td>${escapeHtml(item.thresholds)}</td>
-        <td class="equip-as">+${item.armorScore}</td>
-        <td class="equip-features">${escapeHtml(item.features)}</td>
-        <td><span class="prof-badge ${item.prof.toLowerCase()}">${escapeHtml(item.prof)}</span></td>
-        <td>${item.tier}</td>
-        <td>${item.cost}</td>
-      </tr>`;
+      html += `<tr><td class="equip-name">${escapeHtml(item.name)}</td><td>${item.armorSlots ?? '—'}</td><td>${escapeHtml(item.thresholds?.raw || '—')}</td>
+        <td>${item.improvementCapacity ?? '—'}</td><td class="equip-features">${escapeHtml((item.features || []).join(', ') || '—')}</td>
+        <td>${escapeHtml(canonicalPack(item))}</td><td>${escapeHtml(canonicalTier(item))}</td><td>${escapeHtml(canonicalCost(item))}</td></tr>`;
     });
-    
-    html += `</tbody></table></div></div>`;
+    html += '</tbody></table></div></div>';
   });
-  
-  return html || '<p class="text-gray text-center">No armor matches your search.</p>';
+  return html || '<p class="text-gray text-center">No canonical armor matches your search.</p>';
 }
 
-function renderAugmentationsTab(search) {
-  let html = '';
-  const categories = [
-    { key: 'neural', title: '🧠 Neural Augmentations' },
-    { key: 'physical', title: '💪 Physical Augmentations' },
-    { key: 'sensory', title: '👁️ Sensory Augmentations' },
-    { key: 'bioware', title: '🫀 Bioware & Organ Augments' }
-  ];
-  
-  categories.forEach(cat => {
-    let items = EQUIPMENT_DATA.augmentations[cat.key];
-    if (search) {
-      items = items.filter(item => 
-        item.name.toLowerCase().includes(search) ||
-        item.benefit.toLowerCase().includes(search) ||
-        item.prof.toLowerCase().includes(search)
-      );
-    }
-    if (items.length === 0) return;
-    
-    html += `<div class="equip-category"><h3>${cat.title}</h3>`;
-    html += `<div class="equip-table-wrapper"><table class="equip-table aug-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Benefit</th>
-          <th>Drawback</th>
-          <th>Stress</th>
-          <th>Strain</th>
-          <th>Prof.</th>
-          <th>Tier</th>
-          <th>Cost</th>
-        </tr>
-      </thead>
-      <tbody>`;
-    
-    items.forEach(item => {
-      html += `<tr>
-        <td class="equip-name">${escapeHtml(item.name)}</td>
-        <td class="aug-benefit">${escapeHtml(item.benefit)}</td>
-        <td class="aug-drawback">${escapeHtml(item.drawback)}</td>
-        <td>${item.stress}</td>
-        <td>${item.strain}</td>
-        <td><span class="prof-badge ${item.prof.toLowerCase()}">${escapeHtml(item.prof)}</span></td>
-        <td>${item.tier}</td>
-        <td>${item.cost}</td>
-      </tr>`;
-    });
-    
-    html += `</tbody></table></div></div>`;
+function renderAugmentationsTab(allItems, search) {
+  const items = (allItems || []).filter(item => canonicalSearch(item, search)).sort((a,b) => (a.tier?.rank || 99) - (b.tier?.rank || 99) || a.name.localeCompare(b.name));
+  if (!items.length) return '<p class="text-gray text-center">No canonical augmentations match your search.</p>';
+  let html = '<div class="equip-category"><h3>🦾 Canonical Augmentations</h3><div class="equip-table-wrapper"><table class="equip-table aug-table"><thead><tr>' +
+    '<th>Name</th><th>Benefit</th><th>Drawback</th><th>Stress</th><th>Source</th><th>Tier</th><th>Cost</th></tr></thead><tbody>';
+  items.forEach(item => {
+    html += `<tr><td class="equip-name">${escapeHtml(item.name)}</td><td class="aug-benefit">${escapeHtml(item.benefit || '—')}</td>
+      <td class="aug-drawback">${escapeHtml(item.drawback || '—')}</td><td>${escapeHtml(item.activationStress || '—')}</td>
+      <td>${escapeHtml(canonicalPack(item))}</td><td>${escapeHtml(canonicalTier(item))}</td><td>${escapeHtml(canonicalCost(item))}</td></tr>`;
   });
-  
-  return html || '<p class="text-gray text-center">No augmentations match your search.</p>';
+  return html + '</tbody></table></div></div>';
 }
 
-function renderFeaturesTab(search) {
+function renderFeaturesTab(allItems, search) {
+  const filtered = (allItems || []).filter(item => canonicalSearch(item, search));
+  const weaponFeatures = filtered.filter(item => item.category === 'Weapon Feature');
+  const armorFeatures = filtered.filter(item => item.category === 'Armor Feature');
   let html = '';
-  
-  // Weapon Features
-  let weaponFeatures = EQUIPMENT_DATA.features.weapons;
-  if (search) {
-    weaponFeatures = weaponFeatures.filter(f => 
-      f.name.toLowerCase().includes(search) ||
-      f.desc.toLowerCase().includes(search)
-    );
-  }
-  
-  if (weaponFeatures.length > 0) {
-    html += `<div class="equip-category"><h3>⚔️ Weapon Features</h3>`;
-    html += `<div class="features-grid">`;
-    weaponFeatures.forEach(f => {
-      html += `<div class="feature-card">
-        <div class="feature-name">${escapeHtml(f.name)}</div>
-        <div class="feature-desc">${escapeHtml(f.desc)}</div>
-      </div>`;
+  [[weaponFeatures,'⚔️ Weapon Features',''],[armorFeatures,'🛡️ Armor Features',' armor']].forEach(group => {
+    if (!group[0].length) return;
+    html += `<div class="equip-category"><h3>${group[1]}</h3><div class="features-grid">`;
+    group[0].sort((a,b) => a.name.localeCompare(b.name)).forEach(feature => {
+      html += `<div class="feature-card${group[2]}"><div class="feature-name">${escapeHtml(feature.name)}</div><div class="feature-desc">${escapeHtml(feature.definition || '')}</div></div>`;
     });
-    html += `</div></div>`;
-  }
-  
-  // Armor Features
-  let armorFeatures = EQUIPMENT_DATA.features.armor;
-  if (search) {
-    armorFeatures = armorFeatures.filter(f => 
-      f.name.toLowerCase().includes(search) ||
-      f.desc.toLowerCase().includes(search)
-    );
-  }
-  
-  if (armorFeatures.length > 0) {
-    html += `<div class="equip-category"><h3>🛡️ Armor Features</h3>`;
-    html += `<div class="features-grid">`;
-    armorFeatures.forEach(f => {
-      html += `<div class="feature-card armor">
-        <div class="feature-name">${escapeHtml(f.name)}</div>
-        <div class="feature-desc">${escapeHtml(f.desc)}</div>
-      </div>`;
-    });
-    html += `</div></div>`;
-  }
-  
-  return html || '<p class="text-gray text-center">No features match your search.</p>';
+    html += '</div></div>';
+  });
+  return html || '<p class="text-gray text-center">No canonical features match your search.</p>';
 }
+
 
 // ==================== MONSTER BESTIARY (CORE RULES) ====================
 const MONSTER_BESTIARY = {

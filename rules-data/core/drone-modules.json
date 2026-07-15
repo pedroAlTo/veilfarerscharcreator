@@ -1,0 +1,506 @@
+[
+  {
+    "id": "vf.core.drone-module.compliance-taser",
+    "type": "drone-module",
+    "name": "Compliance Taser",
+    "slug": "compliance-taser",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6610,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "2",
+      "use": "Close non-lethal attack; mark 1 Stress and force drop/stumble/stun if fiction allows",
+      "source": "core"
+    },
+    "slots": "2",
+    "use": "Close non-lethal attack; mark 1 Stress and force drop/stumble/stun if fiction allows",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.flight-module",
+    "type": "drone-module",
+    "name": "Flight Module",
+    "slug": "flight-module",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6414,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Hover, cross gaps, move vertically, fly at low speed; -2 stealth while flying",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "Hover, cross gaps, move vertically, fly at low speed; -2 stealth while flying",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.hardened-link",
+    "type": "drone-module",
+    "name": "Hardened Link",
+    "slug": "hardened-link",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6796,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Resists interference; does not resist hard Lost zones",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "Resists interference; does not resist hard Lost zones",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.low-light-camera",
+    "type": "drone-module",
+    "name": "Low-Light Camera",
+    "slug": "low-light-camera",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6270,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "0",
+      "use": "See in darkness; remote visual feed",
+      "source": "core"
+    },
+    "slots": "0",
+    "use": "See in darkness; remote visual feed",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.medical-scanner",
+    "type": "drone-module",
+    "name": "Medical Scanner",
+    "slug": "medical-scanner",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6575,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Reads vitals and triage data",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "Reads vitals and triage data",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.neural-network-control",
+    "type": "drone-module",
+    "name": "Neural Network Control",
+    "slug": "neural-network-control",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6498,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "0",
+      "use": "Registered crew can take control by turns; moves spotlight, not action economy",
+      "source": "core"
+    },
+    "slots": "0",
+    "use": "Registered crew can take control by turns; moves spotlight, not action economy",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.smoke-flash-pod",
+    "type": "drone-module",
+    "name": "Smoke/Flash Pod",
+    "slug": "smoke-flash-pod",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6609,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "One-use escape, distraction, breach window, or Advantage on reposition/infiltration",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "One-use escape, distraction, breach window, or Advantage on reposition/infiltration",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.stun-dart",
+    "type": "drone-module",
+    "name": "Stun Dart",
+    "slug": "stun-dart",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6611,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "2",
+      "use": "Close/Far non-lethal attack; 1d6 non-lethal physical or mark 1 Stress",
+      "source": "core"
+    },
+    "slots": "2",
+    "use": "Close/Far non-lethal attack; 1d6 non-lethal physical or mark 1 Stress",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.wall-crawler",
+    "type": "drone-module",
+    "name": "Wall-Crawler",
+    "slug": "wall-crawler",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6413,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "1",
+      "use": "Climb walls, ceilings, ducts, and uneven surfaces",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "Climb walls, ceilings, ducts, and uneven surfaces",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.armor-plating",
+    "type": "drone-module",
+    "name": "Armor Plating",
+    "slug": "armor-plating",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6625,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Gain +1 Armor Slot; -1 Evasion while flying/sneaking/evading/tight terrain",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "Gain +1 Armor Slot; -1 Evasion while flying/sneaking/evading/tight terrain",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.micro-laser",
+    "type": "drone-module",
+    "name": "Micro-Laser",
+    "slug": "micro-laser",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6627,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "cost": "4 Cr",
+      "slots": "2",
+      "use": "Far attack; 1d6 energy; precise but heat/beam traceable",
+      "source": "core"
+    },
+    "slots": "2",
+    "use": "Far attack; 1d6 energy; precise but heat/beam traceable",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.military-flight-module",
+    "type": "drone-module",
+    "name": "Military Flight Module",
+    "slug": "military-flight-module",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6415,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "cost": "6 Cr",
+      "slots": "1",
+      "use": "Controlled tactical flight; +1 to maneuver/evade/chase/reposition/pilot drone",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "Controlled tactical flight; +1 to maneuver/evade/chase/reposition/pilot drone",
+    "cost": {
+      "credits": "6 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.military-stealth-shell",
+    "type": "drone-module",
+    "name": "Military Stealth Shell",
+    "slug": "military-stealth-shell",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6624,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "cost": "8 Cr",
+      "slots": "1",
+      "use": "+2 stealth while moving slowly and avoiding loud modules",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "+2 stealth while moving slowly and avoiding loud modules",
+    "cost": {
+      "credits": "8 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.target-painter",
+    "type": "drone-module",
+    "name": "Target Painter",
+    "slug": "target-painter",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6626,
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Mark one target; next ally attacking gains Advantage or equivalent",
+      "source": "core"
+    },
+    "slots": "1",
+    "use": "Mark one target; next ally attacking gains Advantage or equivalent",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  }
+]

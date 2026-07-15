@@ -1,0 +1,200 @@
+[
+  {
+    "id": "vf.core.trait.agility",
+    "type": "trait",
+    "name": "Agility",
+    "slug": "agility",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 321,
+        "collection": "traits"
+      }
+    ],
+    "rules": {
+      "name": "Agility",
+      "examples": "Sprint · Leap · Maneuver"
+    }
+  },
+  {
+    "id": "vf.core.trait.finesse",
+    "type": "trait",
+    "name": "Finesse",
+    "slug": "finesse",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 337,
+        "collection": "traits"
+      }
+    ],
+    "rules": {
+      "name": "Finesse",
+      "examples": "Control · Hide · Tinker · Pilot/Navigate"
+    }
+  },
+  {
+    "id": "vf.core.trait.instinct",
+    "type": "trait",
+    "name": "Instinct",
+    "slug": "instinct",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 331,
+        "collection": "traits"
+      }
+    ],
+    "rules": {
+      "name": "Instinct",
+      "examples": "Perceive · Sense · Navigate"
+    }
+  },
+  {
+    "id": "vf.core.trait.knowledge",
+    "type": "trait",
+    "name": "Knowledge",
+    "slug": "knowledge",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 133,
+        "collection": "traits"
+      }
+    ],
+    "rules": {
+      "name": "Knowledge",
+      "examples": "Recall · Analyze · Tech · Medicine"
+    }
+  },
+  {
+    "id": "vf.core.trait.presence",
+    "type": "trait",
+    "name": "Presence",
+    "slug": "presence",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 722,
+        "collection": "traits"
+      }
+    ],
+    "rules": {
+      "name": "Presence",
+      "examples": "Charm · Perform · Deceive"
+    }
+  },
+  {
+    "id": "vf.core.trait.strength",
+    "type": "trait",
+    "name": "Strength",
+    "slug": "strength",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1043,
+        "collection": "traits"
+      }
+    ],
+    "rules": {
+      "name": "Strength",
+      "examples": "Lift · Smash · Grapple"
+    }
+  },
+  {
+    "id": "vf.core.subtrait.pilot-navigate",
+    "type": "subtrait",
+    "name": "Pilot/Navigate",
+    "slug": "pilot-navigate",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "pilot",
+      "piloting",
+      "navigate",
+      "navigation"
+    ],
+    "parentTrait": "Finesse",
+    "rules": {
+      "name": "Pilot/Navigate",
+      "parentTrait": "Finesse",
+      "usesParentScore": true,
+      "examples": "Pilot vehicles · Plot courses · Dock · Evade · Navigate"
+    }
+  },
+  {
+    "id": "vf.core.subtrait.tech",
+    "type": "subtrait",
+    "name": "Tech",
+    "slug": "tech",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "technology",
+      "engineering systems",
+      "hacking"
+    ],
+    "parentTrait": "Knowledge",
+    "rules": {
+      "name": "Tech",
+      "parentTrait": "Knowledge",
+      "usesParentScore": true,
+      "examples": "Computers · Electronics · Hacking · Repair theory · Technical analysis"
+    }
+  },
+  {
+    "id": "vf.core.subtrait.medicine",
+    "type": "subtrait",
+    "name": "Medicine",
+    "slug": "medicine",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "medical",
+      "medic"
+    ],
+    "parentTrait": "Knowledge",
+    "rules": {
+      "name": "Medicine",
+      "parentTrait": "Knowledge",
+      "usesParentScore": true,
+      "examples": "Diagnose · Stabilize · Treat · Surgery · Biological analysis"
+    }
+  }
+]

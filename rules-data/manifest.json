@@ -1,0 +1,251 @@
+{
+  "schema": "veilfarers.data.manifest/2",
+  "release": "11.1-RC2-draft6",
+  "generatedAt": "2026-07-15",
+  "brand": "VeilFarers",
+  "sourceOfTruth": "Markdown books and approved decision register; JSON is generated/normalized.",
+  "sourceBooks": [
+    {
+      "id": "core",
+      "title": "VeilFarers Corebook",
+      "version": "11.1-RC2-draft6",
+      "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+      "sha256": "f6154410507a5fcd43da41b976ba2f3f3b715fe19f57cd7d82f3f002614d2e1c"
+    },
+    {
+      "id": "keepers-companion",
+      "title": "VeilFarers Keeper's Companion",
+      "version": "11.1-RC2-draft6",
+      "sourceFile": "VeilFarers_Keepers_Companion_11.1-RC2-draft6_FULL_SOURCE.md",
+      "sha256": "0eb186bac8b7e765411643c2329efc84a3c8743f756a1146046d22c18ff826cf"
+    },
+    {
+      "id": "rust-and-steel",
+      "title": "VeilFarers: Rust & Steel",
+      "version": "11.1-RC2-draft6",
+      "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+      "sha256": "9b55a413f4ea63486923544a120e543029f7fcd9ee42ad181b2485b7be5b2dcb"
+    },
+    {
+      "id": "alien-species",
+      "title": "VeilFarers: The Alien Species",
+      "version": "11.1-RC2-draft6",
+      "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+      "sha256": "25dedc62028a01d6ead83efbe552a333c36e32f5eac2027458c635139d1e51a2"
+    }
+  ],
+  "packs": [
+    {
+      "id": "core",
+      "name": "Core",
+      "version": "11.1-RC2-draft6",
+      "required": true,
+      "default": true,
+      "requires": [],
+      "path": "core",
+      "overridePolicy": "owns canonical names; cannot be overwritten"
+    },
+    {
+      "id": "rust-and-steel",
+      "name": "Rust & Steel",
+      "version": "11.1-RC2-draft6",
+      "required": false,
+      "default": false,
+      "requires": [
+        "core"
+      ],
+      "path": "rust-and-steel",
+      "overridePolicy": "additive only; distinct mechanics require distinct names and IDs"
+    },
+    {
+      "id": "alien-species",
+      "name": "The Alien Species",
+      "version": "11.1-RC2-draft6",
+      "required": false,
+      "default": false,
+      "requires": [
+        "core"
+      ],
+      "path": "alien-species",
+      "overridePolicy": "additive lore and Keeper content; Corebook ancestry mechanics remain canonical"
+    }
+  ],
+  "collections": [
+    {
+      "pack": "core",
+      "collection": "ancestries",
+      "path": "core/ancestries.json",
+      "count": 9
+    },
+    {
+      "pack": "core",
+      "collection": "communities",
+      "path": "core/communities.json",
+      "count": 7
+    },
+    {
+      "pack": "core",
+      "collection": "affiliations",
+      "path": "core/affiliations.json",
+      "count": 13
+    },
+    {
+      "pack": "core",
+      "collection": "classes",
+      "path": "core/classes.json",
+      "count": 9
+    },
+    {
+      "pack": "core",
+      "collection": "subclasses",
+      "path": "core/subclasses.json",
+      "count": 27
+    },
+    {
+      "pack": "core",
+      "collection": "powers",
+      "path": "core/powers.json",
+      "count": 147
+    },
+    {
+      "pack": "core",
+      "collection": "features",
+      "path": "core/features.json",
+      "count": 56
+    },
+    {
+      "pack": "core",
+      "collection": "domains",
+      "path": "core/domains.json",
+      "count": 7
+    },
+    {
+      "pack": "core",
+      "collection": "traits",
+      "path": "core/traits.json",
+      "count": 9
+    },
+    {
+      "pack": "core",
+      "collection": "tech-tiers",
+      "path": "core/tech-tiers.json",
+      "count": 4
+    },
+    {
+      "pack": "core",
+      "collection": "weapons",
+      "path": "core/weapons.json",
+      "count": 71
+    },
+    {
+      "pack": "core",
+      "collection": "armor",
+      "path": "core/armor.json",
+      "count": 23
+    },
+    {
+      "pack": "core",
+      "collection": "augments",
+      "path": "core/augments.json",
+      "count": 24
+    },
+    {
+      "pack": "core",
+      "collection": "gear",
+      "path": "core/gear.json",
+      "count": 37
+    },
+    {
+      "pack": "core",
+      "collection": "drone-grades",
+      "path": "core/drone-grades.json",
+      "count": 3
+    },
+    {
+      "pack": "core",
+      "collection": "drone-modules",
+      "path": "core/drone-modules.json",
+      "count": 14
+    },
+    {
+      "pack": "rust-and-steel",
+      "collection": "weapons",
+      "path": "rust-and-steel/weapons.json",
+      "count": 140
+    },
+    {
+      "pack": "rust-and-steel",
+      "collection": "armor",
+      "path": "rust-and-steel/armor.json",
+      "count": 19
+    },
+    {
+      "pack": "rust-and-steel",
+      "collection": "augments",
+      "path": "rust-and-steel/augments.json",
+      "count": 56
+    },
+    {
+      "pack": "rust-and-steel",
+      "collection": "gear",
+      "path": "rust-and-steel/gear.json",
+      "count": 79
+    },
+    {
+      "pack": "rust-and-steel",
+      "collection": "drone-grades",
+      "path": "rust-and-steel/drone-grades.json",
+      "count": 5
+    },
+    {
+      "pack": "alien-species",
+      "collection": "ancestry-lore",
+      "path": "alien-species/ancestry-lore.json",
+      "count": 9
+    },
+    {
+      "pack": "alien-species",
+      "collection": "adversaries",
+      "path": "alien-species/adversaries.json",
+      "count": 18
+    }
+  ],
+  "identity": {
+    "canonicalKey": "id",
+    "displayKey": "name",
+    "aliasKey": "aliases",
+    "duplicateIdPolicy": "error",
+    "duplicateNamePolicy": "allowed across packs for different entity types; same-type collisions require explicit aliases or migration rules"
+  },
+  "compatibility": {
+    "creator": "compat/creator",
+    "legacyPortal": "compat/legacy-portal",
+    "oldBrandImportKeys": [
+      "voidlight_character_v1",
+      "voidlight_characters_v1"
+    ]
+  },
+  "version": "11.1-RC2-draft6",
+  "rules": "rules.json",
+  "featureRegistry": "features-registry.json",
+  "featureAliases": "feature-aliases.json",
+  "creator": {
+    "version": "11.1-RC2-draft5",
+    "offlineMode": "embedded canonical fallback",
+    "hostedMode": "creator/data JSON",
+    "equipmentPacks": [
+      "core",
+      "rust-and-steel"
+    ],
+    "weaponCount": 211,
+    "armorCount": 42,
+    "technologyAccess": "class and tier filtered"
+  },
+  "pdfCandidatePlan": {
+    "status": "pending-step-5",
+    "spreadBackgroundSystem": "Option 2",
+    "evenPages": "left half of spread master",
+    "oddPages": "right half of spread master",
+    "bookmarkSource": "VF_BOOKMARK markers plus heading hierarchy"
+  }
+}

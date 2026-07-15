@@ -1,0 +1,44 @@
+{
+  "schema": "veilfarers.downloads/2",
+  "release": "11.1-RC2-draft6",
+  "generatedAt": "2026-07-15",
+  "items": [
+    {
+      "id": "corebook",
+      "title": "VeilFarers Corebook",
+      "version": "11.1 RC2",
+      "type": "rulebook",
+      "file": "/download/VeilFarers_Corebook_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 3238108,
+      "status": "PDF Candidate"
+    },
+    {
+      "id": "keepers-companion",
+      "title": "VeilFarers Keeper's Companion",
+      "version": "11.1 RC2",
+      "type": "rulebook",
+      "file": "/download/VeilFarers_Keepers_Companion_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 2155273,
+      "status": "PDF Candidate"
+    },
+    {
+      "id": "rust-and-steel",
+      "title": "VeilFarers: Rust & Steel",
+      "version": "11.1 RC2",
+      "type": "supplement",
+      "file": "/download/VeilFarers_Rust_and_Steel_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 3764561,
+      "status": "PDF Candidate"
+    },
+    {
+      "id": "alien-species",
+      "title": "VeilFarers: Alien Species",
+      "version": "11.1 RC2",
+      "type": "supplement",
+      "file": "/download/VeilFarers_Alien_Species_11.1-RC2-PDF-Candidate.pdf",
+      "bytes": 2073404,
+      "status": "PDF Candidate"
+    }
+  ],
+  "pdfCandidateStatus": "RC2 PDF candidates generated from the synchronized Draft 6 canonical sources."
+}

@@ -1,0 +1,1053 @@
+[
+  {
+    "id": "vf.rs.armor.combat-jacket",
+    "type": "armor",
+    "name": "Combat Jacket",
+    "slug": "combat-jacket",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6436,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "thr": "6 / 13",
+      "slots": 4,
+      "feat": "Pocketed",
+      "cost": 1,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 6,
+      "severe": 13,
+      "raw": "6 / 13"
+    },
+    "armorSlots": 4,
+    "features": [
+      "Pocketed"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "weightClass": "medium",
+    "burden": 2,
+    "improvementCapacity": 4,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.pocketed",
+        "display": "Pocketed"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.frontier-jacket",
+    "type": "armor",
+    "name": "Frontier Jacket",
+    "slug": "frontier-jacket",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6143,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "thr": "4 / 10",
+      "slots": 3,
+      "feat": "Pocketed, Weather-Proof",
+      "cost": 1,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 4,
+      "severe": 10,
+      "raw": "4 / 10"
+    },
+    "armorSlots": 3,
+    "features": [
+      "Pocketed",
+      "Weather-Proof"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "weightClass": "light",
+    "burden": 1,
+    "improvementCapacity": 2,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.pocketed",
+        "display": "Pocketed"
+      },
+      {
+        "id": "vf.feature.personal.armor.weather-proof",
+        "display": "Weather-Proof"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.reinforced-clothing",
+    "type": "armor",
+    "name": "Reinforced Clothing",
+    "slug": "reinforced-clothing",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6142,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "thr": "3 / 8",
+      "slots": 2,
+      "feat": "Social",
+      "cost": 1,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 3,
+      "severe": 8,
+      "raw": "3 / 8"
+    },
+    "armorSlots": 2,
+    "features": [
+      "Social"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "weightClass": "light",
+    "burden": 1,
+    "improvementCapacity": 2,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.social",
+        "display": "Social"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.breacher-armor",
+    "type": "armor",
+    "name": "Breacher Armor",
+    "slug": "breacher-armor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [
+      "Assault Armor (R&S)"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6693,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "10 / 18",
+      "slots": 6,
+      "feat": "Breaching Shield",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 10,
+      "severe": 18,
+      "raw": "10 / 18"
+    },
+    "armorSlots": 6,
+    "features": [
+      "Breaching Shield"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "heavy",
+    "improvementCapacity": 6,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.breaching-shield",
+        "display": "Breaching Shield"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.combat-shell",
+    "type": "armor",
+    "name": "Combat Shell",
+    "slug": "combat-shell",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6438,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "7 / 14",
+      "slots": 5,
+      "feat": "Modular, Environmental",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 7,
+      "severe": 14,
+      "raw": "7 / 14"
+    },
+    "armorSlots": 5,
+    "features": [
+      "Modular",
+      "Environmental"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "medium",
+    "burden": 3,
+    "improvementCapacity": 4,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.modular",
+        "display": "Modular"
+      },
+      {
+        "id": "vf.feature.personal.armor.environmental",
+        "display": "Environmental"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.enforcer-armor",
+    "type": "armor",
+    "name": "Enforcer Armor",
+    "slug": "enforcer-armor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6440,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "8 / 15",
+      "slots": 5,
+      "feat": "Intimidating",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 8,
+      "severe": 15,
+      "raw": "8 / 15"
+    },
+    "armorSlots": 5,
+    "features": [
+      "Intimidating"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "medium",
+    "burden": 3,
+    "improvementCapacity": 4,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.intimidating",
+        "display": "Intimidating"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.flexible-mesh-armor",
+    "type": "armor",
+    "name": "Flexible Mesh Armor",
+    "slug": "flexible-mesh-armor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [
+      "Mesh Armor (R&S)"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5773,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "5 / 12",
+      "slots": 4,
+      "feat": "Flexible",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 5,
+      "severe": 12,
+      "raw": "5 / 12"
+    },
+    "armorSlots": 4,
+    "features": [
+      "Flexible"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "light",
+    "burden": 2,
+    "improvementCapacity": 2,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.flexible",
+        "display": "Flexible"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.hazard-suit",
+    "type": "armor",
+    "name": "Hazard Suit",
+    "slug": "hazard-suit",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6441,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "6 / 13",
+      "slots": 4,
+      "feat": "Hazard-Sealed",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 6,
+      "severe": 13,
+      "raw": "6 / 13"
+    },
+    "armorSlots": 4,
+    "features": [
+      "Hazard-Sealed"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "medium",
+    "burden": 3,
+    "improvementCapacity": 4,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.hazard-sealed",
+        "display": "Hazard-Sealed"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.patrol-armor",
+    "type": "armor",
+    "name": "Patrol Armor",
+    "slug": "patrol-armor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [
+      "Security Armor (R&S)"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5773,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "7 / 14",
+      "slots": 5,
+      "feat": "ID Display, Comms",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 7,
+      "severe": 14,
+      "raw": "7 / 14"
+    },
+    "armorSlots": 5,
+    "features": [
+      "ID Display",
+      "Comms"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "medium",
+    "burden": 2,
+    "improvementCapacity": 4,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.id-display",
+        "display": "ID Display"
+      },
+      {
+        "id": "vf.feature.personal.armor.comms",
+        "display": "Comms"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.plate-carrier",
+    "type": "armor",
+    "name": "Plate Carrier",
+    "slug": "plate-carrier",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6208,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "9 / 17",
+      "slots": 6,
+      "feat": "Modular",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 9,
+      "severe": 17,
+      "raw": "9 / 17"
+    },
+    "armorSlots": 6,
+    "features": [
+      "Modular"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "heavy",
+    "burden": 4,
+    "improvementCapacity": 6,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.modular",
+        "display": "Modular"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.scout-armor",
+    "type": "armor",
+    "name": "Scout Armor",
+    "slug": "scout-armor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6144,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "5 / 11",
+      "slots": 3,
+      "feat": "Silent, Low-Profile",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 5,
+      "severe": 11,
+      "raw": "5 / 11"
+    },
+    "armorSlots": 3,
+    "features": [
+      "Silent",
+      "Low-Profile"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "light",
+    "burden": 1,
+    "improvementCapacity": 2,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.silent",
+        "display": "Silent"
+      },
+      {
+        "id": "vf.feature.personal.armor.low-profile",
+        "display": "Low-Profile"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.voidsuit-combat",
+    "type": "armor",
+    "name": "Voidsuit (Combat)",
+    "slug": "voidsuit-combat",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6439,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "7 / 14",
+      "slots": 5,
+      "feat": "Environmental, Thruster",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 7,
+      "severe": 14,
+      "raw": "7 / 14"
+    },
+    "armorSlots": 5,
+    "features": [
+      "Environmental",
+      "Thruster"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "medium",
+    "burden": 3,
+    "improvementCapacity": 4,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.environmental",
+        "display": "Environmental"
+      },
+      {
+        "id": "vf.feature.personal.armor.thruster",
+        "display": "Thruster"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.voidsuit-light",
+    "type": "armor",
+    "name": "Voidsuit (Light)",
+    "slug": "voidsuit-light",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6147,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "thr": "4 / 10",
+      "slots": 3,
+      "feat": "Environmental",
+      "cost": 4,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 4,
+      "severe": 10,
+      "raw": "4 / 10"
+    },
+    "armorSlots": 3,
+    "features": [
+      "Environmental"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "weightClass": "light",
+    "burden": 2,
+    "improvementCapacity": 2,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.environmental",
+        "display": "Environmental"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.battle-plate",
+    "type": "armor",
+    "name": "Battle Plate",
+    "slug": "battle-plate",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6694,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "thr": "11 / 19",
+      "slots": 7,
+      "feat": "Ablative (3)",
+      "cost": 9,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 11,
+      "severe": 19,
+      "raw": "11 / 19"
+    },
+    "armorSlots": 7,
+    "features": [
+      "Ablative (3)"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "weightClass": "heavy",
+    "burden": 5,
+    "improvementCapacity": 7,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.ablative",
+        "parameters": {
+          "charges": 3
+        },
+        "display": "Ablative (3)"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.exo-mesh",
+    "type": "armor",
+    "name": "Exo-Mesh",
+    "slug": "exo-mesh",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6442,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "thr": "8 / 15",
+      "slots": 5,
+      "feat": "Servo-Assisted, Flexible",
+      "cost": 9,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 8,
+      "severe": 15,
+      "raw": "8 / 15"
+    },
+    "armorSlots": 5,
+    "features": [
+      "Servo-Assisted",
+      "Flexible"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "weightClass": "medium",
+    "burden": 2,
+    "improvementCapacity": 5,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.servo-assisted",
+        "display": "Servo-Assisted"
+      },
+      {
+        "id": "vf.feature.personal.armor.flexible",
+        "display": "Flexible"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.fortress-armor",
+    "type": "armor",
+    "name": "Fortress Armor",
+    "slug": "fortress-armor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6695,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "thr": "12 / 22",
+      "slots": 8,
+      "feat": "Hardened (Energy)",
+      "cost": 9,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 12,
+      "severe": 22,
+      "raw": "12 / 22"
+    },
+    "armorSlots": 8,
+    "features": [
+      "Hardened (Energy)"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "weightClass": "heavy",
+    "burden": 6,
+    "improvementCapacity": 7,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.hardened",
+        "parameters": {
+          "damageType": "Energy"
+        },
+        "display": "Hardened (Energy)"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.stealth-suit",
+    "type": "armor",
+    "name": "Stealth Suit",
+    "slug": "stealth-suit",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6145,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "thr": "4 / 9",
+      "slots": 2,
+      "feat": "Thermoptic Camouflage",
+      "cost": 9,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 4,
+      "severe": 9,
+      "raw": "4 / 9"
+    },
+    "armorSlots": 2,
+    "features": [
+      "Thermoptic Camouflage"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "weightClass": "light",
+    "burden": 1,
+    "improvementCapacity": 3,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.thermoptic-camouflage",
+        "display": "Thermoptic Camouflage"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.void-hardsuit",
+    "type": "armor",
+    "name": "Void Hardsuit",
+    "slug": "void-hardsuit",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6696,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "thr": "10 / 18",
+      "slots": 7,
+      "feat": "Thruster Pack",
+      "cost": 9,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 10,
+      "severe": 18,
+      "raw": "10 / 18"
+    },
+    "armorSlots": 7,
+    "features": [
+      "Thruster Pack"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "weightClass": "heavy",
+    "burden": 5,
+    "improvementCapacity": 7,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.thruster-pack",
+        "display": "Thruster Pack"
+      }
+    ]
+  },
+  {
+    "id": "vf.rs.armor.siege-plate",
+    "type": "armor",
+    "name": "Siege Plate",
+    "slug": "siege-plate",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6697,
+        "collection": "armors"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "thr": "14 / 25",
+      "slots": 10,
+      "feat": "Hardened (All)",
+      "cost": 16,
+      "source": "rust-and-steel"
+    },
+    "thresholds": {
+      "major": 14,
+      "severe": 25,
+      "raw": "14 / 25"
+    },
+    "armorSlots": 10,
+    "features": [
+      "Hardened (All)"
+    ],
+    "cost": {
+      "credits": 16
+    },
+    "weightClass": "heavy",
+    "burden": 7,
+    "improvementCapacity": 8,
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.armor.hardened",
+        "parameters": {
+          "damageType": "All"
+        },
+        "display": "Hardened (All)"
+      }
+    ]
+  }
+]

@@ -1,0 +1,33 @@
+VeilFarers Portal v59.3
+======================
+
+Deploy this folder directly to Netlify.
+
+Canonical sources
+-----------------
+- /index.html and /data/: RC2 Character Creator + integrated Card Library.
+- /rules-data/: normalized 11.1-RC2-draft6 datasets used by all migrated portal modules.
+- /shared-data.js + /canonical-runtime.js: shared browser data adapter for Player and Keeper tools.
+- /download/: four 11.1 RC2 PDF candidates and the corrected downloads manifest.
+
+Services
+--------
+- Netlify Identity: account login, roles, RC2 character vault metadata, and Keeper Tool access.
+- Firebase / Firestore: real-time Player Tool / Keeper Tool sessions only.
+- Firebase browser configuration is served by /api/firebase-config from Netlify environment variables.
+
+Required Netlify configuration
+------------------------------
+- FIREBASE_API_KEY environment variable.
+- Netlify Identity enabled.
+- Assign role "admin" to administrator accounts.
+- Assign role "keeper" or "admin" to accounts allowed to open Keeper Tool.
+- Firebase Anonymous Authentication enabled for real-time table sessions.
+
+Acceptance checks after deployment
+----------------------------------
+1. Open Player Tool and verify domain cards load.
+2. Save a draft in Character Creator, then use the Creator button in Player Tool.
+3. Open Keeper Tool with a keeper/admin account and open Equipment Reference.
+4. Connect Player and Keeper to the same Firebase table.
+5. Confirm /admin.html reports the Firebase configuration endpoint as healthy.

@@ -102,6 +102,78 @@
     };
   }
 
-  if (typeof window !== 'undefined') window.veilfarersImportCreator = importCreator;
-  if (typeof module !== 'undefined' && module.exports) module.exports = { importCreator: importCreator };
+
+  function findBy(items, predicate) {
+    return (items || []).find(predicate) || null;
+  }
+
+  function importCreatorState(raw, canonical) {
+    if (!raw || typeof raw !== 'object' || raw.fields) return null;
+    if (!raw.ancestry && !raw.cls && !raw.name) return null;
+    canonical = canonical || (typeof window !== 'undefined' ? window.VF_CANONICAL_DATA : null) || {};
+
+    var ancestry = findBy(canonical.ancestries, function (x) { return x.slug === raw.ancestry || x.id === raw.ancestry || x.name === raw.ancestry; });
+    var community = findBy(canonical.communities, function (x) { return x.slug === raw.community || x.id === raw.community || x.name === raw.community; });
+    var cls = findBy(canonical.classes, function (x) { return x.slug === raw.cls || x.id === raw.cls || x.name === raw.cls; });
+    var subclass = findBy(canonical.subclasses, function (x) {
+      return x.name === raw.subclass || x.slug === raw.subclass || x.id === raw.subclass;
+    });
+    var selectedArmor = findBy(canonical.armor, function (x) { return (raw.armors || []).indexOf(x.name) !== -1; });
+    var selectedWeapons = (raw.weapons || []).map(function (name) {
+      return findBy(canonical.weapons, function (x) { return x.name === name; });
+    }).filter(Boolean);
+    var selectedPowers = (raw.powers || []).map(function (value) {
+      var bits = String(value || '').split('::');
+      var domain = bits.length > 1 ? bits.shift() : '';
+      var name = bits.join('::') || value;
+      return findBy(canonical.powers, function (x) { return x.name === name && (!domain || x.domain === domain); });
+    }).filter(Boolean);
+
+    var stats = { agility:0, strength:0, finesse:0, instinct:0, presence:0, knowledge:0 };
+    Object.keys(stats).forEach(function (key) { stats[key] = num(raw.traits && raw.traits[key], 0); });
+    var classRules = cls && cls.rules || {};
+    var hp = cls && cls.statistics ? cls.statistics.hitPoints : classRules.hp;
+    var evasion = cls && cls.statistics ? cls.statistics.evasion : classRules.evasion;
+    var thresholds = selectedArmor && selectedArmor.thresholds || { major: 4, severe: 8 };
+    var domainCards = selectedPowers.map(function (power) {
+      var costMatch = String(power.cost || '').match(/(\d+)\s*Hope/i);
+      return {
+        id: power.id, canonicalId: power.id, domain: power.domain, level: power.level || 1,
+        name: power.name, cost: costMatch ? num(costMatch[1], 0) : 0,
+        costText: power.cost || '—', type: power.powerType || 'Ability', text: power.text || '',
+        recallCost: power.recallCost || '—', tier: power.tier || ''
+      };
+    });
+
+    var inventory = [];
+    if (raw.kit) inventory.push(S(raw.kit));
+    while (inventory.length < 8) inventory.push('');
+
+    return {
+      name: S(raw.name), playerName: '', pronouns: S(raw.pronouns),
+      heritage: ancestry ? ancestry.name : S(raw.ancestry),
+      background: community ? community.name : S(raw.community),
+      class: cls ? cls.name : S(raw.cls), subclass: subclass ? subclass.name : S(raw.subclass),
+      level: num(raw.level, 1), path: raw.path === 'sleeping' ? 'sleeping' : 'awakened',
+      stats: stats,
+      hp: { current: 0, max: num(hp, 6) },
+      stress: { current: 0, max: 6 }, hope: { current: 2, max: 6 }, effort: { current: 2, max: 6 },
+      resolve: { current: 0, max: 2 },
+      thresholds: { major: num(thresholds.major, 4), severe: num(thresholds.severe, 8) },
+      evasion: num(evasion, 10), shields: selectedArmor ? num(selectedArmor.armorSlots, 0) : 0,
+      wealth: 1, credits: 0,
+      experiences: (raw.experiences || []).filter(Boolean).map(function (text) { return { description: S(text), bonus: 2 }; }),
+      playerNotes: [raw.appearance, raw.voice, raw.bgAnswer, raw.anchor, raw.wound].filter(Boolean).join('\n'),
+      inventory: inventory,
+      weapons: selectedWeapons.map(function (weapon) {
+        return { id: weapon.id, canonicalId: weapon.id, name: weapon.name, trait: [weapon.trait, weapon.range].filter(Boolean).join(' · '), damage: weapon.damage || '', feature: (weapon.features || []).join(', ') };
+      }).concat([{ name:'', trait:'', damage:'' }]).slice(0,3),
+      armor: selectedArmor ? { id:selectedArmor.id, canonicalId:selectedArmor.id, name:selectedArmor.name, thresholds:selectedArmor.thresholds && selectedArmor.thresholds.raw || '', feature:(selectedArmor.features || []).join(', '), tier:selectedArmor.tier && selectedArmor.tier.name || '' } : null,
+      domainCards: domainCards,
+      creatorSource: { schema: 'veilfarers.creator-state/1', importedAt: new Date().toISOString() }
+    };
+  }
+
+  if (typeof window !== 'undefined') { window.veilfarersImportCreator = importCreator; window.veilfarersImportCreatorState = importCreatorState; }
+  if (typeof module !== 'undefined' && module.exports) module.exports = { importCreator: importCreator, importCreatorState: importCreatorState };
 })();

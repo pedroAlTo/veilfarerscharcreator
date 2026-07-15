@@ -1,0 +1,1274 @@
+[
+  {
+    "id": "diplomat",
+    "name": "Diplomat",
+    "color": "#D6588A",
+    "domains": "Social & Lux",
+    "domainList": [
+      "Social",
+      "Lux"
+    ],
+    "spellcastTrait": "Presence",
+    "evasion": 10,
+    "hp": 6,
+    "items": [
+      "Encrypted Datapad",
+      "Treasured Token"
+    ],
+    "desc": "Diplomats weave peace in a galaxy of shattered trust. They read tiny expressions, broker treaties, and know when to flatter and when to threaten. Charm is their armor. Words are their weapons.",
+    "hopeFeature": {
+      "name": "The Power of Suggestion (3 Hope)",
+      "text": "Spend 3 Hope: Plant an Idea (ally's next Presence/Knowledge/Finesse roll has Advantage), Create an Opening (ally's next attack or stealth roll has Advantage), or Gather Intelligence (Keeper gives you one secret Clue about the scene)."
+    },
+    "classFeature": {
+      "name": "Cultural Lens",
+      "text": "Advantage on all Social tests. Succeed on Persuasion or Deception to gain 1 Favor Token (max 4). Gain 1 Favor Token each long rest."
+    },
+    "bgQuestion": "What secret compelled you to trust words over weapons?",
+    "subclasses": [
+      {
+        "name": "Cultural Attaché",
+        "epithet": "the soft-power reader",
+        "intro": "You are a master of soft power, reading the hidden language of fear, desire, and secret agendas. You do not just hear words; you perceive the truth beneath them.",
+        "trait": "Presence",
+        "themeColor": "#D6588A",
+        "foundation": {
+          "name": "The Unmasking Gaze",
+          "type": "Action",
+          "desc": "Spend 1 Hope and make a Presence check against a target's Presence or Instinct (defender chooses the higher). On a success, ask the Keeper one question about the target's true intentions, fears, or loyalties, which they must answer honestly."
+        }
+      },
+      {
+        "name": "The Icon",
+        "epithet": "the cultural force",
+        "intro": "You are a cultural force. You generate and spend Favors by shaping public opinion. You can hold a maximum of 5 Favor Tokens.",
+        "trait": "Presence",
+        "themeColor": "#D6588A",
+        "foundation": {
+          "name": "Control the Narrative",
+          "type": "Action",
+          "desc": "Make a Presence check (DC 13) to perform or report; on success, gain 1 Favor Token."
+        }
+      },
+      {
+        "name": "Political Operative",
+        "epithet": "the player of the great game",
+        "intro": "You are a player in the great game of factions. You trade in favors, secrets, and influence, understanding that true power is not held, it is wielded from the shadows.",
+        "trait": "Instinct",
+        "themeColor": "#D6588A",
+        "foundation": {
+          "name": "Web of Favors",
+          "type": "Passive",
+          "desc": "You start each session with 2 Favor Tokens. You can spend a Favor to introduce a helpful NPC contact or to produce a piece of common (Tier 1) gear as a \"gift\" from a contact."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light Armor, Melee/Pistols, Neural/Physical Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "Light Armor, Melee/Pistols, Neural/Physical Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "Light Armor, Melee/Pistols, Neural/Physical Augments, now at Experimental grade",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "engineer",
+    "name": "Engineer",
+    "color": "#0E8A8E",
+    "domains": "Tech & Synthesis",
+    "domainList": [
+      "Tech",
+      "Synthesis"
+    ],
+    "spellcastTrait": "Knowledge",
+    "evasion": 9,
+    "hp": 7,
+    "items": [
+      "Alien-etched Multi-Tool",
+      "Universal Lubricant"
+    ],
+    "desc": "Engineers thrive in chaos. Whether hacking rogue AIs or grafting cybernetics onto wounded crewmates, their genius turns duct tape and guts into miracles — just long enough.",
+    "hopeFeature": {
+      "name": "Scrap Genius (3 Hope)",
+      "text": "Spend 3 Hope to create one functional improvised device from available materials. It works perfectly for one scene, then breaks. The Keeper cannot declare it fails during that scene."
+    },
+    "classFeature": {
+      "name": "Field Engineering",
+      "text": "Once per short rest, repair any technology without tools using what's on hand. Mark 1 Stress; the repair holds for the scene. Advantage on rolls to sabotage or interface with technology."
+    },
+    "bgQuestion": "What machine do you carry guilt for building — or for failing to build?",
+    "subclasses": [
+      {
+        "name": "Tech Specialist",
+        "epithet": "the digital phantom",
+        "intro": "You are a digital phantom, moving through secure networks as if they were open doors. You dismantle firewalls, steal data, and turn an enemy's own systems against them with elegant lines of code.",
+        "trait": "Knowledge",
+        "themeColor": "#0E8A8E",
+        "foundation": {
+          "name": "Digital Ghost",
+          "type": "Action",
+          "desc": "You have Advantage on all hacking and technology rolls. When you successfully hack a system, you leave no trace of your intrusion unless you choose to."
+        }
+      },
+      {
+        "name": "Xenotech Savant",
+        "epithet": "the alien-tech translator",
+        "intro": "Fascinated by the galaxy's forgotten marvels. You interface with alien artifacts and recovered tech of vanished civilizations, jury-rigging impossible devices from wreckage.",
+        "trait": "Knowledge",
+        "themeColor": "#0E8A8E",
+        "foundation": {
+          "name": "Adaptive Interface",
+          "type": "Action",
+          "desc": "You have become an expert in alien technology. You can operate any xenotech without penalties, and you have Advantage when trying to understand or modify its functions."
+        }
+      },
+      {
+        "name": "Medical Technician",
+        "epithet": "the field surgeon",
+        "intro": "Where flesh fails, you improvise. A battlefield surgeon who is as comfortable installing a cybernetic limb as stitching a wound, you are the master of both biological and synthetic repair.",
+        "trait": "Instinct",
+        "themeColor": "#0E8A8E",
+        "foundation": {
+          "name": "Field Surgery",
+          "type": "Action",
+          "desc": "Mark 1 Stress to perform emergency medical aid. You can either heal a target for 2 HP plus 1 HP for 1d4 rounds, *or* stabilize a dying creature, *or* remove a level of Degradation from an augmentation."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light/Medium Armor, Pistols, All Augmentations, All Equipment",
+          "weaponCategories": [
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "All Armor, Pistols/Rifles, All Augmentations, All Modifications, All Equipment",
+          "weaponCategories": [
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium",
+            "Heavy"
+          ],
+          "allWeapons": false,
+          "allArmor": true,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "All Armor, Pistols/Rifles, All Augmentations, All Modifications, All Equipment, now at Experimental grade",
+          "weaponCategories": [
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium",
+            "Heavy"
+          ],
+          "allWeapons": false,
+          "allArmor": true,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "explorer",
+    "name": "Explorer",
+    "color": "#3E8945",
+    "domains": "Synthesis & Lux",
+    "domainList": [
+      "Synthesis",
+      "Lux"
+    ],
+    "spellcastTrait": "Instinct",
+    "evasion": 11,
+    "hp": 6,
+    "items": [
+      "Advanced Survival Kit",
+      "Encrypted Star Chart (1 free Intel Token per exploration)"
+    ],
+    "desc": "Explorers are the eyes and ears of post-Silence civilization, pushing boundaries of what is known and turning whispers of legend into tangible truths.",
+    "hopeFeature": {
+      "name": "Pathfinder's Insight (3 Hope)",
+      "text": "When making a Travel or Scan roll during a Void Crawl, spend 3 Hope to automatically find a safe route. You also discover one piece of hidden information about the destination."
+    },
+    "classFeature": {
+      "name": "Terrain Mastery",
+      "text": "You cannot be surprised in wilderness or unexplored environments. Advantage on all rolls to track, navigate, or survive in the field. Once per long rest, identify any substance, creature, or phenomenon you can observe."
+    },
+    "bgQuestion": "What is the one place you have not gone back to — and why haven't you?",
+    "subclasses": [
+      {
+        "name": "Cartographer",
+        "epithet": "the void's reader",
+        "intro": "You see the void as pathways and puzzles, mapping safe routes and uncovering hidden truths in the stars.",
+        "trait": "Instinct",
+        "themeColor": "#3E8945",
+        "foundation": {
+          "name": "Cosmic Cartography",
+          "type": "Passive",
+          "desc": "You have Advantage on long-distance Piloting and astrogation rolls. You also have Advantage on *Chart a Safe Route* during a Void Crawl."
+        }
+      },
+      {
+        "name": "Wilderness",
+        "epithet": "the world's friend",
+        "intro": "You are a true survivor, at home in the most hostile and untamed natural environments. You read the land, understand its creatures, and channel its resources to endure.",
+        "trait": "Synthesis",
+        "themeColor": "#3E8945",
+        "foundation": {
+          "name": "Naturalist's Eye",
+          "type": "Passive",
+          "desc": "Gain Advantage on Knowledge rolls to identify flora and fauna, and on Instinct rolls to track creatures or find natural resources."
+        }
+      },
+      {
+        "name": "The Stalker",
+        "epithet": "the perfect pursuer",
+        "intro": "You are the ultimate pursuer. To you, every target leaves a trail, and every trail leads to its end. You thrive on the thrill of the hunt, turning any environment into your personal hunting ground.",
+        "trait": "Instinct",
+        "themeColor": "#3E8945",
+        "foundation": {
+          "name": "Mark Quarry",
+          "type": "Action",
+          "desc": "As an action, mark a single target. Until your next long rest, you have Advantage on Instinct rolls to track them, and your first successful attack each round against the marked quarry deals an extra **1d6 damage**."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light Armor, Pistols, Exploration & Survival Equipment, Physical Augments",
+          "weaponCategories": [
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "Light Armor, Pistols/Rifles, Exploration & Survival Equipment, Physical Augments",
+          "weaponCategories": [
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "Light Armor, Pistols/Rifles, Exploration & Survival Equipment, Physical Augments, now at Experimental grade",
+          "weaponCategories": [
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "mystic",
+    "name": "Mystic",
+    "color": "#7C3F9E",
+    "domains": "Neural & Lux/Void",
+    "domainList": [
+      "Neural",
+      "Lux",
+      "Void"
+    ],
+    "spellcastTrait": "Instinct",
+    "evasion": 10,
+    "hp": 6,
+    "items": [
+      "Whispering Veil-Crystal",
+      "Starlight Blindfold"
+    ],
+    "desc": "Mystics walk through realities where physics crumbles. Caution defines them — one wrong step in the Veil might unravel their mind. They feel the room's substrate shift before anyone else.",
+    "hopeFeature": {
+      "name": "Reality Unfold (3 Hope)",
+      "text": "Spend 3 Hope to briefly pierce the substrate: ask the Keeper one question about the true nature of a person, object, or location in the scene. The Keeper answers with the deepest truth accessible."
+    },
+    "classFeature": {
+      "name": "Veil Alignment (Lux or Void)",
+      "text": "Choose at creation. Lux Mystics gain Advantage on rolls involving light, clarity, revelation, healing substrate. Void Mystics gain Advantage on rolls involving shadow, entropy, erasure, substrate disruption."
+    },
+    "bgQuestion": "What have you perceived in the Veil that you cannot tell anyone?",
+    "subclasses": [
+      {
+        "name": "Veil Walker",
+        "epithet": "the unseen-paths walker",
+        "intro": "You walk the unseen paths between realities. By bending space and time, you can step through walls, evade attacks, and find sanctuary in dimensions that exist only for you.",
+        "trait": "Instinct",
+        "themeColor": "#7C3F9E",
+        "foundation": {
+          "name": "Phase Step",
+          "type": "Reaction",
+          "desc": "When you are the target of an attack or need to move through an obstacle, you can spend 1 Stress to \"blink\" to a location in Close range, evading the attack or obstacle. Once per short rest, you can create a pocket dimensional sanctuary that lasts 10 minutes, invisible and inaccessible."
+        },
+        "sleeping": {
+          "epithet": "the architect of shared conditions",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Layered Working",
+            "type": "Passive",
+            "desc": "Choose two different Calibrated Minor Ritual effects instead of one; every target receives both."
+          },
+          "specialization": {
+            "name": "Enduring Formula",
+            "type": "Passive",
+            "desc": "Double ritual duration and unlock Protective Geometry: +1 Evasion or +1 to all damage thresholds for the whole group."
+          },
+          "mastery": {
+            "name": "Shared Lattice",
+            "type": "Passive",
+            "desc": "Double numerical ritual benefits; Group Adaptation protects against two hazards; all affected creatures gain group telepathy for the duration."
+          }
+        }
+      },
+      {
+        "name": "Mind-Touched",
+        "epithet": "the conduit of thought",
+        "intro": "You are a telepath, a living conduit for thoughts and emotions. You forge psychic links, share skills, and can shield your allies' minds from the horrors of the void.",
+        "trait": "Presence",
+        "themeColor": "#7C3F9E",
+        "foundation": {
+          "name": "Thought Tide",
+          "type": "Action",
+          "desc": "Spend 1 Hope to allow an ally to use your Presence or Instinct modifier for one roll. Once per rest, you can spend 1 Stress to grant your entire crew a mental shield, giving them Advantage on rolls to resist fear or psychic influence for one scene."
+        },
+        "sleeping": {
+          "epithet": "the impossible conduit",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Perfect Invocation",
+            "type": "Special",
+            "desc": "Once per Short Rest, manifest one known Power at or below your level with no Resolve, access roll, or Spellcast Roll. Keeper gains 1 Fear. Retain non-Hope costs and restrictions."
+          },
+          "specialization": {
+            "name": "Reach Beyond",
+            "type": "Action",
+            "desc": "Once per session, attempt an unknown Power exactly one level above you from a Domain you have studied. Keeper gains 1 Fear; roll Knowledge against DC 10 + level. The Power is not learned."
+          },
+          "mastery": {
+            "name": "Impossible Efficiency",
+            "type": "Special",
+            "desc": "Once per session, each Resolve spent on Uncanny Power contributes two Effort Dice instead of one; Fear is based on Resolve actually spent."
+          }
+        }
+      },
+      {
+        "name": "Precursor Touched",
+        "epithet": "the artifact-listener",
+        "intro": "You hear the whispers of ancient machines. Your mind connects with relics of vanished civilizations — awakening, interpreting, sometimes controlling tech that defies physics.",
+        "trait": "Presence",
+        "themeColor": "#7C3F9E",
+        "foundation": {
+          "name": "Ancient Echo",
+          "type": "Action",
+          "desc": "Spend 1 Hope to open your mind to a Precursor artifact or site. The Keeper will give you a cryptic, dream-like vision related to its purpose or history. You gain Advantage on all rolls to interact with it for the scene."
+        },
+        "sleeping": {
+          "epithet": "the patient reconstructionist",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Persistent Inquiry",
+            "type": "Passive",
+            "desc": "Advance one Domain Study Project by 1 segment during every Long Rest without consuming a Long Rest move."
+          },
+          "specialization": {
+            "name": "Pattern Recognition",
+            "type": "Passive",
+            "desc": "Reduce a new Domain Study clock by the Spellcast Trait modifier, minimum 2 segments."
+          },
+          "mastery": {
+            "name": "Parallel Reconstruction",
+            "type": "Passive",
+            "desc": "Research two Domain Paths simultaneously and apply each progress gain to both. Parallel projects do not receive Pattern Recognition's clock reduction."
+          }
+        }
+      }
+    ],
+    "sleepingRules": {
+      "name": "Sleeping Mystic",
+      "spellcastTrait": "Knowledge",
+      "startingDomains": {
+        "choose": 2,
+        "different": true,
+        "level": 1,
+        "unlock": "all powers at that level"
+      },
+      "evasion": 10,
+      "hp": 6,
+      "items": [
+        "Veil-Crystal Recorder",
+        "Bound Notebook of Annotations"
+      ],
+      "desc": "A ritualist and occult scholar who cannot perceive the Veil, but reconstructs procedures that force it to answer. Their Archive can eventually contain paths from every Domain.",
+      "effortFeature": {
+        "name": "The Reading (2 Effort)",
+        "text": "Study a person, place, object, active Power, or Veil phenomenon. Ask one question about its Veil exposure, Domain signature, history, instability, likely behavior, or required procedure. The Keeper answers truthfully from the available evidence."
+      },
+      "classFeature": {
+        "name": "Uncanny Archive",
+        "text": "Begin with every Level 1 Power from two chosen Domains. Research a Domain level with a 4 + level clock. To research Level N, first unlock at least two different Domains at Level N-1. The researched Domain need not continue either prerequisite Domain."
+      },
+      "resolveMoves": [
+        {
+          "name": "Calibrated Minor Ritual",
+          "cost": "spend and roll 1 Resolve Die",
+          "time": "10 minutes",
+          "fear": 0,
+          "duration": "Resolve Die result in hours",
+          "targets": "level + Spellcast Trait modifier, minimum 1",
+          "effects": [
+            {
+              "name": "Group Calibration",
+              "effect": "All targets gain +1 to rolls with one chosen Trait."
+            },
+            {
+              "name": "Group Adaptation",
+              "effect": "All targets gain Advantage against one specific environmental hazard."
+            },
+            {
+              "name": "Sustained Restoration",
+              "effect": "All targets clear 1 HP after each complete hour; all remaining duration may be consumed to stabilize one affected Dying creature."
+            }
+          ]
+        },
+        {
+          "name": "Uncanny Power",
+          "cost": "spend and roll 1+ Resolve Dice",
+          "access": "sum Effort Dice + Knowledge once, capped by character level",
+          "fear": "1 per Resolve spent",
+          "dc": "10 + Domain level",
+          "timing": "full Action; no Reaction or Passive Powers",
+          "hopeCost": "ignored",
+          "otherCosts": "retained",
+          "critical": "regain all Resolve spent on this invocation; Fear and non-Resolve costs remain"
+        }
+      ],
+      "subclasses": {
+        "Veil Walker": {
+          "epithet": "the architect of shared conditions",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Layered Working",
+            "type": "Passive",
+            "desc": "Choose two different Calibrated Minor Ritual effects instead of one; every target receives both."
+          },
+          "specialization": {
+            "name": "Enduring Formula",
+            "type": "Passive",
+            "desc": "Double ritual duration and unlock Protective Geometry: +1 Evasion or +1 to all damage thresholds for the whole group."
+          },
+          "mastery": {
+            "name": "Shared Lattice",
+            "type": "Passive",
+            "desc": "Double numerical ritual benefits; Group Adaptation protects against two hazards; all affected creatures gain group telepathy for the duration."
+          }
+        },
+        "Mind-Touched": {
+          "epithet": "the impossible conduit",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Perfect Invocation",
+            "type": "Special",
+            "desc": "Once per Short Rest, manifest one known Power at or below your level with no Resolve, access roll, or Spellcast Roll. Keeper gains 1 Fear. Retain non-Hope costs and restrictions."
+          },
+          "specialization": {
+            "name": "Reach Beyond",
+            "type": "Action",
+            "desc": "Once per session, attempt an unknown Power exactly one level above you from a Domain you have studied. Keeper gains 1 Fear; roll Knowledge against DC 10 + level. The Power is not learned."
+          },
+          "mastery": {
+            "name": "Impossible Efficiency",
+            "type": "Special",
+            "desc": "Once per session, each Resolve spent on Uncanny Power contributes two Effort Dice instead of one; Fear is based on Resolve actually spent."
+          }
+        },
+        "Precursor Touched": {
+          "epithet": "the patient reconstructionist",
+          "trait": "Knowledge",
+          "foundation": {
+            "name": "Persistent Inquiry",
+            "type": "Passive",
+            "desc": "Advance one Domain Study Project by 1 segment during every Long Rest without consuming a Long Rest move."
+          },
+          "specialization": {
+            "name": "Pattern Recognition",
+            "type": "Passive",
+            "desc": "Reduce a new Domain Study clock by the Spellcast Trait modifier, minimum 2 segments."
+          },
+          "mastery": {
+            "name": "Parallel Reconstruction",
+            "type": "Passive",
+            "desc": "Research two Domain Paths simultaneously and apply each progress gain to both. Parallel projects do not receive Pattern Recognition's clock reduction."
+          }
+        }
+      }
+    },
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light Armor, Melee/Pistols, Neural/Physical Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "Light Armor, Melee/Pistols, Neural/Physical Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "Light Armor, Melee/Pistols, Neural/Physical Augments, now at Experimental grade",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "pilot",
+    "name": "Pilot",
+    "color": "#2A2A3E",
+    "domains": "Void & Tech",
+    "domainList": [
+      "Void",
+      "Tech"
+    ],
+    "spellcastTrait": "Instinct",
+    "evasion": 11,
+    "hp": 6,
+    "items": [
+      "Frayed Star Chart",
+      "Veil-Energy Control Crystal"
+    ],
+    "desc": "Pilots are not just button-pushers. They dance with stardust. Whether chasing Void routes or outmaneuvering pirates, they blend gut instinct with sharp reflexes.",
+    "hopeFeature": {
+      "name": "Veil Surge (3 Hope)",
+      "text": "Spend 3 Hope to gain Advantage on all ship maneuver rolls for the next hour. During this time, your ship cannot be targeted by standard weapon locks — only specialized systems can track you."
+    },
+    "classFeature": {
+      "name": "Neural Interface",
+      "text": "Pilot any vehicle or vessel without penalty, regardless of make or origin. Once per session, declare you know a hidden route — a shortcut, a smuggler's lane — that no one else knows."
+    },
+    "bgQuestion": "What ship did you lose, and how do you carry that loss?",
+    "subclasses": [
+      {
+        "name": "Void Runner",
+        "epithet": "the Veil dancer",
+        "intro": "You do not just fly a ship; you dance with the Veil's impossible currents. Relying on pure instinct, you see paths where others see only chaos, navigating the unnavigable.",
+        "trait": "Instinct",
+        "themeColor": "#2A2A3E",
+        "foundation": {
+          "name": "Pathfinder's Sense",
+          "type": "Action",
+          "desc": "Mark 1 Stress to sense the safest or fastest route through a dangerous area (asteroid field, nebula, contested system). You and your ship gain Advantage on all Piloting and Evasion rolls while following this route during the scene."
+        }
+      },
+      {
+        "name": "Combat Ace",
+        "epithet": "the kinetic dueler",
+        "intro": "For you, a starship is a weapon, and the void is your arena. You thrive in the chaos of battle, executing aggressive, high-G maneuvers that turn your vessel into a deadly extension of your will.",
+        "trait": "Agility",
+        "themeColor": "#2A2A3E",
+        "foundation": {
+          "name": "Tactical Grace",
+          "type": "Reaction",
+          "desc": "When you or your ship is the target of an attack, you can spend 1 Stress to add your Agility modifier to the ship's Evasion for that attack."
+        }
+      },
+      {
+        "name": "System Jockey",
+        "epithet": "the ghost in the machine",
+        "intro": "A starship is a complex instrument; the void, a symphony you conduct. You don't just fly — you interface, tweaking power, spoofing sensors, pushing the ship beyond design limits.",
+        "trait": "Finesse",
+        "themeColor": "#2A2A3E",
+        "foundation": {
+          "name": "Orbital Whisperer",
+          "type": "Action",
+          "desc": "When attempting to dock, land, or navigate in tight spaces, you can spend 1 Stress to automatically succeed. You can also spend 1 Hope to obtain a complete and detailed map of all defenses and active security systems in the area."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light/Medium Armor, Pistols/Rifles, All Augmentations",
+          "weaponCategories": [
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "Light/Medium Armor, Pistols/Rifles/Heavy Weapons, All Augmentations",
+          "weaponCategories": [
+            "Pistols",
+            "Rifles",
+            "Heavy Weapons"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "Light/Medium Armor, Pistols/Rifles/Heavy Weapons, All Augmentations, now at Experimental grade",
+          "weaponCategories": [
+            "Pistols",
+            "Rifles",
+            "Heavy Weapons"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "scholar",
+    "name": "Scholar",
+    "color": "#0E8A8E",
+    "domains": "Tech & Social",
+    "domainList": [
+      "Tech",
+      "Social"
+    ],
+    "spellcastTrait": "Knowledge",
+    "evasion": 10,
+    "hp": 5,
+    "items": [
+      "Cracked Data-Slate",
+      "Vial of Alien Sample"
+    ],
+    "desc": "Scholars are the crew's lens onto everything the Pearl Era did not preserve. Where others see anomalies, they see breakthroughs. Knowledge is oxygen in the post-Silence galaxy.",
+    "hopeFeature": {
+      "name": "Eureka Moment (3 Hope)",
+      "text": "Spend 3 Hope to automatically succeed on one research or analysis test. You also uncover a hidden connection — the Keeper provides one piece of unexpected information that reframes the situation."
+    },
+    "classFeature": {
+      "name": "Academic Edge",
+      "text": "Once per scene, when you succeed on a Knowledge roll, ask the Keeper one additional question about the subject. Advantage on all rolls to recall historical, scientific, or cultural information."
+    },
+    "bgQuestion": "What piece of knowledge are you looking for — and what will you do when you find it?",
+    "subclasses": [
+      {
+        "name": "Xenobiologist",
+        "epithet": "the alien-life student",
+        "intro": "You are a student of alien life in its purest form. By studying strange ecosystems and bizarre biologies, you access the secrets of adaptation and survival in the galaxy's harshest corners.",
+        "trait": "Instinct",
+        "themeColor": "#0E8A8E",
+        "foundation": {
+          "name": "Life Reader",
+          "type": "Action",
+          "desc": "Spend 1 Hope to study an organism (living or dead) and learn its biology, behavior, and weaknesses. The Keeper will reveal a mechanical weakness (e.g., Vulnerable to an energy type) or a narrative weakness (e.g., afraid of light)."
+        }
+      },
+      {
+        "name": "Precursor Archaeologist",
+        "epithet": "the relic-reader",
+        "intro": "You study what no one else can read — dead languages, silent sites, artifacts filed away as inert. The Precursors were trying to communicate, and you intend to listen.",
+        "trait": "Knowledge",
+        "themeColor": "#0E8A8E",
+        "foundation": {
+          "name": "Artifact Whisper",
+          "type": "Action",
+          "desc": "Spend 1 Hope to attune to a Precursor artifact. The Keeper will reveal a fragment of its history or a clue about how to use it. You have Advantage on all rolls to activate Precursor technology for the scene."
+        }
+      },
+      {
+        "name": "Information Theorist",
+        "epithet": "the data-stream analyst",
+        "intro": "You study patterns, networks, and how information moves through systems and societies. Every faction is a network, every economy a graph, every secret a node waiting to be reached.",
+        "trait": "Knowledge",
+        "themeColor": "#0E8A8E",
+        "foundation": {
+          "name": "Data Storm",
+          "type": "Reaction",
+          "desc": "When you fail a decryption or hacking roll, you can spend 1 Stress to reroll the dice. If you succeed, you can also create a temporary firewall that protects that system for one scene."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light Armor, Pistols, Neural/Physical Augments, All Equipment",
+          "weaponCategories": [
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "Light Armor, Pistols, Neural/Physical Augments, All Equipment",
+          "weaponCategories": [
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "Light Armor, Pistols, Neural/Physical Augments, All Equipment, now at Experimental grade",
+          "weaponCategories": [
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "scoundrel",
+    "name": "Scoundrel",
+    "color": "#D6588A",
+    "domains": "Social & Void",
+    "domainList": [
+      "Social",
+      "Void"
+    ],
+    "spellcastTrait": "Finesse",
+    "evasion": 12,
+    "hp": 6,
+    "items": [
+      "Morphic Skeleton Key",
+      "Influential Holo-Mask"
+    ],
+    "desc": "Scoundrels are the rats in the walls — always listening, stealing, surviving. Charm is their lockpick. Paranoia is their armor. The crew's professional liars.",
+    "hopeFeature": {
+      "name": "Vanishing Act (3 Hope)",
+      "text": "Spend 3 Hope to disappear from sight and sound for 1 minute. Immune to all tracking (visual, audio, thermal, network, psionic). Reappear wherever you choose within the scene."
+    },
+    "classFeature": {
+      "name": "Shadow Step",
+      "text": "Once per encounter, move through difficult terrain or past an obstacle without a roll. Advantage on all rolls to pick locks, bypass security, or blend into crowds."
+    },
+    "bgQuestion": "Who are you running from — and do they know you're running?",
+    "subclasses": [
+      {
+        "name": "Assassin",
+        "epithet": "the disguised killer",
+        "intro": "You are a deadly ghost who wears faces like masks. A master of disguise and lethal precision, you can become anyone and get anywhere, ensuring your target never sees the end coming.",
+        "trait": "Finesse",
+        "themeColor": "#D6588A",
+        "foundation": {
+          "name": "Deadly Masquerade",
+          "type": "Action",
+          "desc": "Spend 1 Stress to create a flawless disguise and identity for one scene. You can spend 1 Hope to make this identity stand up to any level of scrutiny for 24 hours."
+        }
+      },
+      {
+        "name": "Ghost",
+        "epithet": "the silent infiltrator",
+        "intro": "You are a whisper in the dark, a true master of infiltration. You move without a sound and leave no trace, bypassing the most advanced security systems as if they were not there.",
+        "trait": "Agility",
+        "themeColor": "#D6588A",
+        "foundation": {
+          "name": "Ghost",
+          "type": "Action",
+          "desc": "Mark 1 Stress to become invisible for one round, or to remove all traces of your passage through an area. If you succeed with Hope on a Stealth roll while invisible, you remain invisible."
+        }
+      },
+      {
+        "name": "Contrabandist",
+        "epithet": "the rogue with the cargo hold",
+        "intro": "The charming rogue with a fast ship and a hidden cargo hold. You know the price of everything and every crooked port official. A master of logistics, bluffing, and improvisation.",
+        "trait": "Presence",
+        "themeColor": "#D6588A",
+        "foundation": {
+          "name": "Hidden Cargo",
+          "type": "Action",
+          "desc": "Spend 1 Stress to declare you have a small, useful, or contraband item secreted on your person or ship that you have not previously mentioned. The Keeper has final say on what is plausible. Once per session, you can spend 1 Hope to upgrade this declaration to a Tier 1 piece of gear or a small quantity of valuable contraband."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light Armor, Melee/Pistols, Physical/Stealth Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "Light Armor, Melee/Pistols/Rifles, Physical/Stealth Augments, Weapon Modifications",
+          "weaponCategories": [
+            "Melee",
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "Light Armor, Melee/Pistols/Rifles, Physical/Stealth Augments, Weapon Modifications, now at Experimental grade",
+          "weaponCategories": [
+            "Melee",
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "soldier",
+    "name": "Soldier",
+    "color": "#B8323E",
+    "domains": "Kinetic & Synthesis",
+    "domainList": [
+      "Kinetic",
+      "Synthesis"
+    ],
+    "spellcastTrait": "Strength",
+    "evasion": 9,
+    "hp": 7,
+    "items": [
+      "Dented Riot Shield",
+      "Fallen Comrade's Dog-tag"
+    ],
+    "desc": "A Soldier's expertise is not just in fighting — it is in reading threats before they strike, turning a panicked crowd into a disciplined unit, knowing when to break bones to save lives.",
+    "hopeFeature": {
+      "name": "Combat Surge (2 Hope)",
+      "text": "After you hit with an attack, spend 2 Hope to immediately make a second attack against the same or a different target. You may also move up to Close range as part of this action."
+    },
+    "classFeature": {
+      "name": "Tactical Presence",
+      "text": "Allies within Close range gain +1 to attack rolls. Once per encounter, issue a tactical command as a free action: the chosen ally may immediately take a move action out of turn."
+    },
+    "bgQuestion": "What order did you follow — or refuse to follow — that you still think about?",
+    "subclasses": [
+      {
+        "name": "Guardian",
+        "epithet": "the unbreakable shield",
+        "intro": "You are the crew's unbreakable shield. Standing between your allies and harm, you absorb punishment with sheer will and grit. Where you stand is where the line is drawn, and it will not break.",
+        "trait": "Strength",
+        "themeColor": "#B8323E",
+        "foundation": {
+          "name": "Bodyguard Protocol",
+          "type": "Reaction",
+          "desc": "When an ally within Close range is hit by an attack, you can spend 1 Stress to intercept it, taking the damage yourself. When you do, you gain Advantage on your next Melee attack against that attacker."
+        }
+      },
+      {
+        "name": "Military Officer",
+        "epithet": "the battlefield conductor",
+        "intro": "A battlefield conductor orchestrating victory through superior tactics and decisive commands. You don't just fight — you lead, turning chaos into a symphony of coordinated destruction.",
+        "trait": "Finesse",
+        "themeColor": "#B8323E",
+        "foundation": {
+          "name": "Call the Shot",
+          "type": "Action",
+          "desc": "Mark 1 Stress to grant an ally one of the following benefits on their next action: gain Advantage, their attack ignores cover, or their action does not draw the spotlight."
+        }
+      },
+      {
+        "name": "Peacekeeper",
+        "epithet": "the order without violence",
+        "intro": "You believe true strength lies in control, not destruction. You enforce order with an intimidating presence and non-lethal tactics, proving that a firm word can be far mightier than a plasma rifle.",
+        "trait": "Presence",
+        "themeColor": "#B8323E",
+        "foundation": {
+          "name": "Unspoken Authority",
+          "type": "Action",
+          "desc": "Spend 1 Hope to halt a conflict for a single, tense moment. No one can take hostile action until you speak or act. This gives you a key window to negotiate, intimidate, or create an escape route."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "All Armor, All Weapons, Physical Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols",
+            "Rifles",
+            "Heavy Weapons"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium",
+            "Heavy"
+          ],
+          "allWeapons": true,
+          "allArmor": true,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "All Armor, All Weapons, Physical Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols",
+            "Rifles",
+            "Heavy Weapons"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium",
+            "Heavy"
+          ],
+          "allWeapons": true,
+          "allArmor": true,
+          "restrictions": []
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "All Armor, All Weapons, Physical Augments, now at Experimental grade",
+          "weaponCategories": [
+            "Melee",
+            "Pistols",
+            "Rifles",
+            "Heavy Weapons"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium",
+            "Heavy"
+          ],
+          "allWeapons": true,
+          "allArmor": true,
+          "restrictions": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "vanguard",
+    "name": "Vanguard",
+    "color": "#7C3F9E",
+    "domains": "Neural & branch",
+    "domainList": [
+      "Neural",
+      "Void",
+      "Kinetic",
+      "Lux"
+    ],
+    "spellcastTrait": "Presence",
+    "evasion": 11,
+    "hp": 6,
+    "items": [
+      "Light Staff (Melee)",
+      "Meditation Orb",
+      "Spiced Tea Mix"
+    ],
+    "desc": "Vanguards use their minds to anticipate movements, augment kinetic reflexes, and project will onto the battlefield. The crew's centered presence whose stillness in a crisis steadies everyone.",
+    "hopeFeature": {
+      "name": "Path to Nirvana (3 Hope)",
+      "text": "Spend 3 Hope to project a psychic burst: all enemies within Close range must succeed on an Instinct check (DC = your Presence + 10) or be briefly stunned — no actions on their next turn."
+    },
+    "classFeature": {
+      "name": "Mind Over Matter",
+      "text": "Once per scene, reduce incoming damage to you by your Presence modifier (min 1) through force of will. Advantage on rolls to resist mental influence, fear, and substrate-based attacks."
+    },
+    "bgQuestion": "What moment taught you that the mind could do what the body could not?",
+    "subclasses": [
+      {
+        "name": "Ghost Blade",
+        "epithet": "the deadly grace",
+        "intro": "Your body is a weapon honed to impossible sharpness. Every deflection and strike, a perfect synthesis of psionic anticipation and physical execution. *Second Domain: Void.*",
+        "trait": "Finesse",
+        "themeColor": "#7C3F9E",
+        "foundation": {
+          "name": "Perfect Deflection",
+          "type": "Reaction",
+          "desc": "Spend 1 Stress to gain +3 Evasion against one incoming attack. If the attack misses due to this bonus, you gain Advantage on your next Melee attack against that attacker."
+        }
+      },
+      {
+        "name": "Kinetic Echo",
+        "epithet": "the precognitive dodger",
+        "intro": "You don't react — you anticipate. Sensing echoes of what's to come, you alter fate, forcing attacks to miss and positioning for the perfect counter. *Second Domain: Kinetic.*",
+        "trait": "Instinct",
+        "themeColor": "#7C3F9E",
+        "foundation": {
+          "name": "Precog Dodge",
+          "type": "Reaction",
+          "desc": "Spend 1 Hope when targeted by an attack. You force the attacker to **reroll the attack roll** (the Keeper must accept the new result)."
+        }
+      },
+      {
+        "name": "Pure Conduit",
+        "epithet": "the channeled will",
+        "intro": "A channel for raw psionic will — you project focus outward, creating kinetic barriers, shielding allies' minds, shaping the battlefield without throwing a punch. *Second Domain: Lux.*",
+        "trait": "Knowledge",
+        "themeColor": "#7C3F9E",
+        "foundation": {
+          "name": "Force Projection",
+          "type": "Action",
+          "desc": "Spend 1 Stress. Choose one: push one object or creature up to Far Range, *or* create a wall of force that provides cover until your next turn, *or* deal 1d6 Kinetic damage to everything in Close Range (no effect on creatures)."
+        }
+      }
+    ],
+    "technologyAccess": {
+      "source": "VeilFarers Corebook, class Technology Access table",
+      "tiers": [
+        {
+          "rank": 1,
+          "name": "Common",
+          "level": 1,
+          "summary": "Light/Medium Armor, Melee/Pistols, Neural Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": []
+        },
+        {
+          "rank": 2,
+          "name": "Military",
+          "level": 2,
+          "summary": "Light/Medium Armor (excluding Heavy/Very Heavy features), Melee/Pistols/Rifles (excluding Massive feature), Neural Augments",
+          "weaponCategories": [
+            "Melee",
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": [
+            "Armor with Heavy or Very Heavy features is outside access.",
+            "Weapons with the Massive feature are outside access."
+          ]
+        },
+        {
+          "rank": 3,
+          "name": "Experimental",
+          "level": 5,
+          "summary": "Light/Medium Armor (excluding Heavy/Very Heavy features), Melee/Pistols/Rifles (excluding Massive feature), Neural Augments, now at Experimental grade",
+          "weaponCategories": [
+            "Melee",
+            "Pistols",
+            "Rifles"
+          ],
+          "armorCategories": [
+            "Light",
+            "Medium"
+          ],
+          "allWeapons": false,
+          "allArmor": false,
+          "restrictions": [
+            "Armor with Heavy or Very Heavy features is outside access.",
+            "Weapons with the Massive feature are outside access."
+          ]
+        }
+      ]
+    }
+  }
+]

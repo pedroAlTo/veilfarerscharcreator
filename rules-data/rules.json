@@ -1,0 +1,83 @@
+{
+  "version": "11.1-RC2-draft6",
+  "authority": "core",
+  "difficultyClasses": [
+    {
+      "dc": 5,
+      "name": "Routine"
+    },
+    {
+      "dc": 10,
+      "name": "Easy"
+    },
+    {
+      "dc": 15,
+      "name": "Challenging"
+    },
+    {
+      "dc": 20,
+      "name": "Difficult"
+    },
+    {
+      "dc": 25,
+      "name": "Extreme"
+    },
+    {
+      "dc": 30,
+      "name": "Nearly Impossible"
+    }
+  ],
+  "damage": {
+    "proficiency": "Apply Proficiency to one listed damage die. Roll the Proficiency Die once per Proficiency rank and each other listed die once.",
+    "playerCritical": "Double the normal damage dice; add flat modifiers once.",
+    "keeperCritical": "Use the maximum result of the normal damage dice; add flat modifiers once. Resolve normally against thresholds and Armor Slots."
+  },
+  "armorRecovery": {
+    "shortRest": "Repair Armor restores 1d4 + Tier spent Armor Slots.",
+    "longRest": "Repair All Armor restores all spent Armor Slots."
+  },
+  "dying": {
+    "die": "1d12",
+    "advanceOn": "8+",
+    "dyingAdvancesToFinal": 2,
+    "finalAdvancesToDeath": 2
+  },
+  "traits": [
+    "Agility",
+    "Strength",
+    "Finesse",
+    "Knowledge",
+    "Instinct",
+    "Presence"
+  ],
+  "damageTypes": [
+    "Physical",
+    "Energy",
+    "Void",
+    "Neural"
+  ],
+  "subtraits": [
+    {
+      "name": "Pilot/Navigate",
+      "parentTrait": "Finesse"
+    },
+    {
+      "name": "Tech",
+      "parentTrait": "Knowledge"
+    },
+    {
+      "name": "Medicine",
+      "parentTrait": "Knowledge"
+    }
+  ],
+  "checkNotation": "Parent Trait (Subtrait) Roll; subtraits use the parent Trait score and are not additional Traits.",
+  "sleepingMystic": {
+    "spellcastTrait": "Knowledge",
+    "startingArchive": "Two different Domains at Level 1; every Level 1 Power in both.",
+    "researchClock": "4 + selected Domain level",
+    "breadthRequirement": "Two different Domains at the immediately preceding level.",
+    "uncannyPowerDC": "10 + selected Power level",
+    "fear": "1 Fear per Resolve spent",
+    "critical": "Regain every Resolve spent on the invocation; Fear and non-Resolve costs remain."
+  }
+}

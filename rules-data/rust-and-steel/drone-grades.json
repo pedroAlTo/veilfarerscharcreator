@@ -1,0 +1,232 @@
+[
+  {
+    "id": "vf.rs.drone-grade.swarm-cell",
+    "type": "drone-grade",
+    "name": "Swarm Cell",
+    "slug": "swarm-cell",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15091,
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "cost": "2 Cr each",
+      "hp": 1,
+      "eva": 12,
+      "thr": "4 / -",
+      "armor": 0,
+      "slots": 1,
+      "access": "Useless alone; dangerous in numbers",
+      "source": "rust-and-steel"
+    },
+    "cost": {
+      "credits": "2 Cr each"
+    },
+    "statistics": {
+      "hp": 1,
+      "eva": 12,
+      "thr": "4 / -",
+      "armor": 0,
+      "slots": 1,
+      "access": "Useless alone; dangerous in numbers"
+    }
+  },
+  {
+    "id": "vf.rs.drone-grade.house-sentinel",
+    "type": "drone-grade",
+    "name": "House Sentinel",
+    "slug": "house-sentinel",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15089,
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "cost": "12 Cr",
+      "hp": 4,
+      "eva": 11,
+      "thr": "8 / 15",
+      "armor": 2,
+      "slots": 4,
+      "access": "Licensed, transponder-locked, faction traceable",
+      "source": "rust-and-steel"
+    },
+    "cost": {
+      "credits": "12 Cr"
+    },
+    "statistics": {
+      "hp": 4,
+      "eva": 11,
+      "thr": "8 / 15",
+      "armor": 2,
+      "slots": 4,
+      "access": "Licensed, transponder-locked, faction traceable"
+    }
+  },
+  {
+    "id": "vf.rs.drone-grade.industrial-hauler",
+    "type": "drone-grade",
+    "name": "Industrial Hauler",
+    "slug": "industrial-hauler",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15088,
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "cost": "10 Cr",
+      "hp": 5,
+      "eva": 9,
+      "thr": "8 / 15",
+      "armor": 1,
+      "slots": 4,
+      "access": "Slow, loud, heavy lift; not stealth-capable",
+      "source": "rust-and-steel"
+    },
+    "cost": {
+      "credits": "10 Cr"
+    },
+    "statistics": {
+      "hp": 5,
+      "eva": 9,
+      "thr": "8 / 15",
+      "armor": 1,
+      "slots": 4,
+      "access": "Slow, loud, heavy lift; not stealth-capable"
+    }
+  },
+  {
+    "id": "vf.rs.drone-grade.black-site-chimera",
+    "type": "drone-grade",
+    "name": "Black-Site Chimera",
+    "slug": "black-site-chimera",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15092,
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "cost": "24+ Cr",
+      "hp": 6,
+      "eva": 13,
+      "thr": "10 / 18",
+      "armor": 2,
+      "slots": 5,
+      "access": "Prototype, wanted, unstable, hidden cost",
+      "source": "rust-and-steel"
+    },
+    "cost": {
+      "credits": "24+ Cr"
+    },
+    "statistics": {
+      "hp": 6,
+      "eva": 13,
+      "thr": "10 / 18",
+      "armor": 2,
+      "slots": 5,
+      "access": "Prototype, wanted, unstable, hidden cost"
+    }
+  },
+  {
+    "id": "vf.rs.drone-grade.war-frame",
+    "type": "drone-grade",
+    "name": "War-Frame",
+    "slug": "war-frame",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15090,
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "cost": "20 Cr",
+      "hp": 6,
+      "eva": 12,
+      "thr": "10 / 18",
+      "armor": 3,
+      "slots": 5,
+      "access": "Restricted military hardware; illegal in most ports",
+      "source": "rust-and-steel"
+    },
+    "cost": {
+      "credits": "20 Cr"
+    },
+    "statistics": {
+      "hp": 6,
+      "eva": 12,
+      "thr": "10 / 18",
+      "armor": 3,
+      "slots": 5,
+      "access": "Restricted military hardware; illegal in most ports"
+    }
+  }
+]

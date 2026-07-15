@@ -1,0 +1,4102 @@
+[
+  {
+    "id": "vf.core.weapon.assault-rifle",
+    "type": "weapon",
+    "name": "Assault Rifle",
+    "slug": "assault-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5166,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Strength · Close",
+      "dmg": "d8+1 phys.",
+      "feat": "Automatic",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Close",
+    "damage": "d8+1 phys.",
+    "features": [
+      "Automatic"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.automatic",
+        "display": "Automatic"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.beam-cannon",
+    "type": "weapon",
+    "name": "Beam Cannon",
+    "slug": "beam-cannon",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5241,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Knowledge · Far",
+      "dmg": "d6+3 ene.",
+      "feat": "Continuous",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "d6+3 ene.",
+    "features": [
+      "Continuous"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.continuous",
+        "display": "Continuous"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.combat-knife",
+    "type": "weapon",
+    "name": "Combat Knife",
+    "slug": "combat-knife",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5006,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Finesse · Melee",
+      "dmg": "d6 phys.",
+      "feat": "Paired",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Melee",
+    "damage": "d6 phys.",
+    "features": [
+      "Paired"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.paired",
+        "parameters": {
+          "bonus": 0
+        },
+        "display": "Paired"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.energy-dagger",
+    "type": "weapon",
+    "name": "Energy Dagger",
+    "slug": "energy-dagger",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5014,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Agility · Melee",
+      "dmg": "d6+1 ene.",
+      "feat": "Lightweight, Energy Tag",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Melee",
+    "damage": "d6+1 ene.",
+    "features": [
+      "Lightweight",
+      "Energy Tag"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.lightweight",
+        "display": "Lightweight"
+      },
+      {
+        "id": "vf.feature.personal.weapon.energy",
+        "display": "Energy Tag"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.flechette-pistol",
+    "type": "weapon",
+    "name": "Flechette Pistol",
+    "slug": "flechette-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5083,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Finesse · Close",
+      "dmg": "d6+1 phys.",
+      "feat": "Armor Piercing",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Close",
+    "damage": "d6+1 phys.",
+    "features": [
+      "Armor Piercing"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.armor-piercing",
+        "display": "Armor Piercing"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.gauss-rifle",
+    "type": "weapon",
+    "name": "Gauss Rifle",
+    "slug": "gauss-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5172,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Agility · Far",
+      "dmg": "d6+1 phys.",
+      "feat": "Armor Piercing",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Far",
+    "damage": "d6+1 phys.",
+    "features": [
+      "Armor Piercing"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.armor-piercing",
+        "display": "Armor Piercing"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.holdout-blaster",
+    "type": "weapon",
+    "name": "Holdout Blaster",
+    "slug": "holdout-blaster",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5089,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Agility · Close",
+      "dmg": "d6+1 ene.",
+      "feat": "Concealable",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "d6+1 ene.",
+    "features": [
+      "Concealable"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.concealable",
+        "display": "Concealable"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.machine-gun",
+    "type": "weapon",
+    "name": "Machine Gun",
+    "slug": "machine-gun",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5233,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Strength · Far",
+      "dmg": "d6+3 phys.",
+      "feat": "Automatic",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Far",
+    "damage": "d6+3 phys.",
+    "features": [
+      "Automatic"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.automatic",
+        "display": "Automatic"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.mono-blade",
+    "type": "weapon",
+    "name": "Mono-Blade",
+    "slug": "mono-blade",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5012,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Finesse · Melee",
+      "dmg": "d8 phys.",
+      "feat": "Armor Piercing, Paired+2",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Melee",
+    "damage": "d8 phys.",
+    "features": [
+      "Armor Piercing",
+      "Paired+2"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.armor-piercing",
+        "display": "Armor Piercing"
+      },
+      {
+        "id": "vf.feature.personal.weapon.paired",
+        "parameters": {
+          "bonus": 2
+        },
+        "display": "Paired+2"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.needle-gun",
+    "type": "weapon",
+    "name": "Needle Gun",
+    "slug": "needle-gun",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5087,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Finesse · Close",
+      "dmg": "d6+1 phys.",
+      "feat": "Poison",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Close",
+    "damage": "d6+1 phys.",
+    "features": [
+      "Poison"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.poison",
+        "display": "Poison"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.net-launcher",
+    "type": "weapon",
+    "name": "Net Launcher",
+    "slug": "net-launcher",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5334,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Agility · Close",
+      "dmg": "n/a",
+      "feat": "Entangling, Reload",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "n/a",
+    "features": [
+      "Entangling",
+      "Reload"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.entangling",
+        "display": "Entangling"
+      },
+      {
+        "id": "vf.feature.personal.weapon.reload",
+        "display": "Reload"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-cannon",
+    "type": "weapon",
+    "name": "Plasma Cannon",
+    "slug": "plasma-cannon",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5237,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Instinct · Close",
+      "dmg": "d10+3 ene.",
+      "feat": "Overheating",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Instinct",
+    "range": "Close",
+    "damage": "d10+3 ene.",
+    "features": [
+      "Overheating"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.overheating",
+        "display": "Overheating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-cutter",
+    "type": "weapon",
+    "name": "Plasma Cutter",
+    "slug": "plasma-cutter",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5010,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Agility · Melee",
+      "dmg": "d8 ene.",
+      "feat": "Cutting, Paired+2",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Melee",
+    "damage": "d8 ene.",
+    "features": [
+      "Cutting",
+      "Paired+2"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.cutting",
+        "display": "Cutting"
+      },
+      {
+        "id": "vf.feature.personal.weapon.paired",
+        "parameters": {
+          "bonus": 2
+        },
+        "display": "Paired+2"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-pistol",
+    "type": "weapon",
+    "name": "Plasma Pistol",
+    "slug": "plasma-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5085,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Instinct · Close",
+      "dmg": "d8 ene.",
+      "feat": "Overheating",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Instinct",
+    "range": "Close",
+    "damage": "d8 ene.",
+    "features": [
+      "Overheating"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.overheating",
+        "display": "Overheating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-rifle",
+    "type": "weapon",
+    "name": "Plasma Rifle",
+    "slug": "plasma-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5170,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Instinct · Close",
+      "dmg": "d8 ene.",
+      "feat": "Overheating",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Instinct",
+    "range": "Close",
+    "damage": "d8 ene.",
+    "features": [
+      "Overheating"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.overheating",
+        "display": "Overheating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.pulse-rifle",
+    "type": "weapon",
+    "name": "Pulse Rifle",
+    "slug": "pulse-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5174,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Strength · Close",
+      "dmg": "d8+1 ene.",
+      "feat": "Burst Fire",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Close",
+    "damage": "d8+1 ene.",
+    "features": [
+      "Burst Fire"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.burst-fire",
+        "display": "Burst Fire"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.railgun",
+    "type": "weapon",
+    "name": "Railgun",
+    "slug": "railgun",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5239,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Strength · Far",
+      "dmg": "d8+3 phys.",
+      "feat": "Massive",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Far",
+    "damage": "d8+3 phys.",
+    "features": [
+      "Massive"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.massive",
+        "display": "Massive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.rocket-launcher",
+    "type": "weapon",
+    "name": "Rocket Launcher",
+    "slug": "rocket-launcher",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5235,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Agility · Far",
+      "dmg": "d10+3 phys.",
+      "feat": "Explosive",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Far",
+    "damage": "d10+3 phys.",
+    "features": [
+      "Explosive"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.explosive",
+        "display": "Explosive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.shock-baton",
+    "type": "weapon",
+    "name": "Shock Baton",
+    "slug": "shock-baton",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5008,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Strength · Melee",
+      "dmg": "d6+1 phys.",
+      "feat": "Stunning, Paired+1",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Melee",
+    "damage": "d6+1 phys.",
+    "features": [
+      "Stunning",
+      "Paired+1"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.stunning",
+        "display": "Stunning"
+      },
+      {
+        "id": "vf.feature.personal.weapon.paired",
+        "parameters": {
+          "bonus": 1
+        },
+        "display": "Paired+1"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.slug-pistol",
+    "type": "weapon",
+    "name": "Slug Pistol",
+    "slug": "slug-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5081,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Agility · Close",
+      "dmg": "d8+1 phys.",
+      "feat": "Reliable",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "d8+1 phys.",
+    "features": [
+      "Reliable"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.reliable",
+        "display": "Reliable"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.sniper-rifle",
+    "type": "weapon",
+    "name": "Sniper Rifle",
+    "slug": "sniper-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5168,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Finesse · Far",
+      "dmg": "d8+1 phys.",
+      "feat": "Accurate",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Far",
+    "damage": "d8+1 phys.",
+    "features": [
+      "Accurate"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.accurate",
+        "display": "Accurate"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.taser-pistol",
+    "type": "weapon",
+    "name": "Taser Pistol",
+    "slug": "taser-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5333,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "trait": "Finesse · Close",
+      "dmg": "1d4 Stress",
+      "feat": "Taser Charge",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Close",
+    "damage": "1d4 Stress",
+    "features": [
+      "Taser Charge"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d4",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.taser-charge",
+        "display": "Taser Charge"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.battle-rifle",
+    "type": "weapon",
+    "name": "Battle Rifle",
+    "slug": "battle-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5190,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Close",
+      "dmg": "d10+3 phys.",
+      "feat": "Powerful",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Close",
+    "damage": "d10+3 phys.",
+    "features": [
+      "Powerful"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.powerful",
+        "display": "Powerful"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.chainglaive",
+    "type": "weapon",
+    "name": "Chainglaive",
+    "slug": "chainglaive",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5035,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Melee",
+      "dmg": "d10+3 phys.",
+      "feat": "Automatic, Cleave",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Melee",
+    "damage": "d10+3 phys.",
+    "features": [
+      "Automatic",
+      "Cleave"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "melee-two-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.automatic",
+        "display": "Automatic"
+      },
+      {
+        "id": "vf.feature.personal.weapon.cleave",
+        "display": "Cleave"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.combat-pistol",
+    "type": "weapon",
+    "name": "Combat Pistol",
+    "slug": "combat-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5107,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Agility · Close",
+      "dmg": "d8+3 phys.",
+      "feat": "Quick",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "d8+3 phys.",
+    "features": [
+      "Quick"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.quick",
+        "display": "Quick"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.concussion-grenade-3",
+    "type": "weapon",
+    "name": "Concussion Grenade (×3)",
+    "slug": "concussion-grenade-3",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5285,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Agility · Close",
+      "dmg": "1d6 Stress",
+      "feat": "Explosive, Stunning, Area",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "1d6 Stress",
+    "features": [
+      "Explosive",
+      "Stunning",
+      "Area"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.explosive",
+        "display": "Explosive"
+      },
+      {
+        "id": "vf.feature.personal.weapon.stunning",
+        "display": "Stunning"
+      },
+      {
+        "id": "vf.feature.personal.weapon.area",
+        "display": "Area"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.disruptor-pistol",
+    "type": "weapon",
+    "name": "Disruptor Pistol",
+    "slug": "disruptor-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5113,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Knowledge · Close",
+      "dmg": "d8+3 ene.",
+      "feat": "Shield Piercing",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Close",
+    "damage": "d8+3 ene.",
+    "features": [
+      "Shield Piercing"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.shield-piercing",
+        "display": "Shield Piercing"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.electro-whip",
+    "type": "weapon",
+    "name": "Electro-Whip",
+    "slug": "electro-whip",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5041,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Agility · Melee",
+      "dmg": "d6+3 ene.",
+      "feat": "Reach 2m, Stunning on crit",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Melee",
+    "damage": "d6+3 ene.",
+    "features": [
+      "Reach 2m",
+      "Stunning on crit"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.reach",
+        "parameters": {
+          "distanceMeters": 2,
+          "rangeBand": "Very Close"
+        },
+        "display": "Reach 2m"
+      },
+      {
+        "id": "vf.feature.personal.weapon.stunning-on-crit",
+        "display": "Stunning on crit"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.flamethrower",
+    "type": "weapon",
+    "name": "Flamethrower",
+    "slug": "flamethrower",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5309,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Close",
+      "dmg": "d8 ene.",
+      "feat": "Continuous, Ignite",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Close",
+    "damage": "d8 ene.",
+    "features": [
+      "Continuous",
+      "Ignite"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.continuous",
+        "display": "Continuous"
+      },
+      {
+        "id": "vf.feature.personal.weapon.ignite",
+        "display": "Ignite"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.frag-grenade-3",
+    "type": "weapon",
+    "name": "Frag Grenade (×3)",
+    "slug": "frag-grenade-3",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5284,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Agility · Close",
+      "dmg": "d8+1 phys.",
+      "feat": "Explosive",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "d8+1 phys.",
+    "features": [
+      "Explosive"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.explosive",
+        "display": "Explosive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.fusion-cannon",
+    "type": "weapon",
+    "name": "Fusion Cannon",
+    "slug": "fusion-cannon",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5261,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Instinct · Close",
+      "dmg": "d10+6 ene.",
+      "feat": "Devastating",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Instinct",
+    "range": "Close",
+    "damage": "d10+6 ene.",
+    "features": [
+      "Devastating"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.devastating",
+        "display": "Devastating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.gauss-pistol",
+    "type": "weapon",
+    "name": "Gauss Pistol",
+    "slug": "gauss-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5111,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Finesse · Close",
+      "dmg": "d8+3 phys.",
+      "feat": "Silent",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Close",
+    "damage": "d8+3 phys.",
+    "features": [
+      "Silent"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.silent",
+        "display": "Silent"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.gravity-hammer",
+    "type": "weapon",
+    "name": "Gravity Hammer",
+    "slug": "gravity-hammer",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5039,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Melee",
+      "dmg": "d10+3 phys.",
+      "feat": "Stagger",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Melee",
+    "damage": "d10+3 phys.",
+    "features": [
+      "Stagger"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "melee-two-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.stagger",
+        "display": "Stagger"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.grenade-launcher",
+    "type": "weapon",
+    "name": "Grenade Launcher",
+    "slug": "grenade-launcher",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5286,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Far",
+      "dmg": "(as ammo)",
+      "feat": "Arcing Shot, Explosive",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Far",
+    "damage": "(as ammo)",
+    "features": [
+      "Arcing Shot",
+      "Explosive"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.arcing-shot",
+        "display": "Arcing Shot"
+      },
+      {
+        "id": "vf.feature.personal.weapon.explosive",
+        "display": "Explosive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.heavy-machine-gun",
+    "type": "weapon",
+    "name": "Heavy Machine Gun",
+    "slug": "heavy-machine-gun",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5257,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Far",
+      "dmg": "d6+6 phys.",
+      "feat": "Suppressive",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Far",
+    "damage": "d6+6 phys.",
+    "features": [
+      "Suppressive"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.suppressive",
+        "display": "Suppressive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.magnetic-accelerator",
+    "type": "weapon",
+    "name": "Magnetic Accelerator",
+    "slug": "magnetic-accelerator",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5263,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Finesse · Very Far",
+      "dmg": "d6+6 phys.",
+      "feat": "Armor Piercing (2)",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Very Far",
+    "damage": "d6+6 phys.",
+    "features": [
+      "Armor Piercing (2)"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.armor-piercing",
+        "parameters": {
+          "rating": 2
+        },
+        "display": "Armor Piercing (2)"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.mass-driver-rifle",
+    "type": "weapon",
+    "name": "Mass Driver Rifle",
+    "slug": "mass-driver-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5196,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Far",
+      "dmg": "d8+3 phys.",
+      "feat": "Massive",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Far",
+    "damage": "d8+3 phys.",
+    "features": [
+      "Massive"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.massive",
+        "display": "Massive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-carbine",
+    "type": "weapon",
+    "name": "Plasma Carbine",
+    "slug": "plasma-carbine",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5194,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Instinct · Close",
+      "dmg": "d8+3 ene.",
+      "feat": "Stable",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Instinct",
+    "range": "Close",
+    "damage": "d8+3 ene.",
+    "features": [
+      "Stable"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.stable",
+        "display": "Stable"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-rapier",
+    "type": "weapon",
+    "name": "Plasma Rapier",
+    "slug": "plasma-rapier",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5037,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Finesse · Melee",
+      "dmg": "d8+3 ene.",
+      "feat": "Piercing, Overheating",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Melee",
+    "damage": "d8+3 ene.",
+    "features": [
+      "Piercing",
+      "Overheating"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.armor-piercing",
+        "parameters": {
+          "rating": 1
+        },
+        "display": "Piercing"
+      },
+      {
+        "id": "vf.feature.personal.weapon.overheating",
+        "display": "Overheating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-sidearm",
+    "type": "weapon",
+    "name": "Plasma Sidearm",
+    "slug": "plasma-sidearm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5109,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Instinct · Close",
+      "dmg": "d8+3 ene.",
+      "feat": "Reliable",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Instinct",
+    "range": "Close",
+    "damage": "d8+3 ene.",
+    "features": [
+      "Reliable"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.reliable",
+        "display": "Reliable"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.resonance-disperser",
+    "type": "weapon",
+    "name": "Resonance Disperser",
+    "slug": "resonance-disperser",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5312,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Knowledge · Close",
+      "dmg": "1d8 Stress",
+      "feat": "Dispersal Wave, Disorienting",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Close",
+    "damage": "1d8 Stress",
+    "features": [
+      "Dispersal Wave",
+      "Disorienting"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.dispersal-wave",
+        "display": "Dispersal Wave"
+      },
+      {
+        "id": "vf.feature.personal.weapon.disorienting",
+        "display": "Disorienting"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.shrapnel-cannon",
+    "type": "weapon",
+    "name": "Shrapnel Cannon",
+    "slug": "shrapnel-cannon",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5310,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Close",
+      "dmg": "d10 phys.",
+      "feat": "Massive, Shredding",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Close",
+    "damage": "d10 phys.",
+    "features": [
+      "Massive",
+      "Shredding"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.massive",
+        "display": "Massive"
+      },
+      {
+        "id": "vf.feature.personal.weapon.shredding",
+        "display": "Shredding"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.smart-launcher",
+    "type": "weapon",
+    "name": "Smart Launcher",
+    "slug": "smart-launcher",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5259,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Knowledge · Far",
+      "dmg": "d10+6 phys.",
+      "feat": "Guided",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "d10+6 phys.",
+    "features": [
+      "Guided"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.guided",
+        "display": "Guided"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.sniper-system",
+    "type": "weapon",
+    "name": "Sniper System",
+    "slug": "sniper-system",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5192,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Finesse · Very Far",
+      "dmg": "d8+3 phys.",
+      "feat": "Smart Scope",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Very Far",
+    "damage": "d8+3 phys.",
+    "features": [
+      "Smart Scope"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.smart-scope",
+        "display": "Smart Scope"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.stasis-foam-projector",
+    "type": "weapon",
+    "name": "Stasis Foam Projector",
+    "slug": "stasis-foam-projector",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5311,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Close",
+      "dmg": "n/a",
+      "feat": "Entrapping, Messy",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Close",
+    "damage": "n/a",
+    "features": [
+      "Entrapping",
+      "Messy"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.entrapping",
+        "display": "Entrapping"
+      },
+      {
+        "id": "vf.feature.personal.weapon.messy",
+        "display": "Messy"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.suppression-rifle",
+    "type": "weapon",
+    "name": "Suppression Rifle",
+    "slug": "suppression-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5198,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Far",
+      "dmg": "d6+3 phys.",
+      "feat": "Suppressive",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Far",
+    "damage": "d6+3 phys.",
+    "features": [
+      "Suppressive"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.suppressive",
+        "display": "Suppressive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.tangle-field-grenade-3",
+    "type": "weapon",
+    "name": "Tangle-Field Grenade (×3)",
+    "slug": "tangle-field-grenade-3",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5308,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Agility · Close",
+      "dmg": "1d4 Stress",
+      "feat": "Explosive, Entangling",
+      "cost": 1,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "1d4 Stress",
+    "features": [
+      "Explosive",
+      "Entangling"
+    ],
+    "cost": {
+      "credits": 1
+    },
+    "proficiencyDie": "d4",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.explosive",
+        "display": "Explosive"
+      },
+      {
+        "id": "vf.feature.personal.weapon.entangling",
+        "display": "Entangling"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.vibro-sword",
+    "type": "weapon",
+    "name": "Vibro-Sword",
+    "slug": "vibro-sword",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5033,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "trait": "Strength · Melee",
+      "dmg": "d8+3 phys.",
+      "feat": "Vibration",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Melee",
+    "damage": "d8+3 phys.",
+    "features": [
+      "Vibration"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.vibration",
+        "display": "Vibration"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.barrier-emitter",
+    "type": "weapon",
+    "name": "Barrier Emitter",
+    "slug": "barrier-emitter",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5321,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Knowledge · Far",
+      "dmg": "n/a",
+      "feat": "Deployable Cover",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "n/a",
+    "features": [
+      "Deployable Cover"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.deployable-cover",
+        "display": "Deployable Cover"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.cryo-projector",
+    "type": "weapon",
+    "name": "Cryo-Projector",
+    "slug": "cryo-projector",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5320,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Knowledge · Close",
+      "dmg": "d6 ene.",
+      "feat": "Continuous, Brittle",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Close",
+    "damage": "d6 ene.",
+    "features": [
+      "Continuous",
+      "Brittle"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.continuous",
+        "display": "Continuous"
+      },
+      {
+        "id": "vf.feature.personal.weapon.brittle",
+        "display": "Brittle"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.gravity-well-emitter",
+    "type": "weapon",
+    "name": "Gravity Well Emitter",
+    "slug": "gravity-well-emitter",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5323,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Knowledge · Far",
+      "dmg": "n/a",
+      "feat": "Singularity",
+      "cost": 16,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "n/a",
+    "features": [
+      "Singularity"
+    ],
+    "cost": {
+      "credits": 16
+    },
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.singularity",
+        "display": "Singularity"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.micro-missile-launcher",
+    "type": "weapon",
+    "name": "Micro-Missile Launcher",
+    "slug": "micro-missile-launcher",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5295,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Knowledge · Far",
+      "dmg": "d10+3 phys.",
+      "feat": "Guided, Salvo Fire",
+      "cost": 16,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "d10+3 phys.",
+    "features": [
+      "Guided",
+      "Salvo Fire"
+    ],
+    "cost": {
+      "credits": 16
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.guided",
+        "display": "Guided"
+      },
+      {
+        "id": "vf.feature.personal.weapon.salvo-fire",
+        "display": "Salvo Fire"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.nanite-gauntlet",
+    "type": "weapon",
+    "name": "Nanite Gauntlet",
+    "slug": "nanite-gauntlet",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5063,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Finesse · Melee",
+      "dmg": "d8+6 phys.",
+      "feat": "Adaptive",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Melee",
+    "damage": "d8+6 phys.",
+    "features": [
+      "Adaptive"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.adaptive",
+        "display": "Adaptive"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.neural-scrambler",
+    "type": "weapon",
+    "name": "Neural Scrambler",
+    "slug": "neural-scrambler",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5335,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Finesse · Close",
+      "dmg": "1d10 Stress",
+      "feat": "Mind-Lock, Psionic",
+      "cost": 16,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Close",
+    "damage": "1d10 Stress",
+    "features": [
+      "Mind-Lock",
+      "Psionic"
+    ],
+    "cost": {
+      "credits": 16
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.mind-lock",
+        "display": "Mind-Lock"
+      },
+      {
+        "id": "vf.feature.personal.weapon.psionic",
+        "display": "Psionic"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.phase-blade",
+    "type": "weapon",
+    "name": "Phase Blade",
+    "slug": "phase-blade",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5057,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Finesse · Melee",
+      "dmg": "d8+6 void",
+      "feat": "Phasing",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Melee",
+    "damage": "d8+6 void",
+    "features": [
+      "Phasing"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "balanceNote": "Experimental Void weapon cost corrected to WT3; combat statistics unchanged.",
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.phasing",
+        "display": "Phasing"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.phase-pistol",
+    "type": "weapon",
+    "name": "Phase Pistol",
+    "slug": "phase-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5130,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Knowledge · Close",
+      "dmg": "d8+6 void",
+      "feat": "Phasing",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Close",
+    "damage": "d8+6 void",
+    "features": [
+      "Phasing"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "balanceNote": "Experimental Void weapon cost corrected to WT3; combat statistics unchanged.",
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.phasing",
+        "display": "Phasing"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.plasma-infused-katana",
+    "type": "weapon",
+    "name": "Plasma-Infused Katana",
+    "slug": "plasma-infused-katana",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5065,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Agility · Melee",
+      "dmg": "d8+6 ene.",
+      "feat": "Energy Surge",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Melee",
+    "damage": "d8+6 ene.",
+    "features": [
+      "Energy Surge"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.energy-surge",
+        "display": "Energy Surge"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.quantum-rapier",
+    "type": "weapon",
+    "name": "Quantum Rapier",
+    "slug": "quantum-rapier",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5059,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Finesse · Melee",
+      "dmg": "d6+6 void",
+      "feat": "Probability Shift",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Finesse",
+    "range": "Melee",
+    "damage": "d6+6 void",
+    "features": [
+      "Probability Shift"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "melee-one-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.probability-shift",
+        "display": "Probability Shift"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.quantum-sidearm",
+    "type": "weapon",
+    "name": "Quantum Sidearm",
+    "slug": "quantum-sidearm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5132,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Instinct · Close",
+      "dmg": "d6+6 void",
+      "feat": "Probability Shift",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Instinct",
+    "range": "Close",
+    "damage": "d6+6 void",
+    "features": [
+      "Probability Shift"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.probability-shift",
+        "display": "Probability Shift"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.sonic-cannon",
+    "type": "weapon",
+    "name": "Sonic Cannon",
+    "slug": "sonic-cannon",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5322,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Knowledge · Far",
+      "dmg": "1d8 Stress",
+      "feat": "Waveform, Stagger",
+      "cost": 16,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "1d8 Stress",
+    "features": [
+      "Waveform",
+      "Stagger"
+    ],
+    "cost": {
+      "credits": 16
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.waveform",
+        "display": "Waveform"
+      },
+      {
+        "id": "vf.feature.personal.weapon.stagger",
+        "display": "Stagger"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.static-pulse-grenade-2",
+    "type": "weapon",
+    "name": "Static Pulse Grenade (×2)",
+    "slug": "static-pulse-grenade-2",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5294,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Agility · Close",
+      "dmg": "d8+3 ene.",
+      "feat": "Explosive, System Shock",
+      "cost": 4,
+      "source": "core"
+    },
+    "trait": "Agility",
+    "range": "Close",
+    "damage": "d8+3 ene.",
+    "features": [
+      "Explosive",
+      "System Shock"
+    ],
+    "cost": {
+      "credits": 4
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.explosive",
+        "display": "Explosive"
+      },
+      {
+        "id": "vf.feature.personal.weapon.system-shock",
+        "display": "System Shock"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.veil-pistol",
+    "type": "weapon",
+    "name": "Veil Pistol",
+    "slug": "veil-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5134,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Presence · Close",
+      "dmg": "d8+6 void",
+      "feat": "Reality Shift",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Presence",
+    "range": "Close",
+    "damage": "d8+6 void",
+    "features": [
+      "Reality Shift"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.reality-shift",
+        "display": "Reality Shift"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.void-cleaver",
+    "type": "weapon",
+    "name": "Void Cleaver",
+    "slug": "void-cleaver",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5061,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Strength · Melee",
+      "dmg": "d10+6 void",
+      "feat": "Disintegrating",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Strength",
+    "range": "Melee",
+    "damage": "d10+6 void",
+    "features": [
+      "Disintegrating"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "melee-two-handed",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.disintegrating",
+        "display": "Disintegrating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.void-grenade-1",
+    "type": "weapon",
+    "name": "Void Grenade (×1)",
+    "slug": "void-grenade-1",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5296,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Presence · Close",
+      "dmg": "d10+3 void",
+      "feat": "Explosive, Unraveling",
+      "cost": 3,
+      "source": "core"
+    },
+    "trait": "Presence",
+    "range": "Close",
+    "damage": "d10+3 void",
+    "features": [
+      "Explosive",
+      "Unraveling"
+    ],
+    "cost": {
+      "credits": 3
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "heavy-or-special",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.explosive",
+        "display": "Explosive"
+      },
+      {
+        "id": "vf.feature.personal.weapon.unraveling",
+        "display": "Unraveling"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.void-pistol",
+    "type": "weapon",
+    "name": "Void Pistol",
+    "slug": "void-pistol",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5136,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "trait": "Presence · Close",
+      "dmg": "d6+6 void",
+      "feat": "Disintegrating",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Presence",
+    "range": "Close",
+    "damage": "d6+6 void",
+    "features": [
+      "Disintegrating"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.disintegrating",
+        "display": "Disintegrating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.phase-rifle",
+    "type": "weapon",
+    "name": "Phase Rifle",
+    "slug": "phase-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5212,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "trait": "Knowledge · Far",
+      "dmg": "d8+6 void",
+      "feat": "Phasing",
+      "cost": 9,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "d8+6 void",
+    "features": [
+      "Phasing"
+    ],
+    "cost": {
+      "credits": 9
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.phasing",
+        "display": "Phasing"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.precursor-beam-caster",
+    "type": "weapon",
+    "name": "Precursor Beam Caster",
+    "slug": "precursor-beam-caster",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5218,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "trait": "Presence · Far",
+      "dmg": "d10+9 void",
+      "feat": "Existence",
+      "cost": "n/a",
+      "source": "core"
+    },
+    "trait": "Presence",
+    "range": "Far",
+    "damage": "d10+9 void",
+    "features": [
+      "Existence"
+    ],
+    "cost": {
+      "credits": "n/a"
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.existence",
+        "display": "Existence"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.reality-shaper",
+    "type": "weapon",
+    "name": "Reality Shaper",
+    "slug": "reality-shaper",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5153,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "trait": "Knowledge · Close",
+      "dmg": "d6+9 void",
+      "feat": "Existence",
+      "cost": "Precursor",
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Close",
+    "damage": "d6+9 void",
+    "features": [
+      "Existence"
+    ],
+    "cost": {
+      "credits": "Precursor"
+    },
+    "proficiencyDie": "d6",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.existence",
+        "display": "Existence"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.singularity-rifle",
+    "type": "weapon",
+    "name": "Singularity Rifle",
+    "slug": "singularity-rifle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5216,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "trait": "Knowledge · Far",
+      "dmg": "d8+6 void",
+      "feat": "Disintegrating",
+      "cost": 16,
+      "source": "core"
+    },
+    "trait": "Knowledge",
+    "range": "Far",
+    "damage": "d8+6 void",
+    "features": [
+      "Disintegrating"
+    ],
+    "cost": {
+      "credits": 16
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.disintegrating",
+        "display": "Disintegrating"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.thought-caster",
+    "type": "weapon",
+    "name": "Thought Caster",
+    "slug": "thought-caster",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5151,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "trait": "Presence · Close",
+      "dmg": "d8+9 void",
+      "feat": "Mind Link",
+      "cost": "Precursor",
+      "source": "core"
+    },
+    "trait": "Presence",
+    "range": "Close",
+    "damage": "d8+9 void",
+    "features": [
+      "Mind Link"
+    ],
+    "cost": {
+      "credits": "Precursor"
+    },
+    "proficiencyDie": "d8",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 1,
+    "weaponFamily": "sidearm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.mind-link",
+        "display": "Mind Link"
+      }
+    ]
+  },
+  {
+    "id": "vf.core.weapon.veil-lance",
+    "type": "weapon",
+    "name": "Veil Lance",
+    "slug": "veil-lance",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5214,
+        "collection": "weapons"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "trait": "Presence · Far",
+      "dmg": "d10+6 void",
+      "feat": "Reality Shift",
+      "cost": 16,
+      "source": "core"
+    },
+    "trait": "Presence",
+    "range": "Far",
+    "damage": "d10+6 void",
+    "features": [
+      "Reality Shift"
+    ],
+    "cost": {
+      "credits": 16
+    },
+    "proficiencyDie": "d10",
+    "proficiencyScaling": "one-die",
+    "criticalRules": {
+      "player": "double-normal-dice",
+      "keeper": "maximum-normal-damage"
+    },
+    "burden": 2,
+    "weaponFamily": "longarm",
+    "scale": "personal",
+    "featureRefs": [
+      {
+        "id": "vf.feature.personal.weapon.reality-shift",
+        "display": "Reality Shift"
+      }
+    ]
+  }
+]
