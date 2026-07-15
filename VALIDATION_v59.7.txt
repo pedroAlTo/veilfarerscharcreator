@@ -1,0 +1,44 @@
+VeilFarers Portal v59.7 validation
+=================================
+
+Result
+------
+Passed: 148
+Failed: 0
+
+Validated
+---------
+- JSON integrity for all canonical data, download manifests and changelog files.
+- JavaScript syntax for external project scripts and non-Babel inline scripts.
+- HTML titles and local script, stylesheet and image dependencies.
+- Character Sheet uses portal.js and no longer contains the obsolete Player/Keeper secondary navigation.
+- Embedded Creator, Mode, Downloads/Feedback and Account controls remain implemented but are hidden.
+- Sync Draft replaces the ambiguous Creator Draft label.
+- Canonical portal navigation is present in Player Tool, Keeper Tool, Character Sheet, Downloads, Feedback, Armory, Items, Login and Admin.
+- Fillable Character Sheet is listed in both download manifests.
+- Fillable Character Sheet exists at /download/veilfarers_charsheet_fillable.pdf.
+- Fillable PDF inspection: 2 pages and at least 180 form fields; actual field count is 186.
+- Fillable PDF render completed successfully for both pages.
+- v59.5 real-time broadcast identifiers remain present in Player Tool and Keeper Tool.
+- Detailed Player Tool damage breakdown fields remain present.
+- Changelog and Feedback build references updated to v59.7.
+- No embedded Firebase API key pattern or direct FIREBASE_API_KEY assignment was found.
+
+PDF inspection
+--------------
+File: download/veilfarers_charsheet_fillable.pdf
+Pages: 2
+Form fields: 186
+Annotations: 193
+Encrypted: No
+Rendered: Both pages successfully rendered for visual integrity inspection.
+
+Not covered by static validation
+--------------------------------
+The following must be checked on a Netlify Deploy Preview:
+- Final responsive rendering in supported desktop and mobile browsers.
+- Netlify Identity login, logout, role claims and vault behavior.
+- Firebase anonymous authentication and Firestore synchronization.
+- Player/Keeper roll callouts across separate browsers or devices.
+- Browser-generated visual, editable and flattened PDF exports.
+- Netlify Forms submissions and questionnaire links.

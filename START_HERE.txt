@@ -1,15 +1,41 @@
-VeilFarers Portal v59.6
+VeilFarers Portal v59.7
 ======================
 
-Deploy the contents of this folder directly to Netlify. This build replaces v59.4.
+Deploy the contents of this folder directly to Netlify. This build replaces v59.6.
 
-Canonical sources
------------------
-- /index.html and /data/: RC2 Character Creator with its integrated Card Library.
-- /rules-data/: normalized VeilFarers 11.1-RC2-draft6 rules datasets.
-- /shared-data.js and /canonical-runtime.js: shared canonical browser data adapters.
-- /charsheet.html: restored complete multi-face character sheet and PDF export workflow.
-- /download/: current 11.1 RC2 PDF candidates and the physical character-sheet PDF template.
+Canonical navigation
+--------------------
+- portal.js is the only site-level navigation layer.
+- The obsolete Character Sheet Player/Keeper link strip has been removed.
+- Player Tool and Keeper Tool retain their functional character/session controls, but no separate site navigation.
+
+Digital Character Sheet
+-----------------------
+The toolbar has been reduced to the controls that are specific to the sheet:
+- Guided Fill, Random Character and Reset.
+- View and zoom controls.
+- JSON load/save.
+- Visual PDF and physical PDF export.
+- Sleeping/Awakened path switch.
+- Sync Draft, injected by sheet-bridge.js, imports the current canonical Character Creator draft.
+
+The embedded Creator button, Setup/Play Mode section, Downloads/Feedback section and sheet-local Account section remain in the DOM but are hidden and marked as reserved controls. They can be re-enabled later without reconstructing the underlying logic.
+
+Downloads
+---------
+Downloads now contains:
+- Four VeilFarers 11.1 RC2 PDF candidates.
+- The retained editable two-page physical character-sheet PDF.
+
+The fillable sheet contains 186 form fields and remains at:
+/download/veilfarers_charsheet_fillable.pdf
+
+Cohesion changes
+----------------
+- Shared portal navigation surface, border, active state and spacing.
+- Shared module page rhythm for headers, panels, fields and actions.
+- Character Sheet toolbar aligned with the same gold/dark portal surface system.
+- Duplicate navigation and account controls removed from the visible sheet workflow.
 
 Services
 --------
@@ -17,43 +43,17 @@ Services
 - Firebase Authentication/Firestore: real-time Player Tool and Keeper Tool table sessions.
 - Firebase browser configuration: served at runtime by /api/firebase-config from Netlify environment variables.
 
-Required Netlify configuration
-------------------------------
-- Netlify Identity enabled.
-- FIREBASE_API_KEY and the existing Firebase variables configured in Netlify Environment Variables.
-- Firebase Anonymous Authentication enabled.
-- Assign role "admin" to administrator accounts.
-- Assign role "keeper" or "admin" to accounts allowed to open Keeper Tool.
-- Netlify Forms enabled for Feedback submissions.
-
-Primary v59.6 regression checks
--------------------------------
-1. Create or load a character in Character Creator and save the draft.
-2. Open Player Tool and import the Creator draft.
-3. Confirm Ancestry Gift, Class Feature, Community Feature and Domain Cards are visible.
-4. Open Character Sheet and use "Creator Draft" to synchronize the current RC2 character.
-5. Test Both Sides, Current Side, Editable and Print PDF exports.
-6. Confirm the account button turns green and displays a green status dot after login.
-7. Verify Armory tiers are Common, Military, Experimental and Precursor only.
-8. Verify catalogue costs use the WT ladder: 1, 4, 9, 16 and 25 Cr.
-9. Confirm Player Tool and Keeper Tool use the same portal navigation.
-10. Connect Player and Keeper to the same Firebase table on the deployed site.
+Required Netlify checks
+-----------------------
+1. Confirm the canonical navigation appears once on Character Sheet, Player Tool and Keeper Tool.
+2. Confirm the Character Sheet toolbar does not show Creator, Mode, Downloads, Feedback or Account controls.
+3. Confirm Sync Draft imports the current Creator draft.
+4. Confirm both editable and print-ready PDF exports still work.
+5. Confirm Downloads lists the fillable physical character sheet.
+6. Confirm Netlify Identity login status remains available from the canonical navigation.
+7. Confirm Player/Keeper Firebase sessions and roll callouts remain operational.
 
 Validation
 ----------
-Read VALIDATION_v59.6.txt for automated static and data checks. Identity, Firebase,
-PDF downloads and browser print rendering must still be checked on the deployed Netlify site.
-
-
-v59.6 UI and feedback fixes
-- Every roll broadcast carries a unique broadcastId.
-- Player callouts are triggered by new events, not by comparing device clocks.
-- Keeper main roller broadcasts Duality, d20 and damage results.
-- Roll histories show damage dice, individual results, modifiers and totals.
-
-
-v59.6 changes
-- Player top controls no longer expose a browser horizontal scrollbar.
-- Portal overflow uses application-owned previous/next controls.
-- Feedback includes the original seven structured playtest questionnaires.
-- Admin role assignment instructions are included in admin.html and the handover.
+Read VALIDATION_v59.7.txt for automated static, dependency, data and PDF-form checks.
+Identity, Firebase, generated PDFs and responsive browser rendering must still be checked on a Netlify Deploy Preview.

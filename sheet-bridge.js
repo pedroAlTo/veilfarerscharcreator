@@ -72,7 +72,7 @@
   function addButton(){
     const group=q('.toolbar-section.io-tools .tool-subgroup')||q('.toolbar-section.io-tools')||q('.tb-actions');
     if(!group||q('#vf-sync-creator'))return;
-    const b=document.createElement('button');b.id='vf-sync-creator';b.type='button';b.textContent='Creator Draft';b.title='Load the current canonical RC2 Character Creator draft into the full sheet';b.addEventListener('click',sync);group.prepend(b);
+    const b=document.createElement('button');b.id='vf-sync-creator';b.type='button';b.textContent='Sync Draft';b.title='Import the current canonical RC2 Character Creator draft into the digital sheet';b.addEventListener('click',sync);group.prepend(b);
   }
   function firstOpenSync(){
     if(localStorage.getItem(FIELDS_KEY))return;

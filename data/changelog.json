@@ -1,7 +1,17 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.6",
+  "currentVersion": "v59.7",
   "entries": [
+    {
+      "version": "v59.7",
+      "date": "2026-07-15",
+      "changes": [
+        "Removed the obsolete Character Sheet secondary Player/Keeper navigation so portal.js is the only site-level navigation.",
+        "Reduced the digital Character Sheet toolbar by hiding duplicate Creator, Mode, Downloads/Feedback and Account controls while retaining the underlying code for future reactivation.",
+        "Restored the fillable two-page physical character-sheet PDF to the Downloads manifest.",
+        "Aligned shared navigation, page spacing, panels, fields and Character Sheet toolbar surfaces for stronger cross-module visual cohesion."
+      ]
+    },
     {
       "version": "v59.6",
       "date": "2026-07-15",
@@ -71,5 +81,5 @@
       ]
     }
   ],
-  "version": "v59.6"
+  "version": "v59.7"
 }

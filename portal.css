@@ -22,3 +22,9 @@ html{scrollbar-width:thin;scrollbar-color:var(--vf-ui-thumb) var(--vf-ui-track)}
 /* Common controls keep semantic HTML but use VeilFarers chrome instead of browser chrome. */
 select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%)!important;background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%!important;background-size:5px 5px,5px 5px!important;background-repeat:no-repeat!important;padding-right:34px!important}
 input[type="checkbox"],input[type="radio"]{accent-color:#d5a843}
+
+/* v59.7 cohesion layer: canonical navigation is the only site-level navigation. */
+body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,.30)}
+.vf-portal-nav{background:var(--vf-portal-surface);border-bottom-color:var(--vf-portal-border);box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.vf-portal-nav a{min-height:32px;display:inline-flex;align-items:center;justify-content:center}
+.vf-portal-nav a.active{box-shadow:inset 0 0 0 1px rgba(233,192,104,.12),0 0 16px rgba(233,192,104,.10)}
