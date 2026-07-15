@@ -1,0 +1,31 @@
+VeilFarers Portal v59.10 validation
+=======================================
+
+[PASS] All JSON files parse — 43 files
+[PASS] Changelog current version v59.10
+[PASS] v59.10 changelog entry
+[PASS] Feedback build reference v59.10
+[PASS] Start Here version v59.10
+[PASS] Hope-cost alternative helper present
+[PASS] Feature actions render payment alternatives
+[PASS] Feature action accepts selected payment
+[PASS] Feature action spends selected resource
+[PASS] Duality rolls retain selected payment
+[PASS] Domain Cards offer Hope payment
+[PASS] Domain Cards offer Effort payment
+[PASS] Domain Card cost label says Hope / Effort
+[PASS] Callout shows resource payment
+[PASS] History shows resource payment
+[PASS] Legacy whole-card Hope-only Domain click removed
+[PASS] Player Tool Babel script found
+[PASS] Player Tool TSX syntax
+[PASS] Chrono-Gift 2 Hope produces 2 Hope / 2 Effort choices
+[PASS] Canonical manifest retained
+[PASS] Canonical powers count — 147
+[PASS] Canonical weapons count — 211
+[PASS] Canonical armor count — 42
+[PASS] Local HTML dependencies resolve
+[PASS] No embedded Firebase browser key patterns
+
+Passed: 25
+Failed: 0

@@ -1,59 +1,48 @@
-VeilFarers Portal v59.9
-======================
+VeilFarers Portal v59.10
+=======================
 
-Deploy the contents of this folder directly to Netlify. This build replaces v59.8.
+Deploy the contents of this folder directly to Netlify. This build replaces v59.9.
 
-Player Tool weapon loadout
---------------------------
-- Player characters can keep an arsenal larger than their currently equipped loadout.
-- Any number of weapons may be equipped and one may be selected as the active weapon.
-- The Loadout panel searches the 211 canonical RC2 weapons and supports custom weapons.
-- Imported legacy and RC2 characters retain their equipped weapons as persistent arsenal entries.
+Hope / Effort alternative payments
+----------------------------------
+Player Tool now follows the canonical resource rule that any ability with a Hope cost may instead be paid with the same amount of Effort.
 
-Operational weapon rules
-------------------------
-The Player Tool reads canonical feature definitions from /rules-data/features-registry.json.
-Implemented attack/damage automation includes:
-- Reliable: +1 to attacks.
-- Accurate: +1 at Far or Very Far range.
-- Heavy: Disadvantage when Strength is 0 or lower.
-- Massive: roll one additional normal damage die, discard the lowest, and apply -1 Evasion while active.
-- Brutal: reroll damage dice showing 1 once.
-- Paired: apply the listed damage bonus when two Paired weapons are equipped.
+This applies to executable actions generated from:
+- Ancestry Gifts;
+- Class Features;
+- Community Features;
+- Hope Features;
+- Domain Cards.
 
-Other canonical features remain visible as concise timing/effect notes. Resistance effects such as Knockdown display their Reaction Roll and Feature DC requirements.
+Both payment options remain visible. Each button is independently disabled when the character lacks the required resource. The selected payment is deducted before the action resolves.
 
-Operational character features
-------------------------------
-Ancestry Gift, Class Feature, Community Feature and Hope/Effort Feature are displayed as compact cards. Explicit trait or Duality rolls create action buttons. Costs found in the feature text spend Hope, Effort or Resolve, or mark Stress, before the normal roll outcome generates resources.
+Roll records
+------------
+Feature and Domain Card activations record the selected Hope or Effort payment in:
+- the local Player Tool Roll History;
+- Firebase table-wide roll callouts;
+- the shared session roll history.
 
-Real-time results
------------------
-Weapon attacks continue to broadcast to all players at the table. Callouts and Roll History include:
-- weapon and trait;
-- attack modifier breakdown;
-- damage expression and individual dice;
-- discarded or rerolled dice;
-- static and feature modifiers;
-- canonical special-effect and resistance notes.
-
-Services
---------
-- Netlify Identity: account login, roles, character vault, and Keeper Tool access.
-- Firebase Authentication/Firestore: real-time Player Tool and Keeper Tool table sessions.
-- Firebase browser configuration: served at runtime by /api/firebase-config from Netlify environment variables.
+Existing mechanics retained
+---------------------------
+- Operational multi-weapon arsenal and active-weapon switching.
+- Reliable, Accurate, Heavy, Massive, Brutal and Paired automation.
+- Structured weapon effects, resistance/DC notes and damage details.
+- Canonical 11.1 RC2 datasets.
+- Netlify Identity accounts and roles.
+- Firebase real-time Player/Keeper sessions.
 
 Required Deploy Preview checks
 ------------------------------
-1. Import an existing character and verify all weapons appear in Loadout.
-2. Equip several weapons, switch the active weapon, reload, and confirm persistence.
-3. Attack with Railgun and verify 2d8 are rolled and the lowest die is discarded.
-4. Attack with a Reliable weapon and confirm +1 appears in the attack breakdown.
-5. Use a Knockdown weapon and confirm the Reaction Roll / Feature DC note appears in the callout and log.
-6. Execute an available feature action and verify its resource cost and resulting Hope/Effort/Fear change.
-7. Test the same attack while connected to a real Firebase table with at least two Player Tools and one Keeper Tool.
+1. Import a character whose Ancestry Gift costs Hope.
+2. Verify separate Hope and Effort action buttons are shown.
+3. Activate with Hope and verify Hope decreases by the stated amount.
+4. Activate with Effort and verify Effort decreases by the stated amount.
+5. Verify insufficient-resource buttons are disabled independently.
+6. Activate a Domain Card using both payment methods.
+7. Confirm the selected resource appears in the local history and on another browser connected to the same Firebase table.
 
 Validation
 ----------
-Read VALIDATION_v59.9.txt for automated checks.
+Read VALIDATION_v59.10.txt for automated checks.
 Identity, Firebase broadcasting, responsive layout and cross-browser interaction must still be tested on a Netlify Deploy Preview.

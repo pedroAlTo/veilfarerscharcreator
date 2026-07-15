@@ -1,7 +1,17 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.9",
+  "currentVersion": "v59.10",
   "entries": [
+    {
+      "version": "v59.10",
+      "date": "2026-07-15",
+      "changes": [
+        "Allowed every Hope-cost character feature to be activated with the same amount of Effort as an alternative payment.",
+        "Added explicit Hope and Effort action buttons to executable Ancestry, Class, Community and Hope-feature cards.",
+        "Applied the same Hope-or-Effort choice to Domain Card powers without changing their canonical numeric cost.",
+        "Recorded the selected resource payment in local Roll History and Firebase table-wide callouts."
+      ]
+    },
     {
       "version": "v59.9",
       "date": "2026-07-15",
@@ -104,5 +114,5 @@
       ]
     }
   ],
-  "version": "v59.9"
+  "version": "v59.10"
 }
