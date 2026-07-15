@@ -16,6 +16,7 @@
     techTiers: ['core/tech-tiers.json'],
     traits: ['core/traits.json'],
     features: ['core/features.json'],
+    featureRegistry: ['features-registry.json'],
     droneGrades: ['core/drone-grades.json', 'rust-and-steel/drone-grades.json'],
     droneModules: ['core/drone-modules.json']
   });

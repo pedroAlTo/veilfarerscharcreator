@@ -1,43 +1,41 @@
-VeilFarers Portal v59.8
+VeilFarers Portal v59.9
 ======================
 
-Deploy the contents of this folder directly to Netlify. This build replaces v59.7.
+Deploy the contents of this folder directly to Netlify. This build replaces v59.8.
 
-Player Tool backgrounds
------------------------
-The deployment now includes the two background assets referenced by Player Tool:
-- /assets/bg-spacestation.webp
-- /assets/bg-panels.webp
+Player Tool weapon loadout
+--------------------------
+- Player characters can keep an arsenal larger than their currently equipped loadout.
+- Any number of weapons may be equipped and one may be selected as the active weapon.
+- The Loadout panel searches the 211 canonical RC2 weapons and supports custom weapons.
+- Imported legacy and RC2 characters retain their equipped weapons as persistent arsenal entries.
 
-The background selector and existing local preference key remain unchanged.
+Operational weapon rules
+------------------------
+The Player Tool reads canonical feature definitions from /rules-data/features-registry.json.
+Implemented attack/damage automation includes:
+- Reliable: +1 to attacks.
+- Accurate: +1 at Far or Very Far range.
+- Heavy: Disadvantage when Strength is 0 or lower.
+- Massive: roll one additional normal damage die, discard the lowest, and apply -1 Evasion while active.
+- Brutal: reroll damage dice showing 1 once.
+- Paired: apply the listed damage bonus when two Paired weapons are equipped.
 
-Character Creator flow
-----------------------
-- A single fixed Back/Next dock remains visible in the lower-right corner during all nine creation steps.
-- Next is disabled until the active step is complete.
-- Ailuran selection opens the two required Sub-Strain options in a custom overlay.
-- Clicking outside the Ailuran overlay cancels Ailuran selection.
-- Choosing a class opens its subclass choices in the same viewport-level overlay.
-- Clicking outside the subclass overlay cancels the selected class.
-- The old inline Sub-Strain and subclass regions remain as compatibility mounts but no longer create a second scroll-dependent workflow.
+Other canonical features remain visible as concise timing/effect notes. Resistance effects such as Knockdown display their Reaction Roll and Feature DC requirements.
 
-Traits
-------
-The fixed +2, +1, +1, +0, +0, -1 array now supports:
-- Select a value, then a trait.
-- Select a trait, then a value.
-- Select two assigned traits to swap values.
-- Drag an available value onto a trait.
-- Assignment progress and Clear assignments.
+Operational character features
+------------------------------
+Ancestry Gift, Class Feature, Community Feature and Hope/Effort Feature are displayed as compact cards. Explicit trait or Duality rolls create action buttons. Costs found in the feature text spend Hope, Effort or Resolve, or mark Stress, before the normal roll outcome generates resources.
 
-Experiences
------------
-Starting characters now use three Experiences at +2. The third Experience is included in:
-- Creator state.
-- Draft persistence.
-- JSON save/load and migration of older two-Experience drafts.
-- Step validation.
-- Generated Creator character sheet.
+Real-time results
+-----------------
+Weapon attacks continue to broadcast to all players at the table. Callouts and Roll History include:
+- weapon and trait;
+- attack modifier breakdown;
+- damage expression and individual dice;
+- discarded or rerolled dice;
+- static and feature modifiers;
+- canonical special-effect and resistance notes.
 
 Services
 --------
@@ -47,15 +45,15 @@ Services
 
 Required Deploy Preview checks
 ------------------------------
-1. Open Player Tool Settings and select both restored backgrounds.
-2. Select Ailuran, cancel by clicking the overlay backdrop, then select it again and complete a Sub-Strain.
-3. Select a path and class; verify subclass options open without scrolling.
-4. Complete traits using both click orders and at least one swap.
-5. Enter three Experiences, save JSON, reload it, and verify all three remain.
-6. Complete a character and verify all three Experiences appear on the generated sheet.
-7. Regression-test Netlify Identity, Firebase sessions, roll callouts and PDF exports.
+1. Import an existing character and verify all weapons appear in Loadout.
+2. Equip several weapons, switch the active weapon, reload, and confirm persistence.
+3. Attack with Railgun and verify 2d8 are rolled and the lowest die is discarded.
+4. Attack with a Reliable weapon and confirm +1 appears in the attack breakdown.
+5. Use a Knockdown weapon and confirm the Reaction Roll / Feature DC note appears in the callout and log.
+6. Execute an available feature action and verify its resource cost and resulting Hope/Effort/Fear change.
+7. Test the same attack while connected to a real Firebase table with at least two Player Tools and one Keeper Tool.
 
 Validation
 ----------
-Read VALIDATION_v59.8.txt for static and headless interaction checks.
-Identity, Firebase and Netlify runtime behavior must still be tested on a Deploy Preview.
+Read VALIDATION_v59.9.txt for automated checks.
+Identity, Firebase broadcasting, responsive layout and cross-browser interaction must still be tested on a Netlify Deploy Preview.

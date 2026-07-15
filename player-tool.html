@@ -415,6 +415,178 @@
         // DATA: CARTAS DE DOMINIO
         const DOMAIN_CARDS = VF_CANON.domainCards || {};
 
+        const FEATURE_REGISTRY = VF_CANON.featureRegistry || [];
+        const CORE_FEATURES = VF_CANON.features || [];
+        const WEAPON_CATALOG = VF_CANON.weapons || [];
+        const normalizeRuleName = (value) => String(value || '').toLowerCase().replace(/[+()]|\d+/g, ' ').replace(/[^a-z]+/g, ' ').trim();
+        const weaponKey = (weapon) => String((weapon && (weapon.canonicalId || weapon.id || weapon.name)) || '').trim();
+        const findCanonicalWeapon = (weapon) => {
+          const key = weaponKey(weapon);
+          const name = String((weapon && weapon.name) || '').trim().toLowerCase();
+          return WEAPON_CATALOG.find(item => item.id === key || (name && String(item.name || '').trim().toLowerCase() === name)) || null;
+        };
+        const featureList = (value) => {
+          if (Array.isArray(value)) return value.filter(Boolean).map(String);
+          return String(value || '').split(/[,;]+/).map(x => x.trim()).filter(Boolean);
+        };
+        const hydratePlayerWeapon = (weapon) => {
+          weapon = weapon || {};
+          const canonical = findCanonicalWeapon(weapon);
+          const source = canonical || weapon;
+          let trait = String(weapon.trait || source.trait || '').trim();
+          let range = String(weapon.range || source.range || '').trim();
+          if (!range && trait.indexOf('·') !== -1) {
+            const parts = trait.split('·').map(x => x.trim());
+            trait = parts.shift() || '';
+            range = parts.join(' · ');
+          }
+          const features = featureList((weapon.features && weapon.features.length) ? weapon.features : (weapon.feature || source.features || source.feature));
+          return {
+            ...weapon,
+            id: (canonical && canonical.id) || weapon.id || weapon.canonicalId || '',
+            canonicalId: (canonical && canonical.id) || weapon.canonicalId || weapon.id || '',
+            name: weapon.name || source.name || '',
+            trait: trait || source.trait || '',
+            range: range || source.range || '',
+            damage: weapon.damage || source.damage || '',
+            features: features.length ? features : featureList(source.features),
+            feature: (features.length ? features : featureList(source.features)).join(', '),
+            featureRefs: (canonical && canonical.featureRefs) || weapon.featureRefs || [],
+            tier: (canonical && canonical.tier) || weapon.tier || null,
+            pack: (canonical && canonical.pack) || weapon.pack || '',
+            burden: canonical && canonical.burden != null ? canonical.burden : weapon.burden,
+            weaponFamily: (canonical && canonical.weaponFamily) || weapon.weaponFamily || '',
+            proficiencyDie: (canonical && canonical.proficiencyDie) || weapon.proficiencyDie || ''
+          };
+        };
+        const findFeatureRule = (display, ref) => {
+          const id = ref && ref.id;
+          if (id) {
+            const byId = FEATURE_REGISTRY.find(rule => rule.id === id && (!rule.appliesTo || rule.appliesTo.indexOf('weapon') !== -1));
+            if (byId) return byId;
+          }
+          const wanted = normalizeRuleName(display || (ref && ref.display));
+          const registry = FEATURE_REGISTRY.find(rule => (!rule.appliesTo || rule.appliesTo.indexOf('weapon') !== -1) && normalizeRuleName(rule.name) === wanted);
+          if (registry) return registry;
+          const simple = CORE_FEATURES.find(rule => normalizeRuleName(rule.name) === wanted);
+          return simple ? { ...simple, effect: simple.definition, timing: 'Passive', cost: { type: 'none' } } : null;
+        };
+        const weaponFeatureEntries = (weapon) => {
+          const hydrated = hydratePlayerWeapon(weapon);
+          const displays = featureList(hydrated.features);
+          const refs = Array.isArray(hydrated.featureRefs) ? hydrated.featureRefs : [];
+          return displays.map((display, index) => {
+            const wanted = normalizeRuleName(display);
+            const ref = refs.find(item => normalizeRuleName(item.display) === wanted || (item.id && normalizeRuleName(item.id.split('.').pop()) === wanted)) || refs[index] || null;
+            return { display, ref, rule: findFeatureRule(display, ref), parameters: (ref && ref.parameters) || {} };
+          });
+        };
+        const conciseEffect = (entry) => {
+          if (!entry) return '';
+          const rule = entry.rule || {};
+          let effect = String(rule.effect || rule.definition || '').trim();
+          if (rule.resistance) {
+            const resistance = [rule.resistance.trait, rule.resistance.dc].filter(Boolean).join(' vs ');
+            if (resistance && effect.toLowerCase().indexOf(resistance.toLowerCase()) === -1) effect = resistance + '. ' + effect;
+          }
+          return effect || entry.display;
+        };
+        const weaponAttackProfile = (weapon, character, equipped) => {
+          const hydrated = hydratePlayerWeapon(weapon);
+          const entries = weaponFeatureEntries(hydrated);
+          let attackBonus = 0;
+          const attackBonuses = [];
+          const range = String(hydrated.range || '').toLowerCase();
+          entries.forEach(entry => {
+            const name = normalizeRuleName(entry.display);
+            if (name === 'reliable') { attackBonus += 1; attackBonuses.push('Reliable +1'); }
+            if (name === 'accurate' && (range.indexOf('far') !== -1)) { attackBonus += 1; attackBonuses.push('Accurate +1'); }
+          });
+          const heavy = entries.some(entry => normalizeRuleName(entry.display) === 'heavy');
+          const massive = entries.some(entry => normalizeRuleName(entry.display) === 'massive');
+          const brutal = entries.some(entry => normalizeRuleName(entry.display) === 'brutal');
+          const pairedEntries = entries.filter(entry => normalizeRuleName(entry.display) === 'paired');
+          const allEquipped = (equipped || []).map(hydratePlayerWeapon).filter(w => w.name);
+          const pairedWeapons = allEquipped.filter(w => weaponFeatureEntries(w).some(entry => normalizeRuleName(entry.display) === 'paired'));
+          let pairedBonus = 0;
+          if (pairedEntries.length && pairedWeapons.length >= 2) {
+            pairedWeapons.forEach(w => weaponFeatureEntries(w).forEach(entry => {
+              if (normalizeRuleName(entry.display) !== 'paired') return;
+              const fromParam = Number(entry.parameters && entry.parameters.bonus);
+              const fromText = Number((String(entry.display).match(/\+(\d+)/) || [])[1]);
+              pairedBonus = Math.max(pairedBonus, Number.isFinite(fromParam) ? fromParam : (Number.isFinite(fromText) ? fromText : 0));
+            }));
+          }
+          return {
+            weapon: hydrated,
+            entries,
+            traitMod: Number(character && character.stats && character.stats[String(hydrated.trait || '').toLowerCase()]) || 0,
+            attackBonus,
+            attackBonuses,
+            heavyDisadvantage: heavy && (Number(character && character.stats && character.stats.strength) || 0) <= 0,
+            massive,
+            brutal,
+            pairedBonus,
+            evasionModifier: massive ? -1 : 0,
+            effects: entries.map(entry => ({ name: entry.display, timing: entry.rule && entry.rule.timing || '', effect: conciseEffect(entry), resistance: entry.rule && entry.rule.resistance || null }))
+          };
+        };
+        const ensureThreeExperiences = (list) => {
+          const out = (Array.isArray(list) ? list : []).map(exp => ({ description: String((exp && exp.description) || ''), bonus: Number(exp && exp.bonus) || 2 }));
+          while (out.length < 3) out.push({ description: '', bonus: 2 });
+          return out;
+        };
+        const parseFeatureCost = (text) => {
+          const source = String(text || '');
+          const match = source.match(/(?:spend|cost\s*:?|\()\s*(\d+)\s*(hope|effort|resolve|stress)\b/i);
+          if (!match) return null;
+          return { amount: Number(match[1]) || 0, resource: match[2].toLowerCase(), mode: match[2].toLowerCase() === 'stress' ? 'mark' : 'spend' };
+        };
+        const parseFeatureRolls = (text, fallbackTitle) => {
+          const source = String(text || '');
+          const actions = [];
+          const cost = parseFeatureCost(source);
+          const choice = source.match(/\b(Agility|Strength|Finesse|Instinct|Presence|Knowledge)\s+or\s+(Agility|Strength|Finesse|Instinct|Presence|Knowledge)(?:\s+Spellcast)?\s+(?:Reaction\s+)?Roll\s*(?:\(DC\s*(\d+)\))?/i);
+          if (choice) {
+            [choice[1], choice[2]].forEach(trait => actions.push({ type: 'roll', label: fallbackTitle || 'Feature roll', trait: trait.toLowerCase(), dc: choice[3] ? Number(choice[3]) : null, cost }));
+          }
+          const explicit = /\b(Agility|Strength|Finesse|Instinct|Presence|Knowledge)(?:\s+Spellcast)?\s+(?:Reaction\s+)?Roll\s*(?:\(DC\s*(\d+)\))?/ig;
+          let match;
+          while (!actions.length && (match = explicit.exec(source)) && actions.length < 2) {
+            actions.push({ type: 'roll', label: fallbackTitle || 'Feature roll', trait: match[1].toLowerCase(), dc: match[2] ? Number(match[2]) : null, cost });
+          }
+          if (!actions.length && /(?:roll your duality dice|duality roll|roll the duality dice)/i.test(source)) actions.push({ type: 'roll', label: fallbackTitle || 'Feature roll', trait: '', dc: null, cost });
+          const namedDie = source.match(/\broll\s+(?:(?:the|a|one|your)\s+)?(Fear|Hope)\s+die\b/i);
+          if (!actions.length && namedDie) actions.push({ type: 'die', label: fallbackTitle || 'Feature die', die: 12, dieName: namedDie[1], cost });
+          const explicitDie = source.match(/\broll\s+(?:(?:the|a|one|your)\s+)?(?:a\s+)?d(4|6|8|10|12|20)\b/i);
+          if (!actions.length && explicitDie) actions.push({ type: 'die', label: fallbackTitle || 'Feature die', die: Number(explicitDie[1]), dieName: `d${explicitDie[1]}`, cost });
+          if (!actions.length && cost) actions.push({ type: 'use', label: fallbackTitle || 'Use feature', cost });
+          return actions;
+        };
+        const compactFeature = (text, fallbackTitle) => {
+          const source = String(text || '').replace(/\r/g, '').trim();
+          if (!source) return { title: fallbackTitle, bullets: [], full: '', actions: [] };
+          const firstLine = source.split('\n').find(Boolean) || source;
+          let title = fallbackTitle;
+          const titleMatch = firstLine.match(/^([^:—]{2,70})(?::|\s+—\s+)/);
+          if (titleMatch) title = titleMatch[1].trim();
+          let normalized = source.replace(/\s+-\s+/g, '\n').replace(/([.!?])\s+(?=[A-Z])/g, '$1\n');
+          const rawLines = normalized.split(/\n+/).map(line => line.trim()).filter(Boolean);
+          const bullets = [];
+          rawLines.forEach(line => {
+            let cleaned = line.replace(/^[-•]\s*/, '').trim();
+            if (titleMatch && cleaned.indexOf(titleMatch[0]) === 0) cleaned = cleaned.slice(titleMatch[0].length).trim();
+            if (!cleaned || normalizeRuleName(cleaned) === normalizeRuleName(title)) return;
+            if (cleaned.length > 180) {
+              const clauses = cleaned.split(/;\s+|\.\s+/).filter(Boolean);
+              clauses.forEach(clause => { if (bullets.length < 5) bullets.push(clause.trim().replace(/[.]$/, '') + '.'); });
+            } else if (bullets.length < 5) bullets.push(cleaned);
+          });
+          if (!bullets.length) bullets.push(source.length > 220 ? source.slice(0, 217).trim() + '…' : source);
+          return { title, bullets: bullets.slice(0, 5), full: source, actions: parseFeatureRolls(source, title) };
+        };
+
+
         // Stable per-character id. Spotlight is keyed by this id (never by name) so that
         // multiple unnamed players can still be selected/highlighted individually.
         const mkCharId = () => 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -429,7 +601,10 @@
           evasion: 10, shields: 0, wealth: 1, credits: 0,
           playerNotes: '', savedNotes: [],
           inventory: Array(8).fill(''),
-          weapons: Array(3).fill({ name: '', trait: '', damage: '' }),
+          weapons: [],
+          weaponInventory: [],
+          weaponArsenal: [],
+          activeWeaponId: '',
           domainCards: []
         };
 
@@ -498,6 +673,11 @@
           const [showRoller, setShowRoller] = useState(false);
           const [showDiceTray, setShowDiceTray] = useState(false);
           const [showCardManager, setShowCardManager] = useState(false);
+          const [showWeaponManager, setShowWeaponManager] = useState(false);
+          const [weaponSearch, setWeaponSearch] = useState('');
+          const [weaponManagerView, setWeaponManagerView] = useState('arsenal');
+          const [showCustomWeaponForm, setShowCustomWeaponForm] = useState(false);
+          const [customWeaponDraft, setCustomWeaponDraft] = useState({ name:'', trait:'', range:'', damage:'', feature:'' });
           const [showHistory, setShowHistory] = useState(false); 
           const [selectedDomain, setSelectedDomain] = useState("Tech");
           
@@ -631,7 +811,24 @@
           const lastBroadcastIdRef = useRef(null);
           const listenerPrimedRef = useRef(false);
           
-          const normChar = (c) => { c = c || {}; return { ...c, stats: c.stats || {agility:0,strength:0,finesse:0,instinct:0,presence:0,knowledge:0}, hp: c.hp || {current:0,max:6}, stress: c.stress || {current:0,max:6}, hope: c.hope || {current:0,max:6}, effort: c.effort || {current:0,max:6}, resolve: c.resolve || {current:0,max:2}, thresholds: c.thresholds || {major:0,severe:0}, experiences: c.experiences || [], weapons: c.weapons || [{name:"",trait:"",damage:""},{name:"",trait:"",damage:""},{name:"",trait:"",damage:""}], inventory: c.inventory || [], domainCards: c.domainCards || [], moves: c.moves || [], augments: c.augments || [], drones: c.drones || [] }; };
+          const normChar = (c) => {
+            c = c || {};
+            const weapons = (Array.isArray(c.weapons) ? c.weapons : []).map(hydratePlayerWeapon).filter(w => w.name);
+            const storedArsenal = (Array.isArray(c.weaponArsenal) ? c.weaponArsenal : []).map(hydratePlayerWeapon).filter(w => w.name);
+            const inventoryIds = Array.from(new Set((Array.isArray(c.weaponInventory) ? c.weaponInventory : []).concat(storedArsenal.map(weaponKey), weapons.map(weaponKey)).filter(Boolean)));
+            const canonicalOwned = WEAPON_CATALOG.filter(item => inventoryIds.includes(weaponKey(item))).map(hydratePlayerWeapon);
+            const arsenalMap = new Map();
+            [...canonicalOwned, ...storedArsenal, ...weapons].forEach(item => { const key = weaponKey(item); if (key) arsenalMap.set(key, hydratePlayerWeapon(item)); });
+            const weaponArsenal = Array.from(arsenalMap.values());
+            const activeId = c.activeWeaponId && weapons.some(w => weaponKey(w) === c.activeWeaponId) ? c.activeWeaponId : (weapons[0] ? weaponKey(weapons[0]) : '');
+            return {
+              ...c,
+              stats: c.stats || {agility:0,strength:0,finesse:0,instinct:0,presence:0,knowledge:0},
+              hp: c.hp || {current:0,max:6}, stress: c.stress || {current:0,max:6}, hope: c.hope || {current:0,max:6}, effort: c.effort || {current:0,max:6}, resolve: c.resolve || {current:0,max:2}, thresholds: c.thresholds || {major:0,severe:0},
+              experiences: ensureThreeExperiences(c.experiences), weapons, weaponInventory: inventoryIds, weaponArsenal, activeWeaponId: activeId,
+              inventory: c.inventory || [], domainCards: c.domainCards || [], moves: c.moves || [], augments: c.augments || [], drones: c.drones || []
+            };
+          };
           const character = normChar(characters[activeTab] || characters[0] || {});
 
           // --- DRAGGING LOGIC ---
@@ -870,76 +1067,173 @@
               logRoll({ type:"note", label: label, outcome:"", outcomeColor:"", total:"", hope:"", fear:"", playerName: (character.name||character.playerName||"Player"), timestamp: Date.now() });
             }
           };
-          const rollDamage = (dmgStr, mult, bonus) => { if (!dmgStr) return null; mult=mult||1; bonus=bonus||0; var m=String(dmgStr).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i); if(!m) return null; var count=(parseInt(m[1]||'1',10)||1)*mult; var sides=parseInt(m[2],10); var mod=m[3]?parseInt(m[3].replace(/\s/g,''),10):0; var sum=0, rolls=[]; for(var k=0;k<count;k++){ var r=Math.floor(Math.random()*sides)+1; rolls.push(r); sum+=r; } var extra=mod+bonus; return { total: sum+extra, detail: rolls.join('+')+(extra?(extra>0?'+'+extra:extra):''), dice: count+'d'+sides, rolls: rolls, modifier: extra, base: String(dmgStr) }; };
+          const rollWeaponDamage = (dmgStr, mult, bonus, profile) => {
+              if (!dmgStr) return null;
+              mult = mult || 1; bonus = bonus || 0; profile = profile || {};
+              const match = String(dmgStr).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i);
+              if (!match) return null;
+              const baseCount = parseInt(match[1] || '1', 10) || 1;
+              const sides = parseInt(match[2], 10);
+              const keptCount = baseCount * mult;
+              const rolledCount = keptCount + (profile.massive ? 1 : 0);
+              const staticMod = match[3] ? parseInt(match[3].replace(/\s/g, ''), 10) : 0;
+              const rolls = [], rerolls = [];
+              for (let index = 0; index < rolledCount; index++) {
+                  const first = Math.floor(Math.random() * sides) + 1;
+                  let final = first;
+                  if (profile.brutal && first === 1) {
+                      final = Math.floor(Math.random() * sides) + 1;
+                      rerolls.push({ index, from: first, to: final });
+                  }
+                  rolls.push(final);
+              }
+              const keptRolls = rolls.slice();
+              const discardedIndices = [];
+              if (profile.massive && keptRolls.length > keptCount) {
+                  let lowest = 0;
+                  for (let i = 1; i < keptRolls.length; i++) if (keptRolls[i] < keptRolls[lowest]) lowest = i;
+                  discardedIndices.push(lowest);
+                  keptRolls.splice(lowest, 1);
+              }
+              const paired = Number(profile.pairedBonus) || 0;
+              const extra = staticMod + bonus + paired;
+              const sum = keptRolls.reduce((total, value) => total + value, 0);
+              const ruleParts = [];
+              if (profile.massive) ruleParts.push(`Massive: rolled ${rolledCount}d${sides}, discarded lowest`);
+              if (profile.brutal && rerolls.length) ruleParts.push(`Brutal: rerolled ${rerolls.length} result${rerolls.length === 1 ? '' : 's'} of 1`);
+              if (paired) ruleParts.push(`Paired +${paired}`);
+              return {
+                  total: sum + extra,
+                  detail: keptRolls.join('+') + (extra ? (extra > 0 ? '+' + extra : extra) : ''),
+                  dice: keptCount + 'd' + sides,
+                  rolledDice: rolledCount + 'd' + sides,
+                  rolls,
+                  keptRolls,
+                  discardedIndices,
+                  rerolls,
+                  modifier: extra,
+                  base: String(dmgStr),
+                  rules: ruleParts,
+                  modifierBreakdown: { weapon: staticMod, honed: bonus, paired }
+              };
+          };
           const traitModForWeapon = (traitStr) => { if (!traitStr) return 0; var tt=String(traitStr).toLowerCase(); var ks=['agility','strength','finesse','instinct','presence','knowledge']; for (var n=0;n<ks.length;n++){ if (tt.indexOf(ks[n])!==-1) return (parseInt(character.stats && character.stats[ks[n]], 10) || 0); } return 0; };
           const rollDuality = (opts) => {
               const o = (opts && typeof opts === 'object' && !opts.nativeEvent) ? opts : {};
-              const extraMod = (parseInt(o.extraMod, 10) || 0);
-              const lbl = (typeof o.label === 'string') ? o.label : rollLabel;
+              const profile = o.weapon ? weaponAttackProfile(o.weapon, character, character.weapons) : null;
+              const traitBonus = profile ? profile.traitMod : 0;
+              const featureAttackBonus = profile ? profile.attackBonus : 0;
+              const extraMod = (parseInt(o.extraMod, 10) || 0) + traitBonus + featureAttackBonus;
+              const lbl = (typeof o.label === 'string') ? o.label : (profile ? `Attack: ${profile.weapon.name}` : rollLabel);
               const hopeDie = (o.hopeDie != null) ? o.hopeDie : Math.floor(Math.random() * 12) + 1;
               const fearDie = (o.fearDie != null) ? o.fearDie : Math.floor(Math.random() * 12) + 1;
               const modVal = Math.max(-20, Math.min(20, parseInt(rollModifier, 10) || 0)) + extraMod;
+              let effectiveRollType = o.rollType || playerRollType;
+              if (profile && profile.heavyDisadvantage) {
+                  effectiveRollType = effectiveRollType === 'advantage' ? 'normal' : 'disadvantage';
+              }
               let extraDie = 0;
               let total = hopeDie + fearDie + modVal;
 
-              if (playerRollType === 'advantage') {
+              if (effectiveRollType === 'advantage') {
                   extraDie = Math.floor(Math.random() * 6) + 1;
                   total += extraDie;
-              } else if (playerRollType === 'disadvantage') {
+              } else if (effectiveRollType === 'disadvantage') {
                   extraDie = Math.floor(Math.random() * 6) + 1;
                   total -= extraDie;
               }
-              
-              let outcome = "";
-              let outcomeColor = "";
-              // ... existing spectrum logic ...
-               if (useSpectrum) {
-                  if (hopeDie === 1 && fearDie === 1) { outcome = "CLUMSY CRITICAL"; outcomeColor = "text-orange-500 animate-pulse"; } 
-                  else if (hopeDie === 12 && fearDie === 12) { outcome = "CRITICAL SUCCESS (Legendary)"; outcomeColor = "text-yellow-300 animate-pulse"; } 
-                  else if (hopeDie === fearDie) { outcome = "CRITICAL SUCCESS"; outcomeColor = "text-yellow-400"; } 
-                  else if (hopeDie > fearDie) { outcome = "WITH HOPE"; outcomeColor = "text-cyan-400"; } 
-                  else { outcome = "WITH FEAR"; outcomeColor = "text-purple-400"; }
+
+              let outcome = '';
+              let outcomeColor = '';
+              if (useSpectrum) {
+                  if (hopeDie === 1 && fearDie === 1) { outcome = 'CLUMSY CRITICAL'; outcomeColor = 'text-orange-500 animate-pulse'; }
+                  else if (hopeDie === 12 && fearDie === 12) { outcome = 'CRITICAL SUCCESS (Legendary)'; outcomeColor = 'text-yellow-300 animate-pulse'; }
+                  else if (hopeDie === fearDie) { outcome = 'CRITICAL SUCCESS'; outcomeColor = 'text-yellow-400'; }
+                  else if (hopeDie > fearDie) { outcome = 'WITH HOPE'; outcomeColor = 'text-cyan-400'; }
+                  else { outcome = 'WITH FEAR'; outcomeColor = 'text-purple-400'; }
               } else {
-                  if (hopeDie === fearDie) { outcome = "CRITICAL SUCCESS"; outcomeColor = "text-yellow-400"; } 
-                  else if (hopeDie > fearDie) { outcome = "WITH HOPE"; outcomeColor = "text-cyan-400"; } 
-                  else { outcome = "WITH FEAR"; outcomeColor = "text-purple-400"; }
+                  if (hopeDie === fearDie) { outcome = 'CRITICAL SUCCESS'; outcomeColor = 'text-yellow-400'; }
+                  else if (hopeDie > fearDie) { outcome = 'WITH HOPE'; outcomeColor = 'text-cyan-400'; }
+                  else { outcome = 'WITH FEAR'; outcomeColor = 'text-purple-400'; }
               }
 
-              var finalLabel = lbl;
-              var isCrit = outcome.indexOf('CRITICAL') !== -1;
-              var dmgTotal = null, dmgDetail = null, dmgDice = null, dmgRolls = null, dmgModifier = 0, dmgBase = null;
-              if (o.weaponDamage) {
-                  var honed = (character.path === 'sleeping') ? Math.max(0, (parseInt(character.level)||1) - 1) : 0;
-                  var dmgInfo = rollDamage(o.weaponDamage, isCrit ? 2 : 1, honed);
-                  if (dmgInfo) {
-                      dmgTotal = dmgInfo.total; dmgDetail = dmgInfo.detail; dmgDice = dmgInfo.dice;
-                      dmgRolls = dmgInfo.rolls; dmgModifier = dmgInfo.modifier; dmgBase = dmgInfo.base;
+              const isCrit = outcome.indexOf('CRITICAL') !== -1;
+              let dmgInfo = null;
+              const weaponDamage = profile ? profile.weapon.damage : o.weaponDamage;
+              if (weaponDamage) {
+                  const honed = (character.path === 'sleeping') ? Math.max(0, (parseInt(character.level) || 1) - 1) : 0;
+                  dmgInfo = rollWeaponDamage(weaponDamage, isCrit ? 2 : 1, honed, profile || {});
+              }
+              let charUpd = { ...character }; let charChanged = false;
+              if (o.spend && o.spend.resource) {
+                  const resource = o.spend.resource, amount = o.spend.amount || 1;
+                  if (charUpd[resource]) {
+                      const track = charUpd[resource];
+                      const shouldMark = o.spend.mode === 'mark' || resource === 'stress';
+                      const current = shouldMark ? Math.min(track.max || 99, (track.current || 0) + amount) : Math.max(0, (track.current || 0) - amount);
+                      charUpd = { ...charUpd, [resource]: { ...track, current } }; charChanged = true;
                   }
               }
-              var charUpd = {...character}; var charChanged = false;
-              if (o.spend && o.spend.resource) { var rk=o.spend.resource, amt=o.spend.amount||1; if (charUpd[rk]) { charUpd = {...charUpd, [rk]: {...charUpd[rk], current: Math.max(0, ((charUpd[rk].current)||0) - amt)}}; charChanged = true; } }
-              if (/FEAR/.test(outcome)) { pushFear((fear||0)+1); }
+              if (/FEAR/.test(outcome)) { pushFear((fear || 0) + 1); }
               else if (/HOPE|CRITICAL/.test(outcome)) {
-                  if (character.path === 'sleeping') { var ee = charUpd.effort || {current:0,max:6}; charUpd = {...charUpd, effort: {...ee, current: Math.min((ee.max||6), ((ee.current)||0)+1)}}; charChanged = true; }
-                  else { var hh = charUpd.hope || {current:0,max:6}; charUpd = {...charUpd, hope: {...hh, current: Math.min((hh.max||6), ((hh.current)||0)+1)}}; charChanged = true; }
+                  if (character.path === 'sleeping') { const effort = charUpd.effort || {current:0,max:6}; charUpd = {...charUpd, effort: {...effort, current: Math.min((effort.max||6), (effort.current||0)+1)}}; charChanged = true; }
+                  else { const hope = charUpd.hope || {current:0,max:6}; charUpd = {...charUpd, hope: {...hope, current: Math.min((hope.max||6), (hope.current||0)+1)}}; charChanged = true; }
               }
               if (charChanged) updateCharacter(charUpd);
-              const resultObj = { 
-                  hope: hopeDie, fear: fearDie, extra: extraDie, rollType: playerRollType,
-                  total, outcome, outcomeColor, modifier: modVal, label: finalLabel, damage: dmgTotal, damageDetail: dmgDetail,
-                  damageDice: dmgDice, damageRolls: dmgRolls, damageModifier: dmgModifier, damageBase: dmgBase, crit: isCrit, 
-                  playerName: character.name || character.playerName || "Unknown",
+              const attackBreakdown = profile ? [
+                  { label: profile.weapon.trait || 'Trait', value: traitBonus },
+                  ...profile.attackBonuses.map(item => ({ label: item.replace(/\s[+-]\d+$/, ''), value: Number((item.match(/([+-]\d+)$/) || [])[1]) || 0 }))
+              ] : [];
+              const resultObj = {
+                  hope: hopeDie, fear: fearDie, extra: extraDie, rollType: effectiveRollType,
+                  total, outcome, outcomeColor, modifier: modVal, label: lbl,
+                  damage: dmgInfo && dmgInfo.total, damageDetail: dmgInfo && dmgInfo.detail,
+                  damageDice: dmgInfo && dmgInfo.dice, damageRolledDice: dmgInfo && dmgInfo.rolledDice,
+                  damageRolls: dmgInfo && dmgInfo.rolls, damageKeptRolls: dmgInfo && dmgInfo.keptRolls,
+                  damageDiscardedIndices: dmgInfo && dmgInfo.discardedIndices, damageRerolls: dmgInfo && dmgInfo.rerolls,
+                  damageRules: dmgInfo && dmgInfo.rules, damageModifier: dmgInfo ? dmgInfo.modifier : 0,
+                  damageModifierBreakdown: dmgInfo && dmgInfo.modifierBreakdown, damageBase: dmgInfo && dmgInfo.base, crit: isCrit,
+                  weaponName: profile && profile.weapon.name, weaponTrait: profile && profile.weapon.trait,
+                  weaponRange: profile && profile.weapon.range, weaponFeatures: profile && profile.entries.map(entry => entry.display),
+                  weaponEffects: profile && profile.effects, attackBreakdown,
+                  playerName: character.name || character.playerName || 'Unknown',
                   type: 'duality', timestamp: Date.now()
               };
               setRollResult(resultObj);
-              setRollModifier(0); 
+              setRollModifier(0);
               logRoll(resultObj);
-
               setPlayerRollType('normal');
-              if (!pinned.player) {
-                  // Small delay to allow visual confirmation if looking at modal, but toast appears instantly
-                  setTimeout(() => setShowRoller(false), 150);
+              if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
+          };
+          const canPayFeatureCost = (cost) => {
+              if (!cost || !cost.resource || !cost.amount) return true;
+              const track = character[cost.resource];
+              if (!track) return true;
+              return cost.mode === 'mark' || cost.resource === 'stress' ? (track.current || 0) + cost.amount <= (track.max || 99) : (track.current || 0) >= cost.amount;
+          };
+          const executeFeatureAction = (featureKind, summary, action) => {
+              if (!action || !canPayFeatureCost(action.cost)) return;
+              const label = `${featureKind}: ${summary.title}${action.dc ? ` · DC ${action.dc}` : ''}`;
+              if (action.type === 'roll') {
+                  const mod = action.trait ? Number(character.stats && character.stats[action.trait]) || 0 : 0;
+                  rollDuality({ label, extraMod: mod, spend: action.cost || null });
+                  return;
               }
+              let next = { ...character };
+              if (action.cost && next[action.cost.resource]) {
+                  const track = next[action.cost.resource];
+                  const shouldMark = action.cost.mode === 'mark' || action.cost.resource === 'stress';
+                  const current = shouldMark ? Math.min(track.max || 99, (track.current || 0) + action.cost.amount) : Math.max(0, (track.current || 0) - action.cost.amount);
+                  next = { ...next, [action.cost.resource]: { ...track, current } };
+                  updateCharacter(next);
+              }
+              if (action.type === 'die') {
+                  const sides = Number(action.die) || 12;
+                  const value = Math.floor(Math.random() * sides) + 1;
+                  logRoll({ type:'generic', label, rolls:[value], die:sides, count:1, modifier:0, sum:value, total:value, feature:summary.title, dieName:action.dieName || `d${sides}`, resourceCost:action.cost || null, playerName: character.name || character.playerName || 'Player', timestamp: Date.now() });
+                  return;
+              }
+              logRoll({ type:'note', label, playerName: character.name || character.playerName || 'Player', timestamp: Date.now(), feature: summary.title, resourceCost: action.cost || null });
           };
 
           const openRollerWithStat = (statName, statValue) => {
@@ -1217,6 +1511,130 @@
           const handleStatChange = (stat, value) => updateCharacter(prev => ({ ...prev, stats: { ...prev.stats, [stat]: parseInt(value) || 0 } }));
           const handleExperienceChange = (index, field, value) => { const newExperiences = [...character.experiences]; newExperiences[index][field] = value; updateCharacter({ ...character, experiences: newExperiences }); };
 
+          const equippedWeapons = (character.weapons || []).map(hydratePlayerWeapon).filter(weapon => weapon.name);
+          const equippedKeys = new Set(equippedWeapons.map(weaponKey));
+          const arsenalMap = new Map();
+          (character.weaponArsenal || []).map(hydratePlayerWeapon).concat(equippedWeapons).forEach(weapon => { const key = weaponKey(weapon); if (key) arsenalMap.set(key, weapon); });
+          (character.weaponInventory || []).forEach(key => {
+            if (arsenalMap.has(key)) return;
+            const canonical = WEAPON_CATALOG.find(item => weaponKey(item) === key);
+            if (canonical) arsenalMap.set(key, hydratePlayerWeapon(canonical));
+          });
+          const arsenalWeapons = Array.from(arsenalMap.values()).sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')));
+          const arsenalKeys = new Set(arsenalWeapons.map(weaponKey));
+          const activeWeapon = equippedWeapons.find(weapon => weaponKey(weapon) === character.activeWeaponId) || equippedWeapons[0] || null;
+          const activeWeaponProfile = activeWeapon ? weaponAttackProfile(activeWeapon, character, equippedWeapons) : null;
+          const effectiveEvasion = (Number(character.evasion) || 0) + (activeWeaponProfile ? activeWeaponProfile.evasionModifier : 0);
+          const setActiveWeapon = (weapon) => updateCharacter({ ...character, activeWeaponId: weaponKey(weapon) });
+          const toggleWeaponEquip = (weapon) => {
+              const hydrated = hydratePlayerWeapon(weapon);
+              const key = weaponKey(hydrated);
+              const current = equippedWeapons.slice();
+              const exists = current.some(item => weaponKey(item) === key);
+              const nextWeapons = exists ? current.filter(item => weaponKey(item) !== key) : current.concat([hydrated]);
+              const nextArsenalMap = new Map(arsenalWeapons.map(item => [weaponKey(item), item]));
+              nextArsenalMap.set(key, hydrated);
+              const nextArsenal = Array.from(nextArsenalMap.values());
+              const nextInventory = nextArsenal.map(weaponKey).filter(Boolean);
+              const nextActive = exists && character.activeWeaponId === key ? (nextWeapons[0] ? weaponKey(nextWeapons[0]) : '') : (character.activeWeaponId || key);
+              updateCharacter({ ...character, weapons: nextWeapons, weaponInventory: nextInventory, weaponArsenal: nextArsenal, activeWeaponId: nextActive });
+          };
+          const removeWeaponFromArsenal = (weapon) => {
+              const key = weaponKey(weapon);
+              if (equippedKeys.has(key)) return;
+              const nextArsenal = arsenalWeapons.filter(item => weaponKey(item) !== key);
+              updateCharacter({ ...character, weaponInventory: nextArsenal.map(weaponKey), weaponArsenal: nextArsenal });
+          };
+          const addCustomWeapon = () => {
+              const name = String(customWeaponDraft.name || '').trim();
+              if (!name) return;
+              const custom = hydratePlayerWeapon({
+                id: 'custom:' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+                name, trait: customWeaponDraft.trait, range: customWeaponDraft.range,
+                damage: customWeaponDraft.damage, feature: customWeaponDraft.feature
+              });
+              const nextArsenal = arsenalWeapons.concat([custom]);
+              updateCharacter({
+                ...character,
+                weapons: equippedWeapons.concat([custom]),
+                weaponInventory: nextArsenal.map(weaponKey),
+                weaponArsenal: nextArsenal,
+                activeWeaponId: character.activeWeaponId || weaponKey(custom)
+              });
+              setCustomWeaponDraft({ name:'', trait:'', range:'', damage:'', feature:'' });
+              setShowCustomWeaponForm(false);
+          };
+          const normalizedWeaponSearch = String(weaponSearch || '').trim().toLowerCase();
+          const weaponManagerPool = weaponManagerView === 'catalog' ? WEAPON_CATALOG.map(hydratePlayerWeapon) : arsenalWeapons;
+          const filteredWeaponManagerPool = weaponManagerPool.filter(weapon => {
+            if (!normalizedWeaponSearch) return true;
+            return [weapon.name, weapon.trait, weapon.range, weapon.damage, featureList(weapon.features).join(' '), weapon.weaponFamily].join(' ').toLowerCase().includes(normalizedWeaponSearch);
+          });
+          const featureAccent = {
+            ancestry: { label:'Ancestry Gift', text:'text-amber-300', border:'border-amber-800/50', bg:'bg-amber-950/20' },
+            class: { label:'Class Feature', text:'text-emerald-300', border:'border-emerald-800/50', bg:'bg-emerald-950/20' },
+            community: { label:'Community Feature', text:'text-cyan-300', border:'border-cyan-800/50', bg:'bg-cyan-950/20' },
+            effort: { label: character.path === 'sleeping' ? 'Effort Feature' : 'Hope Feature', text:'text-purple-300', border:'border-purple-800/50', bg:'bg-purple-950/20' }
+          };
+          const FeatureSummaryCard = ({ kind, text }) => {
+              const [expanded, setExpanded] = useState(false);
+              const accent = featureAccent[kind] || featureAccent.class;
+              const summary = compactFeature(text, accent.label);
+              return (
+                <div className={`rounded border ${accent.border} ${accent.bg} p-2.5 min-w-0`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className={`text-[9px] font-black uppercase tracking-widest ${accent.text}`}>{accent.label}</div>
+                      <div className="text-[12px] font-bold text-slate-100 mt-0.5 leading-tight">{summary.title}</div>
+                    </div>
+                    {summary.full.length > 210 && <button onClick={() => setExpanded(value => !value)} className="shrink-0 px-2 py-1 rounded border border-slate-700 bg-slate-950 text-[9px] font-bold uppercase text-slate-400 hover:text-white hover:border-slate-500">{expanded ? 'Less' : 'Details'}</button>}
+                  </div>
+                  {!expanded ? (
+                    <ul className="mt-1.5 space-y-1 text-[10px] text-slate-300 leading-snug">
+                      {summary.bullets.map((bullet, index) => <li key={index} className="flex gap-1.5"><span className={accent.text}>◆</span><span>{bullet}</span></li>)}
+                    </ul>
+                  ) : <div className="mt-2 text-[10px] text-slate-300 leading-relaxed whitespace-pre-line">{summary.full}</div>}
+                  {summary.actions.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-slate-800/70">
+                      {summary.actions.map((action, index) => {
+                        const cost = action.cost;
+                        const disabled = !canPayFeatureCost(cost);
+                        const costLabel = cost ? `${cost.amount} ${cost.resource}` : '';
+                        const actionLabel = action.type === 'roll' ? `Roll${action.trait ? ' ' + action.trait : ''}${action.dc ? ' · DC ' + action.dc : ''}` : action.type === 'die' ? `Roll ${action.dieName || ('d' + action.die)}` : 'Use';
+                        return <button key={index} disabled={disabled} onClick={() => executeFeatureAction(accent.label, summary, action)} className={`px-2.5 py-1 rounded border text-[9px] font-black uppercase tracking-wide ${accent.text} border-slate-700 bg-slate-950 hover:border-slate-500 disabled:opacity-30 disabled:cursor-not-allowed`}><Zap className="w-3 h-3 inline mr-1" />{actionLabel}{costLabel ? ` · ${costLabel}` : ''}</button>;
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+          };
+          const WeaponCard = ({ weapon }) => {
+              const profile = weaponAttackProfile(weapon, character, equippedWeapons);
+              const key = weaponKey(profile.weapon);
+              const active = key === weaponKey(activeWeapon);
+              const traitName = profile.weapon.trait || 'No trait';
+              return (
+                <div onClick={() => setActiveWeapon(profile.weapon)} className={`rounded-lg border p-2.5 cursor-pointer transition-all ${active ? 'border-yellow-500/70 bg-yellow-950/20 shadow-[0_0_18px_rgba(234,179,8,0.08)]' : 'border-slate-800 bg-slate-950/45 hover:border-slate-600'}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap"><span className="text-xs font-black text-slate-100">{profile.weapon.name}</span>{active && <span className="px-1.5 py-0.5 rounded bg-yellow-500/15 border border-yellow-500/30 text-[8px] font-black text-yellow-300 uppercase">Active</span>}</div>
+                      <div className="flex flex-wrap gap-1 mt-1 text-[9px]">
+                        <span className="px-1.5 py-0.5 rounded border border-cyan-900/60 bg-cyan-950/30 text-cyan-300">{traitName} {profile.traitMod >= 0 ? '+' : ''}{profile.traitMod}</span>
+                        {profile.weapon.range && <span className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900 text-slate-400">{profile.weapon.range}</span>}
+                        <span className="px-1.5 py-0.5 rounded border border-red-900/50 bg-red-950/25 text-red-300">{profile.weapon.damage || 'No damage'}</span>
+                        {profile.attackBonus !== 0 && <span className="px-1.5 py-0.5 rounded border border-emerald-800/50 bg-emerald-950/20 text-emerald-300">Attack +{profile.attackBonus}</span>}
+                      </div>
+                    </div>
+                    <button onClick={(event) => { event.stopPropagation(); rollDuality({ weapon: profile.weapon }); }} className="shrink-0 px-2.5 py-1.5 rounded border border-yellow-500/50 bg-yellow-900/20 text-yellow-300 hover:bg-yellow-800/30 text-[9px] font-black uppercase"><Zap className="w-3 h-3 inline mr-1" />Attack</button>
+                  </div>
+                  {profile.entries.length > 0 && <div className="flex flex-wrap gap-1 mt-2">{profile.entries.map((entry, index) => <span key={index} title={conciseEffect(entry)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900 text-[8px] font-bold text-slate-300 cursor-help">{entry.display}</span>)}</div>}
+                  {active && profile.effects.length > 0 && <div className="mt-2 pt-2 border-t border-slate-800 space-y-1">{profile.effects.map((effect, index) => <div key={index} className="text-[9px] leading-snug text-slate-400"><span className="font-bold text-slate-200">{effect.name}:</span> {effect.effect}</div>)}</div>}
+                  {active && profile.heavyDisadvantage && <div className="mt-2 text-[9px] font-bold text-red-300">Heavy: attacks use Disadvantage while Strength is 0 or lower.</div>}
+                </div>
+              );
+          };
+
+
           // Helper UI Components
           const ResourceTrack = ({ label, current, max, cap, color, icon: Icon, onChange, tokenKey }) => { var total = cap || max; var tk = tokenKey || label.toLowerCase(); return ( <div className={`bg-slate-900/90 px-3 py-2 rounded border border-${color}-900/30 flex items-center justify-between shadow-sm h-full`}> <div className="flex items-center gap-2 mr-2 shrink-0" data-resicon={tk}> {Icon && <Icon className={`w-3 h-3 text-${color}-500`} />} <div className="flex flex-col leading-none"><label className={`text-[9px] font-bold uppercase text-${color}-400 tracking-wider`}>{label}</label><span className={`text-[9px] font-mono text-${color}-300 opacity-60`}>{current}/{max}</span></div> </div> <div className="flex gap-1 flex-wrap justify-end"> {Array.from({ length: total }).map((_, i) => { var active = i < max; var filled = i < current && !pending[tk + '-' + i]; return ( <button key={i} data-token={tk + '-' + i} disabled={!active} onClick={() => { if (active) onChange(i + 1 === current ? i : i + 1); }} className={`w-3 h-4 shrink-0 rounded-[1px] border transition-all duration-100 ${!active ? "bg-transparent border border-dashed border-slate-600 cursor-not-allowed" : (filled ? `bg-${color}-600 border-${color}-400` : `bg-slate-950 border-slate-800 hover:border-${color}-500/50`)}`} /> ); })} </div> </div> ); };
           const StatBlock = ({ label, statKey, skills, color }) => ( <div className="bg-slate-900/60 border-b border-slate-800/80 last:border-0 p-2 flex items-center gap-3 group hover:bg-slate-800/60 transition-colors cursor-pointer" onClick={() => openRollerWithStat(label, character.stats[statKey])}> <div className={`flex flex-col items-center justify-center min-w-[3rem]`}> <NumField onClick={(e) => e.stopPropagation()} className={`w-8 h-7 bg-slate-950 border border-slate-700 rounded text-center text-white font-bold text-lg leading-none focus:border-${color}-500 focus:outline-none`} value={character.stats[statKey]} onChange={(e) => handleStatChange(statKey, e.target.value)} /> <h3 onClick={(e) => { e.stopPropagation(); openRollerWithStat(label, character.stats[statKey]); }} title="Tap to roll" className={`font-bold text-${color}-500 uppercase text-[11px] sm:text-[9px] mt-1 tracking-tighter cursor-pointer select-none active:opacity-60 px-2 py-1 sm:p-0 -mx-2 sm:mx-0 rounded hover:bg-${color}-500/10`}>{label}</h3> </div> <div className="flex flex-wrap gap-1 content-center"> {skills.map(skill => (<span key={skill} className="px-1.5 py-0.5 bg-slate-800/50 text-slate-400 text-[9px] rounded uppercase font-medium border border-transparent hover:border-slate-700 cursor-default">{skill}</span>))} </div> </div> );
@@ -1320,11 +1738,12 @@
                                     <span className="text-[9px] text-red-400 font-bold uppercase tracking-wider">{broadcastRoll.damageDice || broadcastRoll.damageBase || 'Damage'}{broadcastRoll.damageModifier ? ` ${broadcastRoll.damageModifier > 0 ? '+' : ''}${broadcastRoll.damageModifier}` : ''}</span>
                                     {Array.isArray(broadcastRoll.damageRolls) && broadcastRoll.damageRolls.length > 0 && (
                                       <div className="flex flex-wrap justify-center gap-1 my-1">
-                                        {broadcastRoll.damageRolls.map((r, idx) => <ShapedDie key={idx} sides={parseInt((String(broadcastRoll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6} value={r} rolling={rolling} variant={r === 1 ? 'crit' : 'neutral'} />)}
+                                        {broadcastRoll.damageRolls.map((r, idx) => <span key={idx} className={(broadcastRoll.damageDiscardedIndices || []).includes(idx) ? 'opacity-30 line-through grayscale' : ''}><ShapedDie sides={parseInt((String(broadcastRoll.damageRolledDice || broadcastRoll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6} value={r} rolling={rolling} variant={r === 1 ? 'crit' : 'neutral'} /></span>)}
                                       </div>
                                     )}
                                     <span className="text-3xl font-black text-red-400 leading-none">{broadcastRoll.damage}</span>
                                     {broadcastRoll.damageDetail && <span className="text-[8px] text-red-300/70 font-mono">{broadcastRoll.damageDetail}{broadcastRoll.crit ? ' · critical damage' : ''}</span>}
+                                    {(broadcastRoll.damageRules || []).map((rule, index) => <span key={index} className="text-[8px] text-yellow-300/80 text-center">{rule}</span>)}
                                 </div>
                                 )}
                                 <div className="h-8 w-px bg-slate-700"></div>
@@ -1341,6 +1760,15 @@
                                     )}
                                 </div>
                             </div>
+                            {broadcastRoll.attackBreakdown && broadcastRoll.attackBreakdown.length > 0 && (
+                              <div className="flex flex-wrap gap-1 text-[8px]">{broadcastRoll.attackBreakdown.map((part, index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-slate-300">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>
+                            )}
+                            {broadcastRoll.weaponEffects && broadcastRoll.weaponEffects.length > 0 && (
+                              <div className="rounded border border-slate-700 bg-slate-950/60 p-2 space-y-1">
+                                <div className="text-[9px] font-black uppercase text-yellow-300">{broadcastRoll.weaponName || 'Weapon'} effects</div>
+                                {broadcastRoll.weaponEffects.map((effect, index) => <div key={index} className="text-[9px] text-slate-300 leading-snug"><span className="font-bold text-white">{effect.name}</span>{effect.timing ? ` · ${effect.timing}` : ''}: {effect.effect}</div>)}
+                              </div>
+                            )}
                             {broadcastRoll.rollType !== 'normal' && broadcastRoll.extra && (
                                 <div className="flex items-center gap-2 bg-slate-950/50 p-1 rounded">
                                     <span className={`text-[9px] font-bold uppercase ${broadcastRoll.rollType === 'advantage' ? 'text-green-400' : 'text-red-400'}`}>
@@ -1573,11 +2001,18 @@
                                        <div>
                                          <div className="text-[9px] text-red-400 font-bold uppercase">Damage · {roll.damageDice || roll.damageBase || 'weapon'}{roll.damageModifier ? ` ${roll.damageModifier > 0 ? '+' : ''}${roll.damageModifier}` : ''}</div>
                                          <div className="flex flex-wrap gap-1 mt-1">
-                                           {(roll.damageRolls || []).map((r, i) => <span key={i} className="w-5 h-5 flex items-center justify-center bg-red-950/50 border border-red-900 rounded text-[9px] font-bold text-red-300">{r}</span>)}
+                                           {(roll.damageRolls || []).map((r, i) => <span key={i} className={`w-5 h-5 flex items-center justify-center bg-red-950/50 border border-red-900 rounded text-[9px] font-bold text-red-300 ${(roll.damageDiscardedIndices || []).includes(i) ? 'opacity-30 line-through grayscale' : ''}`}>{r}</span>)}
                                          </div>
                                          {roll.damageDetail && <div className="text-[8px] text-slate-500 font-mono mt-1">{roll.damageDetail}{roll.crit ? ' · critical' : ''}</div>}
+                                         {(roll.damageRules || []).map((rule, index) => <div key={index} className="text-[8px] text-yellow-300/70 mt-0.5">{rule}</div>)}
                                        </div>
                                        <div className="text-xl font-black text-red-400">{roll.damage}</div>
+                                     </div>
+                                   )}
+                                   {roll.attackBreakdown && roll.attackBreakdown.length > 0 && <div className="mt-2 flex flex-wrap gap-1">{roll.attackBreakdown.map((part, index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-800 bg-slate-950 text-[8px] text-slate-400">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>}
+                                   {roll.weaponEffects && roll.weaponEffects.length > 0 && (
+                                     <div className="mt-2 pt-2 border-t border-slate-800 space-y-1">
+                                       {roll.weaponEffects.map((effect, index) => <div key={index} className="text-[8px] text-slate-400 leading-snug"><span className="font-bold text-slate-200">{effect.name}</span>{effect.timing ? ` · ${effect.timing}` : ''}: {effect.effect}</div>)}
                                      </div>
                                    )}
                                  </div>
@@ -1755,6 +2190,66 @@
                    </div>
               )}
 
+              {/* WEAPON LOADOUT MANAGER */}
+              {showWeaponManager && (
+                <div className="fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-3 md:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowWeaponManager(false); }}>
+                  <div className="bg-slate-900 border border-yellow-700/50 rounded-xl w-[96vw] max-w-6xl h-[88vh] flex flex-col min-w-0 shadow-2xl overflow-hidden">
+                    <header className="p-3 md:p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between bg-slate-950">
+                      <div>
+                        <h2 className="text-lg font-black text-white flex items-center gap-2"><Zap className="text-yellow-400" /> Weapon Loadout</h2>
+                        <p className="text-[10px] text-slate-500 mt-0.5">Keep any number in your arsenal. Equip several and select the active weapon from the sheet.</p>
+                      </div>
+                      <button onClick={() => setShowWeaponManager(false)} className="self-end sm:self-auto p-2 rounded border border-slate-700 bg-slate-900 text-slate-400 hover:text-white hover:border-slate-500" aria-label="Close weapon loadout"><X className="w-5 h-5" /></button>
+                    </header>
+                    <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex flex-col md:flex-row gap-2 md:items-center">
+                      <div className="flex gap-1 rounded-lg border border-slate-800 bg-black p-1 shrink-0">
+                        <button onClick={() => setWeaponManagerView('arsenal')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${weaponManagerView === 'arsenal' ? 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>Arsenal · {arsenalWeapons.length}</button>
+                        <button onClick={() => setWeaponManagerView('catalog')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${weaponManagerView === 'catalog' ? 'bg-cyan-500/15 border border-cyan-500/40 text-cyan-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>All Weapons · {WEAPON_CATALOG.length}</button>
+                      </div>
+                      <input value={weaponSearch} onChange={event => setWeaponSearch(event.target.value)} placeholder="Search name, trait, range or feature…" className="flex-grow min-w-0 bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500 placeholder-slate-600" />
+                      <button onClick={() => setShowCustomWeaponForm(value => !value)} className="px-3 py-2 rounded-lg border border-purple-700/60 bg-purple-950/20 text-purple-300 text-[10px] font-black uppercase hover:border-purple-500">{showCustomWeaponForm ? 'Cancel custom' : '+ Custom weapon'}</button>
+                    </div>
+                    {showCustomWeaponForm && (
+                      <div className="p-3 border-b border-purple-900/50 bg-purple-950/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
+                        {['name','trait','range','damage','feature'].map(field => <input key={field} value={customWeaponDraft[field]} onChange={event => setCustomWeaponDraft({ ...customWeaponDraft, [field]: event.target.value })} placeholder={field === 'feature' ? 'Features, comma separated' : field.charAt(0).toUpperCase() + field.slice(1)} className={`bg-black border border-slate-700 rounded px-2.5 py-2 text-xs text-white outline-none focus:border-purple-500 ${field === 'feature' ? 'sm:col-span-2 lg:col-span-2' : ''}`} />)}
+                        <button disabled={!String(customWeaponDraft.name || '').trim()} onClick={addCustomWeapon} className="px-3 py-2 rounded border border-purple-500/50 bg-purple-800/20 text-purple-200 text-[10px] font-black uppercase disabled:opacity-30">Add & equip</button>
+                      </div>
+                    )}
+                    <div className="flex-grow min-h-0 overflow-y-auto p-3 md:p-4 bg-slate-900">
+                      {filteredWeaponManagerPool.length ? (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
+                          {filteredWeaponManagerPool.map((rawWeapon, index) => {
+                            const weapon = hydratePlayerWeapon(rawWeapon);
+                            const key = weaponKey(weapon);
+                            const equipped = equippedKeys.has(key);
+                            const owned = arsenalKeys.has(key);
+                            const active = key === weaponKey(activeWeapon);
+                            const profile = weaponAttackProfile(weapon, character, equippedWeapons);
+                            return (
+                              <div key={key || index} className={`rounded-lg border p-3 ${active ? 'border-yellow-500/70 bg-yellow-950/15' : equipped ? 'border-cyan-700/50 bg-cyan-950/10' : 'border-slate-800 bg-slate-950/45'}`}>
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="min-w-0">
+                                    <div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{weapon.name}</span>{active && <span className="px-1.5 py-0.5 rounded border border-yellow-500/40 bg-yellow-500/10 text-[8px] text-yellow-300 font-black uppercase">Active</span>}{equipped && !active && <span className="px-1.5 py-0.5 rounded border border-cyan-600/40 bg-cyan-500/10 text-[8px] text-cyan-300 font-black uppercase">Equipped</span>}</div>
+                                    <div className="flex flex-wrap gap-1 mt-1.5 text-[9px]"><span className="px-1.5 py-0.5 rounded border border-cyan-900/60 text-cyan-300">{weapon.trait || 'No trait'} {profile.traitMod >= 0 ? '+' : ''}{profile.traitMod}</span>{weapon.range && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{weapon.range}</span>}<span className="px-1.5 py-0.5 rounded border border-red-900/60 text-red-300">{weapon.damage || 'No damage'}</span>{weapon.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{weapon.tier.name || weapon.tier}</span>}</div>
+                                    {profile.entries.length > 0 && <div className="flex flex-wrap gap-1 mt-2">{profile.entries.map((entry, i) => <span key={i} title={conciseEffect(entry)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900 text-[8px] font-bold text-slate-300 cursor-help">{entry.display}</span>)}</div>}
+                                  </div>
+                                  <div className="flex flex-col gap-1.5 shrink-0">
+                                    <button onClick={() => toggleWeaponEquip(weapon)} className={`px-2.5 py-1.5 rounded border text-[9px] font-black uppercase ${equipped ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-emerald-700/60 bg-emerald-950/20 text-emerald-300'}`}>{equipped ? 'Unequip' : 'Equip'}</button>
+                                    {equipped && !active && <button onClick={() => setActiveWeapon(weapon)} className="px-2.5 py-1.5 rounded border border-yellow-600/50 bg-yellow-950/20 text-yellow-300 text-[9px] font-black uppercase">Set active</button>}
+                                    {owned && !equipped && <button onClick={() => removeWeaponFromArsenal(weapon)} className="px-2.5 py-1 rounded border border-slate-800 text-slate-500 text-[8px] font-bold uppercase hover:text-red-300">Remove</button>}
+                                  </div>
+                                </div>
+                                {profile.effects.length > 0 && <div className="mt-2 pt-2 border-t border-slate-800 space-y-1">{profile.effects.slice(0,3).map((effect, i) => <div key={i} className="text-[9px] text-slate-400 leading-snug"><span className="font-bold text-slate-200">{effect.name}</span>{effect.timing ? ` · ${effect.timing}` : ''}: {effect.effect}</div>)}</div>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : <div className="h-full flex items-center justify-center text-sm text-slate-600 italic">No weapons match this view.</div>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* CARD MANAGER */}
               {showCardManager && (
                   <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
@@ -1880,7 +2375,7 @@
                          </div>
                        </div>
                        <div className="grid grid-cols-2 gap-2 h-24">
-                         <div className="bg-slate-900/60 rounded border border-slate-800 p-2 relative flex flex-col items-center justify-center"><div className="absolute top-1 left-2 text-[9px] text-slate-500 font-bold uppercase tracking-wider">Evasion</div><Shield className="w-12 h-12 text-slate-800 absolute opacity-30" /><NumField className="bg-transparent text-3xl font-black text-white text-center z-10 w-full outline-none" value={character.evasion} onChange={e => updateCharacter({...character, evasion: e.target.value})} /></div>
+                         <div className="bg-slate-900/60 rounded border border-slate-800 p-2 relative flex flex-col items-center justify-center"><div className="absolute top-1 left-2 text-[9px] text-slate-500 font-bold uppercase tracking-wider">Evasion</div>{activeWeaponProfile && activeWeaponProfile.evasionModifier !== 0 && <div title={`${activeWeaponProfile.weapon.name}: ${activeWeaponProfile.effects.find(effect => normalizeRuleName(effect.name) === 'massive')?.effect || 'weapon modifier'}`} className="absolute top-1 right-2 px-1.5 py-0.5 rounded border border-red-800/50 bg-red-950/30 text-[8px] font-black text-red-300">{activeWeaponProfile.evasionModifier > 0 ? '+' : ''}{activeWeaponProfile.evasionModifier} · {effectiveEvasion}</div>}<Shield className="w-12 h-12 text-slate-800 absolute opacity-30" /><NumField className="bg-transparent text-3xl font-black text-white text-center z-10 w-full outline-none" value={character.evasion} onChange={e => updateCharacter({...character, evasion: e.target.value})} /></div>
                          <div className="bg-slate-900/60 rounded border border-cyan-900/30 p-2 relative flex flex-col items-center justify-center"><div className="absolute top-1 left-2 text-[9px] text-cyan-600 font-bold uppercase tracking-wider" data-resicon="shields">Shields</div><Zap className="w-12 h-12 text-cyan-900 absolute opacity-30" /><div className="flex flex-wrap gap-1 justify-center items-center z-10 mt-3 max-w-[130px]">{Array.from({length:6}).map(function(_,i){ var filled = i < (character.shields||0) && !pending['shields-'+i]; return (<button key={i} data-token={"shields-"+i} onClick={() => updateCharacter({...character, shields: (i+1===(character.shields||0) ? i : i+1)})} title={"Shields "+(i+1)} style={{clipPath:"polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%)"}} className={"w-4 h-5 shrink-0 transition-all "+(filled ? "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)]" : "bg-slate-800 hover:bg-cyan-900/60")} />); })}</div></div>
                        </div>
                        
@@ -1925,15 +2420,19 @@
                          )}
                        </div>
                        
-                       {/* KIT: gifts / augments / drones (from creator import) */}
-                       {(character.ancestryGift || character.communityGift || character.features || (character.augments && character.augments.length) || (character.drones && character.drones.length) || character.classFeature) && (
-                         <div className="bg-slate-900/40 rounded border border-slate-800 p-2 text-[9px] text-slate-300 space-y-2">
-                           {character.ancestryGift && (<div><span className="text-amber-400 font-bold uppercase tracking-wider">Ancestry Gift</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.ancestryGift}</div></div>)}
-                           {character.classFeature && (<div><span className="text-emerald-400 font-bold uppercase tracking-wider">Class Feature</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.classFeature}</div></div>)}
-                           {character.communityGift && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Community Feature</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.communityGift}</div></div>)}
-                           {character.features && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">{character.path === 'sleeping' ? 'Effort Feature' : 'Hope Feature'}</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.features}</div></div>)}
-                           {character.augments && character.augments.length > 0 && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Augmentations</span>{character.augments.map((a,i)=>(<div key={i} className="text-slate-300 mt-0.5">{a.name} <span className="text-slate-400">{a.tier}</span> &middot; {a.benefit}</div>))}</div>)}
-                           {character.drones && character.drones.length > 0 && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">Drones</span>{character.drones.map((d,i)=>(<div key={i} className="text-slate-300 mt-0.5">{d.name} <span className="text-slate-400">{d.grade}</span> &middot; HP {d.hp} &middot; Ev {d.evasion}</div>))}</div>)}
+                       {/* OPERATIONAL FEATURES / KIT */}
+                       {(character.ancestryGift || character.communityGift || character.features || character.classFeature) && (
+                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+                           {character.ancestryGift && <FeatureSummaryCard kind="ancestry" text={character.ancestryGift} />}
+                           {character.classFeature && <FeatureSummaryCard kind="class" text={character.classFeature} />}
+                           {character.communityGift && <FeatureSummaryCard kind="community" text={character.communityGift} />}
+                           {character.features && <FeatureSummaryCard kind="effort" text={character.features} />}
+                         </div>
+                       )}
+                       {((character.augments && character.augments.length) || (character.drones && character.drones.length)) && (
+                         <div className="bg-slate-900/40 rounded border border-slate-800 p-2 text-[9px] text-slate-300 grid grid-cols-1 xl:grid-cols-2 gap-2">
+                           {character.augments && character.augments.length > 0 && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Augmentations</span>{character.augments.map((a,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{a.name}</span> <span className="text-slate-500">{a.tier}</span><div className="text-slate-400 leading-snug">{a.benefit}</div></div>))}</div>)}
+                           {character.drones && character.drones.length > 0 && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">Drones</span>{character.drones.map((d,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{d.name}</span> <span className="text-slate-500">{d.grade}</span> · HP {d.hp} · Ev {d.evasion}</div>))}</div>)}
                          </div>
                        )}
 
@@ -1994,17 +2493,13 @@
                          </div>
                        </div>
                        <div className="bg-slate-900/40 rounded border border-slate-800 p-2">
-                         <h2 className="text-[9px] font-bold uppercase text-slate-500 mb-2 flex items-center gap-1 tracking-wider"><Zap className="w-3 h-3 text-yellow-500" /> Weapons</h2>
+                         <div className="flex items-center justify-between gap-2 mb-2">
+                           <div><h2 className="text-[9px] font-bold uppercase text-slate-500 flex items-center gap-1 tracking-wider"><Zap className="w-3 h-3 text-yellow-500" /> Weapons</h2><div className="text-[8px] text-slate-600 mt-0.5">{equippedWeapons.length} equipped · {arsenalWeapons.length} in arsenal</div></div>
+                           <button onClick={() => setShowWeaponManager(true)} className="px-2.5 py-1 rounded border border-yellow-600/40 bg-yellow-950/20 text-yellow-300 text-[9px] font-black uppercase hover:border-yellow-500">Loadout</button>
+                         </div>
                          <div className="space-y-2">
-                           {(character.weapons || []).map((wpn, i) => (
-                             <div key={i} className="flex flex-col gap-1 pb-2 border-b border-slate-800/50 last:border-0 last:pb-0">
-                               <input type="text" placeholder="Weapon Name" className="bg-transparent font-bold text-slate-200 text-xs outline-none placeholder-slate-700" value={wpn.name} onChange={e => {const w = [...character.weapons]; w[i].name = e.target.value; updateCharacter({...character, weapons: w})}} />
-                               <div className="flex gap-1">
-                                 <input type="text" placeholder="Traits" className="bg-slate-950/50 text-[9px] px-1 py-0.5 rounded border border-slate-800 text-slate-400 flex-grow outline-none" value={wpn.trait} onChange={e => {const w = [...character.weapons]; w[i].trait = e.target.value; updateCharacter({...character, weapons: w})}} />
-                                 <input type="text" placeholder="Dmg" className="bg-slate-950/50 text-[9px] px-1 py-0.5 rounded border border-slate-800 text-yellow-500 w-12 text-center outline-none" value={wpn.damage} onChange={e => {const w = [...character.weapons]; w[i].damage = e.target.value; updateCharacter({...character, weapons: w})}} /><button onClick={() => rollDuality({label: 'Attack: ' + (wpn.name || 'Weapon'), extraMod: traitModForWeapon(wpn.trait), weaponDamage: wpn.damage})} title="Attack roll (adds trait)" className="px-1 bg-slate-950 border border-slate-700 rounded flex items-center justify-center shrink-0 hover:border-yellow-500 text-yellow-500"><Zap className="w-3 h-3" /></button>
-                               </div>
-                             </div>
-                           ))}
+                           {equippedWeapons.map(weapon => <WeaponCard key={weaponKey(weapon)} weapon={weapon} />)}
+                           {!equippedWeapons.length && <button onClick={() => setShowWeaponManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-4 text-[10px] text-slate-500 hover:border-yellow-600/60 hover:text-yellow-300">No weapon equipped. Open Loadout to equip one or more weapons.</button>}
                          </div>
                        </div>
                        <div className="bg-slate-900/40 rounded border border-slate-800 p-2 flex-grow">

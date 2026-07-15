@@ -41,6 +41,7 @@
     api.loadCollection('gear'),
     api.loadCollection('augments'),
     api.loadCollection('features'),
+    api.loadCollection('featureRegistry'),
     api.loadCollection('classes'),
     api.loadCollection('subclasses'),
     api.loadCollection('ancestries'),
@@ -48,9 +49,9 @@
     api.loadCollection('traits'),
     api.loadCollection('droneGrades'),
     api.loadCollection('droneModules')
-  ]).then(([manifest,powers,weapons,armor,gear,augments,features,classes,subclasses,ancestries,communities,traits,droneGrades,droneModules]) => {
+  ]).then(([manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,ancestries,communities,traits,droneGrades,droneModules]) => {
     const data = {
-      manifest,powers,weapons,armor,gear,augments,features,classes,subclasses,ancestries,communities,traits,droneGrades,droneModules,
+      manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,ancestries,communities,traits,droneGrades,droneModules,
       domainCards: domainCards(powers)
     };
     global.VF_CANONICAL_DATA = data;

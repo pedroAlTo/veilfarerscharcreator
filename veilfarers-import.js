@@ -3,6 +3,50 @@
 (function () {
   function num(v, d) { var n = parseInt(v, 10); return isNaN(n) ? (d || 0) : n; }
   function S(v) { return (v == null) ? '' : String(v); }
+  function featureNames(value) {
+    if (Array.isArray(value)) return value.filter(Boolean).map(S);
+    return S(value).split(/[,;]+/).map(function(x){ return x.trim(); }).filter(Boolean);
+  }
+  function findCanonicalWeapon(canonical, source) {
+    source = source || {};
+    var id = S(source.id || source.canonicalId);
+    var name = S(source.name).trim().toLowerCase();
+    return (canonical.weapons || []).find(function (weapon) {
+      if (id && weapon.id === id) return true;
+      return name && S(weapon.name).trim().toLowerCase() === name;
+    }) || null;
+  }
+  function hydrateWeapon(source, canonical) {
+    source = source || {};
+    var found = findCanonicalWeapon(canonical || {}, source);
+    var base = found || source;
+    var traits = S(source.trait || base.trait);
+    var range = S(source.range || base.range);
+    if (!range && traits.indexOf('·') !== -1) range = traits.split('·').slice(1).join('·').trim();
+    var featureList = featureNames(source.features && source.features.length ? source.features : (source.feature || base.features || base.feature));
+    if (!featureList.length && Array.isArray(base.features)) featureList = base.features.slice();
+    return {
+      id: S((found && found.id) || source.id || source.canonicalId),
+      canonicalId: S((found && found.id) || source.canonicalId || source.id),
+      name: S(source.name || base.name),
+      trait: S(source.trait || base.trait),
+      range: range,
+      damage: S(source.damage || base.damage),
+      features: featureList,
+      feature: featureList.join(', '),
+      featureRefs: (found && found.featureRefs) ? found.featureRefs : (source.featureRefs || []),
+      tier: (found && found.tier) ? found.tier : (source.tier || null),
+      pack: S((found && found.pack) || source.pack),
+      burden: found && found.burden != null ? found.burden : source.burden,
+      weaponFamily: S((found && found.weaponFamily) || source.weaponFamily),
+      proficiencyDie: S((found && found.proficiencyDie) || source.proficiencyDie)
+    };
+  }
+  function ensureThreeExperiences(list) {
+    var out = (list || []).map(function(exp){ return { description:S(exp && exp.description), bonus:num(exp && exp.bonus,2) }; });
+    while (out.length < 3) out.push({ description:'', bonus:2 });
+    return out;
+  }
 
   function importCreator(json, canonical) {
     if (!json || !json.fields) return null;
@@ -23,7 +67,7 @@
       var d = S(f[pre + i]);
       if (d) exps.push({ description: d, bonus: num(f[pre + i + '_bonus'], 2) });
     }
-    if (!exps.length) exps = [{ description: '', bonus: 2 }, { description: '', bonus: 2 }, { description: '', bonus: 2 }];
+    exps = ensureThreeExperiences(exps);
 
     // moves (sleeper): s_move_0..4 (name/text)
     var moves = [];
@@ -34,10 +78,9 @@
 
     // weapons
     var weapons = [
-      { name: S(f.wpri_name), trait: S(f.wpri_trait), damage: S(f.wpri_dmg_final || f.wpri_dmg), feature: S(f.wpri_feat) },
-      { name: S(f.wsec_name), trait: S(f.wsec_trait), damage: S(f.wsec_dmg_final || f.wsec_dmg), feature: S(f.wsec_feat) },
-      { name: '', trait: '', damage: '', feature: '' }
-    ];
+      hydrateWeapon({ name: S(f.wpri_name), trait: S(f.wpri_trait), damage: S(f.wpri_dmg_final || f.wpri_dmg), feature: S(f.wpri_feat) }, canonical),
+      hydrateWeapon({ name: S(f.wsec_name), trait: S(f.wsec_trait), damage: S(f.wsec_dmg_final || f.wsec_dmg), feature: S(f.wsec_feat) }, canonical)
+    ].filter(function(w){ return !!w.name; });
 
     // inventory: eq_0..7 names (+use)
     var inv = [];
@@ -115,6 +158,9 @@
       drones: drones,
       inventory: inv,
       weapons: weapons,
+      weaponInventory: weapons.map(function(w){ return w.canonicalId || w.id; }).filter(Boolean),
+      weaponArsenal: weapons.slice(),
+      activeWeaponId: weapons[0] ? (weapons[0].canonicalId || weapons[0].id || weapons[0].name) : '',
       domainCards: oldDomainCards
     };
   }
@@ -193,12 +239,13 @@
       thresholds: { major: num(thresholds.major, 4), severe: num(thresholds.severe, 8) },
       evasion: num(evasion, 10), shields: selectedArmor ? num(selectedArmor.armorSlots, 0) : 0,
       wealth: 1, credits: 0,
-      experiences: (raw.experiences || []).filter(Boolean).map(function (text) { return { description: S(text), bonus: 2 }; }),
+      experiences: ensureThreeExperiences((raw.experiences || []).map(function (text) { return { description: S(text), bonus: 2 }; })),
       playerNotes: [raw.appearance, raw.voice, raw.bgAnswer, raw.anchor, raw.wound].filter(Boolean).join('\n'),
       inventory: inventory,
-      weapons: selectedWeapons.map(function (weapon) {
-        return { id: weapon.id, canonicalId: weapon.id, name: weapon.name, trait: [weapon.trait, weapon.range].filter(Boolean).join(' · '), damage: weapon.damage || '', feature: (weapon.features || []).join(', ') };
-      }).concat([{ name:'', trait:'', damage:'' }]).slice(0,3),
+      weapons: selectedWeapons.map(function (weapon) { return hydrateWeapon(weapon, canonical); }),
+      weaponInventory: selectedWeapons.map(function(weapon){ return weapon.id; }),
+      weaponArsenal: selectedWeapons.map(function (weapon) { return hydrateWeapon(weapon, canonical); }),
+      activeWeaponId: selectedWeapons[0] ? selectedWeapons[0].id : '',
       armor: selectedArmor ? { id:selectedArmor.id, canonicalId:selectedArmor.id, name:selectedArmor.name, thresholds:selectedArmor.thresholds && selectedArmor.thresholds.raw || '', feature:(selectedArmor.features || []).join(', '), tier:selectedArmor.tier && selectedArmor.tier.name || '' } : null,
       ancestryGift: gifts.join('\n\n'), communityGift: communityFeature, classFeature: classFeature, features: pathLower === 'sleeping' ? '' : hopeFeature,
       moves: foundation ? [foundation] : [], domainCards: domainCards,
