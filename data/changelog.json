@@ -1,7 +1,18 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.7",
+  "currentVersion": "v59.8",
   "entries": [
+    {
+      "version": "v59.8",
+      "date": "2026-07-15",
+      "changes": [
+        "Restored the two Player Tool background assets that were omitted from the consolidated deployment package.",
+        "Added a fixed viewport-level Back/Next dock so character-creation progression remains available without scrolling.",
+        "Moved required Ailuran sub-strain and class subclass choices into custom in-app overlays; cancelling the overlay cancels the parent selection.",
+        "Redesigned trait assignment to support trait-first or value-first selection, direct swaps, drag-and-drop, progress feedback and reset.",
+        "Expanded starting Experiences from two to three and updated save, load, migration, validation and generated character-sheet output."
+      ]
+    },
     {
       "version": "v59.7",
       "date": "2026-07-15",
@@ -81,5 +92,5 @@
       ]
     }
   ],
-  "version": "v59.7"
+  "version": "v59.8"
 }

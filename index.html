@@ -524,6 +524,82 @@ html,body{
 }
 .validation-msg.visible{display:block;}
 
+
+/* Guided creator flow: one fixed action dock and custom dependent-choice overlay. */
+#creator-view .step-panel:not(#step-sheet) > .nav-row{display:none;}
+.wizard-dock{
+  position:fixed;right:24px;bottom:24px;z-index:85;
+  display:flex;align-items:center;gap:10px;padding:10px;
+  border:1px solid rgba(233,192,104,.42);border-radius:14px;
+  background:linear-gradient(145deg,rgba(30,27,21,.97),rgba(12,11,9,.97));
+  box-shadow:0 18px 54px rgba(0,0,0,.62),0 0 24px rgba(196,132,17,.12);
+  backdrop-filter:blur(18px);
+}
+.wizard-dock[hidden]{display:none!important;}
+.wizard-dock-status{min-width:134px;padding:0 7px;}
+.wizard-dock-step{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-3);}
+.wizard-dock-hint{font-size:11px;color:var(--text-dim);margin-top:3px;white-space:nowrap;}
+.wizard-dock .btn{min-height:44px;padding:10px 18px;justify-content:center;}
+.wizard-dock .btn[disabled]{opacity:.34;cursor:not-allowed;filter:grayscale(.55);transform:none;box-shadow:none;}
+.wizard-next.ready{box-shadow:0 0 0 1px rgba(248,231,168,.28),0 0 22px rgba(233,192,104,.26);}
+
+.choice-overlay{
+  position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;
+  padding:24px;background:rgba(3,3,3,.76);backdrop-filter:blur(12px);
+}
+.choice-overlay.open{display:flex;animation:choiceFade .18s ease-out;}
+@keyframes choiceFade{from{opacity:0}to{opacity:1}}
+.choice-dialog{
+  width:min(920px,100%);max-height:min(760px,calc(100vh - 48px));overflow:auto;
+  border:1px solid rgba(233,192,104,.45);border-radius:18px;
+  background:linear-gradient(155deg,#242016,#0f0e0b 72%);
+  box-shadow:0 32px 100px rgba(0,0,0,.78),0 0 42px rgba(196,132,17,.13);
+  padding:24px;
+  scrollbar-width:thin;scrollbar-color:var(--gold-3) rgba(12,11,9,.7);
+}
+.choice-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:18px;}
+.choice-head-copy{flex:1;}
+.choice-eyebrow{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-3);margin-bottom:6px;}
+.choice-title{font-family:"Cinzel",serif;font-size:20px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-1);}
+.choice-copy{font-size:12px;line-height:1.55;color:var(--text-dim);margin-top:7px;max-width:700px;}
+.choice-close{width:42px;height:42px;border-radius:10px;border:1px solid var(--border-gold);background:rgba(0,0,0,.25);color:var(--gold-2);font-size:20px;cursor:pointer;}
+.choice-close:hover{border-color:var(--gold-2);background:rgba(233,192,104,.08);}
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;}
+.choice-option{
+  appearance:none;text-align:left;border:1px solid var(--border-gold);border-radius:12px;
+  background:linear-gradient(145deg,var(--bg-card),rgba(18,16,12,.96));color:var(--text-bright);
+  padding:18px;cursor:pointer;transition:transform .16s,border-color .16s,background .16s;
+}
+.choice-option:hover,.choice-option:focus-visible{transform:translateY(-2px);border-color:var(--gold-2);outline:none;background:rgba(233,192,104,.08);}
+.choice-option-name{font-family:"Cinzel",serif;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-1);}
+.choice-option-tag{font-size:11px;color:var(--gold-3);font-style:italic;margin:4px 0 10px;}
+.choice-option-text{font-size:12px;line-height:1.5;color:var(--text-mid);}
+.choice-cancel-note{font-size:10px;color:var(--text-dim);text-align:center;margin-top:16px;}
+body.choice-open{overflow:hidden;}
+
+/* Trait assignment board. Supports value-first, trait-first, swapping and drag/drop. */
+.trait-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.trait-progress{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
+.trait-progress strong{color:var(--gold-2);}
+.trait-clear{border:1px solid var(--border-gold);border-radius:7px;background:transparent;color:var(--text-dim);padding:7px 11px;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
+.trait-clear:hover{color:var(--gold-2);border-color:var(--gold-3);}
+.array-chip{appearance:none;}
+.array-chip.selected-for-trait{box-shadow:0 0 0 2px var(--gold-2),0 0 18px rgba(233,192,104,.24);}
+.trait-row{appearance:none;width:100%;text-align:left;color:inherit;font:inherit;}
+.trait-row.focused{border-color:var(--gold-2)!important;box-shadow:0 0 0 1px rgba(233,192,104,.22),inset 0 0 24px rgba(233,192,104,.05);}
+.trait-row.drop-ready{border-style:dashed;border-color:var(--gold-2);}
+.trait-instruction{font-size:11px;color:var(--text-dim);margin:-7px 0 16px;}
+.trait-instruction strong{color:var(--gold-2);}
+
+@media(max-width:680px){
+  .wizard-dock{left:10px;right:10px;bottom:10px;justify-content:space-between;}
+  .wizard-dock-status{display:none;}
+  .wizard-dock .btn{flex:1;padding:10px 12px;font-size:10px;}
+  .choice-overlay{padding:10px;align-items:flex-end;}
+  .choice-dialog{max-height:88vh;border-radius:18px 18px 10px 10px;padding:18px;}
+  .choice-grid{grid-template-columns:1fr;}
+}
+
 /* Sheet */
 .sheet-wrapper{
   background:#fff;color:#1a1814;border-radius:16px;overflow:hidden;
@@ -836,11 +912,35 @@ html,body{
     <div class="step-nav-item" data-step="sheet"><span class="step-num">Sheet</span><span class="step-label">Character</span></div>
   </nav>
 
+  <div class="wizard-dock" id="wizard-dock" aria-live="polite">
+    <button class="btn btn-ghost" id="wizard-back" type="button">&larr; Back</button>
+    <div class="wizard-dock-status">
+      <div class="wizard-dock-step" id="wizard-dock-step">Step 1 of 9</div>
+      <div class="wizard-dock-hint" id="wizard-dock-hint">Choose an ancestry</div>
+    </div>
+    <button class="btn btn-primary wizard-next" id="wizard-next" type="button" disabled>Next: Community &rarr;</button>
+  </div>
+
+  <div class="choice-overlay" id="choice-overlay" aria-hidden="true">
+    <div class="choice-dialog" role="dialog" aria-modal="true" aria-labelledby="choice-title">
+      <div class="choice-head">
+        <div class="choice-head-copy">
+          <div class="choice-eyebrow" id="choice-eyebrow">Required choice</div>
+          <h3 class="choice-title" id="choice-title">Choose an option</h3>
+          <p class="choice-copy" id="choice-copy"></p>
+        </div>
+        <button class="choice-close" id="choice-close" type="button" aria-label="Cancel selection">&times;</button>
+      </div>
+      <div class="choice-grid" id="choice-grid"></div>
+      <div class="choice-cancel-note">Click outside this panel to cancel the parent selection.</div>
+    </div>
+  </div>
+
   <!-- STEP 1 -->
   <section class="step-panel active" id="step-1">
     <h2 class="step-heading">Step 1 &middot; Ancestry</h2>
     <p class="step-sub">Choose the body you walk through the galaxy in. Your ancestry grants two <strong>Ancestry Gifts</strong> and a complications table. Hover a card to inspect it.</p>
-    <div class="validation-msg" id="val-1">Please select an ancestry to continue.</div>
+    <div class="validation-msg" id="val-1">Select an ancestry and complete any required ancestry option.</div>
     <div class="card-deck" id="ancestry-deck"></div>
     <div id="substrain-section"></div>
     <div class="nav-row"><span></span><button class="btn btn-primary" onclick="goStep(2)">Next: Community &rarr;</button></div>
@@ -910,17 +1010,23 @@ html,body{
   <!-- STEP 5 -->
   <section class="step-panel" id="step-5">
     <h2 class="step-heading">Step 5 &middot; Experiences</h2>
-    <p class="step-sub">Choose two defining experiences from your past. Each starts at <strong>+2</strong> and can be invoked when relevant (spend 1 Hope or Effort) to add a flat bonus to a roll. Make them personal, applicable, and costly.</p>
+    <p class="step-sub">Choose <strong>three defining experiences</strong> from your past. Each starts at <strong>+2</strong> and can be invoked when relevant (spend 1 Hope or Effort) to add a flat bonus to a roll. Make them personal, applicable, and distinct.</p>
+    <div class="validation-msg" id="val-5">Complete all three experiences to continue.</div>
     <div class="experience-inputs">
       <div class="experience-item">
         <div class="experience-num">Experience 1 &middot; +2</div>
         <input class="exp-input" id="exp1" placeholder="e.g. I held the line at Titan Station for 72 hours, alone."/>
-        <div class="exp-hint">Specific and personal &mdash; a defining moment with a cost attached.</div>
+        <div class="exp-hint">A defining event: personal, specific, and paid for.</div>
       </div>
       <div class="experience-item">
         <div class="experience-num">Experience 2 &middot; +2</div>
         <input class="exp-input" id="exp2" placeholder="e.g. Frontier Scout &middot; Crimson Veil Survivor"/>
-        <div class="exp-hint">Broader and flexible &mdash; a skill or identity applicable across scene types.</div>
+        <div class="exp-hint">A practiced identity or field of expertise.</div>
+      </div>
+      <div class="experience-item">
+        <div class="experience-num">Experience 3 &middot; +2</div>
+        <input class="exp-input" id="exp3" placeholder="e.g. I know how corporate security thinks."/>
+        <div class="exp-hint">A relationship, reputation, survival lesson, or recurring edge.</div>
       </div>
     </div>
     <div class="nav-row">
@@ -1086,13 +1192,15 @@ const DOMAIN_COLORS = Object.freeze({
 let state = {
   ancestry:null, subStrain:null, community:null,
   path:null, cls:null, subclass:null,
-  traits:{}, experiences:["",""], affiliation:null,
+  traits:{}, experiences:["","",""], affiliation:null,
   veilAlignment:null, sleepingMysticDomains:[], powers:[],
   weapons:[], armors:[], kit:"",
   name:"",pronouns:"",appearance:"",voice:"",bgAnswer:"",anchor:"",wound:"",
   selectedArrayVal:null
 };
 let currentStep = 1;
+let selectedTraitId = null;
+let activeDependentChoice = null;
 
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c]);}
 
@@ -1187,25 +1295,71 @@ function renderAncestries(){
 
 /* ── RENDER: Sub-strain (Ailuran) ── */
 function renderSubStrain(){
+  // Required ancestry variants are presented in the viewport-level choice overlay.
+  // Keep this legacy mount empty so users never need to scroll below the ancestry cards.
   const sec=document.getElementById("substrain-section");
-  const anc=ANCESTRIES.find(a=>a.id===state.ancestry);
-  if(!anc || !anc.subStrains || !anc.subStrains.length){ sec.innerHTML=""; return; }
-  sec.innerHTML=`
-    <div class="substrain-box">
-      <h4>${esc(anc.name)} Sub-Strain</h4>
-      <p class="hint">${esc(anc.name)}s choose a sub-strain at character creation &mdash; an additional Gift on top of your two ancestry Gifts.</p>
-      <div class="substrain-grid">
-        ${anc.subStrains.map(s=>`
-          <div class="substrain-card${state.subStrain===s.id?" selected":""}" data-substrain="${s.id}">
-            <div class="substrain-name">${esc(s.name)}</div>
-            <div class="substrain-epithet">${esc(s.epithet)}</div>
-            <div class="substrain-feat"><strong>${esc(s.featName)}.</strong> ${esc(trim(s.featText,180))}</div>
-          </div>`).join("")}
-      </div>
-    </div>`;
-  sec.querySelectorAll(".substrain-card").forEach(el=>{
-    el.addEventListener("click",()=>{ state.subStrain=el.dataset.substrain; renderSubStrain(); });
-  });
+  if(sec) sec.innerHTML="";
+}
+
+function openDependentChoice(type){
+  const overlay=document.getElementById("choice-overlay");
+  const grid=document.getElementById("choice-grid");
+  const title=document.getElementById("choice-title");
+  const copy=document.getElementById("choice-copy");
+  const eyebrow=document.getElementById("choice-eyebrow");
+  if(!overlay||!grid)return;
+  activeDependentChoice=type;
+  if(type==="ancestry"){
+    const anc=ANCESTRIES.find(a=>a.id===state.ancestry);
+    if(!anc||!anc.subStrains||!anc.subStrains.length)return;
+    eyebrow.textContent="Ancestry option required";
+    title.textContent=`Choose ${anc.name} Sub-Strain`;
+    copy.textContent="This additional Gift is part of the ancestry choice. Select one to confirm the ancestry and unlock Next.";
+    grid.innerHTML=anc.subStrains.map(opt=>`<button type="button" class="choice-option" data-choice-kind="substrain" data-choice-id="${esc(opt.id)}"><div class="choice-option-name">${esc(opt.name)}</div><div class="choice-option-tag">${esc(opt.epithet)}</div><div class="choice-option-text"><strong>${esc(opt.featName)}.</strong> ${esc(opt.featText)}</div></button>`).join("");
+  }else if(type==="class"){
+    const cls=CLASSES.find(c=>c.id===state.cls);
+    if(!cls)return;
+    eyebrow.textContent="Class option required";
+    title.textContent=`Choose ${cls.name} Subclass`;
+    copy.textContent="Choose the specialization that defines your Level 1 Foundation. This selection stays in the same viewport; no scroll is required.";
+    grid.innerHTML=cls.subclasses.map(opt=>{const r=subclassPathRules(opt);return `<button type="button" class="choice-option" data-choice-kind="subclass" data-choice-id="${esc(opt.name)}"><div class="choice-option-name">${esc(opt.name)}</div><div class="choice-option-tag">${esc(r.epithet||opt.epithet)} · Spellcast ${esc(r.trait||opt.trait)}</div><div class="choice-option-text"><strong>${esc(r.foundation.name)}</strong> (${esc(r.foundation.type)}). ${esc(r.foundation.desc)}</div></button>`;}).join("");
+  }
+  overlay.classList.add("open");
+  overlay.setAttribute("aria-hidden","false");
+  document.body.classList.add("choice-open");
+  const first=grid.querySelector(".choice-option");
+  if(first)setTimeout(()=>first.focus(),40);
+}
+
+function closeDependentChoice(commit){
+  const overlay=document.getElementById("choice-overlay");
+  if(!commit){
+    if(activeDependentChoice==="ancestry"){
+      state.ancestry=null; state.subStrain=null;
+      if(state.community==="displaced-enclave")state.community=null;
+      renderAncestries();
+    }else if(activeDependentChoice==="class"){
+      state.cls=null; state.subclass=null; state.powers=[]; state.veilAlignment=null;
+      state.sleepingMysticDomains=[]; state.weapons=[]; state.armors=[];
+      renderClasses(); renderTraits(); updateBgQuestion();
+    }
+  }
+  activeDependentChoice=null;
+  if(overlay){overlay.classList.remove("open");overlay.setAttribute("aria-hidden","true");}
+  document.body.classList.remove("choice-open");
+  updateWizardDock();
+}
+
+function chooseDependentOption(kind,id){
+  if(kind==="substrain"){
+    state.subStrain=id;
+    renderAncestries();
+  }else if(kind==="subclass"){
+    state.subclass=id; state.powers=[];
+    renderClasses();
+  }
+  closeDependentChoice(true);
+  autosave();
 }
 
 /* ── RENDER: Community ── */
@@ -1261,12 +1415,10 @@ function renderClasses(){
 
 /* ── RENDER: Subclass ── */
 function renderSubclasses(){
-  const cls=CLASSES.find(c=>c.id===state.cls); if(!cls)return;
-  document.getElementById("subclass-section").style.display="block";
-  document.getElementById("subclass-title").textContent=cls.name+" Subclass";
-  const deck=document.getElementById("subclass-deck");
-  deck.innerHTML=cls.subclasses.map((s,i)=>{ const r=subclassPathRules(s); return `<div class="vl-card${state.subclass===s.name?" selected":""}" data-pick="subclass" data-id="${esc(s.name)}"><div class="vl-art" style="${artBg(s.themeColor||cls.color)}">${artImg("subclass/"+cls.id,i+1)}<span class="vl-art-icon">Subclass</span><span class="vl-checkmark">&#10003;</span><span class="vl-art-name" style="font-size:14px;">${esc(s.name)}</span></div><div class="vl-body"><div class="vl-tag">${esc(r.epithet||s.epithet)}</div><div class="vl-desc">${esc(trim(r.intro||s.intro,160))}</div><div class="vl-stats"><span class="vl-stat">Spellcast ${esc(r.trait||s.trait)}</span></div><div class="vl-feature"><div class="vl-feature-label">Foundation &middot; L1 &middot; ${esc(r.foundation.type)}</div><div class="vl-feature-name">${esc(r.foundation.name)}</div><div class="vl-feature-text">${esc(trim(r.foundation.desc,170))}</div></div></div><div class="sheen"></div><div class="frame"></div></div>`; }).join("");
-  attachAll3D(deck);
+  // Subclasses are selected in the viewport-level dependent-choice overlay.
+  // The original inline section remains in the DOM for compatibility but stays hidden.
+  const section=document.getElementById("subclass-section");
+  if(section)section.style.display="none";
 }
 
 /* ── RENDER: Affiliation ── */
@@ -1648,34 +1800,46 @@ function hideFeatTip(){
 
 /* ── Click delegation for cards ── */
 document.addEventListener("click",e=>{
+  const option=e.target.closest(".choice-option[data-choice-kind]");
+  if(option){chooseDependentOption(option.dataset.choiceKind,option.dataset.choiceId);return;}
+
   const card=e.target.closest(".vl-card[data-pick]");
   if(!card || card.classList.contains("disabled"))return;
   const key=card.dataset.pick, val=card.dataset.id;
   if(key==="ancestry"){
+    const anc=ANCESTRIES.find(a=>a.id===val);
     state.ancestry=val; state.subStrain=null;
     if(val!=="ailuran" && state.community==="displaced-enclave") state.community=null;
     renderAncestries(); renderSubStrain();
+    if(anc&&anc.subStrains&&anc.subStrains.length) openDependentChoice("ancestry");
   } else if(key==="community"){
     state.community=val; renderCommunities();
   } else if(key==="cls"){
+    if(!state.path){
+      const msg=document.getElementById("val-3");
+      if(msg){msg.textContent="Choose Awakened or Sleeping before selecting a class.";msg.classList.add("visible");}
+      document.getElementById("path-toggle")?.scrollIntoView({behavior:"smooth",block:"center"});
+      return;
+    }
     if(state.cls!==val){ state.cls=val; state.subclass=null; state.powers=[]; state.veilAlignment=null; state.sleepingMysticDomains=[]; state.weapons=[]; state.armors=[]; }
-    renderClasses(); renderSubclasses(); renderTraits(); updateBgQuestion();
-  } else if(key==="subclass"){
-    if(state.subclass!==val){ state.subclass=val; state.powers=[]; }
-    renderSubclasses();
+    renderClasses(); renderTraits(); updateBgQuestion();
+    openDependentChoice("class");
   } else if(key==="affiliation"){
     state.affiliation=val; renderAffiliations();
   }
+  updateWizardDock();
 });
 
 function selectPath(p){
+  const changed=state.path&&state.path!==p;
   state.path=p;
+  if(changed){state.cls=null;state.subclass=null;state.powers=[];state.veilAlignment=null;state.sleepingMysticDomains=[];state.weapons=[];state.armors=[];}
   document.querySelectorAll(".path-btn").forEach(b=>{
     b.className="path-btn"+(b.dataset.path===p?` sel-${p.toLowerCase()}`:"");
   });
   const anchor=document.getElementById("anchor-field");
   if(anchor) anchor.style.display=p==="Sleeping"?"block":"none";
-  if(state.cls){ renderClasses(); renderSubclasses(); renderTraits(); }
+  renderClasses(); renderTraits(); updateWizardDock();
 }
 
 /* ── Traits ── */
@@ -1683,50 +1847,84 @@ function renderTraits(){
   const cls=CLASSES.find(c=>c.id===state.cls);
   const active=classPathRules(cls);
   const spell=active?active.spellcastTrait.toLowerCase():null;
+  const assigned=Object.keys(state.traits).length;
   const pool=document.getElementById("array-pool");
-  pool.innerHTML='<span class="array-pool-label">Pool:</span>'+
+  pool.innerHTML=`<div class="trait-toolbar" style="width:100%"><div class="trait-progress"><strong>${assigned}/6</strong> traits assigned</div><button type="button" class="trait-clear" onclick="clearTraits()">Clear assignments</button></div><span class="array-pool-label">Available values:</span>`+
     ARRAY.map((v,i)=>{
       const totalCount=ARRAY.filter(x=>x===v).length;
       const usedCount=Object.values(state.traits).filter(x=>x===v).length;
       const used=usedCount>=totalCount;
       const c2=v>0?"positive":v<0?"negative":"";
-      const active=state.selectedArrayVal===i?" active":"";
-      return `<span class="array-chip${used?" used":active} ${c2}" data-idx="${i}" onclick="selectArrayVal(${i})">${v>=0?"+":""}${v}</span>`;
+      const activeChip=state.selectedArrayVal===i?" active":"";
+      const selectedForTrait=selectedTraitId!==null&&!used?" selected-for-trait":"";
+      return `<button type="button" class="array-chip${used?" used":activeChip}${selectedForTrait} ${c2}" data-idx="${i}" draggable="${!used}" onclick="selectArrayVal(${i})" ${used?"disabled":""}>${v>=0?"+":""}${v}</button>`;
     }).join("");
+
+  const instruction=document.getElementById("trait-instruction")||document.createElement("div");
+  instruction.id="trait-instruction";instruction.className="trait-instruction";
+  instruction.innerHTML=selectedTraitId?`Selected <strong>${esc(TRAITS.find(t=>t.id===selectedTraitId)?.name||selectedTraitId)}</strong>. Choose an available value, or click another trait to swap.`:state.selectedArrayVal!==null?`Value selected. Choose the trait that should receive it.`:`Choose a trait or a value first. Assigned traits can be selected and swapped directly.`;
+  if(!instruction.parentNode)pool.insertAdjacentElement("afterend",instruction);
+
   const grid=document.getElementById("trait-grid");
   grid.innerHTML=TRAITS.map(t=>{
     const val=state.traits[t.id];
     const disp=val!==undefined?(val>=0?"+":"")+val:"—";
     const col=val===undefined?"rgba(248,231,168,.25)":val>0?"#8fd48f":val<0?"#d48f8f":"var(--gold-1)";
     const isSpell=t.id===spell;
-    return `<div class="trait-row" style="${isSpell?"border-color:rgba(233,192,104,.5);":""}" onclick="assignTrait('${t.id}')">
-      <div style="flex:1">
-        <div class="trait-name">${t.name}${isSpell?' <span style="color:var(--gold-3);font-size:10px;">&#9733; Spellcast</span>':""}</div>
-        <div class="trait-desc">${t.desc}</div>
-      </div>
-      <div class="trait-val" style="color:${col}">${disp}</div>
-    </div>`;
+    return `<button type="button" class="trait-row${selectedTraitId===t.id?" focused":""}" data-trait-id="${t.id}" style="${isSpell?"border-color:rgba(233,192,104,.5);":""}" onclick="assignTrait('${t.id}')"><span style="flex:1"><span class="trait-name">${t.name}${isSpell?' <span style="color:var(--gold-3);font-size:10px;">&#9733; Spellcast</span>':""}</span><span class="trait-desc" style="display:block">${t.desc}</span></span><span class="trait-val" style="color:${col}">${disp}</span></button>`;
   }).join("");
+
+  pool.querySelectorAll(".array-chip:not([disabled])").forEach(chip=>{
+    chip.addEventListener("dragstart",ev=>{ev.dataTransfer.setData("text/plain",chip.dataset.idx);ev.dataTransfer.effectAllowed="move";});
+  });
+  grid.querySelectorAll(".trait-row").forEach(row=>{
+    row.addEventListener("dragover",ev=>{ev.preventDefault();row.classList.add("drop-ready");});
+    row.addEventListener("dragleave",()=>row.classList.remove("drop-ready"));
+    row.addEventListener("drop",ev=>{ev.preventDefault();row.classList.remove("drop-ready");assignValueToTrait(row.dataset.traitId,parseInt(ev.dataTransfer.getData("text/plain"),10));});
+  });
+  updateWizardDock();
 }
+
+function assignValueToTrait(tid,idx){
+  if(!Number.isInteger(idx)||idx<0||idx>=ARRAY.length)return;
+  const val=ARRAY[idx];
+  const old=state.traits[tid];
+  if(old===val){selectedTraitId=null;state.selectedArrayVal=null;renderTraits();return;}
+  const total=ARRAY.filter(x=>x===val).length;
+  const used=Object.entries(state.traits).filter(([id,v])=>id!==tid&&v===val);
+  if(used.length>=total)return;
+  state.traits[tid]=val;
+  selectedTraitId=null;state.selectedArrayVal=null;
+  renderTraits();autosave();
+}
+
 function selectArrayVal(idx){
   const val=ARRAY[idx];
   const used=Object.values(state.traits).filter(x=>x===val).length;
   const total=ARRAY.filter(x=>x===val).length;
   if(used>=total)return;
+  if(selectedTraitId){assignValueToTrait(selectedTraitId,idx);return;}
   state.selectedArrayVal=(state.selectedArrayVal===idx)?null:idx;
   renderTraits();
 }
+
 function assignTrait(tid){
-  if(state.selectedArrayVal===null)return;
-  const val=ARRAY[state.selectedArrayVal];
-  if(state.traits[tid]===val){ delete state.traits[tid]; state.selectedArrayVal=null; renderTraits(); return; }
-  if(state.traits[tid]!==undefined) delete state.traits[tid];
-  const total=ARRAY.filter(x=>x===val).length;
-  if(Object.values(state.traits).filter(x=>x===val).length>=total){
-    const rm=Object.entries(state.traits).find(([,v])=>v===val);
-    if(rm) delete state.traits[rm[0]];
+  if(state.selectedArrayVal!==null){assignValueToTrait(tid,state.selectedArrayVal);return;}
+  if(selectedTraitId===tid){selectedTraitId=null;renderTraits();return;}
+  if(selectedTraitId){
+    const a=state.traits[selectedTraitId],b=state.traits[tid];
+    if(a!==undefined){
+      if(b===undefined)delete state.traits[selectedTraitId];else state.traits[selectedTraitId]=b;
+      state.traits[tid]=a;
+      selectedTraitId=null;renderTraits();autosave();return;
+    }
   }
-  state.traits[tid]=val; state.selectedArrayVal=null; renderTraits();
+  selectedTraitId=tid;
+  renderTraits();
+}
+
+function clearTraits(){
+  state.traits={};state.selectedArrayVal=null;selectedTraitId=null;renderTraits();autosave();
 }
 
 function updateBgQuestion(){
@@ -1743,9 +1941,54 @@ const LEGACY_STORAGE_KEY="void"+"light-character";
 function autosave(){
   try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }catch(e){}
 }
+const STEP_META={
+  1:{next:"Next: Community →",hint:"Choose an ancestry"},
+  2:{next:"Next: Class →",hint:"Choose a community"},
+  3:{next:"Next: Traits →",hint:"Choose path, class and subclass"},
+  4:{next:"Next: Experiences →",hint:"Assign all six values"},
+  5:{next:"Next: Affiliation →",hint:"Write three experiences"},
+  6:{next:"Next: Domain Powers →",hint:"Choose an affiliation"},
+  7:{next:"Next: Equipment →",hint:"Complete your starting powers"},
+  8:{next:"Next: Details →",hint:"Choose weapon and armor"},
+  9:{next:"Generate Character Sheet →",hint:"Complete personal details"}
+};
+
+function isStepReady(step){
+  if(step===1){const anc=ANCESTRIES.find(a=>a.id===state.ancestry);return !!state.ancestry&&(!(anc&&anc.subStrains&&anc.subStrains.length)||!!state.subStrain);}
+  if(step===2)return !!state.community;
+  if(step===3)return !!(state.path&&state.cls&&state.subclass);
+  if(step===4)return Object.keys(state.traits).length===6;
+  if(step===5)return state.experiences.slice(0,3).every(x=>String(x||"").trim().length>0);
+  if(step===6)return !!state.affiliation;
+  if(step===7){if(state.path==="Sleeping"){if(state.cls==="mystic")return (state.sleepingMysticDomains||[]).length===2;return true;}return state.powers.length===2;}
+  if(step===8)return !!(state.weapons.length&&state.armors.length);
+  if(step===9)return true;
+  return false;
+}
+
+function updateWizardDock(){
+  const dock=document.getElementById("wizard-dock");
+  const creator=document.getElementById("creator-view");
+  const numeric=typeof currentStep==="number";
+  const visible=numeric&&creator&&getComputedStyle(creator).display!=="none";
+  if(!dock)return;
+  dock.hidden=!visible;
+  if(!visible)return;
+  const meta=STEP_META[currentStep]||STEP_META[1];
+  const back=document.getElementById("wizard-back");
+  const next=document.getElementById("wizard-next");
+  document.getElementById("wizard-dock-step").textContent=`Step ${currentStep} of 9`;
+  document.getElementById("wizard-dock-hint").textContent=meta.hint;
+  back.disabled=currentStep===1;
+  next.textContent=meta.next;
+  const ready=isStepReady(currentStep);
+  next.disabled=!ready;
+  next.classList.toggle("ready",ready);
+}
+
 function goStep(step){
-  if(step>currentStep && typeof currentStep==="number"){ if(!validateStep(currentStep))return; }
   saveInputs();
+  if(step>currentStep && typeof currentStep==="number" && !validateStep(currentStep))return;
   autosave();
   document.querySelectorAll(".step-panel").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".step-nav-item").forEach(ni=>{
@@ -1759,39 +2002,29 @@ function goStep(step){
   currentStep=step;
   window.scrollTo({top:0,behavior:"smooth"});
   if(step===2)renderCommunities();
-  if(step===3){renderClasses(); if(state.cls)renderSubclasses();}
+  if(step===3)renderClasses();
   if(step===4)renderTraits();
   if(step===6)renderAffiliations();
   if(step===7)renderPowers();
   if(step===8)renderEquipment();
   if(step===9)updateBgQuestion();
+  updateWizardDock();
 }
+
 function validateStep(step){
+  saveInputs();
   const show=id=>document.getElementById(id)&&document.getElementById(id).classList.add("visible");
   const hide=id=>document.getElementById(id)&&document.getElementById(id).classList.remove("visible");
-  if(step===1){ if(!state.ancestry){show("val-1");return false;} hide("val-1"); return true; }
-  if(step===2){ if(!state.community){show("val-2");return false;} hide("val-2"); return true; }
-  if(step===3){ if(!state.path||!state.cls||!state.subclass){show("val-3");return false;} hide("val-3"); return true; }
-  if(step===4){ if(Object.keys(state.traits).length<6){show("val-4");return false;} hide("val-4"); return true; }
-  if(step===6){ if(!state.affiliation){show("val-6");return false;} hide("val-6"); return true; }
-  if(step===7){
-    if(state.path==="Sleeping"){
-      if(state.cls==="mystic" && (!state.sleepingMysticDomains || state.sleepingMysticDomains.length!==2)){ show("val-7"); return false; }
-      hide("val-7"); return true;
-    }
-    if(state.powers.length!==2){ show("val-7"); return false; }
-    hide("val-7"); return true;
-  }
-  if(step===8){
-    if(!state.weapons.length||!state.armors.length){ show("val-8"); return false; }
-    hide("val-8"); return true;
-  }
-  return true;
+  const map={1:"val-1",2:"val-2",3:"val-3",4:"val-4",5:"val-5",6:"val-6",7:"val-7",8:"val-8"};
+  const valid=isStepReady(step);
+  if(map[step])valid?hide(map[step]):show(map[step]);
+  return valid;
 }
+
 function saveInputs(){
   const g=id=>{const e=document.getElementById(id);return e?e.value:null;};
-  const e1=g("exp1"),e2=g("exp2");
-  if(e1!==null)state.experiences[0]=e1; if(e2!==null)state.experiences[1]=e2;
+  ["exp1","exp2","exp3"].forEach((id,i)=>{const v=g(id);if(v!==null)state.experiences[i]=v;});
+  while(state.experiences.length<3)state.experiences.push("");
   const set=(id,key)=>{const v=g(id);if(v!==null)state[key]=v;};
   set("char-name","name"); set("char-pronouns","pronouns");
   set("char-appearance","appearance"); set("char-voice","voice");
@@ -1876,6 +2109,7 @@ function buildSheet(){
         <div class="sheet-section-title">Experiences</div>
         <div class="exp-row"><div class="exp-modifier">+2</div><div class="exp-text">${esc(state.experiences[0]||"—")}</div></div>
         <div class="exp-row"><div class="exp-modifier">+2</div><div class="exp-text">${esc(state.experiences[1]||"—")}</div></div>
+        <div class="exp-row"><div class="exp-modifier">+2</div><div class="exp-text">${esc(state.experiences[2]||"—")}</div></div>
         <div class="sheet-section-title" style="margin-top:16px;">Community</div>
         ${com?`<div class="feature-block">
           <div class="feature-block-name">${esc(com.name)} &middot; ${esc(com.feature.name)}</div>
@@ -1952,27 +2186,28 @@ function buildSheet(){
 
 function freshState(){
   return {ancestry:null,subStrain:null,community:null,path:null,cls:null,subclass:null,
-    traits:{},experiences:["",""],affiliation:null,veilAlignment:null,sleepingMysticDomains:[],powers:[],
+    traits:{},experiences:["","",""],affiliation:null,veilAlignment:null,sleepingMysticDomains:[],powers:[],
     weapons:[],armors:[],kit:"",
     name:"",pronouns:"",appearance:"",voice:"",bgAnswer:"",anchor:"",wound:"",selectedArrayVal:null};
 }
 function resetAll(){
   if(!confirm("Start a new character? Unsaved progress will be lost.")) return;
-  state=freshState();
+  state=freshState(); selectedTraitId=null; activeDependentChoice=null;
   try{ localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(LEGACY_STORAGE_KEY); }catch(e){}
   document.querySelectorAll(".path-btn").forEach(b=>b.className="path-btn");
   document.getElementById("substrain-section").innerHTML="";
   document.getElementById("subclass-section").style.display="none";
-  ["exp1","exp2","char-name","char-pronouns","char-appearance","char-voice","char-bg-answer","char-anchor","char-wound"].forEach(id=>{
+  ["exp1","exp2","exp3","char-name","char-pronouns","char-appearance","char-voice","char-bg-answer","char-anchor","char-wound"].forEach(id=>{
     const e=document.getElementById(id); if(e)e.value="";
   });
-  goStep(1); renderAncestries();
+  goStep(1); renderAncestries(); updateWizardDock();
 }
 
 /* ── Save / Load ── */
 function syncFieldsFromState(){
   const s=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v||"";};
-  s("exp1",state.experiences[0]); s("exp2",state.experiences[1]);
+  while(state.experiences.length<3)state.experiences.push("");
+  s("exp1",state.experiences[0]); s("exp2",state.experiences[1]); s("exp3",state.experiences[2]);
   s("char-name",state.name); s("char-pronouns",state.pronouns);
   s("char-appearance",state.appearance); s("char-voice",state.voice);
   s("char-bg-answer",state.bgAnswer); s("char-anchor",state.anchor); s("char-wound",state.wound);
@@ -2005,6 +2240,9 @@ function loadCharacterData(obj){
   if(typeof obj.armor==="string"&&obj.armor) fresh.armors=[obj.armor];
   if(!Array.isArray(fresh.weapons)) fresh.weapons=[];
   if(!Array.isArray(fresh.armors)) fresh.armors=[];
+  if(!Array.isArray(fresh.experiences)) fresh.experiences=[];
+  fresh.experiences=fresh.experiences.slice(0,3);
+  while(fresh.experiences.length<3)fresh.experiences.push("");
   fresh.weapons=fresh.weapons.filter(n=>WEAPONS.some(w=>w.name===n));
   fresh.armors=fresh.armors.filter(n=>ARMOR.some(a=>a.name===n));
   fresh.selectedArrayVal=null;
@@ -2075,11 +2313,26 @@ document.getElementById("step-nav").addEventListener("click",e=>{
 
 document.getElementById("load-file-input").addEventListener("change",handleLoadFile);
 
+document.getElementById("wizard-back").addEventListener("click",()=>{if(typeof currentStep==="number"&&currentStep>1)goStep(currentStep-1);});
+document.getElementById("wizard-next").addEventListener("click",()=>{
+  saveInputs();
+  if(!validateStep(currentStep)){updateWizardDock();return;}
+  if(currentStep===9)buildSheet();else goStep(currentStep+1);
+});
+const choiceOverlay=document.getElementById("choice-overlay");
+choiceOverlay.addEventListener("click",e=>{if(e.target===choiceOverlay)closeDependentChoice(false);});
+document.getElementById("choice-close").addEventListener("click",()=>closeDependentChoice(false));
+document.addEventListener("input",e=>{
+  if(e.target.closest("#creator-view")){saveInputs();updateWizardDock();}
+});
+document.addEventListener("click",()=>setTimeout(updateWizardDock,0));
+
 window.addEventListener("scroll",hideFeatTip,true);
 document.addEventListener("click",e=>{
   if(!e.target.closest(".feat-chip")) hideFeatTip();
 });
 document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&activeDependentChoice){closeDependentChoice(false);return;}
   if(e.key==="Escape") hideFeatTip();
 });
 
@@ -2263,6 +2516,7 @@ document.getElementById("mode-bar").addEventListener("click",e=>{
     renderLibTab(active?active.dataset.lib:"domains");
   }
   window.scrollTo({top:0,behavior:"smooth"});
+  updateWizardDock();
 });
 document.getElementById("lib-tabs").addEventListener("click",e=>{
   const t=e.target.closest(".lib-tab"); if(!t) return;
@@ -2332,6 +2586,8 @@ async function loadData(){
 (async function init(){
   await loadData();
   renderAncestries();
+  renderTraits();
+  updateWizardDock();
   tryResumeDraft();
 })();
 </script>
