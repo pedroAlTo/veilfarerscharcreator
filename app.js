@@ -1831,6 +1831,7 @@ function rollDuality() {
   dr.results = result;
   dr.rollHistory.unshift(result);
   if (dr.rollHistory.length > 10) dr.rollHistory.pop();
+  if (window.keeperBroadcastRoll) window.keeperBroadcastRoll(result);
   
   renderAll();
 }
@@ -1866,6 +1867,7 @@ function rollD20() {
   dr.results = result;
   dr.rollHistory.unshift(result);
   if (dr.rollHistory.length > 10) dr.rollHistory.pop();
+  if (window.keeperBroadcastRoll) window.keeperBroadcastRoll(result);
   
   renderDiceRoller('diceRoller');
   renderDiceRoller('fullDiceRoller');

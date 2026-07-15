@@ -1,7 +1,40 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.3",
+  "currentVersion": "v59.6",
   "entries": [
+    {
+      "version": "v59.6",
+      "date": "2026-07-15",
+      "changes": [
+        "Removed native horizontal scrollbar chrome from Player Tool controls and replaced portal navigation overflow with VeilFarers scroll buttons.",
+        "Added a shared application-owned scrollbar and control skin across portal pages.",
+        "Restored the full original Keeper and Player playtest questionnaire catalogue on the Feedback page while retaining direct Netlify Forms feedback.",
+        "Added current Netlify Identity admin-role assignment guidance to the Administration page."
+      ]
+    },
+    {
+      "version": "v59.5",
+      "date": "2026-07-15",
+      "changes": [
+        "Restored reliable table-wide roll callouts using unique broadcast event IDs instead of client-clock-only freshness checks.",
+        "Broadcast Keeper duality and d20 rolls from the main dice roller, in addition to damage and ability events.",
+        "Added explicit damage dice, individual results, modifiers and final totals to Player and Keeper roll histories.",
+        "Improved Firestore snapshot compatibility and duplicate-callout suppression across reconnects."
+      ]
+    },
+    {
+      "version": "v59.4",
+      "date": "2026-07-15",
+      "changes": [
+        "Restored the complete v58 character sheet and editable/print-ready physical PDF exports.",
+        "Added canonical Creator-to-sheet synchronization and retained legacy character JSON import.",
+        "Fixed ancestry, class and community feature import in Player Tool.",
+        "Fixed Domain Cards modal sizing and readability.",
+        "Replaced the invalid Advanced tech tier with Precursor.",
+        "Added Wealth Tier labels to all catalogue costs.",
+        "Unified Player and Keeper navigation and added a persistent Netlify Identity status button."
+      ]
+    },
     {
       "version": "v59.3",
       "date": "2026-07-15",
@@ -37,5 +70,6 @@
         "Added portal navigation and RC2 PDF downloads."
       ]
     }
-  ]
+  ],
+  "version": "v59.6"
 }

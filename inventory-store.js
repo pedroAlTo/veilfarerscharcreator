@@ -19,8 +19,8 @@
   }
   function add(item, amount=1){
     const state = read();
-    const current = state.entries[item.id] || { id:item.id, type:item.type, name:item.name, pack:item.pack, credits:item?.cost?.credits ?? null, quantity:0 };
-    current.name=item.name; current.type=item.type; current.pack=item.pack; current.credits=item?.cost?.credits ?? current.credits ?? null;
+    const current = state.entries[item.id] || { id:item.id, type:item.type, name:item.name, pack:item.pack, credits:item?.cost?.credits ?? null, wealthTier:(window.VeilFarersData&&window.VeilFarersData.wealthTierForCredits)?window.VeilFarersData.wealthTierForCredits(item?.cost?.credits):null, quantity:0 };
+    current.name=item.name; current.type=item.type; current.pack=item.pack; current.credits=item?.cost?.credits ?? current.credits ?? null; current.wealthTier=(window.VeilFarersData&&window.VeilFarersData.wealthTierForCredits)?window.VeilFarersData.wealthTierForCredits(current.credits):current.wealthTier||null;
     current.quantity = Math.max(0, Number(current.quantity || 0) + Number(amount || 0));
     if(current.quantity) state.entries[item.id] = current;
     else delete state.entries[item.id];

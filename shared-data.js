@@ -54,10 +54,33 @@
 
   function tierName(item){ return item?.tier?.name || item?.raw?.tier || 'Unrated'; }
   function tierRank(item){ return Number(item?.tier?.rank || 99); }
-  function credits(item){
-    const value = item?.cost?.credits;
-    return value === 0 || value ? String(value) : '—';
+  function creditValue(item){
+    const raw = item?.cost?.credits;
+    const value = Number(String(raw ?? '').replace(/[^0-9.\-]/g,''));
+    return Number.isFinite(value) ? value : null;
   }
+  function wealthTierForCredits(value){
+    const n = Number(value);
+    if(!Number.isFinite(n) || n < 0) return null;
+    const ladder = [1,4,9,16,25];
+    const exact = ladder.indexOf(n);
+    if(exact >= 0) return { tier: exact + 1, exact: true, ceiling: ladder[exact], fraction: '1' };
+    if(n === 0) return { tier: 0, exact: true, ceiling: 0, fraction: '0' };
+    const idx = ladder.findIndex(v => n < v);
+    const tier = idx < 0 ? 5 : idx + 1;
+    const ceiling = idx < 0 ? ladder[4] : ladder[idx];
+    const gcd = (a,b) => b ? gcd(b,a%b) : a;
+    const divisor = gcd(Math.round(n),ceiling) || 1;
+    return { tier, exact:false, ceiling, fraction:`${Math.round(n)/divisor}/${ceiling/divisor}` };
+  }
+  function costLabel(item){
+    const value = creditValue(item);
+    if(value === null) return '—';
+    const wt = wealthTierForCredits(value);
+    if(!wt || wt.tier === 0) return `${value} Cr`;
+    return wt.exact ? `${value} Cr (WT${wt.tier})` : `${value} Cr (${wt.fraction} WT${wt.tier})`;
+  }
+  function credits(item){ return costLabel(item); }
   function packLabel(pack){
     if(pack === 'core') return 'Core';
     if(pack === 'rust-and-steel') return 'Rust & Steel';
@@ -82,7 +105,7 @@
     manifest,
     tierName,
     tierRank,
-    credits,
+    credits, creditValue, wealthTierForCredits, costLabel,
     packLabel,
     escapeHtml,
     findById

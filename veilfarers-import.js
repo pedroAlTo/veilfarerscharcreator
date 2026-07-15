@@ -4,8 +4,9 @@
   function num(v, d) { var n = parseInt(v, 10); return isNaN(n) ? (d || 0) : n; }
   function S(v) { return (v == null) ? '' : String(v); }
 
-  function importCreator(json) {
-    if (!json || !json.fields) return null;               // not a creator export
+  function importCreator(json, canonical) {
+    if (!json || !json.fields) return null;
+    canonical = canonical || (typeof window !== 'undefined' ? window.VF_CANONICAL_DATA : null) || {};               // not a creator export
     var f = json.fields;
     var tracks = json.tracks || {};
     var maxT = (tracks.max || {});
@@ -68,6 +69,22 @@
 
     var thrMajor = num(f.thr_major, 8), thrSevere = num(f.thr_severe, 12);
 
+    var oldDomainCards = [];
+    for (var pc = 0; pc < 8; pc++) {
+      var powerName = S(f['a_pwr_' + pc + '_n']).trim();
+      if (!powerName) continue;
+      var domainField = S(f['a_pwr_' + pc + '_d']);
+      var domainName = domainField.split(/[·|]/)[0].trim();
+      var levelMatch = domainField.match(/L(?:VL)?\s*(\d+)/i);
+      var power = (canonical.powers || []).find(function(x){ return x.name === powerName && (!domainName || x.domain === domainName); });
+      if (power) {
+        var costMatch = String(power.cost || '').match(/(\d+)\s*Hope/i);
+        oldDomainCards.push({ id:power.id, canonicalId:power.id, domain:power.domain, level:num(power.level,1), name:power.name, cost:costMatch?num(costMatch[1],0):0, costText:power.cost||'—', type:power.powerType||'Ability', text:power.text||'', recallCost:power.recallCost||S(f['a_pwr_' + pc + '_rc'])||'—', tier:power.tier||'' });
+      } else {
+        oldDomainCards.push({ id:'legacy:'+domainName+':'+powerName, canonicalId:null, domain:domainName||'Unknown', level:levelMatch?num(levelMatch[1],1):1, name:powerName, cost:0, costText:'—', type:'Ability', text:'Imported from a previous VeilFarers character file.', recallCost:S(f['a_pwr_' + pc + '_rc'])||'—', tier:'' });
+      }
+    }
+
     return {
       name: S(f.name), playerName: '', pronouns: S(f.pron),
       heritage: S(f.ancestry) + (f.ailuran_variant ? (' (' + f.ailuran_variant + ')') : ''),
@@ -98,7 +115,7 @@
       drones: drones,
       inventory: inv,
       weapons: weapons,
-      domainCards: []
+      domainCards: oldDomainCards
     };
   }
 
@@ -149,12 +166,26 @@
     if (raw.kit) inventory.push(S(raw.kit));
     while (inventory.length < 8) inventory.push('');
 
+    var ancestryRules = ancestry && (ancestry.rules || ancestry) || {};
+    var communityRules = community && (community.rules || community) || {};
+    var classRulesFull = cls && (cls.rules || cls) || {};
+    var subclassRules = subclass && (subclass.rules || subclass) || {};
+    var gifts = (ancestryRules.gifts || []).map(function(g){ return [g.name,g.text].filter(Boolean).join(': '); });
+    if(ancestryRules.extra) gifts.push([ancestryRules.extra.name,ancestryRules.extra.text].filter(Boolean).join(': '));
+    var strain = (ancestryRules.subStrains || []).find(function(x){ return x.id === raw.subStrain || x.name === raw.subStrain; });
+    if(strain) gifts.push([strain.name, strain.featName, strain.featText].filter(Boolean).join(' · '));
+    var communityFeature = communityRules.feature ? [communityRules.feature.name, communityRules.feature.text].filter(Boolean).join(': ') : '';
+    var classFeature = classRulesFull.classFeature ? [classRulesFull.classFeature.name, classRulesFull.classFeature.text].filter(Boolean).join(': ') : '';
+    var pathLower = String(raw.path || '').toLowerCase();
+    var hopeFeature = classRulesFull.hopeFeature ? [classRulesFull.hopeFeature.name, classRulesFull.hopeFeature.text].filter(Boolean).join(': ') : '';
+    var foundation = subclassRules.foundation ? { name:[subclassRules.foundation.name,subclassRules.foundation.type].filter(Boolean).join(' · '), text:subclassRules.foundation.desc || subclassRules.foundation.text || '' } : null;
+
     return {
       name: S(raw.name), playerName: '', pronouns: S(raw.pronouns),
       heritage: ancestry ? ancestry.name : S(raw.ancestry),
       background: community ? community.name : S(raw.community),
       class: cls ? cls.name : S(raw.cls), subclass: subclass ? subclass.name : S(raw.subclass),
-      level: num(raw.level, 1), path: raw.path === 'sleeping' ? 'sleeping' : 'awakened',
+      level: num(raw.level, 1), path: pathLower === 'sleeping' ? 'sleeping' : 'awakened',
       stats: stats,
       hp: { current: 0, max: num(hp, 6) },
       stress: { current: 0, max: 6 }, hope: { current: 2, max: 6 }, effort: { current: 2, max: 6 },
@@ -169,7 +200,8 @@
         return { id: weapon.id, canonicalId: weapon.id, name: weapon.name, trait: [weapon.trait, weapon.range].filter(Boolean).join(' · '), damage: weapon.damage || '', feature: (weapon.features || []).join(', ') };
       }).concat([{ name:'', trait:'', damage:'' }]).slice(0,3),
       armor: selectedArmor ? { id:selectedArmor.id, canonicalId:selectedArmor.id, name:selectedArmor.name, thresholds:selectedArmor.thresholds && selectedArmor.thresholds.raw || '', feature:(selectedArmor.features || []).join(', '), tier:selectedArmor.tier && selectedArmor.tier.name || '' } : null,
-      domainCards: domainCards,
+      ancestryGift: gifts.join('\n\n'), communityGift: communityFeature, classFeature: classFeature, features: pathLower === 'sleeping' ? '' : hopeFeature,
+      moves: foundation ? [foundation] : [], domainCards: domainCards,
       creatorSource: { schema: 'veilfarers.creator-state/1', importedAt: new Date().toISOString() }
     };
   }

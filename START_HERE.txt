@@ -1,33 +1,59 @@
-VeilFarers Portal v59.3
+VeilFarers Portal v59.6
 ======================
 
-Deploy this folder directly to Netlify.
+Deploy the contents of this folder directly to Netlify. This build replaces v59.4.
 
 Canonical sources
 -----------------
-- /index.html and /data/: RC2 Character Creator + integrated Card Library.
-- /rules-data/: normalized 11.1-RC2-draft6 datasets used by all migrated portal modules.
-- /shared-data.js + /canonical-runtime.js: shared browser data adapter for Player and Keeper tools.
-- /download/: four 11.1 RC2 PDF candidates and the corrected downloads manifest.
+- /index.html and /data/: RC2 Character Creator with its integrated Card Library.
+- /rules-data/: normalized VeilFarers 11.1-RC2-draft6 rules datasets.
+- /shared-data.js and /canonical-runtime.js: shared canonical browser data adapters.
+- /charsheet.html: restored complete multi-face character sheet and PDF export workflow.
+- /download/: current 11.1 RC2 PDF candidates and the physical character-sheet PDF template.
 
 Services
 --------
-- Netlify Identity: account login, roles, RC2 character vault metadata, and Keeper Tool access.
-- Firebase / Firestore: real-time Player Tool / Keeper Tool sessions only.
-- Firebase browser configuration is served by /api/firebase-config from Netlify environment variables.
+- Netlify Identity: account login, roles, character vault, and Keeper Tool access.
+- Firebase Authentication/Firestore: real-time Player Tool and Keeper Tool table sessions.
+- Firebase browser configuration: served at runtime by /api/firebase-config from Netlify environment variables.
 
 Required Netlify configuration
 ------------------------------
-- FIREBASE_API_KEY environment variable.
 - Netlify Identity enabled.
+- FIREBASE_API_KEY and the existing Firebase variables configured in Netlify Environment Variables.
+- Firebase Anonymous Authentication enabled.
 - Assign role "admin" to administrator accounts.
 - Assign role "keeper" or "admin" to accounts allowed to open Keeper Tool.
-- Firebase Anonymous Authentication enabled for real-time table sessions.
+- Netlify Forms enabled for Feedback submissions.
 
-Acceptance checks after deployment
-----------------------------------
-1. Open Player Tool and verify domain cards load.
-2. Save a draft in Character Creator, then use the Creator button in Player Tool.
-3. Open Keeper Tool with a keeper/admin account and open Equipment Reference.
-4. Connect Player and Keeper to the same Firebase table.
-5. Confirm /admin.html reports the Firebase configuration endpoint as healthy.
+Primary v59.6 regression checks
+-------------------------------
+1. Create or load a character in Character Creator and save the draft.
+2. Open Player Tool and import the Creator draft.
+3. Confirm Ancestry Gift, Class Feature, Community Feature and Domain Cards are visible.
+4. Open Character Sheet and use "Creator Draft" to synchronize the current RC2 character.
+5. Test Both Sides, Current Side, Editable and Print PDF exports.
+6. Confirm the account button turns green and displays a green status dot after login.
+7. Verify Armory tiers are Common, Military, Experimental and Precursor only.
+8. Verify catalogue costs use the WT ladder: 1, 4, 9, 16 and 25 Cr.
+9. Confirm Player Tool and Keeper Tool use the same portal navigation.
+10. Connect Player and Keeper to the same Firebase table on the deployed site.
+
+Validation
+----------
+Read VALIDATION_v59.6.txt for automated static and data checks. Identity, Firebase,
+PDF downloads and browser print rendering must still be checked on the deployed Netlify site.
+
+
+v59.6 UI and feedback fixes
+- Every roll broadcast carries a unique broadcastId.
+- Player callouts are triggered by new events, not by comparing device clocks.
+- Keeper main roller broadcasts Duality, d20 and damage results.
+- Roll histories show damage dice, individual results, modifiers and totals.
+
+
+v59.6 changes
+- Player top controls no longer expose a browser horizontal scrollbar.
+- Portal overflow uses application-owned previous/next controls.
+- Feedback includes the original seven structured playtest questionnaires.
+- Admin role assignment instructions are included in admin.html and the handover.

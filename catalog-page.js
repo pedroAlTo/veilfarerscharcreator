@@ -61,7 +61,7 @@
         <div class="vf-card-top"><h2>${esc(item.name)}</h2><span class="vf-badge">${esc(D.tierName(item))}</span></div>
         <div class="vf-meta">${meta(item).map(x=>`<span>${esc(x)}</span>`).join('')}</div>
         <p class="vf-description">${esc(primaryDescription(item))}</p>
-        <div class="vf-card-actions"><span class="vf-cost">Cost <strong>${esc(D.credits(item))}</strong></span><button class="vf-button ${qty?'':'primary'}" data-add="${esc(item.id)}">${qty?`Add another · ${qty} owned`:'Add to inventory'}</button></div>
+        <div class="vf-card-actions"><span class="vf-cost">Cost <strong>${esc(D.costLabel(item))}</strong></span><button class="vf-button ${qty?'':'primary'}" data-add="${esc(item.id)}">${qty?`Add another · ${qty} owned`:'Add to inventory'}</button></div>
       </article>`;
     }).join('');
   }
@@ -76,10 +76,10 @@
       const value = Number(e.credits ?? item?.cost?.credits);
       if(Number.isFinite(value)) totalCredits += value * Number(e.quantity||0);
     }
-    els.invCredits.textContent = totalCredits;
+    els.invCredits.textContent = totalCredits ? `${totalCredits} Cr` : '0 Cr';
     if(!entries.length){ els.inventory.innerHTML='<div class="vf-empty">Your local inventory is empty.</div>'; return; }
     els.inventory.innerHTML = entries.map(e=>`<div class="vf-inventory-row" data-inventory-id="${esc(e.id)}">
-      <div><strong>${esc(e.name)}</strong><small>${esc(D.packLabel(e.pack))} · ${esc(e.type)}</small></div>
+      <div><strong>${esc(e.name)}</strong><small>${esc(D.packLabel(e.pack))} · ${esc(e.type)} · ${esc(D.costLabel({cost:{credits:e.credits}}))}</small></div>
       <div class="vf-qty"><button data-dec="${esc(e.id)}" aria-label="Remove one">−</button><span>${Number(e.quantity||0)}</span><button data-inc="${esc(e.id)}" aria-label="Add one">+</button></div>
     </div>`).join('');
   }

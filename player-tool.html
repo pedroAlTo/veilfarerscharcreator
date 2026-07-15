@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veilfarers - Spectrum of Fate Edition</title>
+    <link rel="stylesheet" href="portal.css">
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
@@ -134,6 +135,13 @@
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .vf-player-topbar{overflow:visible!important;}
+        .vf-player-tabs,.vf-player-tools{overflow:visible!important;}
+        .vf-player-tabs>*{flex:0 0 auto;}
+        .vf-player-tools>*{flex:0 0 auto;}
+        .vf-player-tools button,.vf-player-tabs button{box-shadow:0 2px 8px rgba(0,0,0,.16);}
+        @media (max-width:700px){.vf-player-tools{gap:.35rem}.vf-player-tools button{padding-left:.55rem!important;padding-right:.55rem!important}}
+
         body { background-color: #020617; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
         .status-online { animation: pulse-green 2s infinite; }
@@ -253,12 +261,6 @@
     </style>
 </head>
 <body>
-<div style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;
-     padding:4px 10px;background:rgba(2,6,23,0.92);border-bottom:1px solid #1e293b;font-family:ui-sans-serif,system-ui,sans-serif;">
-  <span style="color:#e2b45a;font-weight:800;letter-spacing:2px;font-size:11px;">VEILFARERS &middot; PLAYER TOOL · RC2</span>
-  <a href="index.html" style="color:#38bdf8;font-size:11px;text-decoration:none;font-weight:600;">&larr; Portal</a>
-</div>
-<div style="height:42px;"></div>
     <div id="root"><div style="padding:72px 24px;text-align:center;color:#94a3b8;font-family:system-ui">Loading canonical RC2 data…</div></div>
 
     
@@ -626,6 +628,8 @@
           }, [spotlight, flickerEnabled, flickerWait]);
           const timeoutRef = useRef(null);
           const toastTimeoutRef = useRef(null);
+          const lastBroadcastIdRef = useRef(null);
+          const listenerPrimedRef = useRef(false);
           
           const normChar = (c) => { c = c || {}; return { ...c, stats: c.stats || {agility:0,strength:0,finesse:0,instinct:0,presence:0,knowledge:0}, hp: c.hp || {current:0,max:6}, stress: c.stress || {current:0,max:6}, hope: c.hope || {current:0,max:6}, effort: c.effort || {current:0,max:6}, resolve: c.resolve || {current:0,max:2}, thresholds: c.thresholds || {major:0,severe:0}, experiences: c.experiences || [], weapons: c.weapons || [{name:"",trait:"",damage:""},{name:"",trait:"",damage:""},{name:"",trait:"",damage:""}], inventory: c.inventory || [], domainCards: c.domainCards || [], moves: c.moves || [], augments: c.augments || [], drones: c.drones || [] }; };
           const character = normChar(characters[activeTab] || characters[0] || {});
@@ -866,7 +870,7 @@
               logRoll({ type:"note", label: label, outcome:"", outcomeColor:"", total:"", hope:"", fear:"", playerName: (character.name||character.playerName||"Player"), timestamp: Date.now() });
             }
           };
-          const rollDamage = (dmgStr, mult, bonus) => { if (!dmgStr) return null; mult=mult||1; bonus=bonus||0; var m=String(dmgStr).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i); if(!m) return null; var count=(parseInt(m[1]||'1',10)||1)*mult; var sides=parseInt(m[2],10); var mod=m[3]?parseInt(m[3].replace(/\s/g,''),10):0; var sum=0, rolls=[]; for(var k=0;k<count;k++){ var r=Math.floor(Math.random()*sides)+1; rolls.push(r); sum+=r; } var extra=mod+bonus; return { total: sum+extra, detail: rolls.join('+')+(extra?(extra>0?'+'+extra:extra):'') }; };
+          const rollDamage = (dmgStr, mult, bonus) => { if (!dmgStr) return null; mult=mult||1; bonus=bonus||0; var m=String(dmgStr).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i); if(!m) return null; var count=(parseInt(m[1]||'1',10)||1)*mult; var sides=parseInt(m[2],10); var mod=m[3]?parseInt(m[3].replace(/\s/g,''),10):0; var sum=0, rolls=[]; for(var k=0;k<count;k++){ var r=Math.floor(Math.random()*sides)+1; rolls.push(r); sum+=r; } var extra=mod+bonus; return { total: sum+extra, detail: rolls.join('+')+(extra?(extra>0?'+'+extra:extra):''), dice: count+'d'+sides, rolls: rolls, modifier: extra, base: String(dmgStr) }; };
           const traitModForWeapon = (traitStr) => { if (!traitStr) return 0; var tt=String(traitStr).toLowerCase(); var ks=['agility','strength','finesse','instinct','presence','knowledge']; for (var n=0;n<ks.length;n++){ if (tt.indexOf(ks[n])!==-1) return (parseInt(character.stats && character.stats[ks[n]], 10) || 0); } return 0; };
           const rollDuality = (opts) => {
               const o = (opts && typeof opts === 'object' && !opts.nativeEvent) ? opts : {};
@@ -903,11 +907,14 @@
 
               var finalLabel = lbl;
               var isCrit = outcome.indexOf('CRITICAL') !== -1;
-              var dmgTotal = null, dmgDetail = null;
+              var dmgTotal = null, dmgDetail = null, dmgDice = null, dmgRolls = null, dmgModifier = 0, dmgBase = null;
               if (o.weaponDamage) {
                   var honed = (character.path === 'sleeping') ? Math.max(0, (parseInt(character.level)||1) - 1) : 0;
                   var dmgInfo = rollDamage(o.weaponDamage, isCrit ? 2 : 1, honed);
-                  if (dmgInfo) { dmgTotal = dmgInfo.total; dmgDetail = dmgInfo.detail; }
+                  if (dmgInfo) {
+                      dmgTotal = dmgInfo.total; dmgDetail = dmgInfo.detail; dmgDice = dmgInfo.dice;
+                      dmgRolls = dmgInfo.rolls; dmgModifier = dmgInfo.modifier; dmgBase = dmgInfo.base;
+                  }
               }
               var charUpd = {...character}; var charChanged = false;
               if (o.spend && o.spend.resource) { var rk=o.spend.resource, amt=o.spend.amount||1; if (charUpd[rk]) { charUpd = {...charUpd, [rk]: {...charUpd[rk], current: Math.max(0, ((charUpd[rk].current)||0) - amt)}}; charChanged = true; } }
@@ -919,7 +926,8 @@
               if (charChanged) updateCharacter(charUpd);
               const resultObj = { 
                   hope: hopeDie, fear: fearDie, extra: extraDie, rollType: playerRollType,
-                  total, outcome, outcomeColor, modifier: modVal, label: finalLabel, damage: dmgTotal, damageDetail: dmgDetail, crit: isCrit, 
+                  total, outcome, outcomeColor, modifier: modVal, label: finalLabel, damage: dmgTotal, damageDetail: dmgDetail,
+                  damageDice: dmgDice, damageRolls: dmgRolls, damageModifier: dmgModifier, damageBase: dmgBase, crit: isCrit, 
                   playerName: character.name || character.playerName || "Unknown",
                   type: 'duality', timestamp: Date.now()
               };
@@ -990,18 +998,31 @@
               if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
           };
 
-          // --- LOGGING ---
+          // --- LOGGING / REAL-TIME CALLOUTS ---
+          const makeBroadcastId = () => 'roll-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
+          const rollTimeMs = (value) => {
+              if (value && typeof value.toMillis === 'function') return value.toMillis();
+              if (value && typeof value.seconds === 'number') return value.seconds * 1000;
+              const n = Number(value); return Number.isFinite(n) ? n : 0;
+          };
+          const rollEventKey = (roll) => {
+              if (!roll) return '';
+              return roll.broadcastId || [rollTimeMs(roll.timestamp), roll.playerName || '', roll.label || '', roll.total == null ? '' : roll.total].join('|');
+          };
           const logRoll = (rollData) => {
-              setRollHistory(prev => [rollData, ...prev]);
+              const enrichedRoll = { ...rollData, timestamp: rollTimeMs(rollData.timestamp) || Date.now(), broadcastId: rollData.broadcastId || makeBroadcastId() };
+              setRollHistory(prev => [enrichedRoll, ...prev]);
               if (isConnected && fbServices) {
                   const { db, setDoc, doc, arrayUnion } = fbServices;
-                  // CORRECT PATH: artifacts/{appId}/public/data/sessions/{sessionId}
                   const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
-                  // Use setDoc with merge to ensure doc exists before updating
                   setDoc(docRef, {
-                      lastRoll: rollData,
-                      rollHistory: arrayUnion(rollData)
-                  }, {merge: true}).catch(e => console.error("Error broadcasting roll:", e));
+                      lastRoll: enrichedRoll,
+                      rollHistory: arrayUnion(enrichedRoll),
+                      lastRollUpdatedAt: enrichedRoll.timestamp
+                  }, {merge: true}).catch(e => {
+                      console.error("Error broadcasting roll:", e);
+                      setErrorMsg('Roll broadcast failed: ' + (e.code || e.message));
+                  });
               }
           };
           const writeSessionField = (obj) => { if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const ref = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId); setDoc(ref, obj, { merge: true }).catch(function(e){console.error(e);}); } catch (e) { console.error(e); } } };
@@ -1118,12 +1139,15 @@
           const startListening = (services, session) => {
               loadSeenNotes(session);
               connectedAtRef.current = Date.now();
+              listenerPrimedRef.current = false;
+              lastBroadcastIdRef.current = null;
               const { db, doc, onSnapshot } = services;
               // CORRECT PATH: artifacts/{appId}/public/data/sessions/{sessionId}
               const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', session);
 
               unsubscribeRef.current = onSnapshot(docRef, (docSnap) => {
-                  if (docSnap.exists) { // CORRECCIÓN CRÍTICA 2: .exists (propiedad) en lugar de .exists() (función)
+                  const snapshotExists = typeof docSnap.exists === 'function' ? docSnap.exists() : !!docSnap.exists;
+                  if (snapshotExists) {
                       const data = docSnap.data();
                       if (data.characters && (Date.now() - lastLocalEditRef.current > 2500)) {
                           isRemoteUpdate.current = true;
@@ -1134,19 +1158,27 @@
                       if (typeof data.spotlight === 'string') { setSpotlight(data.spotlight); }
                       setHandouts(Array.isArray(data.handouts) ? data.handouts : []);
                       if (data.rollHistory && Array.isArray(data.rollHistory)) {
-                          const sortedHistory = [...data.rollHistory].sort((a, b) => b.timestamp - a.timestamp);
+                          const sortedHistory = [...data.rollHistory].sort((a, b) => rollTimeMs(b.timestamp) - rollTimeMs(a.timestamp));
                           setRollHistory(sortedHistory);
                       }
                       if (data.lastRoll) {
-                          const now = Date.now();
-                          if (now - data.lastRoll.timestamp < 10000) { 
-                              setBroadcastRoll(data.lastRoll);
+                          const incoming = { ...data.lastRoll, timestamp: rollTimeMs(data.lastRoll.timestamp) || Date.now() };
+                          const incomingKey = rollEventKey(incoming);
+                          const isInitialSnapshot = !listenerPrimedRef.current;
+                          const isFreshInitialEvent = incoming.timestamp >= connectedAtRef.current - 2000;
+                          const isNewEvent = incomingKey && incomingKey !== lastBroadcastIdRef.current;
+                          listenerPrimedRef.current = true;
+                          lastBroadcastIdRef.current = incomingKey;
+                          if (isNewEvent && (!isInitialSnapshot || isFreshInitialEvent)) {
+                              setBroadcastRoll(incoming);
                               setRolling(true); setTimeout(() => setRolling(false), 750);
-                              setRecentBroadcasts(prev => { var r = data.lastRoll; if (prev[0] && prev[0].timestamp === r.timestamp) return prev; return [r].concat(prev).slice(0, 3); });
+                              setRecentBroadcasts(prev => { if (prev[0] && rollEventKey(prev[0]) === incomingKey) return prev; return [incoming].concat(prev).slice(0, 3); });
                               setShowToast(true);
                               if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
                               toastTimeoutRef.current = setTimeout(() => { setShowToast(false); }, 10000);
                           }
+                      } else {
+                          listenerPrimedRef.current = true;
                       }
                   } else {
                       setStatusMsg("New session created.");
@@ -1230,7 +1262,7 @@
               
               {/* TOAST NOTIFICACIÓN */}
               {showToast && broadcastRoll && (
-                  <div className="fixed bottom-4 left-4 z-[100] flex flex-row gap-2 items-end">
+                  <div className="fixed bottom-4 left-4 z-[12000] flex flex-row gap-2 items-end">
                   <div className="max-w-sm w-full bg-slate-900/95 backdrop-blur border border-slate-600 rounded-lg shadow-2xl p-4 toast-enter border-l-4 border-l-cyan-500">
                       <div className="flex justify-between items-start mb-2">
                           <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
@@ -1248,7 +1280,7 @@
                               {(broadcastRoll.rolls || []).map((r, idx) => (<ShapedDie key={idx} sides={parseInt((String(broadcastRoll.dice).match(/d(\d+)/) || [])[1]) || 6} value={r} rolling={rolling} variant={r === 1 ? 'crit' : 'neutral'} />))}
                             </div>
                             <div className="flex justify-between items-center border-t border-slate-700 pt-2">
-                              <span className="text-[10px] text-slate-500 font-bold uppercase">{broadcastRoll.dice}{broadcastRoll.modifier ? ` +${broadcastRoll.modifier}` : ''} · Damage</span>
+                              <span className="text-[10px] text-slate-500 font-bold uppercase">{broadcastRoll.dice}{broadcastRoll.modifier ? ` ${broadcastRoll.modifier > 0 ? '+' : ''}${broadcastRoll.modifier}` : ''} · Damage</span>
                               <span className="text-2xl font-black text-red-400">{broadcastRoll.total}</span>
                             </div>
                           </div>
@@ -1284,10 +1316,15 @@
                                     </div>
                                 </div>
                                 {broadcastRoll.damage != null && (
-                                <div className="flex flex-col items-center justify-center px-3 py-1 border-2 border-red-500 rounded-lg bg-red-950/30">
-                                    <span className="text-[9px] text-red-400 font-bold uppercase tracking-wider">Damage</span>
-                                    <span className="text-3xl font-black text-red-400 leading-none">{broadcastRoll.damage}{broadcastRoll.crit ? <span className="text-xs"> x2</span> : null}</span>
-                                    {broadcastRoll.damageDetail && <span className="text-[8px] text-red-300/70 font-mono">{broadcastRoll.damageDetail}</span>}
+                                <div className="flex flex-col items-center justify-center px-3 py-1 border-2 border-red-500 rounded-lg bg-red-950/30 min-w-[112px]">
+                                    <span className="text-[9px] text-red-400 font-bold uppercase tracking-wider">{broadcastRoll.damageDice || broadcastRoll.damageBase || 'Damage'}{broadcastRoll.damageModifier ? ` ${broadcastRoll.damageModifier > 0 ? '+' : ''}${broadcastRoll.damageModifier}` : ''}</span>
+                                    {Array.isArray(broadcastRoll.damageRolls) && broadcastRoll.damageRolls.length > 0 && (
+                                      <div className="flex flex-wrap justify-center gap-1 my-1">
+                                        {broadcastRoll.damageRolls.map((r, idx) => <ShapedDie key={idx} sides={parseInt((String(broadcastRoll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6} value={r} rolling={rolling} variant={r === 1 ? 'crit' : 'neutral'} />)}
+                                      </div>
+                                    )}
+                                    <span className="text-3xl font-black text-red-400 leading-none">{broadcastRoll.damage}</span>
+                                    {broadcastRoll.damageDetail && <span className="text-[8px] text-red-300/70 font-mono">{broadcastRoll.damageDetail}{broadcastRoll.crit ? ' · critical damage' : ''}</span>}
                                 </div>
                                 )}
                                 <div className="h-8 w-px bg-slate-700"></div>
@@ -1508,37 +1545,55 @@
                               <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">{roll.label}</div>
                               
                               {roll.type === 'duality' ? (
-                                 <div className="flex justify-between items-end">
-                                    <div className="flex gap-2">
-                                       <div className="flex flex-col items-center">
-                                          <span className="text-[8px] text-cyan-500 font-bold">HOPE</span>
-                                          <span className="text-lg font-bold text-white">{roll.hope}</span>
+                                 <div>
+                                   <div className="flex justify-between items-end">
+                                      <div className="flex gap-2">
+                                         <div className="flex flex-col items-center">
+                                            <span className="text-[8px] text-cyan-500 font-bold">HOPE</span>
+                                            <span className="text-lg font-bold text-white">{roll.hope}</span>
+                                         </div>
+                                         <div className="flex flex-col items-center">
+                                            <span className="text-[8px] text-purple-500 font-bold">FEAR</span>
+                                            <span className="text-lg font-bold text-white">{roll.fear}</span>
+                                         </div>
+                                      </div>
+                                      <div className="flex flex-col items-end">
+                                         <span className="text-xl font-black text-white">{roll.total}</span>
+                                         <span className={`text-[8px] font-bold ${roll.outcomeColor}`}>{roll.outcome}</span>
+                                         {(roll.modifier !== 0 || roll.extra) && (
+                                             <span className="text-[8px] text-slate-500">
+                                                {roll.modifier !== 0 && `Mod ${roll.modifier > 0 ? '+' : ''}${roll.modifier}`}
+                                                {roll.extra && ` ${roll.rollType === 'advantage' ? '+' : '-'} ${roll.extra}`}
+                                             </span>
+                                         )}
+                                      </div>
+                                   </div>
+                                   {roll.damage != null && (
+                                     <div className="mt-2 pt-2 border-t border-red-900/50 flex justify-between items-center gap-2">
+                                       <div>
+                                         <div className="text-[9px] text-red-400 font-bold uppercase">Damage · {roll.damageDice || roll.damageBase || 'weapon'}{roll.damageModifier ? ` ${roll.damageModifier > 0 ? '+' : ''}${roll.damageModifier}` : ''}</div>
+                                         <div className="flex flex-wrap gap-1 mt-1">
+                                           {(roll.damageRolls || []).map((r, i) => <span key={i} className="w-5 h-5 flex items-center justify-center bg-red-950/50 border border-red-900 rounded text-[9px] font-bold text-red-300">{r}</span>)}
+                                         </div>
+                                         {roll.damageDetail && <div className="text-[8px] text-slate-500 font-mono mt-1">{roll.damageDetail}{roll.crit ? ' · critical' : ''}</div>}
                                        </div>
-                                       <div className="flex flex-col items-center">
-                                          <span className="text-[8px] text-purple-500 font-bold">FEAR</span>
-                                          <span className="text-lg font-bold text-white">{roll.fear}</span>
-                                       </div>
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                       <span className="text-xl font-black text-white">{roll.total}</span>
-                                       <span className={`text-[8px] font-bold ${roll.outcomeColor}`}>{roll.outcome}</span>
-                                       {(roll.modifier !== 0 || roll.extra) && (
-                                           <span className="text-[8px] text-slate-500">
-                                              {roll.modifier !== 0 && `Mod ${roll.modifier > 0 ? '+' : ''}${roll.modifier}`}
-                                              {roll.extra && ` ${roll.rollType === 'advantage' ? '+' : '-'} ${roll.extra}`}
-                                           </span>
-                                       )}
-                                    </div>
+                                       <div className="text-xl font-black text-red-400">{roll.damage}</div>
+                                     </div>
+                                   )}
                                  </div>
                               ) : (
                                  <div className="flex justify-between items-center">
                                     <div className="flex flex-col gap-1">
-                                        <div className="flex flex-wrap gap-1 max-w-[150px]">
-                                           {(roll.rolls || []).map((r, i) => <span key={i} className={`w-5 h-5 flex items-center justify-center bg-slate-800 rounded text-[9px] font-bold ${r === roll.die ? 'text-yellow-400 border border-yellow-500/50' : 'text-slate-400'}`}>{r}</span>)}
+                                        <div className={`text-[9px] font-bold uppercase ${roll.type === 'damage' ? 'text-red-400' : 'text-slate-500'}`}>
+                                          {roll.type === 'damage' ? (roll.dice || 'Damage') : `${roll.count || 1}d${roll.die || '?'}`}
+                                          {roll.modifier ? ` ${roll.modifier > 0 ? '+' : ''}${roll.modifier}` : ''}
                                         </div>
-                                        {roll.modifier !== 0 && <span className="text-[8px] text-slate-500">Mod {roll.modifier > 0 ? '+' : ''}{roll.modifier}</span>}
+                                        <div className="flex flex-wrap gap-1 max-w-[150px]">
+                                           {(roll.rolls || []).map((r, i) => <span key={i} className={`w-5 h-5 flex items-center justify-center rounded text-[9px] font-bold ${roll.type === 'damage' ? 'bg-red-950/50 border border-red-900 text-red-300' : (r === roll.die ? 'bg-slate-800 text-yellow-400 border border-yellow-500/50' : 'bg-slate-800 text-slate-400')}`}>{r}</span>)}
+                                        </div>
+                                        {roll.modifier !== 0 && <span className="text-[8px] text-slate-500">Modifier {roll.modifier > 0 ? '+' : ''}{roll.modifier}</span>}
                                     </div>
-                                    <div className="text-xl font-black text-white">{roll.total}</div>
+                                    <div className={`text-xl font-black ${roll.type === 'damage' ? 'text-red-400' : 'text-white'}`}>{roll.total}</div>
                                  </div>
                               )}
                            </div>
@@ -1703,13 +1758,13 @@
               {/* CARD MANAGER */}
               {showCardManager && (
                   <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-                      <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden">
+                      <div className="bg-slate-900 border border-slate-700 rounded-xl w-[96vw] max-w-6xl h-[88vh] flex flex-col min-w-0 shadow-2xl overflow-hidden">
                           <header className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">
                               <h2 className="text-lg font-bold text-white flex items-center gap-2"><CreditCard className="text-emerald-400" /> Domain Cards</h2>
                               <button onClick={() => setShowCardManager(false)}><X className="w-6 h-6 text-slate-400 hover:text-white" /></button>
                           </header>
-                          <div className="flex flex-grow overflow-hidden">
-                              <div className="w-48 bg-slate-950 border-r border-slate-800 p-2 flex flex-col gap-1 overflow-y-auto">
+                          <div className="flex flex-grow overflow-hidden min-w-0">
+                              <div className="w-36 md:w-48 shrink-0 bg-slate-950 border-r border-slate-800 p-2 flex flex-col gap-1 overflow-y-auto">
                                   {Object.keys(DOMAIN_CARDS).map(domain => (
                                       <button key={domain} onClick={() => setSelectedDomain(domain)} 
                                           className={`px-4 py-3 text-left text-sm font-bold rounded transition-colors ${selectedDomain === domain ? 'bg-slate-800 text-white border-l-2 border-emerald-500' : 'text-slate-500 hover:bg-slate-900 hover:text-slate-300'}`}>
@@ -1717,9 +1772,9 @@
                                       </button>
                                   ))}
                               </div>
-                              <div className="flex-grow p-6 overflow-y-auto bg-slate-900">
+                              <div className="flex-grow min-w-0 p-3 md:p-6 overflow-y-auto bg-slate-900">
                                   <h3 className="text-xs font-bold uppercase text-slate-500 mb-4 tracking-widest">Available Cards: {selectedDomain}</h3>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                       {(DOMAIN_CARDS[selectedDomain] || []).map(card => (
                                           <div key={card.id} className="relative group cursor-pointer" onClick={() => addCard(card)}>
                                               <DomainCard card={card} />
@@ -1737,10 +1792,10 @@
 
               <div className="max-w-7xl mx-auto w-full space-y-2 flex-grow">
                 {/* TOP BAR */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between md:overflow-x-auto pb-1 border-b border-slate-800 mb-1 scrollbar-hide">
+                <div className="vf-player-topbar flex flex-col gap-1 pb-1 border-b border-slate-800 mb-1">
                    
                    {/* ROW 1: TABS */}
-                   <div className="flex gap-1 w-full md:w-auto overflow-x-auto mb-2 md:mb-0">
+                   <div className="vf-player-tabs vf-no-browser-scrollbar flex flex-wrap gap-1 w-full mb-1">
                      {characters.map((char, idx) => (
                        <div key={idx} onClick={() => setActiveTab(idx)}
                           className={`group relative px-4 py-2 rounded-t-lg text-xs font-bold uppercase tracking-wide cursor-pointer flex items-center gap-2 select-none transition-colors whitespace-nowrap ${(char.id && char.id === spotlight) ? 'vf-tab-spot ' : ''}${(flick && char.id === spotlight) ? 'flicker ' : ''}${activeTab === idx ? 'bg-slate-900 text-cyan-400 border-t-2 border-cyan-500' : 'bg-slate-950 text-slate-500 hover:bg-slate-900 border-t-2 border-transparent'}`}>
@@ -1753,7 +1808,7 @@
                    </div>
                    
                    {/* ROW 2: TOOLS */}
-                   <div className="flex flex-wrap md:flex-nowrap gap-2 items-center w-full md:w-auto md:ml-2 md:overflow-x-auto pb-1 md:pb-0 shrink-0 justify-center md:justify-start">
+                   <div className="vf-player-tools vf-no-browser-scrollbar flex flex-wrap gap-2 items-center w-full pb-1 justify-start">
                        <input type="file" ref={fileInputRef} onChange={loadFromFile} className="hidden" accept=".json" />
                        <button onClick={importCreatorDraft} title="Import the current draft saved by Character Creator" className="flex items-center gap-1 px-3 py-1 bg-cyan-950/60 hover:bg-cyan-900/70 text-cyan-300 text-[10px] rounded border border-cyan-800 uppercase font-bold transition-colors whitespace-nowrap"><User className="w-3 h-3" /> Creator</button>
                        <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><Upload className="w-3 h-3" /> Load</button>
@@ -1871,10 +1926,12 @@
                        </div>
                        
                        {/* KIT: gifts / augments / drones (from creator import) */}
-                       {(character.ancestryGift || (character.augments && character.augments.length) || (character.drones && character.drones.length) || character.classFeature) && (
+                       {(character.ancestryGift || character.communityGift || character.features || (character.augments && character.augments.length) || (character.drones && character.drones.length) || character.classFeature) && (
                          <div className="bg-slate-900/40 rounded border border-slate-800 p-2 text-[9px] text-slate-300 space-y-2">
-                           {character.ancestryGift && (<div><span className="text-amber-400 font-bold uppercase tracking-wider">Ancestry Gift</span><div className="text-slate-300 mt-0.5">{character.ancestryGift}</div></div>)}
-                           {character.classFeature && (<div><span className="text-emerald-400 font-bold uppercase tracking-wider">Class Feature</span><div className="text-slate-300 mt-0.5">{character.classFeature}</div></div>)}
+                           {character.ancestryGift && (<div><span className="text-amber-400 font-bold uppercase tracking-wider">Ancestry Gift</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.ancestryGift}</div></div>)}
+                           {character.classFeature && (<div><span className="text-emerald-400 font-bold uppercase tracking-wider">Class Feature</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.classFeature}</div></div>)}
+                           {character.communityGift && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Community Feature</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.communityGift}</div></div>)}
+                           {character.features && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">{character.path === 'sleeping' ? 'Effort Feature' : 'Hope Feature'}</span><div className="text-slate-300 mt-0.5 whitespace-pre-line">{character.features}</div></div>)}
                            {character.augments && character.augments.length > 0 && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Augmentations</span>{character.augments.map((a,i)=>(<div key={i} className="text-slate-300 mt-0.5">{a.name} <span className="text-slate-400">{a.tier}</span> &middot; {a.benefit}</div>))}</div>)}
                            {character.drones && character.drones.length > 0 && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">Drones</span>{character.drones.map((d,i)=>(<div key={i} className="text-slate-300 mt-0.5">{d.name} <span className="text-slate-400">{d.grade}</span> &middot; HP {d.hp} &middot; Ev {d.evasion}</div>))}</div>)}
                          </div>
@@ -1980,5 +2037,6 @@
           document.getElementById('root').innerHTML = '<div style="max-width:720px;margin:80px auto;padding:24px;border:1px solid #7f1d1d;border-radius:12px;background:#1f0a0a;color:#fecaca;font-family:system-ui">Player Tool could not load the canonical RC2 rules data. Check that the <code>/rules-data</code> folder was deployed.</div>';
         });
     </script>
+  <script src="portal.js"></script>
 </body>
 </html>
