@@ -172,14 +172,14 @@ const CLASS_DATA = {
     "awakenedItems": "Dented Riot Shield · Fallen Comrade's Dog-tag",
     "sleepingItems": "Dented Riot Shield · Fallen Comrade's Dog-tag",
     "hopeTitle": "COMBAT SURGE (2 HOPE)",
-    "effortTitle": "THE HELD LINE (2 EFFORT)",
+    "effortTitle": "THE HELD LINE (1 EFFORT)",
     "awClassFeature": "COMBAT FOCUS",
     "slClassFeature": "THE DRILL",
     "starter": "Kinetic Blast + Rapid Regeneration",
     "hopeText": "Spend 2 Hope after a successful hit to deal +1d6 damage and push the fight in your favor.",
-    "effortText": "You can spend 2 Effort to deal an additional 1d6 damage when you successfully hit with an attack. This is the smallest Effort cost of any Sleeping Class Feature; the Soldier's signature is meant to be used often, not saved for capstone moments. Discipline is small, and constant.",
+    "effortText": "Spend 1 Effort after you successfully hit with an attack to deal an additional 1d6 damage. The Soldier uses Effort in small, constant, reliable increments.",
     "awClassText": "You use a d4 for your Focus die, starting at 1. When you enter a Focus state, you gain powerful benefits. While in this state, you can: ◆Reroll one weapon damage die per attack. ◆Add the value of the Focus die to your damage or attack roll.",
-    "slClassText": "Sleeping Soldiers train. You begin every session with a list of four Drills actions you have practiced into reflex. The list is recorded on your character sheet at character creation, and grows with downtime; example Drills include cover fire, breach maneuver, controlled retreat, weapon swap. When you take an action that matches a Drill, you may, once per Drill per encounter, resolve the action without rolling, it succeeds at standard parameters. Drills cover routine, practiced actions under ordinary conditions, not decisive blows or actions taken under extreme pressure; those you roll for. Drills handle the routine cases; Effort handles the rest."
+    "slClassText": "You know all four Common Drills and unlock one subclass Drill at Foundation, Specialization, and Mastery. At the beginning of each session, prepare four. Action and Reaction Drills are usable once per scene; Passive Drills remain active while prepared."
   },
   "Vanguard": {
     "domains": "Neural & branch (Void / Kinetic / Lux, determined by Subclass)",
@@ -195,9 +195,9 @@ const CLASS_DATA = {
     "slClassFeature": "UNBROKEN FOCUS",
     "starter": "Veil Sensitivity + one branch Level 1 Power",
     "hopeText": "Spend 3 Hope to enter a focused combat state for the scene, turning discipline into decisive action.",
-    "effortText": "You can spend 2 Effort to enter the Disciplined State. It lasts a number of rounds equal to your Proficiency. While in this state: - Choose one Trait as you enter, Agility, Instinct, or Strength; you gain Advantage on rolls using that Trait for the duration. - You are immune to the Stunned and Dazed effects. - Your first Melee attack against an enemy while in this state deals an additional 2d6 damage (damage type by Subclass branch, Void, Kinetic, or Lux). - As you enter the state, you read the room: the Keeper tells you who is dangerous, who is bluffing, and who will break first. - While outnumbered in this state, enemies beyond the first to attack you in melee each round do so with Disadvantage. The discipline is a focus, not a fog of total superiority: you sharpen one line of your craft to a razor and hold it for as long as your training allows. The Awakened Vanguard's Path to Nirvana is described as a brief alteration of the substrate; the Sleeping Vanguard's Disciplined State is a deeper accessing of self. The substrate does not become more cooperative; you become more present.",
+    "effortText": "Spend 2 Effort to enter the Disciplined State for rounds equal to Proficiency + Presence. Choose Agility, Instinct, or Strength: gain Advantage with it and add its modifier to Melee and unarmed damage. You are immune to Stunned and Dazed, your first Melee hit deals +2d6 branch damage, and subsequent Melee attacks after the first each round have Disadvantage while at least two enemies are in Melee.",
     "awClassText": "Your mental discipline allows you to channel psionic energy into movement and combat. ◆While not wearing Heavy or Very Heavy armor, you gain +1 Evasion.",
-    "slClassText": "Your mental discipline allows you to channel internal force into movement and combat. - While not wearing Heavy or Very Heavy armor, you gain +1 Evasion. - Once per scene, when you would mark a Stress, you may resist by spending 1 Effort and meditating (free action). The Stress is not marked."
+    "slClassText": "Trained Body: choose Strength or Agility for unarmed strikes; they deal d6 physical damage, increasing to d8 at Level 5 and d10 at Level 8. Unbroken Focus: +1 Evasion without Heavy or Very Heavy armor; once per scene spend 1 Effort to prevent Stress without using your Action. The Refusal: once per scene spend 1 Effort to impose Disadvantage on a Domain/Veil attack or Spellcast Roll, or grant Advantage on an allowed Reaction Roll."
   }
 };
 const SUBCLASS_DATA = {
@@ -1262,7 +1262,7 @@ const SUBCLASS_DATA = {
           {
             "tier": "Mastery",
             "name": "The Wall (Passive).",
-            "text": "Allies who fight within Close range of you have advantage on resistance rolls and clear 1 Stress per encounter. Your presence steadies people; this is not a cosmic effect, it is observable training."
+            "text": "Allies who fight within Close range of you have Advantage on resistance rolls and clear 1 Stress per scene. Your presence steadies people; this is observable training, not a cosmic effect."
           }
         ]
       },
@@ -1273,12 +1273,12 @@ const SUBCLASS_DATA = {
           {
             "tier": "Foundation",
             "name": "Rally (Action).",
-            "text": "Once per encounter, allies within Close range each clear 1 Stress. (You give an order; they remember why they are here.)"
+            "text": "Once per scene, allies within Close range each clear 1 Stress. You give an order; they remember why they are here."
           },
           {
             "tier": "Specialization",
             "name": "Coordinated Strike (Action).",
-            "text": "Spend 1 Effort. You and one ally each take an action this turn, but the actions are coordinated; both gain advantage if they target the same enemy."
+            "text": "Spend 1 Effort. You and one ally each take an action outside the ally's Spotlight. Both actions gain Advantage if they target the same enemy."
           },
           {
             "tier": "Mastery",
@@ -1317,17 +1317,17 @@ const SUBCLASS_DATA = {
           {
             "tier": "Foundation",
             "name": "The Quiet Strike (Action).",
-            "text": "Your first melee attack of an encounter, against a target unaware of your presence, ignores the first point of armor."
+            "text": "Once per scene, when you make a Melee attack while Hidden, the attack ignores 1 Armor Slot."
           },
           {
             "tier": "Specialization",
             "name": "The Folded Step (Action).",
-            "text": "Spend 1 Effort. You move from one shadow to another within Close range without being seen. (This is not phasing; this is practice, you have rehearsed this movement for years.)"
+            "text": "Spend 1 Effort. Move to available cover within Close range and become Hidden. This is not phasing; you have rehearsed this movement for years."
           },
           {
             "tier": "Mastery",
             "name": "The Folded Exit (Action).",
-            "text": "Once per scene, after a successful melee attack, you may withdraw from Very Close range to Close range, breaking line of sight, without provoking a Reaction."
+            "text": "Once per scene, after a successful Melee attack, move from Very Close to Close range toward available cover. Until your next Spotlight, attacks against you have Disadvantage."
           }
         ]
       },
@@ -1343,12 +1343,12 @@ const SUBCLASS_DATA = {
           {
             "tier": "Specialization",
             "name": "The Channeled Blow (Action).",
-            "text": "Spend 1 Effort. Your next melee attack deals an additional 1d8 Kinetic damage; if the attack hits, the target is Pushed one range band."
+            "text": "Spend 1 Effort. Your next Melee attack deals an additional 1d8 Kinetic damage. On a success, move the target one range band directly away from you."
           },
           {
             "tier": "Mastery",
             "name": "The Settled Ground (Action).",
-            "text": "Once per scene, on a successful melee attack, you stagger the target. They lose their next action."
+            "text": "Once per scene, after a successful Melee attack, apply Dazed to the target."
           }
         ]
       },
@@ -1359,17 +1359,17 @@ const SUBCLASS_DATA = {
           {
             "tier": "Foundation",
             "name": "The Cleared Room (Action).",
-            "text": "Spend 1 Effort. For the next minute, all NPCs in Close range gain Advantage on rolls against fear, deception, and madness effects. (You are not granting them light; you are being the light, by your presence.)"
+            "text": "Spend 1 Effort. For the next minute, you and allies within Close range have Advantage on rolls made to resist or clear Frightened, Confused, and Veil-induced deception."
           },
           {
             "tier": "Specialization",
             "name": "The Held Truth (Action).",
-            "text": "Spend 1 Effort during a social or interrogation scene. NPCs who lie to you mark 1 Stress; NPCs who tell painful truths to you clear 1 Stress. Your presence does this without your speaking."
+            "text": "Spend 1 Effort during a social or interrogation scene. NPCs who knowingly lie to you mark 1 Stress. NPCs who tell you a painful truth clear 1 Stress. Your presence does this without your speaking."
           },
           {
             "tier": "Mastery",
             "name": "The Cleared Path (Passive).",
-            "text": "Whenever you arrive at a location where deception, illusion, or Veil-induced confusion is present, the deception is, in your presence, attenuated. NPCs and players gain Advantage on rolls against it as long as you remain."
+            "text": "While you remain at a location affected by deception, illusion, or Veil-induced confusion, you and allies within Close range have Advantage on rolls made against those effects."
           }
         ]
       }

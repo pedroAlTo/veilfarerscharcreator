@@ -1,48 +1,43 @@
-VeilFarers Portal v59.10
+VeilFarers Portal v59.14
 =======================
 
-Deploy the contents of this folder directly to Netlify. This build replaces v59.9.
+Deploy the contents of this folder directly to Netlify. This build replaces v59.12.
 
-Hope / Effort alternative payments
-----------------------------------
-Player Tool now follows the canonical resource rule that any ability with a Hope cost may instead be paid with the same amount of Effort.
+Player Tool information hierarchy
+---------------------------------
+Sleeper Actions and Resolve Moves are now separate compact panels. On wide screens they appear side by side; on narrow screens they stack. Both are collapsed by default and use VeilFarers + / - controls rather than browser-native disclosure widgets.
 
-This applies to executable actions generated from:
-- Ancestry Gifts;
-- Class Features;
-- Community Features;
-- Hope Features;
-- Domain Cards.
+Ancestry Gift, Class Feature, Community Feature and Effort/Hope Feature cards follow the same pattern: title and short description remain visible, while the complete rules and executable buttons appear after expansion.
 
-Both payment options remain visible. Each button is independently disabled when the character lacks the required resource. The selected payment is deducted before the action resolves.
+Resolve Moves
+-------------
+Player Tool loads Resolve Moves from /rules-data/core/resolve-moves.json. It shows the two Class Moves plus the matching Subclass Move.
 
-Roll records
-------------
-Feature and Domain Card activations record the selected Hope or Effort payment in:
-- the local Player Tool Roll History;
-- Firebase table-wide roll callouts;
-- the shared session roll history.
+- Fixed-cost moves spend the printed amount.
+- “Spend and roll” moves roll Resolve Dice (d4).
+- “1+” moves use the in-app dialog to choose how many available Resolve Dice to spend.
+- Results and move text are written to local Roll History and Firebase table callouts.
 
-Existing mechanics retained
----------------------------
-- Operational multi-weapon arsenal and active-weapon switching.
-- Reliable, Accurate, Heavy, Massive, Brutal and Paired automation.
-- Structured weapon effects, resistance/DC notes and damage details.
-- Canonical 11.1 RC2 datasets.
-- Netlify Identity accounts and roles.
-- Firebase real-time Player/Keeper sessions.
+The dataset contains the current moves for every Sleeping class. Soldier and Vanguard use the approved consolidated review draft.
 
-Required Deploy Preview checks
-------------------------------
-1. Import a character whose Ancestry Gift costs Hope.
-2. Verify separate Hope and Effort action buttons are shown.
-3. Activate with Hope and verify Hope decreases by the stated amount.
-4. Activate with Effort and verify Effort decreases by the stated amount.
-5. Verify insufficient-resource buttons are disabled independently.
-6. Activate a Domain Card using both payment methods.
-7. Confirm the selected resource appears in the local history and on another browser connected to the same Firebase table.
+Deploy Preview checks
+---------------------
+1. Import a Sleeping character with a class and subclass.
+2. Confirm Sleeper Actions and Resolve Moves are collapsed on load.
+3. Expand each panel and confirm the + changes to -.
+4. Confirm Resolve Moves shows two class moves and the matching subclass move.
+5. Use a fixed-cost move and confirm Resolve decreases.
+6. Use a 1+ move and choose multiple Resolve Dice in the custom dialog.
+7. Confirm d4 results, total, cost and rules text appear in history and on a second connected Player Tool.
+8. Expand and collapse Ancestry, Class, Community and Effort/Hope feature cards.
+9. Confirm weapon callouts and all v59.11 behaviour remain intact.
 
 Validation
 ----------
-Read VALIDATION_v59.10.txt for automated checks.
-Identity, Firebase broadcasting, responsive layout and cross-browser interaction must still be tested on a Netlify Deploy Preview.
+Read VALIDATION_v59.14.txt for automated checks. Firebase broadcasting and final responsive behaviour still require a Netlify Deploy Preview.
+
+
+V59.14 PLAYER TOOL TESTING
+- Books and RC3 PDF files are unchanged.
+- Railgun d8+3 / Massive is a Player Tool-only playtest override.
+- Optional 3D dice are loaded at runtime; see THIRD_PARTY_NOTICES.md.

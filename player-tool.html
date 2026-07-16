@@ -142,6 +142,19 @@
         .vf-player-tools button,.vf-player-tabs button{box-shadow:0 2px 8px rgba(0,0,0,.16);}
         @media (max-width:700px){.vf-player-tools{gap:.35rem}.vf-player-tools button{padding-left:.55rem!important;padding-right:.55rem!important}}
 
+        /* Operational damage dice: weapon mechanics must remain visible in callouts. */
+        .vf-damage-dice{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:.38rem;margin:.2rem 0;}
+        .vf-damage-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:.08rem;min-width:38px;padding:.18rem .16rem .1rem;border:1px solid transparent;border-radius:.55rem;transition:opacity .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease;}
+        .vf-damage-die.is-kept{border-color:rgba(248,113,113,.65);background:rgba(127,29,29,.22);box-shadow:0 0 12px rgba(248,113,113,.18);}
+        .vf-damage-die.is-discarded{opacity:.34;filter:grayscale(1) saturate(.15);border-color:rgba(100,116,139,.45);background:rgba(15,23,42,.42);}
+        .vf-damage-die.is-discarded .vf-damage-die-face:after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;background:#94a3b8;transform:rotate(-34deg);box-shadow:0 0 2px #020617;pointer-events:none;}
+        .vf-damage-die-face{position:relative;display:grid;place-items:center;}
+        .vf-damage-die-state{font-size:7px;line-height:1;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+        .vf-damage-die.is-kept .vf-damage-die-state{color:#fca5a5;}
+        .vf-damage-die.is-discarded .vf-damage-die-state{color:#94a3b8;text-decoration:line-through;}
+        .vf-damage-die-reroll{font-size:7px;line-height:1;color:#facc15;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+        .vf-damage-summary{font-size:8px;color:#cbd5e1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:center;}
+
         body { background-color: #020617; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
         .status-online { animation: pulse-green 2s infinite; }
@@ -258,14 +271,31 @@
         .vf-die.rolling { animation: vf-tumble 0.72s cubic-bezier(0.2,0.7,0.3,1); }
         .vf-chip { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px; padding:0 4px; border-radius:50%; background:radial-gradient(circle at 50% 38%, #475569, #0f172a); border:3px dashed #f59e0b; color:#fbbf24; font-weight:900; font-size:11px; box-shadow:0 2px 7px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(245,158,11,0.15); }
         .window-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8); }
+        .vf-callout-grid { position:fixed; right:14px; bottom:14px; z-index:180; display:grid; grid-template-columns:repeat(2,minmax(260px,320px)); gap:10px; max-height:calc(100vh - 80px); overflow:hidden; pointer-events:none; transform-origin:bottom right; }
+        .vf-callout-card { pointer-events:auto; background:rgba(2,6,23,.94); backdrop-filter:blur(12px); border:1px solid #334155; border-left:3px solid #06b6d4; border-radius:12px; box-shadow:0 18px 45px rgba(0,0,0,.55); padding:10px; min-width:0; animation:vf-callout-in .22s ease-out; }
+        .vf-callout-card[data-kind="damage"] { border-left-color:#ef4444; }
+        .vf-callout-card[data-kind="note"] { border-left-color:#f59e0b; }
+        @keyframes vf-callout-in { from { opacity:0; transform:translateY(12px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .vf-callout-timer { height:2px; border-radius:99px; overflow:hidden; background:#1e293b; margin-top:8px; }
+        .vf-callout-timer > span { display:block; height:100%; background:#06b6d4; animation:vf-callout-shrink 12s linear forwards; }
+        @keyframes vf-callout-shrink { from { width:100%; } to { width:0%; } }
+        .vf-stepper { display:inline-grid; grid-template-columns:32px minmax(72px,1fr) 32px; align-items:center; border:1px solid #334155; border-radius:9px; overflow:hidden; background:#020617; }
+        .vf-stepper button { height:32px; color:#94a3b8; font-weight:900; background:#0f172a; transition:.15s; }
+        .vf-stepper button:hover { color:#67e8f9; background:#1e293b; }
+        .vf-stepper output { text-align:center; font-size:11px; font-weight:900; color:#e2e8f0; padding:0 6px; }
+        .vf-3d-stage { position:fixed; inset:0; z-index:230; background:radial-gradient(circle at center,rgba(15,23,42,.88),rgba(0,0,0,.96)); display:flex; align-items:center; justify-content:center; padding:16px; }
+        .vf-3d-canvas { position:absolute; inset:0; overflow:hidden; }
+        .vf-3d-canvas canvas { width:100% !important; height:100% !important; display:block; }
+        .vf-3d-hud { position:relative; z-index:2; align-self:flex-end; width:min(680px,94vw); margin-bottom:20px; border:1px solid #334155; border-radius:12px; background:rgba(2,6,23,.88); padding:12px; box-shadow:0 16px 40px rgba(0,0,0,.6); }
+        @media (max-width:720px) { .vf-callout-grid { grid-template-columns:minmax(250px,320px); right:8px; bottom:8px; } }
     </style>
 </head>
 <body>
-    <div id="root"><div style="padding:72px 24px;text-align:center;color:#94a3b8;font-family:system-ui">Loading canonical RC2 data…</div></div>
+    <div id="root"><div style="padding:72px 24px;text-align:center;color:#94a3b8;font-family:system-ui">Loading canonical RC3 data…</div></div>
 
     
 
-    <!-- Canonical RC2 data shared with the Creator, inventories and Keeper Tool -->
+    <!-- Canonical RC3 data shared with the Creator, inventories and Keeper Tool -->
     <script src="shared-data.js"></script>
     <script src="canonical-runtime.js"></script>
     <script src="veilfarers-import.js"></script>
@@ -333,6 +363,47 @@
                 <text x="20" y={sh.ty} textAnchor="middle" fontWeight="900" fontSize="15" fill={txt} style={{ fontFamily: 'inherit' }}>{face}</text>
               </svg>
             </span>
+          );
+        };
+
+        const normalizeDamageDiceResults = (results, rolls, discardedIndices, rerolls) => {
+          if (Array.isArray(results) && results.length) {
+            return results.map((die, index) => ({
+              index: Number.isFinite(Number(die.index)) ? Number(die.index) : index,
+              value: Number(die.value),
+              status: die.status === 'discarded' ? 'discarded' : 'kept',
+              rerolledFrom: die.rerolledFrom == null ? null : Number(die.rerolledFrom)
+            }));
+          }
+          const dropped = new Set(Array.isArray(discardedIndices) ? discardedIndices.map(Number) : []);
+          const rerollMap = new Map((Array.isArray(rerolls) ? rerolls : []).map(item => [Number(item.index), item]));
+          return (Array.isArray(rolls) ? rolls : []).map((value, index) => {
+            const reroll = rerollMap.get(index);
+            return { index, value: Number(value), status: dropped.has(index) ? 'discarded' : 'kept', rerolledFrom: reroll ? Number(reroll.from) : null };
+          });
+        };
+
+        const DamageDiceDisplay = ({ results, rolls, discardedIndices, rerolls, sides, rolling, compact }) => {
+          const dice = normalizeDamageDiceResults(results, rolls, discardedIndices, rerolls);
+          if (!dice.length) return null;
+          const hasDiscarded = dice.some(die => die.status === 'discarded');
+          const keptValues = dice.filter(die => die.status !== 'discarded').map(die => die.value);
+          const discardedValues = dice.filter(die => die.status === 'discarded').map(die => die.value);
+          return (
+            <div className="flex flex-col items-center" aria-label={hasDiscarded ? `Kept ${keptValues.join(', ')}; discarded ${discardedValues.join(', ')}` : `Damage dice ${keptValues.join(', ')}`}>
+              <div className="vf-damage-dice">
+                {dice.map((die, index) => (
+                  <div key={`${die.index}-${index}`} data-die-status={die.status} className={`vf-damage-die ${die.status === 'discarded' ? 'is-discarded' : 'is-kept'}`}>
+                    <div className="vf-damage-die-face">
+                      <ShapedDie sides={sides || 6} value={die.value} rolling={rolling} variant={die.status === 'discarded' ? 'neutral' : (die.value === 1 ? 'crit' : 'max')} size={compact ? 26 : 34} />
+                    </div>
+                    {hasDiscarded && <span className="vf-damage-die-state">{die.status === 'discarded' ? 'Drop' : 'Keep'}</span>}
+                    {die.rerolledFrom != null && <span className="vf-damage-die-reroll">{die.rerolledFrom}→{die.value}</span>}
+                  </div>
+                ))}
+              </div>
+              {hasDiscarded && <div className="vf-damage-summary">Keep {keptValues.join(' + ')} · discard {discardedValues.join(', ')}</div>}
+            </div>
           );
         };
 
@@ -418,6 +489,53 @@
         const FEATURE_REGISTRY = VF_CANON.featureRegistry || [];
         const CORE_FEATURES = VF_CANON.features || [];
         const WEAPON_CATALOG = VF_CANON.weapons || [];
+        const RESOLVE_MOVE_LIBRARY = VF_CANON.resolveMoves || [];
+        // Player Tool playtest overrides. These do not alter the books or canonical rules JSON.
+        const PLAYER_TOOL_WEAPON_OVERRIDES = {
+          'vf.core.weapon.railgun': { damage: 'd8+3 phys.', features: ['Massive'], feature: 'Massive' }
+        };
+        const DICE3D_BASES = [
+          'https://cdn.jsdelivr.net/gh/sarahRosannaBusch/dice@617f212/',
+          'https://cdn.jsdelivr.net/gh/sarahRosannaBusch/dice@main/'
+        ];
+        let dice3DLibraryPromise = null;
+        const loadScriptOnce = (src) => new Promise((resolve, reject) => {
+          const existing = document.querySelector(`script[data-vf-src="${src}"]`);
+          if (existing) { if (existing.dataset.loaded === '1') resolve(); else existing.addEventListener('load', resolve, { once:true }); return; }
+          const script = document.createElement('script');
+          script.src = src; script.async = false; script.dataset.vfSrc = src;
+          script.onload = () => { script.dataset.loaded = '1'; resolve(); };
+          script.onerror = () => { script.remove(); reject(new Error(`Unable to load ${src}`)); };
+          document.head.appendChild(script);
+        });
+        const getDice3DGlobal = () => {
+          try {
+            const globalDice = window.DICE || (typeof DICE !== 'undefined' ? DICE : null);
+            if (globalDice && globalDice.dice_box) { window.DICE = globalDice; return globalDice; }
+          } catch (e) {}
+          return null;
+        };
+        const loadDice3DLibrary = () => {
+          const available = getDice3DGlobal();
+          if (available) return Promise.resolve(available);
+          if (dice3DLibraryPromise) return dice3DLibraryPromise;
+          dice3DLibraryPromise = (async () => {
+            let lastError = null;
+            for (const base of DICE3D_BASES) {
+              try {
+                await loadScriptOnce(base + 'libs/three.min.js');
+                await loadScriptOnce(base + 'libs/cannon.min.js');
+                await loadScriptOnce(base + 'libs/teal.js');
+                await loadScriptOnce(base + 'dice.js');
+                const loaded = getDice3DGlobal();
+                if (loaded) return loaded;
+              } catch (error) { lastError = error; }
+            }
+            dice3DLibraryPromise = null;
+            throw lastError || new Error('3D dice library unavailable.');
+          })();
+          return dice3DLibraryPromise;
+        };
         const normalizeRuleName = (value) => String(value || '').toLowerCase().replace(/[+()]|\d+/g, ' ').replace(/[^a-z]+/g, ' ').trim();
         const weaponKey = (weapon) => String((weapon && (weapon.canonicalId || weapon.id || weapon.name)) || '').trim();
         const findCanonicalWeapon = (weapon) => {
@@ -435,12 +553,15 @@
           const source = canonical || weapon;
           let trait = String(weapon.trait || source.trait || '').trim();
           let range = String(weapon.range || source.range || '').trim();
-          if (!range && trait.indexOf('·') !== -1) {
-            const parts = trait.split('·').map(x => x.trim());
+          if (trait.indexOf('·') !== -1) {
+            const parts = trait.split('·').map(x => x.trim()).filter(Boolean);
             trait = parts.shift() || '';
-            range = parts.join(' · ');
+            if (!range) range = parts.join(' · ');
           }
-          const features = featureList((weapon.features && weapon.features.length) ? weapon.features : (weapon.feature || source.features || source.feature));
+          const overrideKey = String((canonical && canonical.id) || weapon.canonicalId || weapon.id || '').trim();
+          const override = PLAYER_TOOL_WEAPON_OVERRIDES[overrideKey] || ((String(weapon.name || source.name || '').trim().toLowerCase() === 'railgun') ? PLAYER_TOOL_WEAPON_OVERRIDES['vf.core.weapon.railgun'] : null);
+          const featureSource = override && override.features ? override.features : ((weapon.features && weapon.features.length) ? weapon.features : (weapon.feature || source.features || source.feature));
+          const features = featureList(featureSource);
           return {
             ...weapon,
             id: (canonical && canonical.id) || weapon.id || weapon.canonicalId || '',
@@ -448,7 +569,7 @@
             name: weapon.name || source.name || '',
             trait: trait || source.trait || '',
             range: range || source.range || '',
-            damage: weapon.damage || source.damage || '',
+            damage: (override && override.damage) || weapon.damage || source.damage || '',
             features: features.length ? features : featureList(source.features),
             feature: (features.length ? features : featureList(source.features)).join(', '),
             featureRefs: (canonical && canonical.featureRefs) || weapon.featureRefs || [],
@@ -491,6 +612,11 @@
           }
           return effect || entry.display;
         };
+        const weaponFeatureMatches = (entry, expected) => {
+          const actual = normalizeRuleName(entry && entry.display);
+          const wanted = normalizeRuleName(expected);
+          return actual === wanted || actual.startsWith(wanted + ' ') || actual.startsWith(wanted + ':') || actual.startsWith(wanted + '(');
+        };
         const weaponAttackProfile = (weapon, character, equipped) => {
           const hydrated = hydratePlayerWeapon(weapon);
           const entries = weaponFeatureEntries(hydrated);
@@ -499,19 +625,19 @@
           const range = String(hydrated.range || '').toLowerCase();
           entries.forEach(entry => {
             const name = normalizeRuleName(entry.display);
-            if (name === 'reliable') { attackBonus += 1; attackBonuses.push('Reliable +1'); }
-            if (name === 'accurate' && (range.indexOf('far') !== -1)) { attackBonus += 1; attackBonuses.push('Accurate +1'); }
+            if (weaponFeatureMatches(entry, 'reliable')) { attackBonus += 1; attackBonuses.push('Reliable +1'); }
+            if (weaponFeatureMatches(entry, 'accurate') && (range.indexOf('far') !== -1)) { attackBonus += 1; attackBonuses.push('Accurate +1'); }
           });
-          const heavy = entries.some(entry => normalizeRuleName(entry.display) === 'heavy');
-          const massive = entries.some(entry => normalizeRuleName(entry.display) === 'massive');
-          const brutal = entries.some(entry => normalizeRuleName(entry.display) === 'brutal');
-          const pairedEntries = entries.filter(entry => normalizeRuleName(entry.display) === 'paired');
+          const heavy = entries.some(entry => weaponFeatureMatches(entry, 'heavy'));
+          const massive = entries.some(entry => weaponFeatureMatches(entry, 'massive'));
+          const brutal = entries.some(entry => weaponFeatureMatches(entry, 'brutal'));
+          const pairedEntries = entries.filter(entry => weaponFeatureMatches(entry, 'paired'));
           const allEquipped = (equipped || []).map(hydratePlayerWeapon).filter(w => w.name);
-          const pairedWeapons = allEquipped.filter(w => weaponFeatureEntries(w).some(entry => normalizeRuleName(entry.display) === 'paired'));
+          const pairedWeapons = allEquipped.filter(w => weaponFeatureEntries(w).some(entry => weaponFeatureMatches(entry, 'paired')));
           let pairedBonus = 0;
           if (pairedEntries.length && pairedWeapons.length >= 2) {
             pairedWeapons.forEach(w => weaponFeatureEntries(w).forEach(entry => {
-              if (normalizeRuleName(entry.display) !== 'paired') return;
+              if (!weaponFeatureMatches(entry, 'paired')) return;
               const fromParam = Number(entry.parameters && entry.parameters.bonus);
               const fromText = Number((String(entry.display).match(/\+(\d+)/) || [])[1]);
               pairedBonus = Math.max(pairedBonus, Number.isFinite(fromParam) ? fromParam : (Number.isFinite(fromText) ? fromText : 0));
@@ -520,7 +646,11 @@
           return {
             weapon: hydrated,
             entries,
-            traitMod: Number(character && character.stats && character.stats[String(hydrated.trait || '').toLowerCase()]) || 0,
+            traitMod: (() => {
+              const wanted = String(hydrated.trait || '').toLowerCase();
+              const key = ['agility','strength','finesse','instinct','presence','knowledge'].find(item => wanted.indexOf(item) !== -1);
+              return key ? (Number(character && character.stats && character.stats[key]) || 0) : 0;
+            })(),
             attackBonus,
             attackBonuses,
             heavyDisadvantage: heavy && (Number(character && character.stats && character.stats.strength) || 0) <= 0,
@@ -584,6 +714,32 @@
           });
           if (!bullets.length) bullets.push(source.length > 220 ? source.slice(0, 217).trim() + '…' : source);
           return { title, bullets: bullets.slice(0, 5), full: source, actions: parseFeatureRolls(source, title) };
+        };
+        const compactLine = (value, limit) => {
+          const text = String(value || '').replace(/\s+/g, ' ').trim();
+          const max = limit || 150;
+          if (text.length <= max) return text;
+          const cut = text.slice(0, max - 1);
+          const boundary = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('; '), cut.lastIndexOf(', '), cut.lastIndexOf(' '));
+          return (boundary > 60 ? cut.slice(0, boundary) : cut).trim() + '…';
+        };
+        const resolveMovesForCharacter = (character) => {
+          const classKey = normalizeRuleName(character && character.class);
+          const subclassKey = normalizeRuleName(character && character.subclass);
+          if (!classKey) return [];
+          return RESOLVE_MOVE_LIBRARY.filter(move => {
+            if (normalizeRuleName(move.class) !== classKey) return false;
+            if (!move.subclass) return true;
+            const wanted = normalizeRuleName(move.subclass);
+            return subclassKey === wanted || subclassKey.indexOf(wanted) !== -1 || wanted.indexOf(subclassKey) !== -1;
+          }).sort((a, b) => {
+            if (!!a.subclass !== !!b.subclass) return a.subclass ? 1 : -1;
+            return String(a.name || '').localeCompare(String(b.name || ''));
+          });
+        };
+        const resolveMoveMinimum = (move) => {
+          const match = String((move && move.cost) || '').match(/(\d+)/);
+          return match ? Math.max(1, Number(match[1])) : 1;
         };
 
 
@@ -680,6 +836,9 @@
           const [customWeaponDraft, setCustomWeaponDraft] = useState({ name:'', trait:'', range:'', damage:'', feature:'' });
           const [showHistory, setShowHistory] = useState(false); 
           const [selectedDomain, setSelectedDomain] = useState("Tech");
+          const [expandedPanels, setExpandedPanels] = useState({});
+          const panelExpanded = (id) => !!expandedPanels[id];
+          const togglePanel = (id) => setExpandedPanels(current => ({ ...current, [id]: !current[id] }));
           
           // Window Management
           const [pinned, setPinned] = useState({ player: false, gm: false });
@@ -745,9 +904,24 @@
           const [errorMsg, setErrorMsg] = useState('');
           const unsubscribeRef = useRef(null); // Store listener unsubscription
           
-          // Estados Broadcasting
-          const [broadcastRoll, setBroadcastRoll] = useState(null);
-          const [recentBroadcasts, setRecentBroadcasts] = useState([]);
+          // Real-time callouts: keep one current window per player, up to six.
+          const [activeCallouts, setActiveCallouts] = useState([]);
+          const calloutTimersRef = useRef(new Map());
+          const seenCalloutIdsRef = useRef(new Set());
+          const [calloutScale, setCalloutScale] = useState(() => { try { const value = Number(localStorage.getItem('veilfarers_callout_scale')); return value >= 0.5 && value <= 1.5 ? value : 1; } catch (e) { return 1; } });
+          useEffect(() => { try { localStorage.setItem('veilfarers_callout_scale', String(calloutScale)); } catch (e) {} }, [calloutScale]);
+          const [diceSoundEnabled, setDiceSoundEnabled] = useState(() => { try { return localStorage.getItem('veilfarers_dice_sound') !== '0'; } catch (e) { return true; } });
+          const [diceVolume, setDiceVolume] = useState(() => { try { const value = Number(localStorage.getItem('veilfarers_dice_volume')); return value >= 0 && value <= 1 ? value : 0.55; } catch (e) { return 0.55; } });
+          useEffect(() => { try { localStorage.setItem('veilfarers_dice_sound', diceSoundEnabled ? '1' : '0'); } catch (e) {} }, [diceSoundEnabled]);
+          useEffect(() => { try { localStorage.setItem('veilfarers_dice_volume', String(diceVolume)); } catch (e) {} }, [diceVolume]);
+          const audioContextRef = useRef(null);
+          const [diceMode, setDiceMode] = useState(() => { try { return localStorage.getItem('veilfarers_dice_mode') === '3d' ? '3d' : '2d'; } catch (e) { return '2d'; } });
+          useEffect(() => { try { localStorage.setItem('veilfarers_dice_mode', diceMode); } catch (e) {} }, [diceMode]);
+          const [dice3DRequest, setDice3DRequest] = useState(null);
+          const dice3DContainerRef = useRef(null);
+          const dice3DBoxRef = useRef(null);
+          const [dice3DStatus, setDice3DStatus] = useState('');
+          const [timeTravelRevision, setTimeTravelRevision] = useState(0);
           // ===== NOTES / HANDOUTS =====
           const [handouts, setHandouts] = useState([]);        // incoming GM handouts (from session)
           const [openNotes, setOpenNotes] = useState([]);      // [{ id, note, min, openedAt }]
@@ -757,6 +931,72 @@
           const showConfirm = (message, onYes, title) => setDialog({ kind: 'confirm', title: title || 'Confirm', message: message, onOk: () => { setDialog(null); if (onYes) onYes(); } });
           const showPrompt = (message, defaultValue, onSubmit, title) => setDialog({ kind: 'prompt', title: title || 'Enter a value', message: message, value: defaultValue || '', onOk: (v) => { setDialog(null); if (onSubmit) onSubmit(v); } });
           const showAlert = (message, title) => setDialog({ kind: 'alert', title: title || 'Notice', message: message, onOk: () => setDialog(null) });
+          const playDiceSound = (count) => {
+            if (!diceSoundEnabled || diceVolume <= 0) return;
+            try {
+              const AudioCtx = window.AudioContext || window.webkitAudioContext;
+              if (!AudioCtx) return;
+              const ctx = audioContextRef.current || new AudioCtx();
+              audioContextRef.current = ctx;
+              if (ctx.state === 'suspended') ctx.resume();
+              const now = ctx.currentTime;
+              const hits = Math.max(3, Math.min(12, Number(count) || 3));
+              for (let index = 0; index < hits; index++) {
+                const at = now + index * 0.028 + Math.random() * 0.018;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+                osc.type = index % 2 ? 'triangle' : 'square';
+                osc.frequency.setValueAtTime(120 + Math.random() * 340, at);
+                filter.type = 'bandpass'; filter.frequency.setValueAtTime(500 + Math.random() * 1500, at); filter.Q.value = 0.7;
+                gain.gain.setValueAtTime(0.0001, at);
+                gain.gain.exponentialRampToValueAtTime(Math.max(0.001, diceVolume * (0.08 + Math.random() * 0.05)), at + 0.004);
+                gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.055 + Math.random() * 0.04);
+                osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+                osc.start(at); osc.stop(at + 0.12);
+              }
+            } catch (error) { console.warn('Dice sound unavailable:', error); }
+          };
+          const completeDice3D = (request) => {
+            if (!request || request.completed) return;
+            request.completed = true;
+            setDice3DRequest(null);
+            setDice3DStatus('');
+            try { if (request.onComplete) request.onComplete(); } catch (error) { console.error(error); }
+          };
+          const presentDiceResult = (notation, desiredResults, onComplete) => {
+            const results = (desiredResults || []).map(Number).filter(Number.isFinite);
+            playDiceSound(results.length || 2);
+            if (diceMode !== '3d') { onComplete(); return; }
+            const supported = /^\s*(?:\d+d(?:4|6|8|10|12|20)(?:\+|$))+\s*$/i.test(String(notation || ''));
+            if (!supported || results.length > 20) {
+              showAlert('This roll cannot be rendered in 3D. It will use the standard VeilFarers dice display.', '3D dice fallback');
+              onComplete(); return;
+            }
+            setDice3DRequest({ id:'3d-' + Date.now().toString(36), notation:String(notation), results, onComplete, completed:false });
+          };
+          useEffect(() => {
+            if (!dice3DRequest || !dice3DContainerRef.current) return;
+            let cancelled = false;
+            let fallbackTimer = null;
+            const request = dice3DRequest;
+            setDice3DStatus('Loading 3D dice…');
+            loadDice3DLibrary().then(() => {
+              if (cancelled || !dice3DContainerRef.current) return;
+              dice3DContainerRef.current.innerHTML = '';
+              const box = new window.DICE.dice_box(dice3DContainerRef.current);
+              dice3DBoxRef.current = box;
+              box.setDice(request.notation);
+              setDice3DStatus('Rolling…');
+              fallbackTimer = setTimeout(() => completeDice3D(request), 9000);
+              box.start_throw(() => request.results.slice(), () => { if (fallbackTimer) clearTimeout(fallbackTimer); completeDice3D(request); });
+            }).catch(error => {
+              console.error(error);
+              setDice3DStatus('3D renderer unavailable — using standard dice.');
+              setTimeout(() => completeDice3D(request), 650);
+            });
+            return () => { cancelled = true; if (fallbackTimer) clearTimeout(fallbackTimer); };
+          }, [dice3DRequest && dice3DRequest.id]);
           const seenNotesRef = useRef(null);                   // Set of note ids already auto-opened (per session)
           const connectedAtRef = useRef(0);                    // when this device joined — only auto-open handouts sent after
           const loadSeenNotes = (sid) => { try { seenNotesRef.current = new Set(JSON.parse(localStorage.getItem('veilfarers_seen_notes_' + sid) || '[]')); } catch (e) { seenNotesRef.current = new Set(); } };
@@ -782,7 +1022,6 @@
           }, [handouts, characters]);
           const [rollerScale, setRollerScale] = useState(1);
           const [rolling, setRolling] = useState(false);
-          const [showToast, setShowToast] = useState(false);
           const [rollHistory, setRollHistory] = useState([]);
           
           const fileInputRef = useRef(null);
@@ -807,7 +1046,6 @@
             return () => { alive = false; if (t) clearTimeout(t); setFlick(false); };
           }, [spotlight, flickerEnabled, flickerWait]);
           const timeoutRef = useRef(null);
-          const toastTimeoutRef = useRef(null);
           const lastBroadcastIdRef = useRef(null);
           const listenerPrimedRef = useRef(false);
           
@@ -830,6 +1068,7 @@
             };
           };
           const character = normChar(characters[activeTab] || characters[0] || {});
+          const availableResolveMoves = resolveMovesForCharacter(character);
 
           // --- DRAGGING LOGIC ---
           const getPoint = (e) => (e.touches && e.touches[0]) ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
@@ -1067,6 +1306,38 @@
               logRoll({ type:"note", label: label, outcome:"", outcomeColor:"", total:"", hope:"", fear:"", playerName: (character.name||character.playerName||"Player"), timestamp: Date.now() });
             }
           };
+          const useResolveMove = (move) => {
+            if (!move) return;
+            const available = Number((character.resolve && character.resolve.current) || 0);
+            const minimum = resolveMoveMinimum(move);
+            if (available < minimum) return;
+            const execute = (count) => {
+              const spend = Math.max(minimum, Math.min(available, Number(count) || minimum));
+              const rolls = move.rollResolve ? Array.from({ length: spend }, () => Math.floor(Math.random() * 4) + 1) : [];
+              const total = rolls.reduce((sum, value) => sum + value, 0);
+              updateCharacter({ ...character, resolve: { ...(character.resolve || { max: 2 }), current: Math.max(0, available - spend) } });
+              const common = {
+                label: `Resolve Move: ${move.name}`,
+                playerName: (character.name || character.playerName || 'Player'),
+                timestamp: Date.now(),
+                resourceCost: { resource: 'Resolve', amount: spend },
+                details: move.text,
+                resolveMove: { id: move.id, name: move.name, class: move.class, subclass: move.subclass || '', cost: move.cost }
+              };
+              if (move.rollResolve) presentDiceResult(`${spend}d4`, rolls, () => logRoll({ ...common, type: 'generic', die: 4, count: spend, modifier: 0, rolls, total }));
+              else logRoll({ ...common, type: 'note', label: `${move.name}\n${move.text}` });
+            };
+            if (move.variableResolve) {
+              showPrompt(`How many Resolve Dice do you spend? Available: ${available}.`, String(minimum), (value) => {
+                const requested = Number(value);
+                if (!Number.isInteger(requested) || requested < minimum || requested > available) {
+                  showAlert(`Choose a whole number from ${minimum} to ${available}.`, 'Invalid Resolve spend');
+                  return;
+                }
+                execute(requested);
+              }, move.name);
+            } else execute(minimum);
+          };
           const rollWeaponDamage = (dmgStr, mult, bonus, profile) => {
               if (!dmgStr) return null;
               mult = mult || 1; bonus = bonus || 0; profile = profile || {};
@@ -1095,6 +1366,13 @@
                   discardedIndices.push(lowest);
                   keptRolls.splice(lowest, 1);
               }
+              const rerollMap = new Map(rerolls.map(item => [item.index, item]));
+              const damageDiceResults = rolls.map((value, index) => ({
+                  index,
+                  value,
+                  status: discardedIndices.includes(index) ? 'discarded' : 'kept',
+                  rerolledFrom: rerollMap.has(index) ? rerollMap.get(index).from : null
+              }));
               const paired = Number(profile.pairedBonus) || 0;
               const extra = staticMod + bonus + paired;
               const sum = keptRolls.reduce((total, value) => total + value, 0);
@@ -1110,6 +1388,7 @@
                   rolls,
                   keptRolls,
                   discardedIndices,
+                  damageDiceResults,
                   rerolls,
                   modifier: extra,
                   base: String(dmgStr),
@@ -1190,7 +1469,8 @@
                   damage: dmgInfo && dmgInfo.total, damageDetail: dmgInfo && dmgInfo.detail,
                   damageDice: dmgInfo && dmgInfo.dice, damageRolledDice: dmgInfo && dmgInfo.rolledDice,
                   damageRolls: dmgInfo && dmgInfo.rolls, damageKeptRolls: dmgInfo && dmgInfo.keptRolls,
-                  damageDiscardedIndices: dmgInfo && dmgInfo.discardedIndices, damageRerolls: dmgInfo && dmgInfo.rerolls,
+                  damageDiscardedIndices: dmgInfo && dmgInfo.discardedIndices, damageDiceResults: dmgInfo && dmgInfo.damageDiceResults,
+                  damageRerolls: dmgInfo && dmgInfo.rerolls,
                   damageRules: dmgInfo && dmgInfo.rules, damageModifier: dmgInfo ? dmgInfo.modifier : 0,
                   damageModifierBreakdown: dmgInfo && dmgInfo.modifierBreakdown, damageBase: dmgInfo && dmgInfo.base, crit: isCrit,
                   weaponName: profile && profile.weapon.name, weaponTrait: profile && profile.weapon.trait,
@@ -1200,11 +1480,17 @@
                   resourceCost: o.spend || null,
                   type: 'duality', timestamp: Date.now()
               };
-              setRollResult(resultObj);
-              setRollModifier(0);
-              logRoll(resultObj);
-              setPlayerRollType('normal');
-              if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
+              const notationParts = ['1d12', '1d12'];
+              const desiredResults = [hopeDie, fearDie];
+              if (extraDie) { notationParts.push('1d6'); desiredResults.push(extraDie); }
+              if (dmgInfo && dmgInfo.rolledDice) { notationParts.push(dmgInfo.rolledDice); desiredResults.push(...dmgInfo.rolls); }
+              presentDiceResult(notationParts.join('+'), desiredResults, () => {
+                setRollResult(resultObj);
+                setRollModifier(0);
+                logRoll(resultObj);
+                setPlayerRollType('normal');
+                if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
+              });
           };
           const canPayFeatureCost = (cost) => {
               if (!cost || !cost.resource || !cost.amount) return true;
@@ -1241,7 +1527,7 @@
               if (action.type === 'die') {
                   const sides = Number(action.die) || 12;
                   const value = Math.floor(Math.random() * sides) + 1;
-                  logRoll({ type:'generic', label, rolls:[value], die:sides, count:1, modifier:0, sum:value, total:value, feature:summary.title, dieName:action.dieName || `d${sides}`, resourceCost:paymentCost || null, playerName: character.name || character.playerName || 'Player', timestamp: Date.now() });
+                  presentDiceResult(`1d${sides}`, [value], () => logRoll({ type:'generic', label, rolls:[value], die:sides, count:1, modifier:0, sum:value, total:value, feature:summary.title, dieName:action.dieName || `d${sides}`, resourceCost:paymentCost || null, playerName: character.name || character.playerName || 'Player', timestamp: Date.now() }));
                   return;
               }
               logRoll({ type:'note', label, playerName: character.name || character.playerName || 'Player', timestamp: Date.now(), feature: summary.title, resourceCost: paymentCost || null });
@@ -1289,8 +1575,10 @@
                   playerName: character.name || character.playerName || "Unknown",
                   timestamp: Date.now()
               };
-              setResultFn(resultObj);
-              if (broadcast) logRoll(resultObj);
+              presentDiceResult(`${c}d${sides}`, rolls, () => {
+                setResultFn(resultObj);
+                if (broadcast) logRoll(resultObj);
+              });
           };
 
           const rollGenericGM = () => {
@@ -1314,16 +1602,63 @@
               if (!roll) return '';
               return roll.broadcastId || [rollTimeMs(roll.timestamp), roll.playerName || '', roll.label || '', roll.total == null ? '' : roll.total].join('|');
           };
+          const calloutActorKey = (roll) => String((roll && (roll.actorId || roll.characterId || roll.playerName)) || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const registerCallout = (roll) => {
+              if (!roll) return;
+              const eventId = rollEventKey(roll);
+              if (!eventId || seenCalloutIdsRef.current.has(eventId)) return;
+              seenCalloutIdsRef.current.add(eventId);
+              if (seenCalloutIdsRef.current.size > 240) seenCalloutIdsRef.current = new Set(Array.from(seenCalloutIdsRef.current).slice(-160));
+              const actorKey = calloutActorKey(roll);
+              setActiveCallouts(prev => [{ ...roll, actorKey }, ...prev.filter(item => item.actorKey !== actorKey)].slice(0, 6));
+              const prior = calloutTimersRef.current.get(actorKey);
+              if (prior) clearTimeout(prior);
+              calloutTimersRef.current.set(actorKey, setTimeout(() => {
+                setActiveCallouts(prev => prev.filter(item => item.actorKey !== actorKey));
+                calloutTimersRef.current.delete(actorKey);
+              }, 12000));
+          };
+          const TIME_TRAVEL_KEY = 'veilfarers_player_time_travel_v1';
+          const readTimeTravel = () => { try { return JSON.parse(localStorage.getItem(TIME_TRAVEL_KEY) || '{}') || {}; } catch (e) { return {}; } };
+          const saveTimeTravelSnapshot = (eventId, stateBefore, label) => {
+              if (!eventId || !stateBefore || !stateBefore.id) return;
+              try {
+                const all = readTimeTravel();
+                all[eventId] = { characterId:stateBefore.id, timestamp:Date.now(), label:label || 'Roll', character:JSON.parse(JSON.stringify(stateBefore)) };
+                const entries = Object.entries(all).sort((a,b) => Number(b[1].timestamp) - Number(a[1].timestamp)).slice(0, 40);
+                localStorage.setItem(TIME_TRAVEL_KEY, JSON.stringify(Object.fromEntries(entries)));
+                setTimeTravelRevision(value => value + 1);
+              } catch (error) { console.warn('Unable to save time-travel snapshot:', error); }
+          };
+          const hasTimeTravelSnapshot = (roll) => !!readTimeTravel()[rollEventKey(roll)];
+          const restoreTimeTravelSnapshot = (roll) => {
+              const eventId = rollEventKey(roll);
+              const snapshot = readTimeTravel()[eventId];
+              if (!snapshot || !snapshot.character) { showAlert('This state is no longer available on this device.', 'Time travel unavailable'); return; }
+              showConfirm(`Restore ${snapshot.character.name || 'this character'} to the state immediately before “${snapshot.label || roll.label || 'this roll'}”?`, () => {
+                const restored = normChar(JSON.parse(JSON.stringify(snapshot.character)));
+                setCharacters(prev => {
+                  const index = prev.findIndex(item => item && item.id === snapshot.characterId);
+                  if (index === -1) { setActiveTab(prev.length); return [...prev, restored]; }
+                  const next = prev.slice(); next[index] = restored; setActiveTab(index); return next;
+                });
+                lastLocalEditRef.current = Date.now();
+                showAlert('Character state restored. Cloud sync will publish this restored state if the table is connected.', 'Time travel complete');
+              }, 'Restore previous state');
+          };
           const logRoll = (rollData) => {
-              const enrichedRoll = { ...rollData, timestamp: rollTimeMs(rollData.timestamp) || Date.now(), broadcastId: rollData.broadcastId || makeBroadcastId() };
+              const enrichedRoll = { ...rollData, timestamp: rollTimeMs(rollData.timestamp) || Date.now(), broadcastId: rollData.broadcastId || makeBroadcastId(), actorId: rollData.actorId || character.id || '', characterId: character.id || '' };
+              saveTimeTravelSnapshot(enrichedRoll.broadcastId, character, enrichedRoll.label);
               setRollHistory(prev => [enrichedRoll, ...prev]);
+              registerCallout(enrichedRoll);
               if (isConnected && fbServices) {
                   const { db, setDoc, doc, arrayUnion } = fbServices;
                   const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
+                  const remoteRoll = { ...enrichedRoll };
                   setDoc(docRef, {
-                      lastRoll: enrichedRoll,
-                      rollHistory: arrayUnion(enrichedRoll),
-                      lastRollUpdatedAt: enrichedRoll.timestamp
+                      lastRoll: remoteRoll,
+                      rollHistory: arrayUnion(remoteRoll),
+                      lastRollUpdatedAt: remoteRoll.timestamp
                   }, {merge: true}).catch(e => {
                       console.error("Error broadcasting roll:", e);
                       setErrorMsg('Roll broadcast failed: ' + (e.code || e.message));
@@ -1465,6 +1800,8 @@
                       if (data.rollHistory && Array.isArray(data.rollHistory)) {
                           const sortedHistory = [...data.rollHistory].sort((a, b) => rollTimeMs(b.timestamp) - rollTimeMs(a.timestamp));
                           setRollHistory(sortedHistory);
+                          const freshCutoff = Math.max(connectedAtRef.current - 2000, Date.now() - 12000);
+                          sortedHistory.filter(item => rollTimeMs(item.timestamp) >= freshCutoff).slice(0, 12).reverse().forEach(registerCallout);
                       }
                       if (data.lastRoll) {
                           const incoming = { ...data.lastRoll, timestamp: rollTimeMs(data.lastRoll.timestamp) || Date.now() };
@@ -1475,12 +1812,8 @@
                           listenerPrimedRef.current = true;
                           lastBroadcastIdRef.current = incomingKey;
                           if (isNewEvent && (!isInitialSnapshot || isFreshInitialEvent)) {
-                              setBroadcastRoll(incoming);
                               setRolling(true); setTimeout(() => setRolling(false), 750);
-                              setRecentBroadcasts(prev => { if (prev[0] && rollEventKey(prev[0]) === incomingKey) return prev; return [incoming].concat(prev).slice(0, 3); });
-                              setShowToast(true);
-                              if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
-                              toastTimeoutRef.current = setTimeout(() => { setShowToast(false); }, 10000);
+                              registerCallout(incoming);
                           }
                       } else {
                           listenerPrimedRef.current = true;
@@ -1587,35 +1920,57 @@
             community: { label:'Community Feature', text:'text-cyan-300', border:'border-cyan-800/50', bg:'bg-cyan-950/20' },
             effort: { label: character.path === 'sleeping' ? 'Effort Feature' : 'Hope Feature', text:'text-purple-300', border:'border-purple-800/50', bg:'bg-purple-950/20' }
           };
+          const CompactActionPanel = ({ panelId, title, description, icon, accentClass, children }) => {
+              const expanded = panelExpanded(panelId);
+              return (
+                <section className={`rounded-lg border border-slate-800 bg-slate-900/40 min-w-0 overflow-hidden ${expanded ? 'shadow-[0_0_20px_rgba(15,23,42,.35)]' : ''}`}>
+                  <button type="button" aria-expanded={expanded} onClick={() => togglePanel(panelId)} className="w-full p-3 flex items-start gap-3 text-left hover:bg-slate-800/35 transition-colors">
+                    <span className={`mt-0.5 shrink-0 ${accentClass || 'text-slate-300'}`}>{icon}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[11px] font-black uppercase tracking-widest text-slate-100">{title}</span>
+                      <span className="block mt-1 text-[10px] leading-snug text-slate-400">{description}</span>
+                    </span>
+                    <span className={`shrink-0 w-7 h-7 rounded-full border grid place-items-center ${expanded ? 'border-slate-500 bg-slate-800 text-white' : 'border-slate-700 bg-slate-950 text-slate-400'}`} aria-hidden="true">
+                      {expanded ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+                  {expanded && <div className="p-3 pt-0 border-t border-slate-800/70">{children}</div>}
+                </section>
+              );
+          };
           const FeatureSummaryCard = ({ kind, text }) => {
-              const [expanded, setExpanded] = useState(false);
               const accent = featureAccent[kind] || featureAccent.class;
               const summary = compactFeature(text, accent.label);
+              const panelId = `feature-${kind}`;
+              const expanded = panelExpanded(panelId);
               return (
-                <div className={`rounded border ${accent.border} ${accent.bg} p-2.5 min-w-0`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className={`text-[9px] font-black uppercase tracking-widest ${accent.text}`}>{accent.label}</div>
-                      <div className="text-[12px] font-bold text-slate-100 mt-0.5 leading-tight">{summary.title}</div>
-                    </div>
-                    {summary.full.length > 210 && <button onClick={() => setExpanded(value => !value)} className="shrink-0 px-2 py-1 rounded border border-slate-700 bg-slate-950 text-[9px] font-bold uppercase text-slate-400 hover:text-white hover:border-slate-500">{expanded ? 'Less' : 'Details'}</button>}
-                  </div>
-                  {!expanded ? (
-                    <ul className="mt-1.5 space-y-1 text-[10px] text-slate-300 leading-snug">
-                      {summary.bullets.map((bullet, index) => <li key={index} className="flex gap-1.5"><span className={accent.text}>◆</span><span>{bullet}</span></li>)}
-                    </ul>
-                  ) : <div className="mt-2 text-[10px] text-slate-300 leading-relaxed whitespace-pre-line">{summary.full}</div>}
-                  {summary.actions.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-slate-800/70">
-                      {summary.actions.flatMap((action, actionIndex) => {
-                        const actionLabel = action.type === 'roll' ? `Roll${action.trait ? ' ' + action.trait : ''}${action.dc ? ' · DC ' + action.dc : ''}` : action.type === 'die' ? `Roll ${action.dieName || ('d' + action.die)}` : 'Use';
-                        return featurePaymentOptions(action.cost).map((paymentCost, paymentIndex) => {
-                          const disabled = !canPayFeatureCost(paymentCost);
-                          const costLabel = paymentCost ? `${paymentCost.amount} ${paymentCost.resource}` : '';
-                          const isEffortAlternative = paymentCost && paymentCost.alternativeFor === 'hope';
-                          return <button key={`${actionIndex}-${paymentIndex}`} disabled={disabled} onClick={() => executeFeatureAction(accent.label, summary, action, paymentCost)} title={isEffortAlternative ? 'Alternative payment: spend Effort instead of Hope' : ''} className={`px-2.5 py-1 rounded border text-[9px] font-black uppercase tracking-wide ${isEffortAlternative ? 'text-amber-300 border-amber-800/70 hover:border-amber-500' : `${accent.text} border-slate-700 hover:border-slate-500`} bg-slate-950 disabled:opacity-30 disabled:cursor-not-allowed`}><Zap className="w-3 h-3 inline mr-1" />{actionLabel}{costLabel ? ` · ${costLabel}` : ''}</button>;
-                        });
-                      })}
+                <div className={`rounded-lg border ${accent.border} ${accent.bg} min-w-0 overflow-hidden`}>
+                  <button type="button" aria-expanded={expanded} onClick={() => togglePanel(panelId)} className="w-full p-2.5 flex items-start justify-between gap-2 text-left hover:bg-slate-900/30 transition-colors">
+                    <span className="min-w-0">
+                      <span className={`block text-[9px] font-black uppercase tracking-widest ${accent.text}`}>{accent.label}</span>
+                      <span className="block text-[12px] font-bold text-slate-100 mt-0.5 leading-tight">{summary.title}</span>
+                      <span className="block mt-1 text-[10px] text-slate-400 leading-snug line-clamp-2">{summary.bullets[0] || compactLine(summary.full, 130)}</span>
+                    </span>
+                    <span className={`shrink-0 w-7 h-7 rounded-full border grid place-items-center ${expanded ? 'border-slate-500 bg-slate-800 text-white' : 'border-slate-700 bg-slate-950 text-slate-400'}`} aria-hidden="true">
+                      {expanded ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+                  {expanded && (
+                    <div className="p-2.5 pt-2 border-t border-slate-800/70">
+                      <div className="text-[10px] text-slate-300 leading-relaxed whitespace-pre-line">{summary.full}</div>
+                      {summary.actions.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-slate-800/70">
+                          {summary.actions.flatMap((action, actionIndex) => {
+                            const actionLabel = action.type === 'roll' ? `Roll${action.trait ? ' ' + action.trait : ''}${action.dc ? ' · DC ' + action.dc : ''}` : action.type === 'die' ? `Roll ${action.dieName || ('d' + action.die)}` : 'Use';
+                            return featurePaymentOptions(action.cost).map((paymentCost, paymentIndex) => {
+                              const disabled = !canPayFeatureCost(paymentCost);
+                              const costLabel = paymentCost ? `${paymentCost.amount} ${paymentCost.resource}` : '';
+                              const isEffortAlternative = paymentCost && paymentCost.alternativeFor === 'hope';
+                              return <button key={`${actionIndex}-${paymentIndex}`} disabled={disabled} onClick={() => executeFeatureAction(accent.label, summary, action, paymentCost)} title={isEffortAlternative ? 'Alternative payment: spend Effort instead of Hope' : ''} className={`px-2.5 py-1 rounded border text-[9px] font-black uppercase tracking-wide ${isEffortAlternative ? 'text-amber-300 border-amber-800/70 hover:border-amber-500' : `${accent.text} border-slate-700 hover:border-slate-500`} bg-slate-950 disabled:opacity-30 disabled:cursor-not-allowed`}><Zap className="w-3 h-3 inline mr-1" />{actionLabel}{costLabel ? ` · ${costLabel}` : ''}</button>;
+                            });
+                          })}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1719,119 +2074,35 @@
               </svg>
               
               {/* TOAST NOTIFICACIÓN */}
-              {showToast && broadcastRoll && (
-                  <div className="fixed bottom-4 left-4 z-[12000] flex flex-row gap-2 items-end">
-                  <div className="max-w-sm w-full bg-slate-900/95 backdrop-blur border border-slate-600 rounded-lg shadow-2xl p-4 toast-enter border-l-4 border-l-cyan-500">
-                      <div className="flex justify-between items-start mb-2">
-                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                              {broadcastRoll.type === 'generic' ? <Crown className="w-4 h-4 text-yellow-500" /> : (broadcastRoll.type === 'note' || broadcastRoll.type === 'damage') ? <ScrollText className="w-4 h-4 text-amber-400" /> : <Dices className="w-4 h-4 text-cyan-500" />} 
-                              {(broadcastRoll.type === 'note' || broadcastRoll.type === 'damage') ? broadcastRoll.playerName : `${broadcastRoll.playerName} rolled ${broadcastRoll.label}`}
-                          </h4>
-                          <button onClick={() => setShowToast(false)} className="text-slate-500 hover:text-white"><X className="w-4 h-4"/></button>
+              {activeCallouts.length > 0 && (
+                <div className="vf-callout-grid" style={{ transform:`scale(${calloutScale})` }}>
+                  {activeCallouts.map((callout) => (
+                    <div key={rollEventKey(callout)} className="vf-callout-card" data-kind={callout.type || 'duality'}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0"><div className="text-[10px] font-black uppercase tracking-wide text-cyan-300 truncate">{callout.playerName || 'Player'}</div><div className="text-[9px] text-slate-400 truncate">{callout.label || 'Roll'}</div></div>
+                        <button onClick={() => setActiveCallouts(prev => prev.filter(item => rollEventKey(item) !== rollEventKey(callout)))} className="text-slate-600 hover:text-white shrink-0" aria-label="Close callout"><X className="w-3 h-3" /></button>
                       </div>
-                      {broadcastRoll.resourceCost && broadcastRoll.resourceCost.amount > 0 && (
-                        <div className="mb-2 inline-flex items-center gap-1 rounded border border-amber-800/60 bg-amber-950/25 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-amber-300">
-                          <Zap className="w-3 h-3" /> Spent {broadcastRoll.resourceCost.amount} {broadcastRoll.resourceCost.resource}
+                      {callout.resourceCost && callout.resourceCost.amount > 0 && <div className="mt-1 text-[8px] font-black uppercase text-amber-300">Spent {callout.resourceCost.amount} {callout.resourceCost.resource}</div>}
+                      {callout.type === 'duality' ? (
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex gap-1"><ShapedDie sides={12} value={callout.hope} variant="hope" size={29} /><ShapedDie sides={12} value={callout.fear} variant="fear" size={29} /></div>
+                            <div className="text-right"><div className="text-2xl font-black text-white leading-none">{callout.total}</div><div className={`text-[8px] font-black ${callout.outcomeColor || ''}`}>{callout.outcome}</div></div>
+                          </div>
+                          {callout.attackBreakdown && callout.attackBreakdown.length > 0 && <div className="mt-1 flex flex-wrap gap-1">{callout.attackBreakdown.map((part,index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-700 bg-black text-[8px] text-slate-300">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>}
+                          {callout.damage != null && <div className="mt-2 rounded border border-red-900/60 bg-red-950/20 p-2 flex items-center justify-between gap-2"><div><div className="text-[8px] font-black uppercase text-red-300">Damage · {callout.damageBase || callout.damageDice}</div><DamageDiceDisplay results={callout.damageDiceResults} rolls={callout.damageRolls} discardedIndices={callout.damageDiscardedIndices} rerolls={callout.damageRerolls} sides={parseInt((String(callout.damageRolledDice || callout.damageDice || '').match(/d(\d+)/) || [])[1]) || 6} compact={true} /><div className="text-[8px] text-slate-500 font-mono">{callout.damageDetail}</div></div><div className="text-2xl font-black text-red-400">{callout.damage}</div></div>}
+                          {(callout.damageRules || []).map((rule,index) => <div key={index} className="mt-1 text-[8px] text-yellow-300">{rule}</div>)}
+                          {callout.weaponEffects && callout.weaponEffects.length > 0 && <div className="mt-2 border-t border-slate-800 pt-1">{callout.weaponEffects.map((effect,index) => <div key={index} className="text-[8px] text-slate-400"><b className="text-slate-200">{effect.name}:</b> {effect.effect}</div>)}</div>}
                         </div>
-                      )}
-
-                      {(broadcastRoll.type === 'note') ? (
-                          <div className="text-[13px] text-slate-200 leading-relaxed whitespace-pre-wrap">{broadcastRoll.label}</div>
-                      ) : (broadcastRoll.type === 'damage') ? (
-                          <div className="flex flex-col gap-1">
-                            <div className="flex flex-wrap gap-1 mb-1">
-                              {(broadcastRoll.rolls || []).map((r, idx) => (<ShapedDie key={idx} sides={parseInt((String(broadcastRoll.dice).match(/d(\d+)/) || [])[1]) || 6} value={r} rolling={rolling} variant={r === 1 ? 'crit' : 'neutral'} />))}
-                            </div>
-                            <div className="flex justify-between items-center border-t border-slate-700 pt-2">
-                              <span className="text-[10px] text-slate-500 font-bold uppercase">{broadcastRoll.dice}{broadcastRoll.modifier ? ` ${broadcastRoll.modifier > 0 ? '+' : ''}${broadcastRoll.modifier}` : ''} · Damage</span>
-                              <span className="text-2xl font-black text-red-400">{broadcastRoll.total}</span>
-                            </div>
-                          </div>
-                      ) : broadcastRoll.type === 'generic' ? (
-                          <div className="flex flex-col gap-1">
-                               <div className="flex flex-wrap gap-1 mb-2">
-                                  {(broadcastRoll.rolls || []).map((r, idx) => (
-                                    <ShapedDie key={idx} sides={broadcastRoll.die} value={r} rolling={rolling}
-                                      variant={r === broadcastRoll.die ? 'max' : r === 1 ? 'crit' : 'neutral'} />
-                                  ))}
-                               </div>
-                               <div className="flex justify-between items-center border-t border-slate-700 pt-2">
-                                   <div className="text-[10px] text-slate-500 font-bold uppercase">
-                                     {broadcastRoll.count}d{broadcastRoll.die} {broadcastRoll.modifier !== 0 && `${broadcastRoll.modifier >= 0 ? '+' : ''}${broadcastRoll.modifier} (Mod)`}
-                                   </div>
-                                   <div className="flex items-center gap-2">
-                                       <span className="text-xs text-slate-400 uppercase font-bold">Total</span>
-                                       <span className="text-2xl font-black text-white">{broadcastRoll.total}</span>
-                                   </div>
-                               </div>
-                          </div>
+                      ) : callout.type === 'note' ? (
+                        <div className="mt-2 text-[10px] text-slate-200 whitespace-pre-wrap">{callout.label}</div>
                       ) : (
-                          <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-4">
-                                <div className="flex gap-2">
-                                    <div className="flex flex-col items-center">
-                                        <span className="text-[10px] text-cyan-500 font-bold">HOPE</span>
-                                        <ShapedDie sides={12} value={broadcastRoll.hope} variant="hope" rolling={rolling} />
-                                    </div>
-                                    <div className="flex flex-col items-center">
-                                        <span className="text-[10px] text-purple-500 font-bold">FEAR</span>
-                                        <ShapedDie sides={12} value={broadcastRoll.fear} variant="fear" rolling={rolling} />
-                                    </div>
-                                </div>
-                                {broadcastRoll.damage != null && (
-                                <div className="flex flex-col items-center justify-center px-3 py-1 border-2 border-red-500 rounded-lg bg-red-950/30 min-w-[112px]">
-                                    <span className="text-[9px] text-red-400 font-bold uppercase tracking-wider">{broadcastRoll.damageDice || broadcastRoll.damageBase || 'Damage'}{broadcastRoll.damageModifier ? ` ${broadcastRoll.damageModifier > 0 ? '+' : ''}${broadcastRoll.damageModifier}` : ''}</span>
-                                    {Array.isArray(broadcastRoll.damageRolls) && broadcastRoll.damageRolls.length > 0 && (
-                                      <div className="flex flex-wrap justify-center gap-1 my-1">
-                                        {broadcastRoll.damageRolls.map((r, idx) => <span key={idx} className={(broadcastRoll.damageDiscardedIndices || []).includes(idx) ? 'opacity-30 line-through grayscale' : ''}><ShapedDie sides={parseInt((String(broadcastRoll.damageRolledDice || broadcastRoll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6} value={r} rolling={rolling} variant={r === 1 ? 'crit' : 'neutral'} /></span>)}
-                                      </div>
-                                    )}
-                                    <span className="text-3xl font-black text-red-400 leading-none">{broadcastRoll.damage}</span>
-                                    {broadcastRoll.damageDetail && <span className="text-[8px] text-red-300/70 font-mono">{broadcastRoll.damageDetail}{broadcastRoll.crit ? ' · critical damage' : ''}</span>}
-                                    {(broadcastRoll.damageRules || []).map((rule, index) => <span key={index} className="text-[8px] text-yellow-300/80 text-center">{rule}</span>)}
-                                </div>
-                                )}
-                                <div className="h-8 w-px bg-slate-700"></div>
-                                <div className="flex flex-col items-end">
-                                    <div className="text-2xl font-black text-white">{broadcastRoll.total}</div>
-                                    <div className={`text-[10px] font-bold ${broadcastRoll.outcomeColor}`}>{broadcastRoll.outcome}</div>
-                                    {broadcastRoll.modifier !== 0 && (<span className="vf-chip mt-1" title="Modifier">{broadcastRoll.modifier > 0 ? "+" : ""}{broadcastRoll.modifier}</span>)}
-                                    {(broadcastRoll.modifier !== 0 || broadcastRoll.extra) && (
-                                        <div className="text-[9px] text-slate-500 font-mono mt-1">
-                                            {broadcastRoll.hope + broadcastRoll.fear} (Dice)
-                                            {broadcastRoll.modifier !== 0 && ` ${broadcastRoll.modifier > 0 ? '+' : ''}${broadcastRoll.modifier} (Mod)`}
-                                            {broadcastRoll.extra && ` ${broadcastRoll.rollType === 'advantage' ? '+' : '-'} ${broadcastRoll.extra} (Extra)`}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            {broadcastRoll.attackBreakdown && broadcastRoll.attackBreakdown.length > 0 && (
-                              <div className="flex flex-wrap gap-1 text-[8px]">{broadcastRoll.attackBreakdown.map((part, index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-slate-300">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>
-                            )}
-                            {broadcastRoll.weaponEffects && broadcastRoll.weaponEffects.length > 0 && (
-                              <div className="rounded border border-slate-700 bg-slate-950/60 p-2 space-y-1">
-                                <div className="text-[9px] font-black uppercase text-yellow-300">{broadcastRoll.weaponName || 'Weapon'} effects</div>
-                                {broadcastRoll.weaponEffects.map((effect, index) => <div key={index} className="text-[9px] text-slate-300 leading-snug"><span className="font-bold text-white">{effect.name}</span>{effect.timing ? ` · ${effect.timing}` : ''}: {effect.effect}</div>)}
-                              </div>
-                            )}
-                            {broadcastRoll.rollType !== 'normal' && broadcastRoll.extra && (
-                                <div className="flex items-center gap-2 bg-slate-950/50 p-1 rounded">
-                                    <span className={`text-[9px] font-bold uppercase ${broadcastRoll.rollType === 'advantage' ? 'text-green-400' : 'text-red-400'}`}>
-                                        {broadcastRoll.rollType === 'advantage' ? 'Advantage (+d6)' : 'Disadvantage (-d6)'}
-                                    </span>
-                                    <span className={`text-xs font-bold text-white`}>{broadcastRoll.extra}</span>
-                                </div>
-                            )}
-                          </div>
+                        <div className="mt-2 flex items-center justify-between gap-2"><div><div className="flex flex-wrap gap-1">{(callout.rolls || []).map((value,index) => <ShapedDie key={index} sides={callout.die || parseInt((String(callout.dice || '').match(/d(\d+)/) || [])[1]) || 6} value={value} variant={value === 1 ? 'crit' : 'neutral'} size={27} />)}</div><div className="text-[8px] text-slate-500">{callout.count ? `${callout.count}d${callout.die}` : callout.dice}{callout.modifier ? ` ${callout.modifier > 0 ? '+' : ''}${callout.modifier}` : ''}</div></div><div className={`text-2xl font-black ${callout.type === 'damage' ? 'text-red-400' : 'text-white'}`}>{callout.total}</div></div>
                       )}
-
-                      <div className="w-full bg-slate-800 h-1 mt-2 rounded-full overflow-hidden">
-                          <div className="bg-cyan-500 h-full w-full" style={{animation: 'shrink 10s linear forwards'}}></div>
-                      </div>
-                      <style>{`@keyframes shrink { from { width: 100%; } to { width: 0%; } }`}</style>
-                  </div>
-                  {recentBroadcasts.slice(1,3).map((br, ri) => (<div key={ri} className="max-w-[150px] bg-slate-900/85 backdrop-blur border border-slate-700 rounded-lg shadow-xl p-2 opacity-75 border-l-2 border-l-slate-500"><div className="text-[9px] font-bold text-slate-400 truncate">{br.playerName}</div><div className="text-[8px] text-slate-500 truncate">{br.label}</div><div className="flex items-center gap-2 mt-1"><span className="text-lg font-black text-white">{br.total != null ? br.total : ""}</span><span className={`text-[9px] font-bold ${br.outcomeColor||""}`}>{br.outcome||""}</span>{br.damage != null && <span className="text-[9px] font-bold text-red-400">D{br.damage}</span>}</div></div>))}
-                  </div>
+                      <div className="vf-callout-timer"><span></span></div>
+                    </div>
+                  ))}
+                </div>
               )}
 
               {/* MODAL CONFIG */}
@@ -1918,6 +2189,22 @@
                 </div>
               )}
 
+              {dice3DRequest && (
+                <div className="vf-3d-stage">
+                  <div ref={dice3DContainerRef} className="vf-3d-canvas" aria-label="3D dice animation"></div>
+                  <div className="vf-3d-hud">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-black text-white">3D Dice · {dice3DRequest.notation}</div>
+                        <div className="text-[10px] text-slate-400 mt-1">{dice3DStatus || 'Preparing roll…'}</div>
+                      </div>
+                      <button onClick={() => completeDice3D(dice3DRequest)} className="px-3 py-2 rounded border border-cyan-700 bg-cyan-950/40 text-cyan-200 text-[10px] font-black uppercase hover:border-cyan-400">Skip animation</button>
+                    </div>
+                    <div className="mt-2 text-[8px] text-slate-500">3D renderer: sarahRosannaBusch/dice, MIT License · derived from Anton Natarov (Teal) · three.js + cannon.js.</div>
+                  </div>
+                </div>
+              )}
+
               {showSettings && (
                   <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" onClick={() => setShowSettings(false)}>
                       <div className="bg-slate-900 border border-slate-600 rounded-xl p-6 max-w-lg w-full shadow-[0_0_30px_rgba(148,163,184,0.15)]" onClick={e => e.stopPropagation()}>
@@ -1941,6 +2228,43 @@
                               })}
                             </div>
                             <p className="text-[10px] text-slate-500 mt-2">Applies to this device and is remembered next time.</p>
+                          </div>
+
+                          <div className="mb-2 mt-4 pt-4 border-t border-slate-800 space-y-4">
+                            <div>
+                              <div className="flex items-center justify-between gap-3">
+                                <div><label className="text-xs font-bold text-slate-500 uppercase block">Callout size</label><span className="text-[10px] text-slate-500">Scales all player callout windows on this device.</span></div>
+                                <div className="vf-stepper">
+                                  <button onClick={() => setCalloutScale(value => Math.max(0.5, Math.round((value - 0.1) * 10) / 10))} aria-label="Reduce callout size">−</button>
+                                  <output>{Math.round(calloutScale * 100)}%</output>
+                                  <button onClick={() => setCalloutScale(value => Math.min(1.5, Math.round((value + 0.1) * 10) / 10))} aria-label="Increase callout size">+</button>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between gap-3">
+                              <div><label className="text-xs font-bold text-slate-500 uppercase block">Dice display</label><span className="text-[10px] text-slate-500">3D loads the optional external renderer only when used.</span></div>
+                              <div className="flex rounded-lg border border-slate-700 bg-slate-950 p-1">
+                                <button onClick={() => setDiceMode('2d')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceMode === '2d' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>2D</button>
+                                <button onClick={() => setDiceMode('3d')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceMode === '3d' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>3D</button>
+                              </div>
+                            </div>
+                            <div className="rounded border border-slate-800 bg-slate-950/50 p-3 text-[9px] text-slate-500 leading-relaxed">
+                              Optional 3D renderer by <a className="text-cyan-400 hover:text-cyan-200" href="https://github.com/sarahRosannaBusch/dice" target="_blank" rel="noreferrer">sarahRosannaBusch/dice</a>, used under the MIT License. Derived from Anton Natarov (Teal), using three.js and cannon.js. See THIRD_PARTY_NOTICES.md.
+                            </div>
+                            <div>
+                              <div className="flex items-center justify-between gap-3 mb-3">
+                                <div><label className="text-xs font-bold text-slate-500 uppercase block">Dice sound</label><span className="text-[10px] text-slate-500">Generated locally; no external audio file.</span></div>
+                                <button role="switch" aria-checked={diceSoundEnabled} onClick={() => setDiceSoundEnabled(value => !value)} className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${diceSoundEnabled ? 'bg-cyan-600' : 'bg-slate-700'}`}><span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${diceSoundEnabled ? 'left-[22px]' : 'left-0.5'}`}></span></button>
+                              </div>
+                              <div className={`flex items-center justify-between gap-3 ${diceSoundEnabled ? '' : 'opacity-40 pointer-events-none'}`}>
+                                <span className="text-[10px] text-slate-400 font-bold uppercase">Volume</span>
+                                <div className="vf-stepper">
+                                  <button onClick={() => setDiceVolume(value => Math.max(0, Math.round((value - 0.1) * 10) / 10))} aria-label="Reduce dice volume">−</button>
+                                  <output>{Math.round(diceVolume * 100)}%</output>
+                                  <button onClick={() => setDiceVolume(value => Math.min(1, Math.round((value + 0.1) * 10) / 10))} aria-label="Increase dice volume">+</button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
 
                           <div className="mb-2 mt-4 pt-4 border-t border-slate-800">
@@ -1975,10 +2299,11 @@
                                 <span className="text-slate-400 font-bold uppercase tracking-wide">Wait between flickers</span>
                                 <span className="font-mono text-cyan-400">~{flickerWait}s</span>
                               </div>
-                              <input type="range" min="2" max="30" step="1" value={flickerWait}
-                                onChange={e => setFlickerWait(parseInt(e.target.value))}
-                                className="w-full accent-cyan-500 cursor-pointer" />
-                              <div className="flex justify-between text-[9px] text-slate-600 mt-0.5"><span>2s (frequent)</span><span>30s (rare)</span></div>
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="text-[9px] text-slate-600">2s frequent</span>
+                                <div className="vf-stepper"><button onClick={() => setFlickerWait(value => Math.max(2, value - 1))}>−</button><output>{flickerWait}s</output><button onClick={() => setFlickerWait(value => Math.min(30, value + 1))}>+</button></div>
+                                <span className="text-[9px] text-slate-600">30s rare</span>
+                              </div>
                             </div>
                           </div>
 
@@ -2017,6 +2342,7 @@
                               </div>
                               <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">{roll.label}</div>
                               {roll.resourceCost && roll.resourceCost.amount > 0 && <div className="mb-2 inline-flex items-center gap-1 rounded border border-amber-900/60 bg-amber-950/20 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-amber-300"><Zap className="w-3 h-3" />Spent {roll.resourceCost.amount} {roll.resourceCost.resource}</div>}
+                              {hasTimeTravelSnapshot(roll) && <button onClick={() => restoreTimeTravelSnapshot(roll)} className="mb-2 ml-1 inline-flex items-center gap-1 rounded border border-cyan-900/70 bg-cyan-950/20 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-cyan-300 hover:border-cyan-500" title="Restore the character state immediately before this log entry">↶ Time travel</button>}
                               
                               {roll.type === 'duality' ? (
                                  <div>
@@ -2046,9 +2372,14 @@
                                      <div className="mt-2 pt-2 border-t border-red-900/50 flex justify-between items-center gap-2">
                                        <div>
                                          <div className="text-[9px] text-red-400 font-bold uppercase">Damage · {roll.damageDice || roll.damageBase || 'weapon'}{roll.damageModifier ? ` ${roll.damageModifier > 0 ? '+' : ''}${roll.damageModifier}` : ''}</div>
-                                         <div className="flex flex-wrap gap-1 mt-1">
-                                           {(roll.damageRolls || []).map((r, i) => <span key={i} className={`w-5 h-5 flex items-center justify-center bg-red-950/50 border border-red-900 rounded text-[9px] font-bold text-red-300 ${(roll.damageDiscardedIndices || []).includes(i) ? 'opacity-30 line-through grayscale' : ''}`}>{r}</span>)}
-                                         </div>
+                                         <DamageDiceDisplay
+                                           results={roll.damageDiceResults}
+                                           rolls={roll.damageRolls}
+                                           discardedIndices={roll.damageDiscardedIndices}
+                                           rerolls={roll.damageRerolls}
+                                           sides={parseInt((String(roll.damageRolledDice || roll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6}
+                                           compact={true}
+                                         />
                                          {roll.damageDetail && <div className="text-[8px] text-slate-500 font-mono mt-1">{roll.damageDetail}{roll.crit ? ' · critical' : ''}</div>}
                                          {(roll.damageRules || []).map((rule, index) => <div key={index} className="text-[8px] text-yellow-300/70 mt-0.5">{rule}</div>)}
                                        </div>
@@ -2063,6 +2394,7 @@
                                    )}
                                  </div>
                               ) : (
+                                 <>
                                  <div className="flex justify-between items-center">
                                     <div className="flex flex-col gap-1">
                                         <div className={`text-[9px] font-bold uppercase ${roll.type === 'damage' ? 'text-red-400' : 'text-slate-500'}`}>
@@ -2076,6 +2408,8 @@
                                     </div>
                                     <div className={`text-xl font-black ${roll.type === 'damage' ? 'text-red-400' : 'text-white'}`}>{roll.total}</div>
                                  </div>
+                                 {roll.details && <div className="mt-2 pt-2 border-t border-slate-800 text-[9px] text-slate-400 leading-relaxed">{roll.details}</div>}
+                                 </>
                               )}
                            </div>
                         ))}
@@ -2092,6 +2426,7 @@
                           <div onMouseDown={(e) => startDrag(e, 'player')} onTouchStart={(e) => startDrag(e, 'player')} className="bg-slate-800/80 p-3 cursor-move flex justify-between items-center select-none border-b border-slate-700 touch-none">
                               <h2 className="text-sm font-bold text-white flex items-center gap-2 pointer-events-none"><Dices className="text-purple-400 w-4 h-4" /> {rollLabel}</h2>
                               <div className="flex items-center gap-1">
+                                  <button onClick={() => setDiceMode(value => value === '2d' ? '3d' : '2d')} title="Toggle 2D / 3D dice" className={`px-1.5 py-1 rounded border text-[8px] font-black ${diceMode === '3d' ? 'border-cyan-500 text-cyan-300 bg-cyan-950/40' : 'border-slate-700 text-slate-400'}`}>{diceMode.toUpperCase()}</button>
                                   <button onClick={() => setRollerScale(s => Math.max(0.5, Math.round((s-0.1)*10)/10))} title="Smaller" className="p-1 rounded hover:bg-slate-700 text-slate-400 text-xs font-bold w-5">-</button><button onClick={() => setRollerScale(s => Math.min(1, Math.round((s+0.1)*10)/10))} title="Larger" className="p-1 rounded hover:bg-slate-700 text-slate-400 text-xs font-bold w-5">+</button><button onClick={() => setPinned(p => ({...p, player: !p.player}))} title="Pin Window (Prevents auto-close)" className={`p-1 rounded hover:bg-slate-700 ${pinned.player ? 'text-cyan-400' : 'text-slate-500'}`}><Pin className="w-3 h-3" /></button>
                                   <button onClick={() => setMinimized(p => ({...p, player: !p.player}))} title="Minimize" className="p-1 rounded hover:bg-slate-700 text-slate-400"><Minus className="w-3 h-3" /></button>
                                   <button onClick={() => setShowRoller(false)} title="Close" className="p-1 rounded hover:bg-red-900/50 text-slate-400 hover:text-red-400"><X className="w-3 h-3" /></button>
@@ -2144,8 +2479,8 @@
                                                 <NumField min="-20" max="20" value={rollModifier} onChange={e => setRollModifier(clampMod(e.target.value))} className="w-12 bg-transparent text-center font-bold text-white border-b border-slate-700 outline-none" />
                                             </div>
                                             <div className="flex items-center gap-2 px-2 justify-center">
-                                                <input type="checkbox" id="spectrumToggle" checked={useSpectrum} onChange={e => setUseSpectrum(e.target.checked)} className="w-3 h-3 accent-cyan-500" />
-                                                <label htmlFor="spectrumToggle" className="text-[10px] text-slate-400 font-bold cursor-pointer select-none">Optional: Spectrum of Fate</label>
+                                                <span className="text-[10px] text-slate-400 font-bold select-none">Optional: Spectrum of Fate</span>
+                                                <button role="switch" aria-checked={useSpectrum} onClick={() => setUseSpectrum(value => !value)} className={`relative w-9 h-5 rounded-full transition-colors ${useSpectrum ? 'bg-cyan-600' : 'bg-slate-700'}`}><span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${useSpectrum ? 'left-[18px]' : 'left-0.5'}`}></span></button>
                                             </div>
                                         </div>
                                         {rollResult && rollResult.type === 'duality' && (
@@ -2225,9 +2560,9 @@
                                       </div>
                                   </div>
 
-                                  <div className="flex items-center justify-center gap-2 mb-4">
-                                      <input type="checkbox" id="genBroadcastToggle" checked={genBroadcast} onChange={e => setGenBroadcast(e.target.checked)} className="w-4 h-4 accent-yellow-500" />
-                                      <label htmlFor="genBroadcastToggle" className="text-xs text-slate-400 font-bold cursor-pointer select-none">Broadcast to Players</label>
+                                  <div className="flex items-center justify-center gap-3 mb-4">
+                                      <span className="text-xs text-slate-400 font-bold select-none">Broadcast to Players</span>
+                                      <button role="switch" aria-checked={genBroadcast} onClick={() => setGenBroadcast(value => !value)} className={`relative w-11 h-6 rounded-full transition-colors ${genBroadcast ? 'bg-yellow-600' : 'bg-slate-700'}`}><span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${genBroadcast ? 'left-[22px]' : 'left-0.5'}`}></span></button>
                                   </div>
 
                                   <button onClick={rollGenericGM} className="w-full py-3 bg-yellow-700 hover:bg-yellow-600 text-white font-bold rounded-lg shadow-lg">ROLL</button>
@@ -2484,28 +2819,37 @@
 
                        {/* ACTIONS / CARDS (path-aware) */}
                        {(character.path === 'sleeping') ? (
-                       <div className="bg-slate-900/40 rounded border border-slate-800 p-2 flex-grow min-h-[150px]">
-                           <h2 className="text-[11px] font-bold uppercase text-slate-300 tracking-widest flex items-center gap-1 mb-2"><Zap className="w-3 h-3 text-amber-500" /> Sleeper Actions</h2>
-                           {character.moves && character.moves.length > 0 && (
-                             <div className="mb-2">
-                               <div className="text-[10px] font-bold uppercase text-cyan-300 tracking-wider mb-1">Resolve Moves (1 Resolve)</div>
-                               {character.moves.map((mv, i) => (
-                                 <div key={i} className="flex items-center gap-1 mb-1">
-                                   <button disabled={(((character.resolve&&character.resolve.current)||0) < 1)} onClick={() => useSleeperAction('Move: ' + mv.name, 'resolve', 1, true)} className="px-2 py-0.5 text-[10px] font-bold rounded border border-slate-700 text-cyan-300 hover:border-cyan-500 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 self-start mt-0.5">Use</button>
-                                   <span className="text-[11px] text-slate-200 leading-snug"><span className="font-bold text-cyan-200">{mv.name}</span>{mv.text ? <span className="text-slate-300 block">{mv.text}</span> : null}</span>
-                                 </div>
-                               ))}
-                             </div>
-                           )}
-                           <div>
-                             <div className="text-[10px] font-bold uppercase text-amber-300 tracking-wider mb-1">Effort</div>
+                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-2 flex-grow items-start">
+                         <CompactActionPanel panelId="sleeper-actions" title="Sleeper Actions" description="General Effort techniques available to every Sleeping character. Expand to choose an action." icon={<Zap className="w-4 h-4" />} accentClass="text-amber-400">
+                           <div className="space-y-1.5 mt-3">
                              {GENERAL_EFFORT.map((ef, i) => (
-                               <div key={i} className="flex items-center gap-1 mb-1">
-                                 <button disabled={(((character.effort&&character.effort.current)||0) < ef.cost)} onClick={() => useSleeperAction('Effort: ' + ef.name, 'effort', ef.cost, ef.roll)} title={ef.text} className="px-2 py-0.5 text-[10px] font-bold rounded border border-slate-700 text-amber-300 hover:border-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 w-6 text-center self-start mt-0.5">{ef.cost}</button>
-                                 <span className="text-[11px] text-slate-200 leading-snug"><span className="font-bold text-amber-200">{ef.name}</span> <span className="text-slate-300">{ef.text}</span></span>
+                               <div key={i} className="rounded border border-slate-800 bg-slate-950/45 p-2 flex items-start gap-2">
+                                 <button disabled={(((character.effort&&character.effort.current)||0) < ef.cost)} onClick={() => useSleeperAction('Effort: ' + ef.name, 'effort', ef.cost, ef.roll)} title={ef.text} className="px-2 py-1 text-[9px] font-black rounded border border-amber-800/60 text-amber-300 hover:border-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shrink-0">{ef.roll ? 'Roll' : 'Use'} · {ef.cost}</button>
+                                 <div className="min-w-0"><div className="text-[11px] font-bold text-amber-100">{ef.name}</div><div className="text-[10px] text-slate-400 leading-snug mt-0.5">{ef.text}</div></div>
                                </div>
                              ))}
                            </div>
+                         </CompactActionPanel>
+                         <CompactActionPanel panelId="resolve-moves" title="Resolve Moves" description={`${character.class || 'Class'}${character.subclass ? ' · ' + character.subclass : ''}. Class and subclass signature moves paid with Resolve.`} icon={<Shield className="w-4 h-4" />} accentClass="text-cyan-400">
+                           <div className="space-y-2 mt-3">
+                             {availableResolveMoves.length > 0 ? availableResolveMoves.map((move) => {
+                               const minimum = resolveMoveMinimum(move);
+                               const disabled = Number((character.resolve && character.resolve.current) || 0) < minimum;
+                               return (
+                                 <div key={move.id} className="rounded border border-cyan-950/80 bg-cyan-950/10 p-2.5">
+                                   <div className="flex items-start justify-between gap-2">
+                                     <div className="min-w-0">
+                                       <div className="flex flex-wrap items-center gap-1.5"><span className="text-[11px] font-black text-cyan-100">{move.name}</span><span className="px-1.5 py-0.5 rounded border border-cyan-900/60 bg-slate-950 text-[8px] font-black uppercase text-cyan-400">{move.subclass || 'Class'}</span></div>
+                                       <div className="mt-1 text-[9px] font-black uppercase tracking-wide text-slate-500">{move.cost}</div>
+                                     </div>
+                                     <button disabled={disabled} onClick={() => useResolveMove(move)} className="shrink-0 px-2.5 py-1.5 rounded border border-cyan-700/60 bg-cyan-950/30 text-[9px] font-black uppercase text-cyan-300 hover:border-cyan-400 disabled:opacity-30 disabled:cursor-not-allowed">{move.rollResolve ? 'Roll' : 'Use'}</button>
+                                   </div>
+                                   <div className="mt-1.5 text-[10px] leading-relaxed text-slate-300">{move.text}</div>
+                                 </div>
+                               );
+                             }) : <div className="rounded border border-dashed border-slate-700 p-3 text-[10px] text-slate-500">No Resolve Moves are available for this class in the loaded rules data.</div>}
+                           </div>
+                         </CompactActionPanel>
                        </div>
                        ) : (
                        <div className="bg-slate-900/40 rounded border border-slate-800 p-2 flex-grow min-h-[150px]">
@@ -2514,12 +2858,8 @@
                                <button onClick={() => setShowCardManager(true)} className="text-[9px] text-emerald-400 hover:text-white uppercase font-bold">+ Manage</button>
                            </div>
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                               {character.domainCards && character.domainCards.map((card, idx) => (
-                                   <DomainCard key={idx} card={card} onDelete={() => removeCard(idx)} />
-                               ))}
-                               {(!character.domainCards || character.domainCards.length === 0) && (
-                                   <div className="col-span-full text-center py-4 text-xs text-slate-600 italic">No domain cards equipped</div>
-                               )}
+                               {character.domainCards && character.domainCards.map((card, idx) => (<DomainCard key={idx} card={card} onDelete={() => removeCard(idx)} />))}
+                               {(!character.domainCards || character.domainCards.length === 0) && (<div className="col-span-full text-center py-4 text-xs text-slate-600 italic">No domain cards equipped</div>)}
                            </div>
                        </div>
                        )}
@@ -2575,7 +2915,7 @@
         root.render(<CharacterSheet />);
         }).catch(function(error){
           console.error('Canonical rules failed to load:', error);
-          document.getElementById('root').innerHTML = '<div style="max-width:720px;margin:80px auto;padding:24px;border:1px solid #7f1d1d;border-radius:12px;background:#1f0a0a;color:#fecaca;font-family:system-ui">Player Tool could not load the canonical RC2 rules data. Check that the <code>/rules-data</code> folder was deployed.</div>';
+          document.getElementById('root').innerHTML = '<div style="max-width:720px;margin:80px auto;padding:24px;border:1px solid #7f1d1d;border-radius:12px;background:#1f0a0a;color:#fecaca;font-family:system-ui">Player Tool could not load the canonical RC3 rules data. Check that the <code>/rules-data</code> folder was deployed.</div>';
         });
     </script>
   <script src="portal.js"></script>

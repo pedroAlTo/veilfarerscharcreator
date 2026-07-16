@@ -44,19 +44,21 @@
     api.loadCollection('featureRegistry'),
     api.loadCollection('classes'),
     api.loadCollection('subclasses'),
+    api.loadCollection('resolveMoves'),
+    api.loadCollection('drills'),
     api.loadCollection('ancestries'),
     api.loadCollection('communities'),
     api.loadCollection('traits'),
     api.loadCollection('droneGrades'),
     api.loadCollection('droneModules')
-  ]).then(([manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,ancestries,communities,traits,droneGrades,droneModules]) => {
+  ]).then(([manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,resolveMoves,drills,ancestries,communities,traits,droneGrades,droneModules]) => {
     const data = {
-      manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,ancestries,communities,traits,droneGrades,droneModules,
+      manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,resolveMoves,drills,ancestries,communities,traits,droneGrades,droneModules,
       domainCards: domainCards(powers)
     };
     global.VF_CANONICAL_DATA = data;
     global.DOMAIN_CARDS = data.domainCards;
-    global.VEILFARERS_DATA_VERSION = manifest.release || manifest.canonicalVersion || manifest.version || '11.1 RC2';
+    global.VEILFARERS_DATA_VERSION = manifest.release || manifest.canonicalVersion || manifest.version || '11.1 RC3';
     return data;
   });
 
