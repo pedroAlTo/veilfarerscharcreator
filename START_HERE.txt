@@ -1,43 +1,50 @@
-VeilFarers Portal v59.14
+VeilFarers Portal v59.15
 =======================
 
-Deploy the contents of this folder directly to Netlify. This build replaces v59.12.
+Deploy the contents of this folder directly to Netlify. This build replaces v59.14.
 
-Player Tool information hierarchy
----------------------------------
-Sleeper Actions and Resolve Moves are now separate compact panels. On wide screens they appear side by side; on narrow screens they stack. Both are collapsed by default and use VeilFarers + / - controls rather than browser-native disclosure widgets.
+Player Tool Firestore save fix
+------------------------------
+Player Tool no longer fails to join or autosave a table when legacy imports,
+custom weapons, or optional character fields contain JavaScript `undefined` values.
+Firestore does not accept `undefined` in document data.
 
-Ancestry Gift, Class Feature, Community Feature and Effort/Hope Feature cards follow the same pattern: title and short description remain visible, while the complete rules and executable buttons appear after expansion.
+The fix uses three layers:
 
-Resolve Moves
--------------
-Player Tool loads Resolve Moves from /rules-data/core/resolve-moves.json. It shows the two Class Moves plus the matching Subclass Move.
+1. Firestore is initialized with `ignoreUndefinedProperties: true` before use.
+2. Every Player Tool write is recursively normalized before it reaches Firestore.
+   Undefined object properties are omitted; undefined array positions become null.
+3. Optional weapon `burden` values now normalize to null during import and hydration.
 
-- Fixed-cost moves spend the printed amount.
-- “Spend and roll” moves roll Resolve Dice (d4).
-- “1+” moves use the in-app dialog to choose how many available Resolve Dice to spend.
-- Results and move text are written to local Roll History and Firebase table callouts.
+The normalizer preserves Firestore-native values such as FieldValue.arrayUnion,
+Timestamp, GeoPoint, and DocumentReference.
 
-The dataset contains the current moves for every Sleeping class. Soldier and Vanguard use the approved consolidated review draft.
+Session connection hardening
+----------------------------
+- Leading and trailing whitespace is removed from table names before the Firestore
+  document reference is created.
+- The table metadata write is awaited before the interface reports Connected.
+- Autosave clears a previous Save error after the next successful write.
+- Undefined field paths are logged to the browser console for diagnostics without
+  exposing character data to other services.
+
+Keeper Tool
+-----------
+Keeper Tool now enables the same Firestore SDK option for undefined optional fields.
+Its existing real-time session behavior and document schema are unchanged.
 
 Deploy Preview checks
 ---------------------
-1. Import a Sleeping character with a class and subclass.
-2. Confirm Sleeper Actions and Resolve Moves are collapsed on load.
-3. Expand each panel and confirm the + changes to -.
-4. Confirm Resolve Moves shows two class moves and the matching subclass move.
-5. Use a fixed-cost move and confirm Resolve decreases.
-6. Use a 1+ move and choose multiple Resolve Dice in the custom dialog.
-7. Confirm d4 results, total, cost and rules text appear in history and on a second connected Player Tool.
-8. Expand and collapse Ancestry, Class, Community and Effort/Hope feature cards.
-9. Confirm weapon callouts and all v59.11 behaviour remain intact.
+1. Open Player Tool with a character imported from an older JSON file.
+2. Add or equip a custom weapon without a burden value.
+3. Join a table whose entered name contains leading or trailing spaces.
+4. Confirm the UI reports Connected and no unsupported-field error appears.
+5. Edit HP, Stress, Experiences, equipment, and weapon loadout; confirm autosave.
+6. Open a second Player Tool and Keeper Tool on the normalized table name.
+7. Confirm character updates, roll callouts, Fear, Spotlight, and roll history sync.
+8. Confirm an earlier Save error disappears after a successful save.
 
 Validation
 ----------
-Read VALIDATION_v59.14.txt for automated checks. Firebase broadcasting and final responsive behaviour still require a Netlify Deploy Preview.
-
-
-V59.14 PLAYER TOOL TESTING
-- Books and RC3 PDF files are unchanged.
-- Railgun d8+3 / Massive is a Player Tool-only playtest override.
-- Optional 3D dice are loaded at runtime; see THIRD_PARTY_NOTICES.md.
+Read VALIDATION_v59.15.txt for automated checks. A live Netlify Deploy Preview is
+still required to verify the real Firebase project, authentication, and Firestore rules.

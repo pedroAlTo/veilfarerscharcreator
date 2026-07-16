@@ -1,10 +1,20 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.14",
+  "currentVersion": "v59.15",
   "entries": [
     {
+      "version": "v59.15",
+      "date": "2026-07-16",
+      "changes": [
+        "Fixed Player Tool Firestore connection and autosave failures caused by optional character or equipment fields containing undefined values.",
+        "Added recursive Firestore payload normalization, SDK-level undefined-property handling, and diagnostic path reporting for legacy and custom character data.",
+        "Normalized table names before creating Firestore document paths and verified table write access before reporting a successful connection.",
+        "Hardened optional weapon burden data in both Creator import and Player Tool hydration, and applied the same Firestore undefined-property guard to Keeper Tool."
+      ]
+    },
+    {
       "version": "v59.14",
-      "date": "2026-07-17",
+      "date": "2026-07-16",
       "changes": [
         "Fixed Player Tool weapon attacks so their Trait modifier and Reliable/Accurate bonuses are included and shown in the attack breakdown.",
         "Restored Massive/Railgun damage resolution with an extra damage die, highest result retained and discarded die visually muted in local and table callouts.",
@@ -12,6 +22,17 @@
         "Added local Roll History time travel, storing bounded pre-action character snapshots that can be restored without increasing Firestore document size.",
         "Replaced the single roll toast with up to six simultaneous per-player callout windows and added 50–150% callout scaling.",
         "Added generated dice-roll audio with mute and volume controls, plus an optional attributed MIT 3D dice renderer with automatic 2D fallback."
+      ]
+    },
+    {
+      "version": "v59.14",
+      "date": "2026-07-16",
+      "changes": [
+        "Restored the canonical alternating page backgrounds to every page of the 11.1 RC3 Corebook PDF.",
+        "Applied Player/general, Awakened, and Sleeping background families to their correct RC3 page ranges with left/right parity.",
+        "Preserved all 281 pages, searchable text, metadata, and the 725-entry PDF bookmark tree.",
+        "Updated the Netlify Downloads package and PDF byte metadata without changing rules content."
+      ]
       ]
     },
     {
@@ -157,5 +178,5 @@
       ]
     }
   ],
-  "version": "v59.14"
+  "version": "v59.15"
 }

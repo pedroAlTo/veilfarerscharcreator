@@ -37,6 +37,46 @@
             return firebaseConfigPromise;
         };
 
+        // Firestore rejects undefined values. Character data can contain optional
+        // fields from older JSON exports or custom equipment, so every write is
+        // normalized before it reaches Firestore. Object properties with undefined
+        // values are omitted; undefined array positions become null to preserve order.
+        window.vfFindUndefinedPaths = (value, path = '$', found = [], seen = new WeakSet()) => {
+            if (value === undefined) { found.push(path); return found; }
+            if (!value || typeof value !== 'object') return found;
+            if (seen.has(value)) return found;
+            seen.add(value);
+            if (Array.isArray(value)) value.forEach((item, index) => window.vfFindUndefinedPaths(item, `${path}[${index}]`, found, seen));
+            else Object.keys(value).forEach((key) => window.vfFindUndefinedPaths(value[key], `${path}.${key}`, found, seen));
+            return found;
+        };
+        window.vfSanitizeFirestore = (value, seen = new WeakSet()) => {
+            if (value === undefined) return undefined;
+            if (value === null || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+            if (value instanceof Date) return value;
+            if (typeof value !== 'object') return undefined;
+
+            // Preserve Firestore native values and transform sentinels.
+            const ctor = value.constructor && value.constructor.name;
+            if ((ctor && /FieldValue|Timestamp|GeoPoint|DocumentReference|FieldPath|Blob|Bytes/i.test(ctor)) ||
+                value._delegate || value._methodName || typeof value.toDate === 'function') return value;
+
+            if (seen.has(value)) return null;
+            seen.add(value);
+            if (Array.isArray(value)) {
+                return value.map((item) => {
+                    const clean = window.vfSanitizeFirestore(item, seen);
+                    return clean === undefined ? null : clean;
+                });
+            }
+            const cleanObject = {};
+            Object.keys(value).forEach((key) => {
+                const clean = window.vfSanitizeFirestore(value[key], seen);
+                if (clean !== undefined) cleanObject[key] = clean;
+            });
+            return cleanObject;
+        };
+
         // Inicialización global robusta con diagnóstico
         window.initFirebase = async (config) => {
             console.log("--- INICIANDO CONEXIÓN FIREBASE ---");
@@ -54,6 +94,19 @@
 
                 const db = firebase.firestore();
                 const auth = firebase.auth();
+
+                // Primary SDK-level guard. The explicit sanitizer below remains in
+                // place so diagnostics are available and old/custom data is safe even
+                // when Firestore has already been initialized elsewhere on the page.
+                if (!window.__vfIgnoreUndefinedConfigured) {
+                    try {
+                        db.settings({ ignoreUndefinedProperties: true });
+                        window.__vfIgnoreUndefinedConfigured = true;
+                    } catch (settingsErr) {
+                        console.warn('Firestore settings already active; using the VeilFarers write sanitizer.', settingsErr);
+                        window.__vfIgnoreUndefinedConfigured = true;
+                    }
+                }
                 
                 // 2. Configurar Persistencia (SESSION es más seguro en iframes que LOCAL)
                 await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
@@ -86,10 +139,18 @@
                         const fullPath = path.join('/');
                         return db.collection(fullPath);
                     },
-                    setDoc: (ref, data, opt) => ref.set(data, opt),
-                    updateDoc: (ref, data) => ref.update(data),
+                    setDoc: (ref, data, opt) => {
+                        const undefinedPaths = window.vfFindUndefinedPaths(data);
+                        if (undefinedPaths.length) console.warn('Firestore write normalized; omitted undefined fields:', undefinedPaths);
+                        return ref.set(window.vfSanitizeFirestore(data), opt);
+                    },
+                    updateDoc: (ref, data) => {
+                        const undefinedPaths = window.vfFindUndefinedPaths(data);
+                        if (undefinedPaths.length) console.warn('Firestore update normalized; omitted undefined fields:', undefinedPaths);
+                        return ref.update(window.vfSanitizeFirestore(data));
+                    },
                     onSnapshot: (ref, next, err) => ref.onSnapshot(next, err),
-                    arrayUnion: (...args) => firebase.firestore.FieldValue.arrayUnion(...args)
+                    arrayUnion: (...args) => firebase.firestore.FieldValue.arrayUnion(...args.map(arg => window.vfSanitizeFirestore(arg)))
                 };
 
             } catch (e) {
@@ -490,52 +551,6 @@
         const CORE_FEATURES = VF_CANON.features || [];
         const WEAPON_CATALOG = VF_CANON.weapons || [];
         const RESOLVE_MOVE_LIBRARY = VF_CANON.resolveMoves || [];
-        // Player Tool playtest overrides. These do not alter the books or canonical rules JSON.
-        const PLAYER_TOOL_WEAPON_OVERRIDES = {
-          'vf.core.weapon.railgun': { damage: 'd8+3 phys.', features: ['Massive'], feature: 'Massive' }
-        };
-        const DICE3D_BASES = [
-          'https://cdn.jsdelivr.net/gh/sarahRosannaBusch/dice@617f212/',
-          'https://cdn.jsdelivr.net/gh/sarahRosannaBusch/dice@main/'
-        ];
-        let dice3DLibraryPromise = null;
-        const loadScriptOnce = (src) => new Promise((resolve, reject) => {
-          const existing = document.querySelector(`script[data-vf-src="${src}"]`);
-          if (existing) { if (existing.dataset.loaded === '1') resolve(); else existing.addEventListener('load', resolve, { once:true }); return; }
-          const script = document.createElement('script');
-          script.src = src; script.async = false; script.dataset.vfSrc = src;
-          script.onload = () => { script.dataset.loaded = '1'; resolve(); };
-          script.onerror = () => { script.remove(); reject(new Error(`Unable to load ${src}`)); };
-          document.head.appendChild(script);
-        });
-        const getDice3DGlobal = () => {
-          try {
-            const globalDice = window.DICE || (typeof DICE !== 'undefined' ? DICE : null);
-            if (globalDice && globalDice.dice_box) { window.DICE = globalDice; return globalDice; }
-          } catch (e) {}
-          return null;
-        };
-        const loadDice3DLibrary = () => {
-          const available = getDice3DGlobal();
-          if (available) return Promise.resolve(available);
-          if (dice3DLibraryPromise) return dice3DLibraryPromise;
-          dice3DLibraryPromise = (async () => {
-            let lastError = null;
-            for (const base of DICE3D_BASES) {
-              try {
-                await loadScriptOnce(base + 'libs/three.min.js');
-                await loadScriptOnce(base + 'libs/cannon.min.js');
-                await loadScriptOnce(base + 'libs/teal.js');
-                await loadScriptOnce(base + 'dice.js');
-                const loaded = getDice3DGlobal();
-                if (loaded) return loaded;
-              } catch (error) { lastError = error; }
-            }
-            dice3DLibraryPromise = null;
-            throw lastError || new Error('3D dice library unavailable.');
-          })();
-          return dice3DLibraryPromise;
-        };
         const normalizeRuleName = (value) => String(value || '').toLowerCase().replace(/[+()]|\d+/g, ' ').replace(/[^a-z]+/g, ' ').trim();
         const weaponKey = (weapon) => String((weapon && (weapon.canonicalId || weapon.id || weapon.name)) || '').trim();
         const findCanonicalWeapon = (weapon) => {
@@ -575,7 +590,7 @@
             featureRefs: (canonical && canonical.featureRefs) || weapon.featureRefs || [],
             tier: (canonical && canonical.tier) || weapon.tier || null,
             pack: (canonical && canonical.pack) || weapon.pack || '',
-            burden: canonical && canonical.burden != null ? canonical.burden : weapon.burden,
+            burden: canonical && canonical.burden != null ? canonical.burden : (weapon.burden == null ? null : weapon.burden),
             weaponFamily: (canonical && canonical.weaponFamily) || weapon.weaponFamily || '',
             proficiencyDie: (canonical && canonical.proficiencyDie) || weapon.proficiencyDie || ''
           };
@@ -780,6 +795,7 @@
         
         // ENV
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const normalizeSessionKey = (value) => String(value || '').trim() || 'Table';
 
         /* SVG lantern with spotlight state machine.
            on=false: unlit, pointing up. on=true: lens lights, rotates smoothly to the name,
@@ -1324,7 +1340,7 @@
                 details: move.text,
                 resolveMove: { id: move.id, name: move.name, class: move.class, subclass: move.subclass || '', cost: move.cost }
               };
-              if (move.rollResolve) presentDiceResult(`${spend}d4`, rolls, () => logRoll({ ...common, type: 'generic', die: 4, count: spend, modifier: 0, rolls, total }));
+              if (move.rollResolve) logRoll({ ...common, type: 'generic', die: 4, count: spend, modifier: 0, rolls, total });
               else logRoll({ ...common, type: 'note', label: `${move.name}\n${move.text}` });
             };
             if (move.variableResolve) {
@@ -1653,8 +1669,7 @@
               registerCallout(enrichedRoll);
               if (isConnected && fbServices) {
                   const { db, setDoc, doc, arrayUnion } = fbServices;
-                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
-                  const remoteRoll = { ...enrichedRoll };
+                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId));
                   setDoc(docRef, {
                       lastRoll: remoteRoll,
                       rollHistory: arrayUnion(remoteRoll),
@@ -1665,12 +1680,12 @@
                   });
               }
           };
-          const writeSessionField = (obj) => { if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const ref = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId); setDoc(ref, obj, { merge: true }).catch(function(e){console.error(e);}); } catch (e) { console.error(e); } } };
+          const writeSessionField = (obj) => { if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const ref = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(ref, obj, { merge: true }).catch(function(e){console.error(e);}); } catch (e) { console.error(e); } } };
           const pushFear = (val) => { val = Math.max(0, Math.min(12, val)); lastFearEditRef.current = Date.now(); setFear(val); writeSessionField({ fearTokens: val }); };
           const takeSpotlight = (id) => { const nn = (id && id === spotlight) ? '' : (id || ''); setSpotlight(nn); writeSessionField({ spotlight: nn }); };
           const clearRollHistory = () => {
               setRollHistory([]);
-              if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId); setDoc(docRef, { rollHistory: [] }, { merge: true }).catch(e => console.error(e)); } catch(e){ console.error(e); } }
+              if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(docRef, { rollHistory: [] }, { merge: true }).catch(e => console.error(e)); } catch(e){ console.error(e); } }
           };
 
           // --- LOCAL SAVE / LOAD / CARD MANAGERS ---
@@ -1721,36 +1736,39 @@
                   // Initialize and Wait for Auth using the runtime config inside initFirebase
                   // The function now handles auth persistence and anonymous login
                   const services = await window.initFirebase();
+                  const cleanSessionId = normalizeSessionKey(sessionId);
+                  if (cleanSessionId !== sessionId) setSessionId(cleanSessionId);
                   
                   if (services) {
                       // Password gate: check the table before joining.
-                      const ref = services.doc(services.db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
+                      const ref = services.doc(services.db, 'artifacts', appId, 'public', 'data', 'sessions', cleanSessionId);
                       const snap = await ref.get();
                       const existing = (snap && snap.exists) ? (snap.data() || {}) : null;
-                      const extra = { name: sessionId, lastActive: Date.now() };
+                      const extra = { name: cleanSessionId, lastActive: Date.now() };
                       if (existing && existing.passHash) {
-                          const cached = localStorage.getItem('veilfarers_tablepass_' + sessionId);
+                          const cached = localStorage.getItem('veilfarers_tablepass_' + cleanSessionId);
                           let candidate = tablePass ? await hashPass(tablePass) : cached;
                           if (candidate !== existing.passHash) {
                               setStatusMsg('');
                               setErrorMsg('This table is password-protected. Enter the correct password in the "Table password" field.');
                               return;
                           }
-                          localStorage.setItem('veilfarers_tablepass_' + sessionId, existing.passHash);
+                          localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, existing.passHash);
                       } else if (!existing && tablePass) {
                           // Creating a new table with password protection.
                           extra.passHash = await hashPass(tablePass);
-                          localStorage.setItem('veilfarers_tablepass_' + sessionId, extra.passHash);
+                          localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, extra.passHash);
                       }
+                      // Verify write access before the UI reports a successful connection.
+                      await services.setDoc(ref, extra, { merge: true });
                       setFbServices(services); 
                       setIsConnected(true); 
                       setShowConfig(false);
                       setStatusMsg("Connected."); 
-                      startListening(services, sessionId);
+                      startListening(services, cleanSessionId);
                       // New session start: everyone begins with 2 Hope / 2 Effort.
                       setCharacters(prev => prev.map(c => ({ ...c, hope: { ...(c.hope || { max: 5 }), current: 2 }, effort: { ...(c.effort || { max: 6 }), current: 2 } })));
-                      try { services.setDoc(ref, extra, { merge: true }); } catch (e) { console.error(e); }
-                      localStorage.setItem('veilfarers_session_id', sessionId);
+                      localStorage.setItem('veilfarers_session_id', cleanSessionId);
                       setTablePass('');
                   }
               } catch (err) { 
@@ -1835,10 +1853,14 @@
               setIsSyncing(true);
               timeoutRef.current = setTimeout(async () => {
                   const { db, doc, setDoc } = fbServices;
-                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
+                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId));
                   try {
-                      await setDoc(docRef, { characters: characters, lastUpdated: new Date().toISOString() }, { merge: true });
+                      const savePayload = { characters: characters, lastUpdated: new Date().toISOString() };
+                      const undefinedPaths = window.vfFindUndefinedPaths(savePayload);
+                      if (undefinedPaths.length) console.warn('Character session contained optional undefined values; normalized before save:', undefinedPaths);
+                      await setDoc(docRef, savePayload, { merge: true });
                       setIsSyncing(false);
+                      setErrorMsg(prev => prev && prev.startsWith('Save error:') ? '' : prev);
                   } catch (e) { 
                       console.error(e); 
                       setIsSyncing(false); 

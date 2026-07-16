@@ -9,8 +9,9 @@
       "version": "11.1 RC3",
       "type": "rulebook",
       "file": "/download/VeilFarers_Corebook_11.1-RC3-PDF-Candidate.pdf",
-      "bytes": 5154645,
-      "status": "PDF Candidate"
+      "bytes": 3122952,
+      "status": "PDF Candidate",
+      "description": "RC3 Corebook with canonical alternating Player, Awakened, and Sleeping page backgrounds restored."
     },
     {
       "id": "keepers-companion",
@@ -51,5 +52,5 @@
       "downloadLabel": "Download fillable PDF"
     }
   ],
-  "pdfCandidateStatus": "Current 11.1 RC3 release-set candidates plus the retained fillable physical character sheet."
+  "pdfCandidateStatus": "Current 11.1 RC3 release-set candidates; Corebook background system restored; fillable physical character sheet retained."
 }
