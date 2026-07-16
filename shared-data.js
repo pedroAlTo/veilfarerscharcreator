@@ -8,6 +8,8 @@
     augments: ['core/augments.json', 'rust-and-steel/augments.json'],
     classes: ['core/classes.json'],
     subclasses: ['core/subclasses.json'],
+    resolveMoves: ['core/resolve-moves.json'],
+    drills: ['core/drills.json'],
     ancestries: ['core/ancestries.json'],
     communities: ['core/communities.json'],
     affiliations: ['core/affiliations.json'],

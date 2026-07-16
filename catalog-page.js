@@ -4,7 +4,7 @@
   const I = window.VeilFarersInventory;
   const pageType = document.body.dataset.catalog;
   const config = pageType === 'items'
-    ? { tabs:[['gear','Gear'],['augments','Augments']], intro:'General gear and augmentations from the canonical RC2 datasets.' }
+    ? { tabs:[['gear','Gear'],['augments','Augments']], intro:'General gear and augmentations from the canonical 11.1 RC3 datasets.' }
     : { tabs:[['weapons','Weapons'],['armor','Armor']], intro:'Weapons and armor from Core and Rust & Steel, using stable canonical IDs.' };
   let active = config.tabs[0][0];
   let data = {};
@@ -87,7 +87,7 @@
     try{
       const [manifest, ...groups] = await Promise.all([D.manifest(), ...config.tabs.map(([name])=>D.loadCollection(name))]);
       config.tabs.forEach(([name],i)=>data[name]=groups[i]);
-      els.release.textContent = manifest.release || manifest.version || '11.1 RC2';
+      els.release.textContent = manifest.release || manifest.version || '11.1 RC3';
       renderTabs(); filterItems(); renderInventory();
     }catch(err){
       els.cards.innerHTML=`<div class="vf-error">Canonical data could not be loaded: ${esc(err.message)}</div>`;

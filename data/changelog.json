@@ -1,7 +1,58 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.10",
+  "currentVersion": "v59.15",
   "entries": [
+    {
+      "version": "v59.15",
+      "date": "2026-07-16",
+      "changes": [
+        "Fixed Player Tool Firestore connection and autosave failures caused by optional character or equipment fields containing undefined values.",
+        "Added recursive Firestore payload normalization, SDK-level undefined-property handling, and diagnostic path reporting for legacy and custom character data.",
+        "Normalized table names before creating Firestore document paths and verified table write access before reporting a successful connection.",
+        "Hardened optional weapon burden data in both Creator import and Player Tool hydration, and applied the same Firestore undefined-property guard to Keeper Tool."
+      ]
+    },
+    {
+      "version": "v59.14",
+      "date": "2026-07-16",
+      "changes": [
+        "Restored the canonical alternating page backgrounds to every page of the 11.1 RC3 Corebook PDF.",
+        "Applied Player/general, Awakened, and Sleeping background families to their correct RC3 page ranges with left/right parity.",
+        "Preserved all 281 pages, searchable text, metadata, and the 725-entry PDF bookmark tree.",
+        "Updated the Netlify Downloads package and PDF byte metadata without changing rules content."
+      ]
+    },
+    {
+      "version": "v59.13",
+      "date": "2026-07-16",
+      "changes": [
+        "Regenerated the Corebook as 11.1 RC3 with the canonical Sleeping Soldier Drills, revised Soldier Resolve Moves and Effort economy.",
+        "Integrated the approved Sleeping Vanguard redesign, expanded Conditions, and added the unarmed-strike baseline.",
+        "Added canonical Soldier Drill and Conditions data to /rules-data and synchronized Player Tool class/Resolve text.",
+        "Replaced all book downloads with the 11.1 RC3 release-set filenames while retaining the fillable physical character sheet."
+      ]
+    },
+    {
+      "version": "v59.12",
+      "date": "2026-07-16",
+      "changes": [
+        "Added a dedicated Resolve Moves panel beside Sleeper Actions in Player Tool.",
+        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/− controls.",
+        "Added shared Resolve Move data for every Sleeping class, with approved Soldier and Vanguard review-draft moves included for Player Tool use.",
+        "Added operational Resolve spending: fixed and variable costs, d4 Resolve Dice, local history and Firebase table callouts.",
+        "Kept compact titles and short descriptions visible while full rules and executable controls remain behind expansion."
+      ]
+    },
+    {
+      "version": "v59.11",
+      "date": "2026-07-15",
+      "changes": [
+        "Restored explicit weapon-feature resolution in Player Tool damage callouts and Roll History.",
+        "Added structured kept/discarded state for every damage die so Massive and Railgun rolls clearly gray and strike the discarded die while highlighting kept dice.",
+        "Persisted damageDiceResults through Firebase broadcasts while retaining backward compatibility with v59.10 roll records.",
+        "Made feature recognition resilient to parameterized and custom labels for Reliable, Accurate, Heavy, Massive, Brutal and Paired."
+      ]
+    },
     {
       "version": "v59.10",
       "date": "2026-07-15",
@@ -114,5 +165,5 @@
       ]
     }
   ],
-  "version": "v59.10"
+  "version": "v59.15"
 }

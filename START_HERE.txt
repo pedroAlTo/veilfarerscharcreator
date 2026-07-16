@@ -1,48 +1,50 @@
-VeilFarers Portal v59.10
+VeilFarers Portal v59.15
 =======================
 
-Deploy the contents of this folder directly to Netlify. This build replaces v59.9.
+Deploy the contents of this folder directly to Netlify. This build replaces v59.14.
 
-Hope / Effort alternative payments
-----------------------------------
-Player Tool now follows the canonical resource rule that any ability with a Hope cost may instead be paid with the same amount of Effort.
-
-This applies to executable actions generated from:
-- Ancestry Gifts;
-- Class Features;
-- Community Features;
-- Hope Features;
-- Domain Cards.
-
-Both payment options remain visible. Each button is independently disabled when the character lacks the required resource. The selected payment is deducted before the action resolves.
-
-Roll records
-------------
-Feature and Domain Card activations record the selected Hope or Effort payment in:
-- the local Player Tool Roll History;
-- Firebase table-wide roll callouts;
-- the shared session roll history.
-
-Existing mechanics retained
----------------------------
-- Operational multi-weapon arsenal and active-weapon switching.
-- Reliable, Accurate, Heavy, Massive, Brutal and Paired automation.
-- Structured weapon effects, resistance/DC notes and damage details.
-- Canonical 11.1 RC2 datasets.
-- Netlify Identity accounts and roles.
-- Firebase real-time Player/Keeper sessions.
-
-Required Deploy Preview checks
+Player Tool Firestore save fix
 ------------------------------
-1. Import a character whose Ancestry Gift costs Hope.
-2. Verify separate Hope and Effort action buttons are shown.
-3. Activate with Hope and verify Hope decreases by the stated amount.
-4. Activate with Effort and verify Effort decreases by the stated amount.
-5. Verify insufficient-resource buttons are disabled independently.
-6. Activate a Domain Card using both payment methods.
-7. Confirm the selected resource appears in the local history and on another browser connected to the same Firebase table.
+Player Tool no longer fails to join or autosave a table when legacy imports,
+custom weapons, or optional character fields contain JavaScript `undefined` values.
+Firestore does not accept `undefined` in document data.
+
+The fix uses three layers:
+
+1. Firestore is initialized with `ignoreUndefinedProperties: true` before use.
+2. Every Player Tool write is recursively normalized before it reaches Firestore.
+   Undefined object properties are omitted; undefined array positions become null.
+3. Optional weapon `burden` values now normalize to null during import and hydration.
+
+The normalizer preserves Firestore-native values such as FieldValue.arrayUnion,
+Timestamp, GeoPoint, and DocumentReference.
+
+Session connection hardening
+----------------------------
+- Leading and trailing whitespace is removed from table names before the Firestore
+  document reference is created.
+- The table metadata write is awaited before the interface reports Connected.
+- Autosave clears a previous Save error after the next successful write.
+- Undefined field paths are logged to the browser console for diagnostics without
+  exposing character data to other services.
+
+Keeper Tool
+-----------
+Keeper Tool now enables the same Firestore SDK option for undefined optional fields.
+Its existing real-time session behavior and document schema are unchanged.
+
+Deploy Preview checks
+---------------------
+1. Open Player Tool with a character imported from an older JSON file.
+2. Add or equip a custom weapon without a burden value.
+3. Join a table whose entered name contains leading or trailing spaces.
+4. Confirm the UI reports Connected and no unsupported-field error appears.
+5. Edit HP, Stress, Experiences, equipment, and weapon loadout; confirm autosave.
+6. Open a second Player Tool and Keeper Tool on the normalized table name.
+7. Confirm character updates, roll callouts, Fear, Spotlight, and roll history sync.
+8. Confirm an earlier Save error disappears after a successful save.
 
 Validation
 ----------
-Read VALIDATION_v59.10.txt for automated checks.
-Identity, Firebase broadcasting, responsive layout and cross-browser interaction must still be tested on a Netlify Deploy Preview.
+Read VALIDATION_v59.15.txt for automated checks. A live Netlify Deploy Preview is
+still required to verify the real Firebase project, authentication, and Firestore rules.

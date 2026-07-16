@@ -32,7 +32,7 @@
   }
   function renderLocal(){
     const state=currentState();
-    if(!state){ localSummary.innerHTML='<p>No RC2 character is saved in this browser. Create one on the homepage first.</p>'; return; }
+    if(!state){ localSummary.innerHTML='<p>No canonical character is saved in this browser. Create one on the homepage first.</p>'; return; }
     const meta=metadata(state);
     localSummary.innerHTML=`<h3>${esc(meta.name)}</h3><p>${esc([meta.path,meta.classId,meta.subclass].filter(Boolean).join(' · ') || 'Incomplete character')}</p><p class="vf-muted">Creator draft available locally. ${Object.keys(currentInventory()?.entries||{}).length} inventory records linked.</p>`;
   }
@@ -45,7 +45,7 @@
       el('account-email').textContent=activeUser.email||activeUser.id;
       const roles=activeUser.app_metadata?.roles||[];
       el('account-role').textContent=roles.length?roles.join(', '):'member';
-      setStatus('Signed in. The RC2 character vault is available.','ok');
+      setStatus('Signed in. The canonical character vault is available.','ok');
       renderVault();
     }else{
       el('account-email').textContent='Guest'; el('account-role').textContent='—';
@@ -55,7 +55,7 @@
   }
   function renderVault(){
     const records=vault(activeUser).sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
-    if(!records.length){ list.innerHTML='<div class="vf-empty">No RC2 characters saved to this account.</div>'; return; }
+    if(!records.length){ list.innerHTML='<div class="vf-empty">No canonical characters saved to this account.</div>'; return; }
     list.innerHTML=records.map(record=>`<article class="vf-character-row" data-id="${esc(record.id)}"><div><h3>${esc(record.name||'Unnamed VeilFarer')}</h3><p>${esc([record.path,record.classId,record.subclass].filter(Boolean).join(' · ')||'Incomplete character')} · Level ${Number(record.level||1)}</p><p>Updated ${esc(record.updatedAt?new Date(record.updatedAt).toLocaleString():'—')}</p></div><div class="vf-actions"><button class="vf-button primary" data-action="load">Load</button><button class="vf-button" data-action="export">Export</button><button class="vf-button danger" data-action="delete">Delete</button></div></article>`).join('');
   }
   async function updateVault(records){
@@ -67,17 +67,17 @@
   }
   async function saveCurrent(asCopy){
     const state=currentState();
-    if(!state) throw new Error('No local RC2 character exists to save.');
+    if(!state) throw new Error('No local canonical character exists to save.');
     let records=vault(activeUser); const linked=asCopy?'':localStorage.getItem(LINK_KEY);
     const id=linked&&records.some(r=>r.id===linked)?linked:uid();
     const existing=records.find(r=>r.id===id); const now=new Date().toISOString();
-    const record=Object.assign({},existing||{},metadata(state),{id,schema:'veilfarers.character.vault/1',rulesRelease:'11.1-RC2-draft6',state,inventory:currentInventory(),createdAt:existing?.createdAt||now,updatedAt:now});
+    const record=Object.assign({},existing||{},metadata(state),{id,schema:'veilfarers.character.vault/1',rulesRelease:'11.1-RC3',state,inventory:currentInventory(),createdAt:existing?.createdAt||now,updatedAt:now});
     records=records.filter(r=>r.id!==id); records.unshift(record);
     await updateVault(records); localStorage.setItem(LINK_KEY,id);
     setStatus(`Saved ${record.name} to Netlify Identity.`, 'ok');
   }
   function loadRecord(record){
-    if(!record?.state) throw new Error('This vault record has no RC2 state.');
+    if(!record?.state) throw new Error('This vault record has no canonical character state.');
     localStorage.setItem(CHARACTER_KEY,JSON.stringify(record.state));
     if(record.inventory) localStorage.setItem(INVENTORY_KEY,JSON.stringify(record.inventory));
     localStorage.setItem(LINK_KEY,record.id);

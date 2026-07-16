@@ -37,6 +37,46 @@
             return firebaseConfigPromise;
         };
 
+        // Firestore rejects undefined values. Character data can contain optional
+        // fields from older JSON exports or custom equipment, so every write is
+        // normalized before it reaches Firestore. Object properties with undefined
+        // values are omitted; undefined array positions become null to preserve order.
+        window.vfFindUndefinedPaths = (value, path = '$', found = [], seen = new WeakSet()) => {
+            if (value === undefined) { found.push(path); return found; }
+            if (!value || typeof value !== 'object') return found;
+            if (seen.has(value)) return found;
+            seen.add(value);
+            if (Array.isArray(value)) value.forEach((item, index) => window.vfFindUndefinedPaths(item, `${path}[${index}]`, found, seen));
+            else Object.keys(value).forEach((key) => window.vfFindUndefinedPaths(value[key], `${path}.${key}`, found, seen));
+            return found;
+        };
+        window.vfSanitizeFirestore = (value, seen = new WeakSet()) => {
+            if (value === undefined) return undefined;
+            if (value === null || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+            if (value instanceof Date) return value;
+            if (typeof value !== 'object') return undefined;
+
+            // Preserve Firestore native values and transform sentinels.
+            const ctor = value.constructor && value.constructor.name;
+            if ((ctor && /FieldValue|Timestamp|GeoPoint|DocumentReference|FieldPath|Blob|Bytes/i.test(ctor)) ||
+                value._delegate || value._methodName || typeof value.toDate === 'function') return value;
+
+            if (seen.has(value)) return null;
+            seen.add(value);
+            if (Array.isArray(value)) {
+                return value.map((item) => {
+                    const clean = window.vfSanitizeFirestore(item, seen);
+                    return clean === undefined ? null : clean;
+                });
+            }
+            const cleanObject = {};
+            Object.keys(value).forEach((key) => {
+                const clean = window.vfSanitizeFirestore(value[key], seen);
+                if (clean !== undefined) cleanObject[key] = clean;
+            });
+            return cleanObject;
+        };
+
         // Inicialización global robusta con diagnóstico
         window.initFirebase = async (config) => {
             console.log("--- INICIANDO CONEXIÓN FIREBASE ---");
@@ -54,6 +94,19 @@
 
                 const db = firebase.firestore();
                 const auth = firebase.auth();
+
+                // Primary SDK-level guard. The explicit sanitizer below remains in
+                // place so diagnostics are available and old/custom data is safe even
+                // when Firestore has already been initialized elsewhere on the page.
+                if (!window.__vfIgnoreUndefinedConfigured) {
+                    try {
+                        db.settings({ ignoreUndefinedProperties: true });
+                        window.__vfIgnoreUndefinedConfigured = true;
+                    } catch (settingsErr) {
+                        console.warn('Firestore settings already active; using the VeilFarers write sanitizer.', settingsErr);
+                        window.__vfIgnoreUndefinedConfigured = true;
+                    }
+                }
                 
                 // 2. Configurar Persistencia (SESSION es más seguro en iframes que LOCAL)
                 await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
@@ -86,10 +139,18 @@
                         const fullPath = path.join('/');
                         return db.collection(fullPath);
                     },
-                    setDoc: (ref, data, opt) => ref.set(data, opt),
-                    updateDoc: (ref, data) => ref.update(data),
+                    setDoc: (ref, data, opt) => {
+                        const undefinedPaths = window.vfFindUndefinedPaths(data);
+                        if (undefinedPaths.length) console.warn('Firestore write normalized; omitted undefined fields:', undefinedPaths);
+                        return ref.set(window.vfSanitizeFirestore(data), opt);
+                    },
+                    updateDoc: (ref, data) => {
+                        const undefinedPaths = window.vfFindUndefinedPaths(data);
+                        if (undefinedPaths.length) console.warn('Firestore update normalized; omitted undefined fields:', undefinedPaths);
+                        return ref.update(window.vfSanitizeFirestore(data));
+                    },
                     onSnapshot: (ref, next, err) => ref.onSnapshot(next, err),
-                    arrayUnion: (...args) => firebase.firestore.FieldValue.arrayUnion(...args)
+                    arrayUnion: (...args) => firebase.firestore.FieldValue.arrayUnion(...args.map(arg => window.vfSanitizeFirestore(arg)))
                 };
 
             } catch (e) {
@@ -141,6 +202,19 @@
         .vf-player-tools>*{flex:0 0 auto;}
         .vf-player-tools button,.vf-player-tabs button{box-shadow:0 2px 8px rgba(0,0,0,.16);}
         @media (max-width:700px){.vf-player-tools{gap:.35rem}.vf-player-tools button{padding-left:.55rem!important;padding-right:.55rem!important}}
+
+        /* Operational damage dice: weapon mechanics must remain visible in callouts. */
+        .vf-damage-dice{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:.38rem;margin:.2rem 0;}
+        .vf-damage-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:.08rem;min-width:38px;padding:.18rem .16rem .1rem;border:1px solid transparent;border-radius:.55rem;transition:opacity .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease;}
+        .vf-damage-die.is-kept{border-color:rgba(248,113,113,.65);background:rgba(127,29,29,.22);box-shadow:0 0 12px rgba(248,113,113,.18);}
+        .vf-damage-die.is-discarded{opacity:.34;filter:grayscale(1) saturate(.15);border-color:rgba(100,116,139,.45);background:rgba(15,23,42,.42);}
+        .vf-damage-die.is-discarded .vf-damage-die-face:after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;background:#94a3b8;transform:rotate(-34deg);box-shadow:0 0 2px #020617;pointer-events:none;}
+        .vf-damage-die-face{position:relative;display:grid;place-items:center;}
+        .vf-damage-die-state{font-size:7px;line-height:1;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+        .vf-damage-die.is-kept .vf-damage-die-state{color:#fca5a5;}
+        .vf-damage-die.is-discarded .vf-damage-die-state{color:#94a3b8;text-decoration:line-through;}
+        .vf-damage-die-reroll{font-size:7px;line-height:1;color:#facc15;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+        .vf-damage-summary{font-size:8px;color:#cbd5e1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:center;}
 
         body { background-color: #020617; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
@@ -336,6 +410,47 @@
           );
         };
 
+        const normalizeDamageDiceResults = (results, rolls, discardedIndices, rerolls) => {
+          if (Array.isArray(results) && results.length) {
+            return results.map((die, index) => ({
+              index: Number.isFinite(Number(die.index)) ? Number(die.index) : index,
+              value: Number(die.value),
+              status: die.status === 'discarded' ? 'discarded' : 'kept',
+              rerolledFrom: die.rerolledFrom == null ? null : Number(die.rerolledFrom)
+            }));
+          }
+          const dropped = new Set(Array.isArray(discardedIndices) ? discardedIndices.map(Number) : []);
+          const rerollMap = new Map((Array.isArray(rerolls) ? rerolls : []).map(item => [Number(item.index), item]));
+          return (Array.isArray(rolls) ? rolls : []).map((value, index) => {
+            const reroll = rerollMap.get(index);
+            return { index, value: Number(value), status: dropped.has(index) ? 'discarded' : 'kept', rerolledFrom: reroll ? Number(reroll.from) : null };
+          });
+        };
+
+        const DamageDiceDisplay = ({ results, rolls, discardedIndices, rerolls, sides, rolling, compact }) => {
+          const dice = normalizeDamageDiceResults(results, rolls, discardedIndices, rerolls);
+          if (!dice.length) return null;
+          const hasDiscarded = dice.some(die => die.status === 'discarded');
+          const keptValues = dice.filter(die => die.status !== 'discarded').map(die => die.value);
+          const discardedValues = dice.filter(die => die.status === 'discarded').map(die => die.value);
+          return (
+            <div className="flex flex-col items-center" aria-label={hasDiscarded ? `Kept ${keptValues.join(', ')}; discarded ${discardedValues.join(', ')}` : `Damage dice ${keptValues.join(', ')}`}>
+              <div className="vf-damage-dice">
+                {dice.map((die, index) => (
+                  <div key={`${die.index}-${index}`} data-die-status={die.status} className={`vf-damage-die ${die.status === 'discarded' ? 'is-discarded' : 'is-kept'}`}>
+                    <div className="vf-damage-die-face">
+                      <ShapedDie sides={sides || 6} value={die.value} rolling={rolling} variant={die.status === 'discarded' ? 'neutral' : (die.value === 1 ? 'crit' : 'max')} size={compact ? 26 : 34} />
+                    </div>
+                    {hasDiscarded && <span className="vf-damage-die-state">{die.status === 'discarded' ? 'Drop' : 'Keep'}</span>}
+                    {die.rerolledFrom != null && <span className="vf-damage-die-reroll">{die.rerolledFrom}→{die.value}</span>}
+                  </div>
+                ))}
+              </div>
+              {hasDiscarded && <div className="vf-damage-summary">Keep {keptValues.join(' + ')} · discard {discardedValues.join(', ')}</div>}
+            </div>
+          );
+        };
+
         /* Number input with custom up/down chevrons (native browser spinners are hidden via CSS). */
         const NumField = ({ value, onChange, className, min, max, onClick, style, placeholder }) => {
           const full = /w-full/.test(className || '');
@@ -418,6 +533,7 @@
         const FEATURE_REGISTRY = VF_CANON.featureRegistry || [];
         const CORE_FEATURES = VF_CANON.features || [];
         const WEAPON_CATALOG = VF_CANON.weapons || [];
+        const RESOLVE_MOVE_LIBRARY = VF_CANON.resolveMoves || [];
         const normalizeRuleName = (value) => String(value || '').toLowerCase().replace(/[+()]|\d+/g, ' ').replace(/[^a-z]+/g, ' ').trim();
         const weaponKey = (weapon) => String((weapon && (weapon.canonicalId || weapon.id || weapon.name)) || '').trim();
         const findCanonicalWeapon = (weapon) => {
@@ -454,7 +570,7 @@
             featureRefs: (canonical && canonical.featureRefs) || weapon.featureRefs || [],
             tier: (canonical && canonical.tier) || weapon.tier || null,
             pack: (canonical && canonical.pack) || weapon.pack || '',
-            burden: canonical && canonical.burden != null ? canonical.burden : weapon.burden,
+            burden: canonical && canonical.burden != null ? canonical.burden : (weapon.burden == null ? null : weapon.burden),
             weaponFamily: (canonical && canonical.weaponFamily) || weapon.weaponFamily || '',
             proficiencyDie: (canonical && canonical.proficiencyDie) || weapon.proficiencyDie || ''
           };
@@ -491,6 +607,11 @@
           }
           return effect || entry.display;
         };
+        const weaponFeatureMatches = (entry, expected) => {
+          const actual = normalizeRuleName(entry && entry.display);
+          const wanted = normalizeRuleName(expected);
+          return actual === wanted || actual.startsWith(wanted + ' ') || actual.startsWith(wanted + ':') || actual.startsWith(wanted + '(');
+        };
         const weaponAttackProfile = (weapon, character, equipped) => {
           const hydrated = hydratePlayerWeapon(weapon);
           const entries = weaponFeatureEntries(hydrated);
@@ -499,19 +620,19 @@
           const range = String(hydrated.range || '').toLowerCase();
           entries.forEach(entry => {
             const name = normalizeRuleName(entry.display);
-            if (name === 'reliable') { attackBonus += 1; attackBonuses.push('Reliable +1'); }
-            if (name === 'accurate' && (range.indexOf('far') !== -1)) { attackBonus += 1; attackBonuses.push('Accurate +1'); }
+            if (weaponFeatureMatches(entry, 'reliable')) { attackBonus += 1; attackBonuses.push('Reliable +1'); }
+            if (weaponFeatureMatches(entry, 'accurate') && (range.indexOf('far') !== -1)) { attackBonus += 1; attackBonuses.push('Accurate +1'); }
           });
-          const heavy = entries.some(entry => normalizeRuleName(entry.display) === 'heavy');
-          const massive = entries.some(entry => normalizeRuleName(entry.display) === 'massive');
-          const brutal = entries.some(entry => normalizeRuleName(entry.display) === 'brutal');
-          const pairedEntries = entries.filter(entry => normalizeRuleName(entry.display) === 'paired');
+          const heavy = entries.some(entry => weaponFeatureMatches(entry, 'heavy'));
+          const massive = entries.some(entry => weaponFeatureMatches(entry, 'massive'));
+          const brutal = entries.some(entry => weaponFeatureMatches(entry, 'brutal'));
+          const pairedEntries = entries.filter(entry => weaponFeatureMatches(entry, 'paired'));
           const allEquipped = (equipped || []).map(hydratePlayerWeapon).filter(w => w.name);
-          const pairedWeapons = allEquipped.filter(w => weaponFeatureEntries(w).some(entry => normalizeRuleName(entry.display) === 'paired'));
+          const pairedWeapons = allEquipped.filter(w => weaponFeatureEntries(w).some(entry => weaponFeatureMatches(entry, 'paired')));
           let pairedBonus = 0;
           if (pairedEntries.length && pairedWeapons.length >= 2) {
             pairedWeapons.forEach(w => weaponFeatureEntries(w).forEach(entry => {
-              if (normalizeRuleName(entry.display) !== 'paired') return;
+              if (!weaponFeatureMatches(entry, 'paired')) return;
               const fromParam = Number(entry.parameters && entry.parameters.bonus);
               const fromText = Number((String(entry.display).match(/\+(\d+)/) || [])[1]);
               pairedBonus = Math.max(pairedBonus, Number.isFinite(fromParam) ? fromParam : (Number.isFinite(fromText) ? fromText : 0));
@@ -585,6 +706,32 @@
           if (!bullets.length) bullets.push(source.length > 220 ? source.slice(0, 217).trim() + '…' : source);
           return { title, bullets: bullets.slice(0, 5), full: source, actions: parseFeatureRolls(source, title) };
         };
+        const compactLine = (value, limit) => {
+          const text = String(value || '').replace(/\s+/g, ' ').trim();
+          const max = limit || 150;
+          if (text.length <= max) return text;
+          const cut = text.slice(0, max - 1);
+          const boundary = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('; '), cut.lastIndexOf(', '), cut.lastIndexOf(' '));
+          return (boundary > 60 ? cut.slice(0, boundary) : cut).trim() + '…';
+        };
+        const resolveMovesForCharacter = (character) => {
+          const classKey = normalizeRuleName(character && character.class);
+          const subclassKey = normalizeRuleName(character && character.subclass);
+          if (!classKey) return [];
+          return RESOLVE_MOVE_LIBRARY.filter(move => {
+            if (normalizeRuleName(move.class) !== classKey) return false;
+            if (!move.subclass) return true;
+            const wanted = normalizeRuleName(move.subclass);
+            return subclassKey === wanted || subclassKey.indexOf(wanted) !== -1 || wanted.indexOf(subclassKey) !== -1;
+          }).sort((a, b) => {
+            if (!!a.subclass !== !!b.subclass) return a.subclass ? 1 : -1;
+            return String(a.name || '').localeCompare(String(b.name || ''));
+          });
+        };
+        const resolveMoveMinimum = (move) => {
+          const match = String((move && move.cost) || '').match(/(\d+)/);
+          return match ? Math.max(1, Number(match[1])) : 1;
+        };
 
 
         // Stable per-character id. Spotlight is keyed by this id (never by name) so that
@@ -624,6 +771,7 @@
         
         // ENV
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const normalizeSessionKey = (value) => String(value || '').trim() || 'Table';
 
         /* SVG lantern with spotlight state machine.
            on=false: unlit, pointing up. on=true: lens lights, rotates smoothly to the name,
@@ -680,6 +828,9 @@
           const [customWeaponDraft, setCustomWeaponDraft] = useState({ name:'', trait:'', range:'', damage:'', feature:'' });
           const [showHistory, setShowHistory] = useState(false); 
           const [selectedDomain, setSelectedDomain] = useState("Tech");
+          const [expandedPanels, setExpandedPanels] = useState({});
+          const panelExpanded = (id) => !!expandedPanels[id];
+          const togglePanel = (id) => setExpandedPanels(current => ({ ...current, [id]: !current[id] }));
           
           // Window Management
           const [pinned, setPinned] = useState({ player: false, gm: false });
@@ -830,6 +981,7 @@
             };
           };
           const character = normChar(characters[activeTab] || characters[0] || {});
+          const availableResolveMoves = resolveMovesForCharacter(character);
 
           // --- DRAGGING LOGIC ---
           const getPoint = (e) => (e.touches && e.touches[0]) ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
@@ -1067,6 +1219,38 @@
               logRoll({ type:"note", label: label, outcome:"", outcomeColor:"", total:"", hope:"", fear:"", playerName: (character.name||character.playerName||"Player"), timestamp: Date.now() });
             }
           };
+          const useResolveMove = (move) => {
+            if (!move) return;
+            const available = Number((character.resolve && character.resolve.current) || 0);
+            const minimum = resolveMoveMinimum(move);
+            if (available < minimum) return;
+            const execute = (count) => {
+              const spend = Math.max(minimum, Math.min(available, Number(count) || minimum));
+              const rolls = move.rollResolve ? Array.from({ length: spend }, () => Math.floor(Math.random() * 4) + 1) : [];
+              const total = rolls.reduce((sum, value) => sum + value, 0);
+              updateCharacter({ ...character, resolve: { ...(character.resolve || { max: 2 }), current: Math.max(0, available - spend) } });
+              const common = {
+                label: `Resolve Move: ${move.name}`,
+                playerName: (character.name || character.playerName || 'Player'),
+                timestamp: Date.now(),
+                resourceCost: { resource: 'Resolve', amount: spend },
+                details: move.text,
+                resolveMove: { id: move.id, name: move.name, class: move.class, subclass: move.subclass || '', cost: move.cost }
+              };
+              if (move.rollResolve) logRoll({ ...common, type: 'generic', die: 4, count: spend, modifier: 0, rolls, total });
+              else logRoll({ ...common, type: 'note', label: `${move.name}\n${move.text}` });
+            };
+            if (move.variableResolve) {
+              showPrompt(`How many Resolve Dice do you spend? Available: ${available}.`, String(minimum), (value) => {
+                const requested = Number(value);
+                if (!Number.isInteger(requested) || requested < minimum || requested > available) {
+                  showAlert(`Choose a whole number from ${minimum} to ${available}.`, 'Invalid Resolve spend');
+                  return;
+                }
+                execute(requested);
+              }, move.name);
+            } else execute(minimum);
+          };
           const rollWeaponDamage = (dmgStr, mult, bonus, profile) => {
               if (!dmgStr) return null;
               mult = mult || 1; bonus = bonus || 0; profile = profile || {};
@@ -1095,6 +1279,13 @@
                   discardedIndices.push(lowest);
                   keptRolls.splice(lowest, 1);
               }
+              const rerollMap = new Map(rerolls.map(item => [item.index, item]));
+              const damageDiceResults = rolls.map((value, index) => ({
+                  index,
+                  value,
+                  status: discardedIndices.includes(index) ? 'discarded' : 'kept',
+                  rerolledFrom: rerollMap.has(index) ? rerollMap.get(index).from : null
+              }));
               const paired = Number(profile.pairedBonus) || 0;
               const extra = staticMod + bonus + paired;
               const sum = keptRolls.reduce((total, value) => total + value, 0);
@@ -1110,6 +1301,7 @@
                   rolls,
                   keptRolls,
                   discardedIndices,
+                  damageDiceResults,
                   rerolls,
                   modifier: extra,
                   base: String(dmgStr),
@@ -1190,7 +1382,8 @@
                   damage: dmgInfo && dmgInfo.total, damageDetail: dmgInfo && dmgInfo.detail,
                   damageDice: dmgInfo && dmgInfo.dice, damageRolledDice: dmgInfo && dmgInfo.rolledDice,
                   damageRolls: dmgInfo && dmgInfo.rolls, damageKeptRolls: dmgInfo && dmgInfo.keptRolls,
-                  damageDiscardedIndices: dmgInfo && dmgInfo.discardedIndices, damageRerolls: dmgInfo && dmgInfo.rerolls,
+                  damageDiscardedIndices: dmgInfo && dmgInfo.discardedIndices, damageDiceResults: dmgInfo && dmgInfo.damageDiceResults,
+                  damageRerolls: dmgInfo && dmgInfo.rerolls,
                   damageRules: dmgInfo && dmgInfo.rules, damageModifier: dmgInfo ? dmgInfo.modifier : 0,
                   damageModifierBreakdown: dmgInfo && dmgInfo.modifierBreakdown, damageBase: dmgInfo && dmgInfo.base, crit: isCrit,
                   weaponName: profile && profile.weapon.name, weaponTrait: profile && profile.weapon.trait,
@@ -1319,7 +1512,7 @@
               setRollHistory(prev => [enrichedRoll, ...prev]);
               if (isConnected && fbServices) {
                   const { db, setDoc, doc, arrayUnion } = fbServices;
-                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
+                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId));
                   setDoc(docRef, {
                       lastRoll: enrichedRoll,
                       rollHistory: arrayUnion(enrichedRoll),
@@ -1330,12 +1523,12 @@
                   });
               }
           };
-          const writeSessionField = (obj) => { if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const ref = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId); setDoc(ref, obj, { merge: true }).catch(function(e){console.error(e);}); } catch (e) { console.error(e); } } };
+          const writeSessionField = (obj) => { if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const ref = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(ref, obj, { merge: true }).catch(function(e){console.error(e);}); } catch (e) { console.error(e); } } };
           const pushFear = (val) => { val = Math.max(0, Math.min(12, val)); lastFearEditRef.current = Date.now(); setFear(val); writeSessionField({ fearTokens: val }); };
           const takeSpotlight = (id) => { const nn = (id && id === spotlight) ? '' : (id || ''); setSpotlight(nn); writeSessionField({ spotlight: nn }); };
           const clearRollHistory = () => {
               setRollHistory([]);
-              if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId); setDoc(docRef, { rollHistory: [] }, { merge: true }).catch(e => console.error(e)); } catch(e){ console.error(e); } }
+              if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(docRef, { rollHistory: [] }, { merge: true }).catch(e => console.error(e)); } catch(e){ console.error(e); } }
           };
 
           // --- LOCAL SAVE / LOAD / CARD MANAGERS ---
@@ -1386,36 +1579,39 @@
                   // Initialize and Wait for Auth using the runtime config inside initFirebase
                   // The function now handles auth persistence and anonymous login
                   const services = await window.initFirebase();
+                  const cleanSessionId = normalizeSessionKey(sessionId);
+                  if (cleanSessionId !== sessionId) setSessionId(cleanSessionId);
                   
                   if (services) {
                       // Password gate: check the table before joining.
-                      const ref = services.doc(services.db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
+                      const ref = services.doc(services.db, 'artifacts', appId, 'public', 'data', 'sessions', cleanSessionId);
                       const snap = await ref.get();
                       const existing = (snap && snap.exists) ? (snap.data() || {}) : null;
-                      const extra = { name: sessionId, lastActive: Date.now() };
+                      const extra = { name: cleanSessionId, lastActive: Date.now() };
                       if (existing && existing.passHash) {
-                          const cached = localStorage.getItem('veilfarers_tablepass_' + sessionId);
+                          const cached = localStorage.getItem('veilfarers_tablepass_' + cleanSessionId);
                           let candidate = tablePass ? await hashPass(tablePass) : cached;
                           if (candidate !== existing.passHash) {
                               setStatusMsg('');
                               setErrorMsg('This table is password-protected. Enter the correct password in the "Table password" field.');
                               return;
                           }
-                          localStorage.setItem('veilfarers_tablepass_' + sessionId, existing.passHash);
+                          localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, existing.passHash);
                       } else if (!existing && tablePass) {
                           // Creating a new table with password protection.
                           extra.passHash = await hashPass(tablePass);
-                          localStorage.setItem('veilfarers_tablepass_' + sessionId, extra.passHash);
+                          localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, extra.passHash);
                       }
+                      // Verify write access before the UI reports a successful connection.
+                      await services.setDoc(ref, extra, { merge: true });
                       setFbServices(services); 
                       setIsConnected(true); 
                       setShowConfig(false);
                       setStatusMsg("Connected."); 
-                      startListening(services, sessionId);
+                      startListening(services, cleanSessionId);
                       // New session start: everyone begins with 2 Hope / 2 Effort.
                       setCharacters(prev => prev.map(c => ({ ...c, hope: { ...(c.hope || { max: 5 }), current: 2 }, effort: { ...(c.effort || { max: 6 }), current: 2 } })));
-                      try { services.setDoc(ref, extra, { merge: true }); } catch (e) { console.error(e); }
-                      localStorage.setItem('veilfarers_session_id', sessionId);
+                      localStorage.setItem('veilfarers_session_id', cleanSessionId);
                       setTablePass('');
                   }
               } catch (err) { 
@@ -1502,10 +1698,14 @@
               setIsSyncing(true);
               timeoutRef.current = setTimeout(async () => {
                   const { db, doc, setDoc } = fbServices;
-                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', sessionId);
+                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId));
                   try {
-                      await setDoc(docRef, { characters: characters, lastUpdated: new Date().toISOString() }, { merge: true });
+                      const savePayload = { characters: characters, lastUpdated: new Date().toISOString() };
+                      const undefinedPaths = window.vfFindUndefinedPaths(savePayload);
+                      if (undefinedPaths.length) console.warn('Character session contained optional undefined values; normalized before save:', undefinedPaths);
+                      await setDoc(docRef, savePayload, { merge: true });
                       setIsSyncing(false);
+                      setErrorMsg(prev => prev && prev.startsWith('Save error:') ? '' : prev);
                   } catch (e) { 
                       console.error(e); 
                       setIsSyncing(false); 
@@ -1587,35 +1787,57 @@
             community: { label:'Community Feature', text:'text-cyan-300', border:'border-cyan-800/50', bg:'bg-cyan-950/20' },
             effort: { label: character.path === 'sleeping' ? 'Effort Feature' : 'Hope Feature', text:'text-purple-300', border:'border-purple-800/50', bg:'bg-purple-950/20' }
           };
+          const CompactActionPanel = ({ panelId, title, description, icon, accentClass, children }) => {
+              const expanded = panelExpanded(panelId);
+              return (
+                <section className={`rounded-lg border border-slate-800 bg-slate-900/40 min-w-0 overflow-hidden ${expanded ? 'shadow-[0_0_20px_rgba(15,23,42,.35)]' : ''}`}>
+                  <button type="button" aria-expanded={expanded} onClick={() => togglePanel(panelId)} className="w-full p-3 flex items-start gap-3 text-left hover:bg-slate-800/35 transition-colors">
+                    <span className={`mt-0.5 shrink-0 ${accentClass || 'text-slate-300'}`}>{icon}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[11px] font-black uppercase tracking-widest text-slate-100">{title}</span>
+                      <span className="block mt-1 text-[10px] leading-snug text-slate-400">{description}</span>
+                    </span>
+                    <span className={`shrink-0 w-7 h-7 rounded-full border grid place-items-center ${expanded ? 'border-slate-500 bg-slate-800 text-white' : 'border-slate-700 bg-slate-950 text-slate-400'}`} aria-hidden="true">
+                      {expanded ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+                  {expanded && <div className="p-3 pt-0 border-t border-slate-800/70">{children}</div>}
+                </section>
+              );
+          };
           const FeatureSummaryCard = ({ kind, text }) => {
-              const [expanded, setExpanded] = useState(false);
               const accent = featureAccent[kind] || featureAccent.class;
               const summary = compactFeature(text, accent.label);
+              const panelId = `feature-${kind}`;
+              const expanded = panelExpanded(panelId);
               return (
-                <div className={`rounded border ${accent.border} ${accent.bg} p-2.5 min-w-0`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className={`text-[9px] font-black uppercase tracking-widest ${accent.text}`}>{accent.label}</div>
-                      <div className="text-[12px] font-bold text-slate-100 mt-0.5 leading-tight">{summary.title}</div>
-                    </div>
-                    {summary.full.length > 210 && <button onClick={() => setExpanded(value => !value)} className="shrink-0 px-2 py-1 rounded border border-slate-700 bg-slate-950 text-[9px] font-bold uppercase text-slate-400 hover:text-white hover:border-slate-500">{expanded ? 'Less' : 'Details'}</button>}
-                  </div>
-                  {!expanded ? (
-                    <ul className="mt-1.5 space-y-1 text-[10px] text-slate-300 leading-snug">
-                      {summary.bullets.map((bullet, index) => <li key={index} className="flex gap-1.5"><span className={accent.text}>◆</span><span>{bullet}</span></li>)}
-                    </ul>
-                  ) : <div className="mt-2 text-[10px] text-slate-300 leading-relaxed whitespace-pre-line">{summary.full}</div>}
-                  {summary.actions.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-slate-800/70">
-                      {summary.actions.flatMap((action, actionIndex) => {
-                        const actionLabel = action.type === 'roll' ? `Roll${action.trait ? ' ' + action.trait : ''}${action.dc ? ' · DC ' + action.dc : ''}` : action.type === 'die' ? `Roll ${action.dieName || ('d' + action.die)}` : 'Use';
-                        return featurePaymentOptions(action.cost).map((paymentCost, paymentIndex) => {
-                          const disabled = !canPayFeatureCost(paymentCost);
-                          const costLabel = paymentCost ? `${paymentCost.amount} ${paymentCost.resource}` : '';
-                          const isEffortAlternative = paymentCost && paymentCost.alternativeFor === 'hope';
-                          return <button key={`${actionIndex}-${paymentIndex}`} disabled={disabled} onClick={() => executeFeatureAction(accent.label, summary, action, paymentCost)} title={isEffortAlternative ? 'Alternative payment: spend Effort instead of Hope' : ''} className={`px-2.5 py-1 rounded border text-[9px] font-black uppercase tracking-wide ${isEffortAlternative ? 'text-amber-300 border-amber-800/70 hover:border-amber-500' : `${accent.text} border-slate-700 hover:border-slate-500`} bg-slate-950 disabled:opacity-30 disabled:cursor-not-allowed`}><Zap className="w-3 h-3 inline mr-1" />{actionLabel}{costLabel ? ` · ${costLabel}` : ''}</button>;
-                        });
-                      })}
+                <div className={`rounded-lg border ${accent.border} ${accent.bg} min-w-0 overflow-hidden`}>
+                  <button type="button" aria-expanded={expanded} onClick={() => togglePanel(panelId)} className="w-full p-2.5 flex items-start justify-between gap-2 text-left hover:bg-slate-900/30 transition-colors">
+                    <span className="min-w-0">
+                      <span className={`block text-[9px] font-black uppercase tracking-widest ${accent.text}`}>{accent.label}</span>
+                      <span className="block text-[12px] font-bold text-slate-100 mt-0.5 leading-tight">{summary.title}</span>
+                      <span className="block mt-1 text-[10px] text-slate-400 leading-snug line-clamp-2">{summary.bullets[0] || compactLine(summary.full, 130)}</span>
+                    </span>
+                    <span className={`shrink-0 w-7 h-7 rounded-full border grid place-items-center ${expanded ? 'border-slate-500 bg-slate-800 text-white' : 'border-slate-700 bg-slate-950 text-slate-400'}`} aria-hidden="true">
+                      {expanded ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+                  {expanded && (
+                    <div className="p-2.5 pt-2 border-t border-slate-800/70">
+                      <div className="text-[10px] text-slate-300 leading-relaxed whitespace-pre-line">{summary.full}</div>
+                      {summary.actions.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-slate-800/70">
+                          {summary.actions.flatMap((action, actionIndex) => {
+                            const actionLabel = action.type === 'roll' ? `Roll${action.trait ? ' ' + action.trait : ''}${action.dc ? ' · DC ' + action.dc : ''}` : action.type === 'die' ? `Roll ${action.dieName || ('d' + action.die)}` : 'Use';
+                            return featurePaymentOptions(action.cost).map((paymentCost, paymentIndex) => {
+                              const disabled = !canPayFeatureCost(paymentCost);
+                              const costLabel = paymentCost ? `${paymentCost.amount} ${paymentCost.resource}` : '';
+                              const isEffortAlternative = paymentCost && paymentCost.alternativeFor === 'hope';
+                              return <button key={`${actionIndex}-${paymentIndex}`} disabled={disabled} onClick={() => executeFeatureAction(accent.label, summary, action, paymentCost)} title={isEffortAlternative ? 'Alternative payment: spend Effort instead of Hope' : ''} className={`px-2.5 py-1 rounded border text-[9px] font-black uppercase tracking-wide ${isEffortAlternative ? 'text-amber-300 border-amber-800/70 hover:border-amber-500' : `${accent.text} border-slate-700 hover:border-slate-500`} bg-slate-950 disabled:opacity-30 disabled:cursor-not-allowed`}><Zap className="w-3 h-3 inline mr-1" />{actionLabel}{costLabel ? ` · ${costLabel}` : ''}</button>;
+                            });
+                          })}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1764,6 +1986,7 @@
                                        <span className="text-2xl font-black text-white">{broadcastRoll.total}</span>
                                    </div>
                                </div>
+                               {broadcastRoll.details && <div className="mt-2 pt-2 border-t border-slate-800 text-[10px] text-slate-300 leading-relaxed">{broadcastRoll.details}</div>}
                           </div>
                       ) : (
                           <div className="flex flex-col gap-2">
@@ -1782,9 +2005,14 @@
                                 <div className="flex flex-col items-center justify-center px-3 py-1 border-2 border-red-500 rounded-lg bg-red-950/30 min-w-[112px]">
                                     <span className="text-[9px] text-red-400 font-bold uppercase tracking-wider">{broadcastRoll.damageDice || broadcastRoll.damageBase || 'Damage'}{broadcastRoll.damageModifier ? ` ${broadcastRoll.damageModifier > 0 ? '+' : ''}${broadcastRoll.damageModifier}` : ''}</span>
                                     {Array.isArray(broadcastRoll.damageRolls) && broadcastRoll.damageRolls.length > 0 && (
-                                      <div className="flex flex-wrap justify-center gap-1 my-1">
-                                        {broadcastRoll.damageRolls.map((r, idx) => <span key={idx} className={(broadcastRoll.damageDiscardedIndices || []).includes(idx) ? 'opacity-30 line-through grayscale' : ''}><ShapedDie sides={parseInt((String(broadcastRoll.damageRolledDice || broadcastRoll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6} value={r} rolling={rolling} variant={r === 1 ? 'crit' : 'neutral'} /></span>)}
-                                      </div>
+                                      <DamageDiceDisplay
+                                        results={broadcastRoll.damageDiceResults}
+                                        rolls={broadcastRoll.damageRolls}
+                                        discardedIndices={broadcastRoll.damageDiscardedIndices}
+                                        rerolls={broadcastRoll.damageRerolls}
+                                        sides={parseInt((String(broadcastRoll.damageRolledDice || broadcastRoll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6}
+                                        rolling={rolling}
+                                      />
                                     )}
                                     <span className="text-3xl font-black text-red-400 leading-none">{broadcastRoll.damage}</span>
                                     {broadcastRoll.damageDetail && <span className="text-[8px] text-red-300/70 font-mono">{broadcastRoll.damageDetail}{broadcastRoll.crit ? ' · critical damage' : ''}</span>}
@@ -2046,9 +2274,14 @@
                                      <div className="mt-2 pt-2 border-t border-red-900/50 flex justify-between items-center gap-2">
                                        <div>
                                          <div className="text-[9px] text-red-400 font-bold uppercase">Damage · {roll.damageDice || roll.damageBase || 'weapon'}{roll.damageModifier ? ` ${roll.damageModifier > 0 ? '+' : ''}${roll.damageModifier}` : ''}</div>
-                                         <div className="flex flex-wrap gap-1 mt-1">
-                                           {(roll.damageRolls || []).map((r, i) => <span key={i} className={`w-5 h-5 flex items-center justify-center bg-red-950/50 border border-red-900 rounded text-[9px] font-bold text-red-300 ${(roll.damageDiscardedIndices || []).includes(i) ? 'opacity-30 line-through grayscale' : ''}`}>{r}</span>)}
-                                         </div>
+                                         <DamageDiceDisplay
+                                           results={roll.damageDiceResults}
+                                           rolls={roll.damageRolls}
+                                           discardedIndices={roll.damageDiscardedIndices}
+                                           rerolls={roll.damageRerolls}
+                                           sides={parseInt((String(roll.damageRolledDice || roll.damageDice || '').match(/d(\d+)/) || [])[1]) || 6}
+                                           compact={true}
+                                         />
                                          {roll.damageDetail && <div className="text-[8px] text-slate-500 font-mono mt-1">{roll.damageDetail}{roll.crit ? ' · critical' : ''}</div>}
                                          {(roll.damageRules || []).map((rule, index) => <div key={index} className="text-[8px] text-yellow-300/70 mt-0.5">{rule}</div>)}
                                        </div>
@@ -2063,6 +2296,7 @@
                                    )}
                                  </div>
                               ) : (
+                                 <>
                                  <div className="flex justify-between items-center">
                                     <div className="flex flex-col gap-1">
                                         <div className={`text-[9px] font-bold uppercase ${roll.type === 'damage' ? 'text-red-400' : 'text-slate-500'}`}>
@@ -2076,6 +2310,8 @@
                                     </div>
                                     <div className={`text-xl font-black ${roll.type === 'damage' ? 'text-red-400' : 'text-white'}`}>{roll.total}</div>
                                  </div>
+                                 {roll.details && <div className="mt-2 pt-2 border-t border-slate-800 text-[9px] text-slate-400 leading-relaxed">{roll.details}</div>}
+                                 </>
                               )}
                            </div>
                         ))}
@@ -2484,28 +2720,37 @@
 
                        {/* ACTIONS / CARDS (path-aware) */}
                        {(character.path === 'sleeping') ? (
-                       <div className="bg-slate-900/40 rounded border border-slate-800 p-2 flex-grow min-h-[150px]">
-                           <h2 className="text-[11px] font-bold uppercase text-slate-300 tracking-widest flex items-center gap-1 mb-2"><Zap className="w-3 h-3 text-amber-500" /> Sleeper Actions</h2>
-                           {character.moves && character.moves.length > 0 && (
-                             <div className="mb-2">
-                               <div className="text-[10px] font-bold uppercase text-cyan-300 tracking-wider mb-1">Resolve Moves (1 Resolve)</div>
-                               {character.moves.map((mv, i) => (
-                                 <div key={i} className="flex items-center gap-1 mb-1">
-                                   <button disabled={(((character.resolve&&character.resolve.current)||0) < 1)} onClick={() => useSleeperAction('Move: ' + mv.name, 'resolve', 1, true)} className="px-2 py-0.5 text-[10px] font-bold rounded border border-slate-700 text-cyan-300 hover:border-cyan-500 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 self-start mt-0.5">Use</button>
-                                   <span className="text-[11px] text-slate-200 leading-snug"><span className="font-bold text-cyan-200">{mv.name}</span>{mv.text ? <span className="text-slate-300 block">{mv.text}</span> : null}</span>
-                                 </div>
-                               ))}
-                             </div>
-                           )}
-                           <div>
-                             <div className="text-[10px] font-bold uppercase text-amber-300 tracking-wider mb-1">Effort</div>
+                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-2 flex-grow items-start">
+                         <CompactActionPanel panelId="sleeper-actions" title="Sleeper Actions" description="General Effort techniques available to every Sleeping character. Expand to choose an action." icon={<Zap className="w-4 h-4" />} accentClass="text-amber-400">
+                           <div className="space-y-1.5 mt-3">
                              {GENERAL_EFFORT.map((ef, i) => (
-                               <div key={i} className="flex items-center gap-1 mb-1">
-                                 <button disabled={(((character.effort&&character.effort.current)||0) < ef.cost)} onClick={() => useSleeperAction('Effort: ' + ef.name, 'effort', ef.cost, ef.roll)} title={ef.text} className="px-2 py-0.5 text-[10px] font-bold rounded border border-slate-700 text-amber-300 hover:border-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 w-6 text-center self-start mt-0.5">{ef.cost}</button>
-                                 <span className="text-[11px] text-slate-200 leading-snug"><span className="font-bold text-amber-200">{ef.name}</span> <span className="text-slate-300">{ef.text}</span></span>
+                               <div key={i} className="rounded border border-slate-800 bg-slate-950/45 p-2 flex items-start gap-2">
+                                 <button disabled={(((character.effort&&character.effort.current)||0) < ef.cost)} onClick={() => useSleeperAction('Effort: ' + ef.name, 'effort', ef.cost, ef.roll)} title={ef.text} className="px-2 py-1 text-[9px] font-black rounded border border-amber-800/60 text-amber-300 hover:border-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shrink-0">{ef.roll ? 'Roll' : 'Use'} · {ef.cost}</button>
+                                 <div className="min-w-0"><div className="text-[11px] font-bold text-amber-100">{ef.name}</div><div className="text-[10px] text-slate-400 leading-snug mt-0.5">{ef.text}</div></div>
                                </div>
                              ))}
                            </div>
+                         </CompactActionPanel>
+                         <CompactActionPanel panelId="resolve-moves" title="Resolve Moves" description={`${character.class || 'Class'}${character.subclass ? ' · ' + character.subclass : ''}. Class and subclass signature moves paid with Resolve.`} icon={<Shield className="w-4 h-4" />} accentClass="text-cyan-400">
+                           <div className="space-y-2 mt-3">
+                             {availableResolveMoves.length > 0 ? availableResolveMoves.map((move) => {
+                               const minimum = resolveMoveMinimum(move);
+                               const disabled = Number((character.resolve && character.resolve.current) || 0) < minimum;
+                               return (
+                                 <div key={move.id} className="rounded border border-cyan-950/80 bg-cyan-950/10 p-2.5">
+                                   <div className="flex items-start justify-between gap-2">
+                                     <div className="min-w-0">
+                                       <div className="flex flex-wrap items-center gap-1.5"><span className="text-[11px] font-black text-cyan-100">{move.name}</span><span className="px-1.5 py-0.5 rounded border border-cyan-900/60 bg-slate-950 text-[8px] font-black uppercase text-cyan-400">{move.subclass || 'Class'}</span></div>
+                                       <div className="mt-1 text-[9px] font-black uppercase tracking-wide text-slate-500">{move.cost}</div>
+                                     </div>
+                                     <button disabled={disabled} onClick={() => useResolveMove(move)} className="shrink-0 px-2.5 py-1.5 rounded border border-cyan-700/60 bg-cyan-950/30 text-[9px] font-black uppercase text-cyan-300 hover:border-cyan-400 disabled:opacity-30 disabled:cursor-not-allowed">{move.rollResolve ? 'Roll' : 'Use'}</button>
+                                   </div>
+                                   <div className="mt-1.5 text-[10px] leading-relaxed text-slate-300">{move.text}</div>
+                                 </div>
+                               );
+                             }) : <div className="rounded border border-dashed border-slate-700 p-3 text-[10px] text-slate-500">No Resolve Moves are available for this class in the loaded rules data.</div>}
+                           </div>
+                         </CompactActionPanel>
                        </div>
                        ) : (
                        <div className="bg-slate-900/40 rounded border border-slate-800 p-2 flex-grow min-h-[150px]">
@@ -2514,12 +2759,8 @@
                                <button onClick={() => setShowCardManager(true)} className="text-[9px] text-emerald-400 hover:text-white uppercase font-bold">+ Manage</button>
                            </div>
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                               {character.domainCards && character.domainCards.map((card, idx) => (
-                                   <DomainCard key={idx} card={card} onDelete={() => removeCard(idx)} />
-                               ))}
-                               {(!character.domainCards || character.domainCards.length === 0) && (
-                                   <div className="col-span-full text-center py-4 text-xs text-slate-600 italic">No domain cards equipped</div>
-                               )}
+                               {character.domainCards && character.domainCards.map((card, idx) => (<DomainCard key={idx} card={card} onDelete={() => removeCard(idx)} />))}
+                               {(!character.domainCards || character.domainCards.length === 0) && (<div className="col-span-full text-center py-4 text-xs text-slate-600 italic">No domain cards equipped</div>)}
                            </div>
                        </div>
                        )}

@@ -37,7 +37,7 @@
       featureRefs: (found && found.featureRefs) ? found.featureRefs : (source.featureRefs || []),
       tier: (found && found.tier) ? found.tier : (source.tier || null),
       pack: S((found && found.pack) || source.pack),
-      burden: found && found.burden != null ? found.burden : source.burden,
+      burden: found && found.burden != null ? found.burden : (source.burden == null ? null : source.burden),
       weaponFamily: S((found && found.weaponFamily) || source.weaponFamily),
       proficiencyDie: S((found && found.proficiencyDie) || source.proficiencyDie)
     };

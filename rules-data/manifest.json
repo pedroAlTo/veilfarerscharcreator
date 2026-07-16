@@ -1,16 +1,16 @@
 {
   "schema": "veilfarers.data.manifest/2",
-  "release": "11.1-RC2-draft6",
-  "generatedAt": "2026-07-15",
+  "release": "11.1-RC3",
+  "generatedAt": "2026-07-16",
   "brand": "VeilFarers",
   "sourceOfTruth": "Markdown books and approved decision register; JSON is generated/normalized.",
   "sourceBooks": [
     {
       "id": "core",
       "title": "VeilFarers Corebook",
-      "version": "11.1-RC2-draft6",
-      "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-      "sha256": "f6154410507a5fcd43da41b976ba2f3f3b715fe19f57cd7d82f3f002614d2e1c"
+      "version": "11.1-RC3",
+      "sourceFile": "VeilFarers_Corebook_11.1-RC3-PDF-Candidate_FULL_SOURCE.md",
+      "sha256": "ccb9ad1796b19a98f15a38acb9734901ad3b0419f1d8dce3d928dbc2df865293"
     },
     {
       "id": "keepers-companion",
@@ -38,7 +38,7 @@
     {
       "id": "core",
       "name": "Core",
-      "version": "11.1-RC2-draft6",
+      "version": "11.1-RC3",
       "required": true,
       "default": true,
       "requires": [],
@@ -48,7 +48,7 @@
     {
       "id": "rust-and-steel",
       "name": "Rust & Steel",
-      "version": "11.1-RC2-draft6",
+      "version": "11.1-RC3",
       "required": false,
       "default": false,
       "requires": [
@@ -60,7 +60,7 @@
     {
       "id": "alien-species",
       "name": "The Alien Species",
-      "version": "11.1-RC2-draft6",
+      "version": "11.1-RC3",
       "required": false,
       "default": false,
       "requires": [
@@ -100,6 +100,18 @@
       "collection": "subclasses",
       "path": "core/subclasses.json",
       "count": 27
+    },
+    {
+      "pack": "core",
+      "collection": "resolve-moves",
+      "path": "core/resolve-moves.json",
+      "count": 42
+    },
+    {
+      "pack": "core",
+      "collection": "drills",
+      "path": "core/drills.json",
+      "count": 13
     },
     {
       "pack": "core",
@@ -225,7 +237,7 @@
       "voidlight_characters_v1"
     ]
   },
-  "version": "11.1-RC2-draft6",
+  "version": "11.1-RC3",
   "rules": "rules.json",
   "featureRegistry": "features-registry.json",
   "featureAliases": "feature-aliases.json",

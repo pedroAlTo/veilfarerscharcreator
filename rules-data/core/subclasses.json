@@ -791,9 +791,9 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC2-draft6",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-        "line": 413,
+        "version": "11.1-RC3",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC3-PDF-Candidate_FULL_SOURCE.md",
+        "line": 3046,
         "collection": "subclasses"
       }
     ],
@@ -810,6 +810,42 @@
         "type": "Reaction",
         "desc": "When an ally within Close range is hit by an attack, you can spend 1 Stress to intercept it, taking the damage yourself. When you do, you gain Advantage on your next Melee attack against that attacker."
       }
+    },
+    "sleepingRules": {
+      "epithet": "the wall between",
+      "trait": "Strength",
+      "foundation": {
+        "name": "Bodyguard",
+        "type": "Reaction",
+        "desc": "When an ally within Close range would take damage, you may step into the path. Take half the damage yourself; the ally takes none."
+      },
+      "specialization": {
+        "name": "Hold Position",
+        "type": "Action",
+        "desc": "Spend 1 Effort. Designate a position: a doorway, a corridor, or a wounded ally. Until you choose otherwise or you fall, no enemy may pass that position without succeeding on a Strength contest against you."
+      },
+      "mastery": {
+        "name": "The Wall",
+        "type": "Passive",
+        "desc": "Allies who fight within Close range of you have Advantage on resistance rolls and clear 1 Stress per scene. Your presence steadies people; this is observable training, not a cosmic effect."
+      },
+      "drills": {
+        "foundation": {
+          "name": "Planted Stance",
+          "type": "Reaction",
+          "desc": "When an effect would make you Prone or move you against your will, ignore that effect."
+        },
+        "specialization": {
+          "name": "Casualty Extraction",
+          "type": "Action",
+          "desc": "Choose one willing, Incapacitated, or Dying ally within Close range. Move to them, then move one range band with them. Until the movement ends, if the Keeper spends Fear to take the Spotlight and attack either of you, that attack has Disadvantage. This Drill does not heal, stabilize, or clear conditions."
+        },
+        "mastery": {
+          "name": "Anchor the Line",
+          "type": "Reaction",
+          "desc": "When an effect would make you or allies within Close range become Prone or move against their will, you and all affected allies within Close range ignore both effects."
+        }
+      }
     }
   },
   {
@@ -824,9 +860,9 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC2-draft6",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-        "line": 2006,
+        "version": "11.1-RC3",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC3-PDF-Candidate_FULL_SOURCE.md",
+        "line": 3063,
         "collection": "subclasses"
       }
     ],
@@ -843,6 +879,42 @@
         "type": "Action",
         "desc": "Mark 1 Stress to grant an ally one of the following benefits on their next action: gain Advantage, their attack ignores cover, or their action does not draw the spotlight."
       }
+    },
+    "sleepingRules": {
+      "epithet": "the chain of command",
+      "trait": "Presence",
+      "foundation": {
+        "name": "Rally",
+        "type": "Action",
+        "desc": "Once per scene, allies within Close range each clear 1 Stress. You give an order; they remember why they are here."
+      },
+      "specialization": {
+        "name": "Coordinated Strike",
+        "type": "Action",
+        "desc": "Spend 1 Effort. You and one ally each take an action outside the ally's Spotlight. Both actions gain Advantage if they target the same enemy."
+      },
+      "mastery": {
+        "name": "One Way Out",
+        "type": "Action",
+        "desc": "Once per story arc, your voice organizes a group of non-combatant NPCs into coordinated action: an evacuation, a mutiny, or a work stoppage. They move as one while your voice holds."
+      },
+      "drills": {
+        "foundation": {
+          "name": "Tactical Reposition",
+          "type": "Action",
+          "desc": "Choose up to two willing allies within Close range who can see or hear you. Each immediately moves one range band. This movement does not use their Spotlight."
+        },
+        "specialization": {
+          "name": "Suppression Order",
+          "type": "Action",
+          "desc": "Choose one visible enemy within Far range. Its next attack before your next Spotlight has Disadvantage."
+        },
+        "mastery": {
+          "name": "Establish Fire Lane",
+          "type": "Action",
+          "desc": "Designate a doorway, corridor, bridge, or clear line within Far range. Until your next Spotlight, each enemy crossing it becomes Vulnerable until the end of its next Spotlight."
+        }
+      }
     }
   },
   {
@@ -857,9 +929,9 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC2-draft6",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-        "line": 2017,
+        "version": "11.1-RC3",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC3-PDF-Candidate_FULL_SOURCE.md",
+        "line": 3080,
         "collection": "subclasses"
       }
     ],
@@ -876,6 +948,42 @@
         "type": "Action",
         "desc": "Spend 1 Hope to halt a conflict for a single, tense moment. No one can take hostile action until you speak or act. This gives you a key window to negotiate, intimidate, or create an escape route."
       }
+    },
+    "sleepingRules": {
+      "epithet": "the de-escalator",
+      "trait": "Strength",
+      "foundation": {
+        "name": "Show of Force",
+        "type": "Action",
+        "desc": "Display, without using, your weapon and authority. Hostile NPCs not specifically committed to violence retreat or stand down."
+      },
+      "specialization": {
+        "name": "The Disarmament",
+        "type": "Action",
+        "desc": "Spend 1 Effort during a tense scene. One armed NPC is convinced, through your demeanor, reputation, position, or all three, to lower their weapon for the duration of the scene. The standdown is real; betraying it has reputational cost."
+      },
+      "mastery": {
+        "name": "The Cease-Fire",
+        "type": "Action",
+        "desc": "Once per story arc, between two willing parties, you broker a cease-fire that the involved factions honor. The cease-fire's terms are negotiable; its existence is binding while you live."
+      },
+      "drills": {
+        "foundation": {
+          "name": "Safe Restraint",
+          "type": "Passive",
+          "desc": "After succeeding on a Melee attack, you may deal no damage and apply Restrained instead, provided the target can be physically restrained."
+        },
+        "specialization": {
+          "name": "Controlled Disarm",
+          "type": "Passive",
+          "desc": "After succeeding on a Melee attack against a target holding a weapon, you may deal no damage and force it to drop one held weapon within Very Close range. Integrated or body-mounted weapons cannot be affected."
+        },
+        "mastery": {
+          "name": "Evacuation Corridor",
+          "type": "Action",
+          "desc": "Choose up to three willing non-combatants, or one Incapacitated or Dying ally, within Close range. They immediately move one range band toward an exit or cover. During this movement, selected characters have Advantage on rolls to cross, avoid, or resist hazardous terrain and environmental dangers, and any attack the Keeper makes against a selected character after spending Fear to take the Spotlight has Disadvantage. You may move with them, but you do not gain these benefits. This Drill does not remove hazards, heal, or stabilize."
+        }
+      }
     }
   },
   {
@@ -890,9 +998,9 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC2-draft6",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-        "line": 1276,
+        "version": "11.1-RC3",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC3-PDF-Candidate_FULL_SOURCE.md",
+        "line": 3182,
         "collection": "subclasses"
       }
     ],
@@ -909,6 +1017,26 @@
         "type": "Reaction",
         "desc": "Spend 1 Stress to gain +3 Evasion against one incoming attack. If the attack misses due to this bonus, you gain Advantage on your next Melee attack against that attacker."
       }
+    },
+    "sleepingRules": {
+      "epithet": "the discipline of stillness",
+      "trait": "Finesse",
+      "branch": "Void",
+      "foundation": {
+        "name": "The Quiet Strike",
+        "type": "Passive",
+        "desc": "Once per scene, when you make a Melee attack while Hidden, the attack ignores 1 Armor Slot."
+      },
+      "specialization": {
+        "name": "The Folded Step",
+        "type": "Action",
+        "desc": "Spend 1 Effort. Move to available cover within Close range and become Hidden. This is not phasing; you have rehearsed this movement for years."
+      },
+      "mastery": {
+        "name": "The Folded Exit",
+        "type": "Action",
+        "desc": "Once per scene, after a successful Melee attack, move from Very Close to Close range toward available cover. Until your next Spotlight, attacks against you have Disadvantage."
+      }
     }
   },
   {
@@ -923,9 +1051,9 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC2-draft6",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-        "line": 1276,
+        "version": "11.1-RC3",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC3-PDF-Candidate_FULL_SOURCE.md",
+        "line": 3191,
         "collection": "subclasses"
       }
     ],
@@ -942,6 +1070,26 @@
         "type": "Reaction",
         "desc": "Spend 1 Hope when targeted by an attack. You force the attacker to **reroll the attack roll** (the Keeper must accept the new result)."
       }
+    },
+    "sleepingRules": {
+      "epithet": "the discipline of force",
+      "trait": "Strength",
+      "branch": "Kinetic",
+      "foundation": {
+        "name": "Body Memory",
+        "type": "Passive",
+        "desc": "Choose one kind of physical feat you have drilled to mastery, such as a specific climb, throw, or landing. You perform that feat without rolling in routine conditions only: no active opposition, no time pressure, and no real risk. When the feat is contested, rushed, or dangerous, roll normally."
+      },
+      "specialization": {
+        "name": "The Channeled Blow",
+        "type": "Action",
+        "desc": "Spend 1 Effort. Your next Melee attack deals an additional 1d8 Kinetic damage. On a success, move the target one range band directly away from you."
+      },
+      "mastery": {
+        "name": "The Settled Ground",
+        "type": "Passive",
+        "desc": "Once per scene, after a successful Melee attack, apply Dazed to the target."
+      }
     }
   },
   {
@@ -956,9 +1104,9 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC2-draft6",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-        "line": 1276,
+        "version": "11.1-RC3",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC3-PDF-Candidate_FULL_SOURCE.md",
+        "line": 3200,
         "collection": "subclasses"
       }
     ],
@@ -974,6 +1122,26 @@
         "name": "Force Projection",
         "type": "Action",
         "desc": "Spend 1 Stress. Choose one: push one object or creature up to Far Range, *or* create a wall of force that provides cover until your next turn, *or* deal 1d6 Kinetic damage to everything in Close Range (no effect on creatures)."
+      }
+    },
+    "sleepingRules": {
+      "epithet": "the discipline of clarity",
+      "trait": "Presence",
+      "branch": "Lux",
+      "foundation": {
+        "name": "The Cleared Room",
+        "type": "Action",
+        "desc": "Spend 1 Effort. For the next minute, you and allies within Close range have Advantage on rolls made to resist or clear Frightened, Confused, and Veil-induced deception."
+      },
+      "specialization": {
+        "name": "The Held Truth",
+        "type": "Action",
+        "desc": "Spend 1 Effort during a social or interrogation scene. NPCs who knowingly lie to you mark 1 Stress. NPCs who tell you a painful truth clear 1 Stress. Your presence does this without your speaking."
+      },
+      "mastery": {
+        "name": "The Cleared Path",
+        "type": "Passive",
+        "desc": "While you remain at a location affected by deception, illusion, or Veil-induced confusion, you and allies within Close range have Advantage on rolls made against those effects."
       }
     }
   }

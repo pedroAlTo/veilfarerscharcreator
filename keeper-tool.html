@@ -1099,6 +1099,8 @@
     if (!firebase.apps.length) firebase.initializeApp(cfg);
     await firebase.auth().signInAnonymously();
     db = firebase.firestore();
+    try { db.settings({ ignoreUndefinedProperties: true }); }
+    catch (settingsErr) { console.warn('Firestore settings already active.', settingsErr); }
   }
   async function hashPass(txt) {
     var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('veilfarers:' + txt));
