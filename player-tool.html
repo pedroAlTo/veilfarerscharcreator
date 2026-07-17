@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="local-runtime.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veilfarers - Spectrum of Fate Edition</title>
@@ -25,7 +26,7 @@
         let firebaseConfigPromise = null;
         window.loadFirebaseConfig = async () => {
             if (!firebaseConfigPromise) {
-                firebaseConfigPromise = fetch('/api/firebase-config')
+                firebaseConfigPromise = fetch('/api/firebase-config', { cache: 'no-store' })
                     .then((res) => {
                         if (!res.ok) throw new Error(`No se pudo cargar la configuración de Firebase (${res.status}).`);
                         return res.json();
@@ -129,7 +130,7 @@
                 console.log("Verificando acceso a Firestore...");
                 
                 return { 
-                    db, auth, 
+                    db, auth, config: activeConfig, 
                     // CORRECCIÓN CRÍTICA 1: Ruta completa (mantenida del paso anterior)
                     doc: (db, ...path) => {
                         const fullPath = path.join('/');
@@ -359,20 +360,123 @@
         .vf-3d-canvas canvas { width:100% !important; height:100% !important; display:block; }
         .vf-3d-hud { position:relative; z-index:2; align-self:flex-end; width:min(680px,94vw); margin-bottom:20px; border:1px solid #334155; border-radius:12px; background:rgba(2,6,23,.88); padding:12px; box-shadow:0 16px 40px rgba(0,0,0,.6); }
         @media (max-width:720px) { .vf-callout-grid { grid-template-columns:minmax(250px,320px); width:min(96vw,320px); right:8px; bottom:8px; } }
+
+        .vf-loading-shell { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:
+          radial-gradient(circle at top, rgba(8,145,178,0.18), transparent 34%),
+          linear-gradient(180deg, #020617 0%, #0b1120 58%, #020617 100%);
+          color:#e2e8f0; font-family: Inter, system-ui, sans-serif; }
+        .vf-loading-panel { width:min(720px, 100%); padding:28px; border-radius:24px; border:1px solid rgba(51,65,85,.95);
+          background:linear-gradient(180deg, rgba(15,23,42,.94), rgba(2,6,23,.96)); box-shadow:0 28px 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(148,163,184,.08); }
+        .vf-loading-kicker { font-size:11px; letter-spacing:.36em; text-transform:uppercase; color:#67e8f9; margin-bottom:10px; font-weight:800; }
+        .vf-loading-panel h1 { margin:0; font-size:clamp(26px, 4vw, 38px); line-height:1.05; font-weight:900; color:#f8fafc; }
+        .vf-loading-lead { margin:12px 0 18px; color:#94a3b8; line-height:1.7; max-width:58ch; }
+        .vf-loading-progress { width:100%; height:14px; border-radius:999px; background:#0f172a; border:1px solid #334155; overflow:hidden; box-shadow: inset 0 0 18px rgba(0,0,0,.45); }
+        .vf-loading-progress > span { display:block; width:6%; height:100%; border-radius:999px; background:linear-gradient(90deg, #06b6d4 0%, #22d3ee 45%, #a78bfa 100%); box-shadow:0 0 30px rgba(34,211,238,.35); transition:width .24s ease; }
+        .vf-loading-meta { display:grid; grid-template-columns:120px 1fr; gap:18px; align-items:end; margin-top:14px; }
+        .vf-loading-label { font-size:10px; font-weight:800; letter-spacing:.24em; text-transform:uppercase; color:#64748b; margin-bottom:4px; }
+        .vf-loading-value { font-weight:800; color:#f8fafc; }
+        .vf-loading-detail { margin-top:10px; color:#67e8f9; font-size:13px; line-height:1.6; min-height:2.6em; }
+        .vf-loading-lore { margin-top:24px; padding:18px; border-radius:18px; border:1px solid rgba(71,85,105,.72); background:rgba(15,23,42,.7); }
+        .vf-loading-lore-head { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:10px; letter-spacing:.28em; text-transform:uppercase; color:#94a3b8; font-weight:800; margin-bottom:10px; }
+        .vf-loading-lore blockquote { margin:0 0 8px; color:#f8fafc; font-size:18px; line-height:1.5; font-weight:700; }
+        .vf-loading-lore p { margin:0; color:#94a3b8; line-height:1.65; }
+        @media (max-width: 640px){ .vf-loading-shell { padding:16px; align-items:flex-start; } .vf-loading-panel { padding:20px; border-radius:20px; margin-top:16px; } .vf-loading-meta { grid-template-columns:1fr; gap:12px; } .vf-loading-lore blockquote { font-size:16px; } }
+
+
+        html.vf-disable-dice-lock .vf-dice-tracking-layer,
+        html.vf-disable-dice-lock .vf-dice-settled-layer,
+        html.vf-disable-dice-lock .vf-dice3d-analysis,
+        html.vf-disable-dice-lock .vf-dice3d-outcome { display:none !important; }
+
     </style>
 </head>
 <body>
-    <div id="root"><div style="padding:72px 24px;text-align:center;color:#94a3b8;font-family:system-ui">Loading canonical RC3 data…</div></div>
+    <div id="root">
+      <div class="vf-loading-shell" role="status" aria-live="polite" aria-label="Loading Player Tool">
+        <div class="vf-loading-panel">
+          <div class="vf-loading-kicker">VeilFarers · Player Tool</div>
+          <h1>Preparing your station…</h1>
+          <p class="vf-loading-lead">Loading the canonical rules dataset, character systems and table interface. Your saves stay local-first while the bridge comes online.</p>
+          <div class="vf-loading-progress" aria-hidden="true">
+            <span id="vf-loading-bar"></span>
+          </div>
+          <div class="vf-loading-meta">
+            <div>
+              <div class="vf-loading-label">Progress</div>
+              <div class="vf-loading-value" id="vf-loading-percent">06%</div>
+            </div>
+            <div>
+              <div class="vf-loading-label">Current task</div>
+              <div class="vf-loading-value" id="vf-loading-status">Initializing VeilFarers systems…</div>
+            </div>
+          </div>
+          <div class="vf-loading-detail" id="vf-loading-detail">Bootstrapping interface shell and checking local runtime…</div>
+          <div class="vf-loading-lore">
+            <div class="vf-loading-lore-head">
+              <span>Transit feed</span>
+              <span id="vf-loading-tip-index">1 / 6</span>
+            </div>
+            <blockquote id="vf-loading-tip-quote">“I am not worried. I am merely preparing a very thorough list of who to blame.” — Aria-7</blockquote>
+            <p id="vf-loading-tip-text">Salvage crews have a saying: if the corridor lights flicker right before docking, someone will immediately blame the navigator.</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    
+    <script>
+      (function(){
+        const tips = [
+          {
+            quote: '“I am not worried. I am merely preparing a very thorough list of who to blame.” — Aria-7',
+            text: 'Salvage crews have a saying: if the corridor lights flicker right before docking, someone will immediately blame the navigator.'
+          },
+          {
+            quote: '“The Veil rarely explains itself. That does not stop crews from pretending otherwise.”',
+            text: 'Local-first saves remain available even if cloud sync is unavailable, so characters can still travel with you.'
+          },
+          {
+            quote: '“A clean jump is a miracle. A controlled landing is professionalism.”',
+            text: 'The Player Tool uses the same canonical rules layer as the Creator, inventories and shared data modules.'
+          },
+          {
+            quote: '“Some doors are locked for security. Others are locked because nobody remembers what is behind them.”',
+            text: 'Duality rolls, damage logic and weapon traits are loaded after the canonical dataset is verified.'
+          },
+          {
+            quote: '“If the plan survives first contact, check whether it was really your plan.”',
+            text: 'Public table discovery can be disabled for privacy, but direct table names still allow shared play when configured.'
+          },
+          {
+            quote: '“Every ship leaves a story in its wake. The smart crews decide which parts become rumors.”',
+            text: 'The 3D dice chamber can be shown as a contained box or overlay, and lock-in tracking can be toggled in options.'
+          }
+        ];
+        const state = { value: 6, target: 6, tipIndex: 0, frame: null, tipTimer: null };
+        function byId(id){ return document.getElementById(id); }
+        function renderProgress(){ const bar = byId('vf-loading-bar'); const percent = byId('vf-loading-percent'); if (bar) bar.style.width = Math.max(0, Math.min(100, state.value)) + '%'; if (percent) percent.textContent = String(Math.round(state.value)).padStart(2, '0') + '%'; }
+        function animate(){ if (Math.abs(state.target - state.value) < 0.4){ state.value = state.target; renderProgress(); state.frame = null; return; } state.value += (state.target - state.value) * 0.08; renderProgress(); state.frame = requestAnimationFrame(animate); }
+        function schedule(){ if (!state.frame) state.frame = requestAnimationFrame(animate); }
+        function setTip(index){ state.tipIndex = index % tips.length; const tip = tips[state.tipIndex]; const quote = byId('vf-loading-tip-quote'); const text = byId('vf-loading-tip-text'); const idx = byId('vf-loading-tip-index'); if (quote) quote.textContent = tip.quote; if (text) text.textContent = tip.text; if (idx) idx.textContent = (state.tipIndex + 1) + ' / ' + tips.length; }
+        function nextTip(){ setTip(state.tipIndex + 1); }
+        window.VFLoading = {
+          advance(percent, status, detail){ if (typeof percent === 'number') { state.target = Math.max(state.target, percent); } if (status && byId('vf-loading-status')) byId('vf-loading-status').textContent = status; if (detail && byId('vf-loading-detail')) byId('vf-loading-detail').textContent = detail; schedule(); },
+          complete(){ this.advance(100, 'Opening Player Tool…', 'Canonical data confirmed. Finalizing interface render…'); }
+        };
+        renderProgress(); setTip(0); state.tipTimer = setInterval(nextTip, 4200); window.addEventListener('beforeunload', function(){ if (state.tipTimer) clearInterval(state.tipTimer); });
+        setTimeout(function(){ window.VFLoading.advance(14, 'Initializing VeilFarers systems…', 'Bootstrapping interface shell and checking local runtime…'); }, 80);
+        setTimeout(function(){ window.VFLoading.advance(22, 'Establishing local systems…', 'Preparing local-first saves, sheet bridge hooks and runtime helpers…'); }, 700);
+      })();
+    </script>
 
     <!-- Canonical RC3 data shared with the Creator, inventories and Keeper Tool -->
-    <script src="shared-data.js"></script>
-    <script src="canonical-runtime.js"></script>
-    <script src="veilfarers-import.js"></script>
+    <script src="shared-data.js" onload="window.VFLoading && window.VFLoading.advance(38, 'Loading shared registries…', 'Source lists, traits and shared canonical helpers are now online.')"></script>
+    <script src="canonical-runtime.js" onload="window.VFLoading && window.VFLoading.advance(64, 'Verifying canonical rules…', 'Merging rule packs and exposing the current release manifest.')"></script>
+    <script src="veilfarers-import.js" onload="window.VFLoading && window.VFLoading.advance(79, 'Linking import bridges…', 'Character import compatibility and state migration bridges are ready.')"></script>
 
     <script type="text/babel">
+        window.VFLoading && window.VFLoading.advance(88, 'Assembling player interface…', 'Mounting tabs, rollers, options and session panels…');
         window.VeilFarersCanonical.ready.then(function(VF_CANON){
+          window.VFLoading && window.VFLoading.advance(96, 'Finalizing player systems…', 'Canonical data is ready. Rendering the Player Tool now…');
         const { useState, useEffect, useLayoutEffect, useRef } = React;
         const { User, Shield, Activity, Zap, Heart, Database, AlertCircle, Sparkles, Skull, Star, Plus, X, Cloud, CloudLightning, Link, Wifi, Dices, CreditCard, Save, Upload, Download, Crown, ScrollText, Pin, Minus, Move, Settings } = Icons;
 
@@ -607,6 +711,9 @@
         const FEATURE_REGISTRY = VF_CANON.featureRegistry || [];
         const CORE_FEATURES = VF_CANON.features || [];
         const WEAPON_CATALOG = VF_CANON.weapons || [];
+        const ARMOR_CATALOG = VF_CANON.armor || [];
+        const AUGMENT_CATALOG = VF_CANON.augments || [];
+        const GEAR_CATALOG = VF_CANON.gear || [];
         const RESOLVE_MOVE_LIBRARY = VF_CANON.resolveMoves || [];
         // Player Tool playtest overrides. These do not alter the books or canonical rules JSON.
         const PLAYER_TOOL_WEAPON_OVERRIDES = {
@@ -738,6 +845,135 @@
             effects: entries.map(entry => ({ name: entry.display, timing: entry.rule && entry.rule.timing || '', effect: conciseEffect(entry), resistance: entry.rule && entry.rule.resistance || null }))
           };
         };
+
+        const displayScalar = (value, fallback = '') => {
+          if (value == null || value === '') return fallback;
+          if (typeof value === 'string' || typeof value === 'number') return String(value);
+          if (Array.isArray(value)) return value.map(item => displayScalar(item, '')).filter(Boolean).join(', ');
+          if (typeof value === 'object') return String(value.name || value.display || value.label || value.code || value.rank || fallback || '');
+          return String(value);
+        };
+        const itemTierLabel = (item) => displayScalar(item && item.tier, displayScalar(item && item.raw && item.raw.tier, ''));
+        const itemCostLabel = (item) => {
+          if (window.VeilFarersData && typeof window.VeilFarersData.costLabel === 'function') return window.VeilFarersData.costLabel(item);
+          const value = item && item.cost && item.cost.credits;
+          return value == null || value === '' ? '—' : `${value} Cr`;
+        };
+        const slugify = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const baseItemKey = (item, prefix) => String((item && (item.canonicalId || item.id || item.name || `${prefix}-${slugify(item && item.name)}`)) || '').trim();
+        const sanitizeCustomEntry = (entry, kind, fields) => {
+          entry = entry || {};
+          const out = { custom: true, type: kind, canonicalId: entry.canonicalId || '', id: entry.id || `${kind}:custom:${slugify(entry.name || kind)}` };
+          fields.forEach(field => { if (entry[field] != null) out[field] = entry[field]; });
+          if (!out.name) out.name = kind.charAt(0).toUpperCase() + kind.slice(1);
+          return out;
+        };
+        const armorKey = (armor) => baseItemKey(armor, 'armor');
+        const augmentKey = (augment) => baseItemKey(augment, 'augment');
+        const gearKey = (gear) => baseItemKey(gear, 'gear');
+        const findCanonicalArmor = (armor) => {
+          const key = armorKey(armor);
+          const name = String((armor && armor.name) || '').trim().toLowerCase();
+          return ARMOR_CATALOG.find(item => item.id === key || (name && String(item.name || '').trim().toLowerCase() === name)) || null;
+        };
+        const hydrateArmor = (armor) => {
+          armor = armor || {};
+          const canonical = findCanonicalArmor(armor);
+          const source = canonical || armor;
+          return {
+            ...source,
+            ...armor,
+            canonicalId: (canonical && canonical.id) || armor.canonicalId || armor.id || '',
+            id: (canonical && canonical.id) || armor.id || armor.canonicalId || '',
+            name: armor.name || source.name || '',
+            features: Array.isArray(source.features) ? source.features : featureList(source.features),
+            thresholds: source.thresholds || armor.thresholds || { major: armor.major || 0, severe: armor.severe || 0 },
+            armorSlots: source.armorSlots != null ? source.armorSlots : (armor.armorSlots != null ? armor.armorSlots : ''),
+            weightClass: source.weightClass || armor.weightClass || '',
+            tier: source.tier || armor.tier || '',
+            cost: source.cost || armor.cost || null,
+            custom: !!armor.custom && !canonical
+          };
+        };
+        const armorSummary = (armor) => {
+          const item = hydrateArmor(armor);
+          const thresholds = item.thresholds || {};
+          const featureText = featureList(item.features).join(', ');
+          return {
+            item,
+            title: item.name,
+            tier: itemTierLabel(item),
+            cost: itemCostLabel(item),
+            detail: `Thresholds ${thresholds.major || '—'} / ${thresholds.severe || '—'}${item.armorSlots ? ` · Slots ${item.armorSlots}` : ''}${item.weightClass ? ` · ${item.weightClass}` : ''}`,
+            features: featureText
+          };
+        };
+        const findCanonicalAugment = (augment) => {
+          const key = augmentKey(augment);
+          const name = String((augment && augment.name) || '').trim().toLowerCase();
+          return AUGMENT_CATALOG.find(item => item.id === key || (name && String(item.name || '').trim().toLowerCase() === name)) || null;
+        };
+        const hydrateAugment = (augment) => {
+          augment = augment || {};
+          const canonical = findCanonicalAugment(augment);
+          const source = canonical || augment;
+          return {
+            ...source,
+            ...augment,
+            canonicalId: (canonical && canonical.id) || augment.canonicalId || augment.id || '',
+            id: (canonical && canonical.id) || augment.id || augment.canonicalId || '',
+            name: augment.name || source.name || '',
+            tier: source.tier || augment.tier || '',
+            benefit: augment.benefit || source.benefit || '',
+            drawback: augment.drawback || source.drawback || '',
+            activationStress: augment.activationStress != null ? augment.activationStress : (source.activationStress != null ? source.activationStress : ''),
+            cost: source.cost || augment.cost || null,
+            custom: !!augment.custom && !canonical
+          };
+        };
+        const augmentSummary = (augment) => {
+          const item = hydrateAugment(augment);
+          return {
+            item,
+            title: item.name,
+            tier: itemTierLabel(item),
+            cost: itemCostLabel(item),
+            detail: item.benefit || 'No benefit recorded.',
+            meta: `${item.activationStress ? `Stress ${item.activationStress}` : 'Passive'}${item.drawback ? ` · ${item.drawback}` : ''}`
+          };
+        };
+        const findCanonicalGear = (gear) => {
+          const key = gearKey(gear);
+          const name = String((gear && gear.name) || '').trim().toLowerCase();
+          return GEAR_CATALOG.find(item => item.id === key || (name && String(item.name || '').trim().toLowerCase() === name)) || null;
+        };
+        const hydrateGear = (gear) => {
+          gear = gear || {};
+          const canonical = findCanonicalGear(gear);
+          const source = canonical || gear;
+          return {
+            ...source,
+            ...gear,
+            canonicalId: (canonical && canonical.id) || gear.canonicalId || gear.id || '',
+            id: (canonical && canonical.id) || gear.id || gear.canonicalId || '',
+            name: gear.name || source.name || '',
+            tier: source.tier || gear.tier || '',
+            use: gear.use || source.use || '',
+            cost: source.cost || gear.cost || null,
+            custom: !!gear.custom && !canonical
+          };
+        };
+        const gearSummary = (gear) => {
+          const item = hydrateGear(gear);
+          return {
+            item,
+            title: item.name,
+            tier: itemTierLabel(item),
+            cost: itemCostLabel(item),
+            detail: item.use || 'General equipment item.'
+          };
+        };
+
         const ensureThreeExperiences = (list) => {
           const out = (Array.isArray(list) ? list : []).map(exp => ({ description: String((exp && exp.description) || ''), bonus: Number(exp && exp.bonus) || 2 }));
           while (out.length < 3) out.push({ description: '', bonus: 2 });
@@ -827,6 +1063,7 @@
         const ensureIds = (arr) => (Array.isArray(arr) ? arr : []).map(c => (c && c.id) ? c : { ...(c || {}), id: mkCharId() });
 
         const EMPTY_CHARACTER = {
+          entityType: 'character',
           name: '', playerName: '', heritage: '', background: '', class: '', subclass: '', level: 1, pronouns: '',
           stats: { agility: 0, strength: 0, finesse: 0, instinct: 0, presence: 0, knowledge: 0 },
           hp: { current: 0, max: 6 }, thresholds: { severe: 4, major: 8 },
@@ -835,6 +1072,16 @@
           evasion: 10, shields: 0, wealth: 1, credits: 0,
           playerNotes: '', savedNotes: [],
           inventory: Array(8).fill(''),
+          augments: [],
+          augmentInventory: [],
+          augmentArsenal: [],
+          activeAugmentIds: [],
+          gearInventory: [],
+          gearArsenal: [],
+          armorInventory: [],
+          armorArsenal: [],
+          activeArmorId: '',
+          drones: [],
           weapons: [],
           weaponInventory: [],
           weaponArsenal: [],
@@ -908,12 +1155,32 @@
           const [showDiceTray, setShowDiceTray] = useState(false);
           const [showCardManager, setShowCardManager] = useState(false);
           const [showWeaponManager, setShowWeaponManager] = useState(false);
+          const [showArmorManager, setShowArmorManager] = useState(false);
+          const [showAugmentManager, setShowAugmentManager] = useState(false);
+          const [showGearManager, setShowGearManager] = useState(false);
           const [weaponSearch, setWeaponSearch] = useState('');
           const [weaponManagerView, setWeaponManagerView] = useState('arsenal');
+          const [armorSearch, setArmorSearch] = useState('');
+          const [armorManagerView, setArmorManagerView] = useState('inventory');
+          const [augmentSearch, setAugmentSearch] = useState('');
+          const [augmentManagerView, setAugmentManagerView] = useState('inventory');
+          const [gearSearch, setGearSearch] = useState('');
+          const [gearManagerView, setGearManagerView] = useState('inventory');
           const [showCustomWeaponForm, setShowCustomWeaponForm] = useState(false);
           const [customWeaponDraft, setCustomWeaponDraft] = useState({ name:'', trait:'', range:'', damage:'', feature:'' });
           const [showHistory, setShowHistory] = useState(false);
+          const [showAddMenu, setShowAddMenu] = useState(false);
           useEffect(() => { if (!showHistory) return; const closeHistory = (event) => { if (event.key === 'Escape') setShowHistory(false); }; window.addEventListener('keydown', closeHistory); return () => window.removeEventListener('keydown', closeHistory); }, [showHistory]); 
+          useEffect(() => {
+            if (!showAddMenu) return;
+            const closeMenu = (event) => {
+              if (event.key === 'Escape') { setShowAddMenu(false); return; }
+              if (event.type === 'mousedown' && !event.target.closest('[data-add-entity-menu]')) setShowAddMenu(false);
+            };
+            window.addEventListener('keydown', closeMenu);
+            window.addEventListener('mousedown', closeMenu);
+            return () => { window.removeEventListener('keydown', closeMenu); window.removeEventListener('mousedown', closeMenu); };
+          }, [showAddMenu]);
           const [selectedDomain, setSelectedDomain] = useState("Tech");
           const [expandedPanels, setExpandedPanels] = useState({});
           const panelExpanded = (id) => !!expandedPanels[id];
@@ -989,6 +1256,7 @@
           const [sessionId, setSessionId] = useState('Table');
           const [availableTables, setAvailableTables] = useState([]);
           const [tablesLoading, setTablesLoading] = useState(false);
+          const [tableDirectoryEnabled, setTableDirectoryEnabled] = useState(null);
           const [tablePass, setTablePass] = useState('');
           const [isConnected, setIsConnected] = useState(false);
           const [fbServices, setFbServices] = useState(null);
@@ -1012,6 +1280,12 @@
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_mode', diceMode); } catch (e) {} }, [diceMode]);
           const [dice3DStyle, setDice3DStyle] = useState(() => { try { return localStorage.getItem('veilfarers_dice_3d_style') === 'overlay' ? 'overlay' : 'box'; } catch (e) { return 'box'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_3d_style', dice3DStyle); } catch (e) {} try { window.VFDice3D && window.VFDice3D.setStyle && window.VFDice3D.setStyle(dice3DStyle); } catch (e) {} }, [dice3DStyle]);
+          const [diceTrackingEnabled, setDiceTrackingEnabled] = useState(() => { try { return localStorage.getItem('veilfarers_dice_tracking') !== '0'; } catch (e) { return true; } });
+          useEffect(() => {
+            try { localStorage.setItem('veilfarers_dice_tracking', diceTrackingEnabled ? '1' : '0'); } catch (e) {}
+            try { document.documentElement.classList.toggle('vf-disable-dice-lock', !diceTrackingEnabled); } catch (e) {}
+            try { window.VFDice3D && window.VFDice3D.setTrackingEnabled && window.VFDice3D.setTrackingEnabled(diceTrackingEnabled); } catch (e) {}
+          }, [diceTrackingEnabled]);
           const [diceTextureSet, setDiceTextureSet] = useState(() => { try { const saved=localStorage.getItem('veilfarers_dice_texture_set'); return saved === 'plain' ? 'plain' : (saved === 'crystal' || saved === 'biolum') ? 'crystal' : 'tech'; } catch (e) { return 'tech'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_texture_set', diceTextureSet); } catch (e) {} }, [diceTextureSet]);
           const [timeTravelRevision, setTimeTravelRevision] = useState(0);
@@ -1162,12 +1436,41 @@
             [...canonicalOwned, ...storedArsenal, ...weapons].forEach(item => { const key = weaponKey(item); if (key) arsenalMap.set(key, hydratePlayerWeapon(item)); });
             const weaponArsenal = Array.from(arsenalMap.values());
             const activeId = c.activeWeaponId && weapons.some(w => weaponKey(w) === c.activeWeaponId) ? c.activeWeaponId : (weapons[0] ? weaponKey(weapons[0]) : '');
+
+            const legacyAugments = (Array.isArray(c.augments) ? c.augments : []).map(item => hydrateAugment(item)).filter(item => item.name);
+            const storedAugmentArsenal = (Array.isArray(c.augmentArsenal) ? c.augmentArsenal : []).map(hydrateAugment).filter(item => item.name);
+            const augmentInventory = Array.from(new Set((Array.isArray(c.augmentInventory) ? c.augmentInventory : []).concat(storedAugmentArsenal.map(augmentKey), legacyAugments.map(augmentKey)).filter(Boolean)));
+            const canonicalAugments = AUGMENT_CATALOG.filter(item => augmentInventory.includes(augmentKey(item))).map(hydrateAugment);
+            const augmentMap = new Map();
+            [...canonicalAugments, ...storedAugmentArsenal, ...legacyAugments].forEach(item => { const key = augmentKey(item); if (key) augmentMap.set(key, hydrateAugment(item)); });
+            const augmentArsenal = Array.from(augmentMap.values());
+            const activeAugmentIds = (Array.isArray(c.activeAugmentIds) ? c.activeAugmentIds : []).filter(id => augmentMap.has(id));
+
+            const legacyArmorItems = [];
+            if (c.armor && (c.armor.name || c.armor.id || c.armor.canonicalId)) legacyArmorItems.push(hydrateArmor(c.armor));
+            if (Array.isArray(c.armors)) c.armors.forEach(item => { const hydrated = hydrateArmor(typeof item === 'string' ? { name:item } : item); if (hydrated.name) legacyArmorItems.push(hydrateArmor(hydrated)); });
+            const storedArmorArsenal = (Array.isArray(c.armorArsenal) ? c.armorArsenal : []).map(hydrateArmor).filter(item => item.name);
+            const armorInventory = Array.from(new Set((Array.isArray(c.armorInventory) ? c.armorInventory : []).concat(storedArmorArsenal.map(armorKey), legacyArmorItems.map(armorKey)).filter(Boolean)));
+            const canonicalArmors = ARMOR_CATALOG.filter(item => armorInventory.includes(armorKey(item))).map(hydrateArmor);
+            const armorMap = new Map();
+            [...canonicalArmors, ...storedArmorArsenal, ...legacyArmorItems].forEach(item => { const key = armorKey(item); if (key) armorMap.set(key, hydrateArmor(item)); });
+            const armorArsenal = Array.from(armorMap.values());
+            const activeArmorId = c.activeArmorId && armorMap.has(c.activeArmorId) ? c.activeArmorId : ((legacyArmorItems[0] && armorKey(legacyArmorItems[0])) || '');
+
+            const storedGearArsenal = (Array.isArray(c.gearArsenal) ? c.gearArsenal : []).map(hydrateGear).filter(item => item.name);
+            const gearInventory = Array.from(new Set((Array.isArray(c.gearInventory) ? c.gearInventory : []).concat(storedGearArsenal.map(gearKey)).filter(Boolean)));
+            const canonicalGear = GEAR_CATALOG.filter(item => gearInventory.includes(gearKey(item))).map(hydrateGear);
+            const gearMap = new Map();
+            [...canonicalGear, ...storedGearArsenal].forEach(item => { const key = gearKey(item); if (key) gearMap.set(key, hydrateGear(item)); });
+            const gearArsenal = Array.from(gearMap.values());
+
             return {
               ...c,
               stats: c.stats || {agility:0,strength:0,finesse:0,instinct:0,presence:0,knowledge:0},
               hp: c.hp || {current:0,max:6}, stress: c.stress || {current:0,max:6}, hope: c.hope || {current:0,max:6}, effort: c.effort || {current:0,max:6}, resolve: c.resolve || {current:0,max:2}, thresholds: c.thresholds || {major:0,severe:0},
               experiences: ensureThreeExperiences(c.experiences), weapons, weaponInventory: inventoryIds, weaponArsenal, activeWeaponId: activeId,
-              inventory: c.inventory || [], domainCards: c.domainCards || [], moves: c.moves || [], augments: c.augments || [], drones: c.drones || []
+              inventory: Array.isArray(c.inventory) && c.inventory.length ? c.inventory : Array(8).fill('').map((_,i) => (Array.isArray(c.inventory) ? c.inventory[i] || '' : '')),
+              domainCards: c.domainCards || [], moves: c.moves || [], augments: augmentArsenal, augmentInventory, augmentArsenal, activeAugmentIds, armorInventory, armorArsenal, activeArmorId, gearInventory, gearArsenal, drones: c.drones || []
             };
           };
           const character = normChar(characters[activeTab] || characters[0] || {});
@@ -1884,6 +2187,14 @@
               try {
                   let svc = fbServices;
                   if (!svc) { svc = await window.initFirebase(); setFbServices(svc); }
+                  const directoryEnabled = !!(svc.config && svc.config.publicTableDirectory === true);
+                  setTableDirectoryEnabled(directoryEnabled);
+                  if (!directoryEnabled) {
+                      setAvailableTables([]);
+                      setStatusMsg('Public table discovery is disabled. Enter the exact table name to join or create it.');
+                      setTablesLoading(false);
+                      return;
+                  }
                   const snap = await svc.db.collection('artifacts/' + appId + '/public/data/sessions').get();
                   const tables = [];
                   snap.forEach(function (d) { const dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!dd.passHash }); });
@@ -2042,10 +2353,23 @@
 
           // --- GESTIÓN LOCAL (Helpers) ---
           const updateCharacter = (updates) => { lastLocalEditRef.current = Date.now(); setCharacters(prev => { const newChars = [...prev]; const currentVal = newChars[activeTab]; const newVal = typeof updates === 'function' ? updates(currentVal) : { ...currentVal, ...updates }; newChars[activeTab] = newVal; return newChars; }); };
-          const addNewCharacter = () => { setCharacters(prev => [...prev, { ...JSON.parse(JSON.stringify(EMPTY_CHARACTER)), id: mkCharId() }]); setActiveTab(characters.length); };
-          const deleteCharacter = (e, index) => { e.stopPropagation(); const nm = (characters[index] && characters[index].name) || ('P' + (index + 1)); showConfirm('Close the tab for "' + nm + '"? This character will be removed from this device (cloud/saved copies are not affected).', () => { if (characters.length === 1) { setCharacters([{ ...JSON.parse(JSON.stringify(EMPTY_CHARACTER)), id: mkCharId() }]); return; } const newChars = characters.filter((_, i) => i !== index); setCharacters(newChars); if (activeTab >= index && activeTab > 0) setActiveTab(activeTab - 1); }); };
+          const addNewCharacter = (entityType = 'character') => {
+            setShowAddMenu(false);
+            if (entityType !== 'character') { showAlert('Drone tabs are planned, but not available in this build yet.', 'Coming soon'); return; }
+            setCharacters(prev => [...prev, { ...JSON.parse(JSON.stringify(EMPTY_CHARACTER)), id: mkCharId(), entityType: 'character' }]);
+            setActiveTab(characters.length);
+          };
+          const deleteCharacter = (e, index) => { e.stopPropagation(); const nm = (characters[index] && characters[index].name) || ('P' + (index + 1)); showConfirm('Close the tab for "' + nm + '"? This character will be removed from this device (cloud/saved copies are not affected).', () => { if (characters.length === 1) { setCharacters([{ ...JSON.parse(JSON.stringify(EMPTY_CHARACTER)), id: mkCharId(), entityType: 'character' }]); return; } const newChars = characters.filter((_, i) => i !== index); setCharacters(newChars); if (activeTab >= index && activeTab > 0) setActiveTab(activeTab - 1); }); };
           const handleStatChange = (stat, value) => updateCharacter(prev => ({ ...prev, stats: { ...prev.stats, [stat]: parseInt(value) || 0 } }));
           const handleExperienceChange = (index, field, value) => { const newExperiences = [...character.experiences]; newExperiences[index][field] = value; updateCharacter({ ...character, experiences: newExperiences }); };
+          const addAugmentationRow = () => updateCharacter(prev => ({ ...prev, augments: [...(Array.isArray(prev.augments) ? prev.augments : []), { name:'', tier:'', benefit:'' }] }));
+          const updateAugmentationField = (index, field, value) => updateCharacter(prev => {
+            const list = Array.isArray(prev.augments) ? prev.augments.slice() : [];
+            const current = list[index] || { name:'', tier:'', benefit:'' };
+            list[index] = { ...current, [field]: value };
+            return { ...prev, augments: list };
+          });
+          const removeAugmentationRow = (index) => updateCharacter(prev => ({ ...prev, augments: (Array.isArray(prev.augments) ? prev.augments : []).filter((_, i) => i !== index) }));
 
           const equippedWeapons = (character.weapons || []).map(hydratePlayerWeapon).filter(weapon => weapon.name);
           const equippedKeys = new Set(equippedWeapons.map(weaponKey));
@@ -2105,6 +2429,72 @@
           const filteredWeaponManagerPool = weaponManagerPool.filter(weapon => {
             if (!normalizedWeaponSearch) return true;
             return [weapon.name, weapon.trait, weapon.range, weapon.damage, featureList(weapon.features).join(' '), weapon.weaponFamily].join(' ').toLowerCase().includes(normalizedWeaponSearch);
+          });
+
+          const armorArsenal = (Array.isArray(character.armorArsenal) ? character.armorArsenal : []).map(hydrateArmor).filter(item => item.name).sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')));
+          const armorInventoryKeys = new Set(armorArsenal.map(armorKey));
+          const activeArmor = armorArsenal.find(item => armorKey(item) === character.activeArmorId) || null;
+          const setActiveArmor = (armor) => { const hydrated = hydrateArmor(armor); updateCharacter({ ...character, activeArmorId: armorKey(hydrated), armor: hydrated }); };
+          const clearActiveArmor = () => updateCharacter({ ...character, activeArmorId: '', armor: null });
+          const toggleArmorOwned = (armor) => {
+            const hydrated = hydrateArmor(armor);
+            const key = armorKey(hydrated);
+            const exists = armorInventoryKeys.has(key);
+            const nextArsenal = exists ? armorArsenal.filter(item => armorKey(item) !== key) : armorArsenal.concat([hydrated]);
+            const nextActive = exists && character.activeArmorId === key ? '' : (character.activeArmorId || '');
+            const nextArmor = nextActive ? (nextArsenal.find(item => armorKey(item) === nextActive) || null) : null;
+            updateCharacter({ ...character, armorInventory: nextArsenal.map(armorKey), armorArsenal: nextArsenal, activeArmorId: nextActive, armor: nextArmor });
+          };
+          const normalizedArmorSearch = String(armorSearch || '').trim().toLowerCase();
+          const armorManagerPool = armorManagerView === 'catalog' ? ARMOR_CATALOG.map(hydrateArmor) : armorArsenal;
+          const filteredArmorManagerPool = armorManagerPool.filter(armor => {
+            if (!normalizedArmorSearch) return true;
+            const summary = armorSummary(armor);
+            return [summary.title, summary.tier, summary.cost, summary.detail, summary.features].join(' ').toLowerCase().includes(normalizedArmorSearch);
+          });
+
+          const augmentArsenal = (Array.isArray(character.augmentArsenal) ? character.augmentArsenal : []).map(hydrateAugment).filter(item => item.name).sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')));
+          const augmentInventoryKeys = new Set(augmentArsenal.map(augmentKey));
+          const activeAugmentIds = Array.isArray(character.activeAugmentIds) ? character.activeAugmentIds : [];
+          const activeAugments = augmentArsenal.filter(item => activeAugmentIds.includes(augmentKey(item)));
+          const toggleAugmentOwned = (augment) => {
+            const hydrated = hydrateAugment(augment);
+            const key = augmentKey(hydrated);
+            const exists = augmentInventoryKeys.has(key);
+            const nextArsenal = exists ? augmentArsenal.filter(item => augmentKey(item) !== key) : augmentArsenal.concat([hydrated]);
+            const nextActive = exists ? activeAugmentIds.filter(id => id !== key) : activeAugmentIds;
+            updateCharacter({ ...character, augments: nextArsenal, augmentInventory: nextArsenal.map(augmentKey), augmentArsenal: nextArsenal, activeAugmentIds: nextActive });
+          };
+          const toggleAugmentActive = (augment) => {
+            const hydrated = hydrateAugment(augment);
+            const key = augmentKey(hydrated);
+            if (!augmentInventoryKeys.has(key)) return;
+            const nextActive = activeAugmentIds.includes(key) ? activeAugmentIds.filter(id => id !== key) : activeAugmentIds.concat([key]);
+            updateCharacter({ ...character, activeAugmentIds: nextActive });
+          };
+          const normalizedAugmentSearch = String(augmentSearch || '').trim().toLowerCase();
+          const augmentManagerPool = augmentManagerView === 'catalog' ? AUGMENT_CATALOG.map(hydrateAugment) : augmentArsenal;
+          const filteredAugmentManagerPool = augmentManagerPool.filter(augment => {
+            if (!normalizedAugmentSearch) return true;
+            const summary = augmentSummary(augment);
+            return [summary.title, summary.tier, summary.cost, summary.detail, summary.meta].join(' ').toLowerCase().includes(normalizedAugmentSearch);
+          });
+
+          const gearArsenal = (Array.isArray(character.gearArsenal) ? character.gearArsenal : []).map(hydrateGear).filter(item => item.name).sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')));
+          const gearInventoryKeys = new Set(gearArsenal.map(gearKey));
+          const toggleGearOwned = (gear) => {
+            const hydrated = hydrateGear(gear);
+            const key = gearKey(hydrated);
+            const exists = gearInventoryKeys.has(key);
+            const nextArsenal = exists ? gearArsenal.filter(item => gearKey(item) !== key) : gearArsenal.concat([hydrated]);
+            updateCharacter({ ...character, gearInventory: nextArsenal.map(gearKey), gearArsenal: nextArsenal });
+          };
+          const normalizedGearSearch = String(gearSearch || '').trim().toLowerCase();
+          const gearManagerPool = gearManagerView === 'catalog' ? GEAR_CATALOG.map(hydrateGear) : gearArsenal;
+          const filteredGearManagerPool = gearManagerPool.filter(gear => {
+            if (!normalizedGearSearch) return true;
+            const summary = gearSummary(gear);
+            return [summary.title, summary.tier, summary.cost, summary.detail].join(' ').toLowerCase().includes(normalizedGearSearch);
           });
           const featureAccent = {
             ancestry: { label:'Ancestry Gift', text:'text-amber-300', border:'border-amber-800/50', bg:'bg-amber-950/20' },
@@ -2288,13 +2678,14 @@
                           
                           <div className="mb-4">
                             <div className="flex items-center justify-between mb-2">
-                              <label className="text-xs font-bold text-slate-500 uppercase">Available Tables</label>
-                              <button onClick={fetchTables} className="text-[10px] text-cyan-400 hover:text-white uppercase font-bold">Refresh</button>
+                              <label className="text-xs font-bold text-slate-500 uppercase">Table access</label>
+                              {tableDirectoryEnabled === true && <button onClick={fetchTables} className="text-[10px] text-cyan-400 hover:text-white uppercase font-bold">Refresh</button>}
                             </div>
                             <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto mb-3">
-                              {tablesLoading && <span className="text-[11px] text-slate-500 italic animate-pulse">Loading tables…</span>}
-                              {!tablesLoading && availableTables.length === 0 && <span className="text-[11px] text-slate-600 italic">No tables yet — type a name below to create one.</span>}
-                              {!tablesLoading && availableTables.map(function (tb) { return (<button key={tb.id} onClick={() => setSessionId(tb.id)} className={`px-3 py-1 rounded text-xs font-bold border ${sessionId === tb.id ? 'border-cyan-500 bg-cyan-950 text-cyan-300' : 'border-slate-700 bg-slate-950 text-slate-400 hover:border-cyan-500'}`}>{tb.locked ? '🔒 ' : ''}{tb.name} <span className="text-slate-600">({tb.players})</span></button>); })}
+                              {tablesLoading && <span className="text-[11px] text-slate-500 italic animate-pulse">Checking table access…</span>}
+                              {!tablesLoading && tableDirectoryEnabled === false && <span className="text-[11px] text-slate-500 italic">For privacy, public table discovery is disabled. Enter the exact table name below.</span>}
+                              {!tablesLoading && tableDirectoryEnabled === true && availableTables.length === 0 && <span className="text-[11px] text-slate-600 italic">No tables yet — type a name below to create one.</span>}
+                              {!tablesLoading && tableDirectoryEnabled === true && availableTables.map(function (tb) { return (<button key={tb.id} onClick={() => setSessionId(tb.id)} className={`px-3 py-1 rounded text-xs font-bold border ${sessionId === tb.id ? 'border-cyan-500 bg-cyan-950 text-cyan-300' : 'border-slate-700 bg-slate-950 text-slate-400 hover:border-cyan-500'}`}>{tb.locked ? '🔒 ' : ''}{tb.name} <span className="text-slate-600">({tb.players})</span></button>); })}
                             </div>
                           </div>
                           <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Join or create a table</label>
@@ -2304,7 +2695,7 @@
                           
                           <div className="bg-slate-950/50 p-3 rounded border border-green-900/30 mb-4">
                               <p className="text-xs text-green-400 font-bold mb-1">Configuration Status:</p>
-                              <p className="text-[10px] text-slate-400">Firebase configuration is requested securely at runtime from the Netlify Function /api/firebase-config.</p>
+                              <p className="text-[10px] text-slate-400">Firebase project configuration is loaded at runtime. Access control must be enforced by Firebase Security Rules and App Check, not by obscuring this configuration.</p>
                           </div>
 
                           <div className="flex justify-end gap-2">
@@ -2434,6 +2825,10 @@
                                 <button onClick={() => setDice3DStyle('overlay')} className={`px-3 py-1.5 rounded text-[10px] font-black ${dice3DStyle === 'overlay' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>OVERLAY</button>
                               </div>
                             </div>
+                            <div className={`flex items-center justify-between gap-3 ${diceMode === '3d' ? '' : 'opacity-40 pointer-events-none'}`}>
+                              <div><label className="text-xs font-bold text-slate-500 uppercase block">Dice tracking &amp; lock-in</label><span className="text-[10px] text-slate-500">Show the quantum trackers, aperture lock and settled winner/discard cues.</span></div>
+                              <button role="switch" aria-checked={diceTrackingEnabled} onClick={() => setDiceTrackingEnabled(value => !value)} className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${diceTrackingEnabled ? 'bg-cyan-600' : 'bg-slate-700'}`}><span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${diceTrackingEnabled ? 'left-[22px]' : 'left-0.5'}`}></span></button>
+                            </div>
                             <div className="flex items-center justify-between gap-3">
                               <div><label className="text-xs font-bold text-slate-500 uppercase block">3D texture set</label><span className="text-[10px] text-slate-500">Choose flat colours, technological plates, or bioluminescent crystal materials.</span></div>
                               <div className={`flex rounded-lg border border-slate-700 bg-slate-950 p-1 ${diceMode === '3d' ? '' : 'opacity-40 pointer-events-none'}`}>
@@ -2502,12 +2897,8 @@
                           </div>
 
                           </div>
-                          <div className="shrink-0 px-4 sm:px-6 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:pb-4 border-t border-slate-800 bg-slate-900/98 backdrop-blur">
-                              <button
-                                type="button"
-                                onClick={() => setShowSettings(false)}
-                                className="w-full px-4 py-3 bg-cyan-700 hover:bg-cyan-600 active:bg-cyan-800 text-white rounded-lg font-black uppercase tracking-wide"
-                              >Back to Player Tool</button>
+                          <div className="sm:hidden shrink-0 px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.65rem)] border-t border-slate-800 bg-slate-900/98 backdrop-blur">
+                              <button type="button" onClick={() => setShowSettings(false)} aria-label="Back to Player Tool" className="inline-flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-950 border border-slate-700 text-cyan-300 rounded-md text-[10px] font-black uppercase tracking-wide"><span aria-hidden="true" className="text-base leading-none">←</span> Back</button>
                           </div>
                       </div>
                   </div>
@@ -2811,7 +3202,7 @@
                                 <div className="flex items-start justify-between gap-3">
                                   <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{weapon.name}</span>{active && <span className="px-1.5 py-0.5 rounded border border-yellow-500/40 bg-yellow-500/10 text-[8px] text-yellow-300 font-black uppercase">Active</span>}{equipped && !active && <span className="px-1.5 py-0.5 rounded border border-cyan-600/40 bg-cyan-500/10 text-[8px] text-cyan-300 font-black uppercase">Equipped</span>}</div>
-                                    <div className="flex flex-wrap gap-1 mt-1.5 text-[9px]"><span className="px-1.5 py-0.5 rounded border border-cyan-900/60 text-cyan-300">{weapon.trait || 'No trait'} {profile.traitMod >= 0 ? '+' : ''}{profile.traitMod}</span>{weapon.range && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{weapon.range}</span>}<span className="px-1.5 py-0.5 rounded border border-red-900/60 text-red-300">{weapon.damage || 'No damage'}</span>{weapon.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{weapon.tier.name || weapon.tier}</span>}</div>
+                                    <div className="flex flex-wrap gap-1 mt-1.5 text-[9px]"><span className="px-1.5 py-0.5 rounded border border-cyan-900/60 text-cyan-300">{weapon.trait || 'No trait'} {profile.traitMod >= 0 ? '+' : ''}{profile.traitMod}</span>{weapon.range && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{weapon.range}</span>}<span className="px-1.5 py-0.5 rounded border border-red-900/60 text-red-300">{weapon.damage || 'No damage'}</span>{weapon.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{itemTierLabel(weapon)}</span>}</div>
                                     {profile.entries.length > 0 && <div className="flex flex-wrap gap-1 mt-2">{profile.entries.map((entry, i) => <span key={i} title={conciseEffect(entry)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900 text-[8px] font-bold text-slate-300 cursor-help">{entry.display}</span>)}</div>}
                                   </div>
                                   <div className="flex flex-col gap-1.5 shrink-0">
@@ -2830,6 +3221,82 @@
                   </div>
                 </div>
               )}
+
+              {/* ARMOR LOADOUT MANAGER */}
+              {showArmorManager && (
+                <div className="fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-3 md:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowArmorManager(false); }}>
+                  <div className="bg-slate-900 border border-amber-700/50 rounded-xl w-[96vw] max-w-5xl h-[84vh] flex flex-col min-w-0 shadow-2xl overflow-hidden">
+                    <header className="p-3 md:p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between bg-slate-950">
+                      <div>
+                        <h2 className="text-lg font-black text-white flex items-center gap-2"><Shield className="text-amber-400" /> Armor Loadout</h2>
+                        <p className="text-[10px] text-slate-500 mt-0.5">Add armor from the canon database to the inventory, then mark one suit as active.</p>
+                      </div>
+                      <button onClick={() => setShowArmorManager(false)} className="self-end sm:self-auto p-2 rounded border border-slate-700 bg-slate-900 text-slate-400 hover:text-white hover:border-slate-500" aria-label="Close armor loadout"><X className="w-5 h-5" /></button>
+                    </header>
+                    <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex flex-col md:flex-row gap-2 md:items-center">
+                      <div className="flex gap-1 rounded-lg border border-slate-800 bg-black p-1 shrink-0">
+                        <button onClick={() => setArmorManagerView('inventory')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${armorManagerView === 'inventory' ? 'bg-amber-500/20 border border-amber-500/50 text-amber-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>Inventory · {armorArsenal.length}</button>
+                        <button onClick={() => setArmorManagerView('catalog')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${armorManagerView === 'catalog' ? 'bg-cyan-500/15 border border-cyan-500/40 text-cyan-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>All Armor · {ARMOR_CATALOG.length}</button>
+                      </div>
+                      <input value={armorSearch} onChange={event => setArmorSearch(event.target.value)} placeholder="Search armor by name, thresholds or feature…" className="flex-grow min-w-0 bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-amber-500 placeholder-slate-600" />
+                    </div>
+                    <div className="flex-grow min-h-0 overflow-y-auto p-3 md:p-4 bg-slate-900">
+                      {filteredArmorManagerPool.length ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">{filteredArmorManagerPool.map((rawArmor, index) => { const armor = hydrateArmor(rawArmor); const key = armorKey(armor); const owned = armorInventoryKeys.has(key); const active = key === (character.activeArmorId || ''); const summary = armorSummary(armor); return <div key={key || index} className={`rounded-lg border p-3 ${active ? 'border-amber-500/70 bg-amber-950/15' : owned ? 'border-cyan-700/50 bg-cyan-950/10' : 'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{summary.title}</span>{active && <span className="px-1.5 py-0.5 rounded border border-amber-500/40 bg-amber-500/10 text-[8px] text-amber-300 font-black uppercase">Active</span>}{owned && !active && <span className="px-1.5 py-0.5 rounded border border-cyan-600/40 bg-cyan-500/10 text-[8px] text-cyan-300 font-black uppercase">In inventory</span>}</div><div className="flex flex-wrap gap-1 mt-1.5 text-[9px]"><span className="px-1.5 py-0.5 rounded border border-red-900/60 text-red-300">{summary.detail}</span>{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{summary.tier}</span>}<span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{summary.cost}</span></div>{summary.features && <div className="mt-2 text-[9px] text-slate-400 leading-snug">{summary.features}</div>}</div><div className="flex flex-col gap-1.5 shrink-0"><button onClick={() => toggleArmorOwned(armor)} className={`px-2.5 py-1.5 rounded border text-[9px] font-black uppercase ${owned ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-emerald-700/60 bg-emerald-950/20 text-emerald-300'}`}>{owned ? 'Remove' : 'Add'}</button>{owned && !active && <button onClick={() => setActiveArmor(armor)} className="px-2.5 py-1.5 rounded border border-amber-600/50 bg-amber-950/20 text-amber-300 text-[9px] font-black uppercase">Set active</button>}{active && <button onClick={clearActiveArmor} className="px-2.5 py-1.5 rounded border border-slate-700 text-slate-400 text-[8px] font-bold uppercase hover:text-white">Clear</button>}</div></div></div>; })}</div> : <div className="h-full flex items-center justify-center text-sm text-slate-600 italic">No armor matches this view.</div>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* AUGMENTATION MANAGER */}
+              {showAugmentManager && (
+                <div className="fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-3 md:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowAugmentManager(false); }}>
+                  <div className="bg-slate-900 border border-cyan-700/50 rounded-xl w-[96vw] max-w-5xl h-[84vh] flex flex-col min-w-0 shadow-2xl overflow-hidden">
+                    <header className="p-3 md:p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between bg-slate-950">
+                      <div>
+                        <h2 className="text-lg font-black text-white flex items-center gap-2"><Activity className="text-cyan-400" /> Augmentation Manager</h2>
+                        <p className="text-[10px] text-slate-500 mt-0.5">Track installed augmentations and separately mark which ones are active right now.</p>
+                      </div>
+                      <button onClick={() => setShowAugmentManager(false)} className="self-end sm:self-auto p-2 rounded border border-slate-700 bg-slate-900 text-slate-400 hover:text-white hover:border-slate-500" aria-label="Close augmentation manager"><X className="w-5 h-5" /></button>
+                    </header>
+                    <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex flex-col md:flex-row gap-2 md:items-center">
+                      <div className="flex gap-1 rounded-lg border border-slate-800 bg-black p-1 shrink-0">
+                        <button onClick={() => setAugmentManagerView('inventory')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${augmentManagerView === 'inventory' ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>Inventory · {augmentArsenal.length}</button>
+                        <button onClick={() => setAugmentManagerView('catalog')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${augmentManagerView === 'catalog' ? 'bg-purple-500/15 border border-purple-500/40 text-purple-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>All Augments · {AUGMENT_CATALOG.length}</button>
+                      </div>
+                      <input value={augmentSearch} onChange={event => setAugmentSearch(event.target.value)} placeholder="Search augmentations by name, benefit or drawback…" className="flex-grow min-w-0 bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500 placeholder-slate-600" />
+                    </div>
+                    <div className="flex-grow min-h-0 overflow-y-auto p-3 md:p-4 bg-slate-900">
+                      {filteredAugmentManagerPool.length ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">{filteredAugmentManagerPool.map((rawAugment, index) => { const augment = hydrateAugment(rawAugment); const key = augmentKey(augment); const owned = augmentInventoryKeys.has(key); const active = activeAugmentIds.includes(key); const summary = augmentSummary(augment); return <div key={key || index} className={`rounded-lg border p-3 ${active ? 'border-cyan-500/70 bg-cyan-950/15' : owned ? 'border-emerald-700/40 bg-emerald-950/10' : 'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{summary.title}</span>{active && <span className="px-1.5 py-0.5 rounded border border-cyan-500/40 bg-cyan-500/10 text-[8px] text-cyan-300 font-black uppercase">Active</span>}{owned && !active && <span className="px-1.5 py-0.5 rounded border border-emerald-600/40 bg-emerald-500/10 text-[8px] text-emerald-300 font-black uppercase">In inventory</span>}</div><div className="flex flex-wrap gap-1 mt-1.5 text-[9px]"><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{summary.tier || 'Augment'}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{summary.cost}</span>{summary.meta && <span className="px-1.5 py-0.5 rounded border border-purple-800/40 text-purple-300">{summary.meta}</span>}</div><div className="mt-2 text-[9px] text-slate-400 leading-snug">{summary.detail}</div></div><div className="flex flex-col gap-1.5 shrink-0"><button onClick={() => toggleAugmentOwned(augment)} className={`px-2.5 py-1.5 rounded border text-[9px] font-black uppercase ${owned ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-emerald-700/60 bg-emerald-950/20 text-emerald-300'}`}>{owned ? 'Remove' : 'Add'}</button>{owned && <button onClick={() => toggleAugmentActive(augment)} className={`px-2.5 py-1.5 rounded border text-[9px] font-black uppercase ${active ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-cyan-700/60 bg-cyan-950/20 text-cyan-300'}`}>{active ? 'Deactivate' : 'Activate'}</button>}</div></div></div>; })}</div> : <div className="h-full flex items-center justify-center text-sm text-slate-600 italic">No augmentations match this view.</div>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* GEAR MANAGER */}
+              {showGearManager && (
+                <div className="fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-3 md:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowGearManager(false); }}>
+                  <div className="bg-slate-900 border border-emerald-700/50 rounded-xl w-[96vw] max-w-5xl h-[84vh] flex flex-col min-w-0 shadow-2xl overflow-hidden">
+                    <header className="p-3 md:p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between bg-slate-950">
+                      <div>
+                        <h2 className="text-lg font-black text-white flex items-center gap-2"><Database className="text-emerald-400" /> Gear Loadout</h2>
+                        <p className="text-[10px] text-slate-500 mt-0.5">Add or remove equipment from the rules-data database. Use the free-text inventory lines for custom notes and loose objects.</p>
+                      </div>
+                      <button onClick={() => setShowGearManager(false)} className="self-end sm:self-auto p-2 rounded border border-slate-700 bg-slate-900 text-slate-400 hover:text-white hover:border-slate-500" aria-label="Close gear manager"><X className="w-5 h-5" /></button>
+                    </header>
+                    <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex flex-col md:flex-row gap-2 md:items-center">
+                      <div className="flex gap-1 rounded-lg border border-slate-800 bg-black p-1 shrink-0">
+                        <button onClick={() => setGearManagerView('inventory')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${gearManagerView === 'inventory' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>Loadout · {gearArsenal.length}</button>
+                        <button onClick={() => setGearManagerView('catalog')} className={`px-3 py-1.5 rounded text-[10px] font-black uppercase ${gearManagerView === 'catalog' ? 'bg-cyan-500/15 border border-cyan-500/40 text-cyan-300' : 'border border-transparent text-slate-500 hover:text-slate-200'}`}>All Gear · {GEAR_CATALOG.length}</button>
+                      </div>
+                      <input value={gearSearch} onChange={event => setGearSearch(event.target.value)} placeholder="Search gear by name or use…" className="flex-grow min-w-0 bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-emerald-500 placeholder-slate-600" />
+                    </div>
+                    <div className="flex-grow min-h-0 overflow-y-auto p-3 md:p-4 bg-slate-900">
+                      {filteredGearManagerPool.length ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">{filteredGearManagerPool.map((rawGear, index) => { const gear = hydrateGear(rawGear); const key = gearKey(gear); const owned = gearInventoryKeys.has(key); const summary = gearSummary(gear); return <div key={key || index} className={`rounded-lg border p-3 ${owned ? 'border-emerald-700/50 bg-emerald-950/10' : 'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{summary.title}</span>{owned && <span className="px-1.5 py-0.5 rounded border border-emerald-600/40 bg-emerald-500/10 text-[8px] text-emerald-300 font-black uppercase">In loadout</span>}</div><div className="flex flex-wrap gap-1 mt-1.5 text-[9px]">{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{summary.tier}</span>}<span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{summary.cost}</span></div><div className="mt-2 text-[9px] text-slate-400 leading-snug">{summary.detail}</div></div><button onClick={() => toggleGearOwned(gear)} className={`shrink-0 px-2.5 py-1.5 rounded border text-[9px] font-black uppercase ${owned ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-emerald-700/60 bg-emerald-950/20 text-emerald-300'}`}>{owned ? 'Remove' : 'Add'}</button></div></div>; })}</div> : <div className="h-full flex items-center justify-center text-sm text-slate-600 italic">No gear matches this view.</div>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
 
               {/* CARD MANAGER */}
               {showCardManager && (
@@ -2880,7 +3347,15 @@
                           <button onClick={(e) => deleteCharacter(e, idx)} className={`ml-1 opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity ${characters.length === 1 ? 'hidden' : ''}`}><X className="w-3 h-3" /></button>
                        </div>
                      ))}
-                     <button onClick={addNewCharacter} className="px-3 py-2 bg-slate-950 hover:bg-slate-900 text-slate-500 hover:text-green-400 rounded-t-lg transition-colors border-t-2 border-transparent"><Plus className="w-4 h-4" /></button>
+                     <div className="relative" data-add-entity-menu>
+                       <button onClick={() => setShowAddMenu(v => !v)} className="px-3 py-2 bg-slate-950 hover:bg-slate-900 text-slate-500 hover:text-green-400 rounded-t-lg transition-colors border-t-2 border-transparent"><Plus className="w-4 h-4" /></button>
+                       {showAddMenu && (
+                         <div className="absolute right-0 top-full mt-2 w-44 rounded-lg border border-slate-700 bg-slate-950/95 shadow-2xl overflow-hidden z-30">
+                           <button onClick={() => addNewCharacter('character')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-300 hover:bg-slate-900 flex items-center justify-between"><span>Character</span><span className="text-slate-500">Ready</span></button>
+                           <button disabled onClick={() => addNewCharacter('drone')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 border-t border-slate-800 cursor-not-allowed flex items-center justify-between"><span>Drone</span><span>Soon</span></button>
+                         </div>
+                       )}
+                     </div>
                    </div>
                    
                    {/* ROW 2: TOOLS */}
@@ -3012,8 +3487,8 @@
                        )}
                        {((character.augments && character.augments.length) || (character.drones && character.drones.length)) && (
                          <div className="bg-slate-900/40 rounded border border-slate-800 p-2 text-[9px] text-slate-300 grid grid-cols-1 xl:grid-cols-2 gap-2">
-                           {character.augments && character.augments.length > 0 && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Augmentations</span>{character.augments.map((a,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{a.name}</span> <span className="text-slate-500">{a.tier}</span><div className="text-slate-400 leading-snug">{a.benefit}</div></div>))}</div>)}
-                           {character.drones && character.drones.length > 0 && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">Drones</span>{character.drones.map((d,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{d.name}</span> <span className="text-slate-500">{d.grade}</span> · HP {d.hp} · Ev {d.evasion}</div>))}</div>)}
+                           {character.augments && character.augments.length > 0 && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Augmentations</span>{character.augments.map((a,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{a.name}</span> <span className="text-slate-500">{itemTierLabel(a)}</span><div className="text-slate-400 leading-snug">{a.benefit}</div></div>))}</div>)}
+                           {character.drones && character.drones.length > 0 && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">Drones</span>{character.drones.map((d,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{d.name}</span> <span className="text-slate-500">{displayScalar(d.grade)}</span> · HP {d.hp} · Ev {d.evasion}</div>))}</div>)}
                          </div>
                        )}
 
@@ -3093,14 +3568,56 @@
                            <div className="flex-1 bg-slate-950 rounded border border-slate-800 px-2 py-1"><label className="text-[8px] text-slate-500 uppercase block font-bold">Wealth</label><NumField className="w-full bg-transparent text-center font-bold text-xs text-blue-400 outline-none" value={character.wealth} onChange={e => updateCharacter({...character, wealth: e.target.value})} /></div>
                            <div className="flex-1 bg-slate-950 rounded border border-slate-800 px-2 py-1"><label className="text-[8px] text-slate-500 uppercase block font-bold">Credits</label><NumField className="w-full bg-transparent text-center font-bold text-xs text-blue-400 outline-none" value={character.credits} onChange={e => updateCharacter({...character, credits: e.target.value})} /></div>
                          </div>
-                         <h2 className="text-[9px] font-bold uppercase text-slate-500 mb-1 tracking-wider"><Database className="w-3 h-3 text-blue-500 inline mr-1" /> Inventory</h2>
+                         <div className="flex items-center justify-between gap-2 mb-1">
+                           <h2 className="text-[9px] font-bold uppercase text-slate-500 tracking-wider"><Database className="w-3 h-3 text-blue-500 inline mr-1" /> Notes & Free Text</h2>
+                         </div>
                          <div className="grid grid-cols-1 gap-1">
-                           {(character.inventory || []).map((item, i) => (
+                           {(Array.isArray(character.inventory) ? character.inventory : []).map((item, i) => (
                              <div key={i} className="flex gap-2 items-center h-5">
                                <span className="text-slate-700 text-[9px] font-mono w-3">{i+1}</span>
-                               <input type="text" className="flex-grow bg-transparent border-b border-slate-800/50 focus:border-blue-500/50 text-[10px] outline-none text-slate-400" value={item} onChange={(e) => { const newInv = [...character.inventory]; newInv[i] = e.target.value; updateCharacter({...character, inventory: newInv}); }} />
+                               <input type="text" className="flex-grow bg-transparent border-b border-slate-800/50 focus:border-blue-500/50 text-[10px] outline-none text-slate-400" value={item} onChange={(e) => { const newInv = [...(Array.isArray(character.inventory) ? character.inventory : [])]; newInv[i] = e.target.value; updateCharacter({...character, inventory: newInv}); }} />
                              </div>
                            ))}
+                         </div>
+
+                         <div className="mt-3 border-t border-slate-800 pt-3 space-y-3">
+                           <div>
+                             <div className="flex items-center justify-between gap-2 mb-2">
+                               <div>
+                                 <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-400">Item Loadout</div>
+                                 <div className="text-[8px] text-slate-600">Choose gear from the canon database and keep the free text lines for everything else.</div>
+                               </div>
+                               <button onClick={() => setShowGearManager(true)} className="px-2 py-1 rounded border border-emerald-700/40 bg-emerald-950/20 text-emerald-300 text-[9px] font-black uppercase hover:border-emerald-500">Manage</button>
+                             </div>
+                             <div className="space-y-2">
+                               {gearArsenal.length ? gearArsenal.map((gear, i) => { const summary = gearSummary(gear); return <div key={gearKey(gear) || i} className="rounded border border-slate-800 bg-slate-950/45 p-2"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-[11px] font-black text-slate-100">{summary.title}</span>{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] leading-snug text-slate-400">{summary.detail}</div></div><span className="px-1.5 py-0.5 rounded border border-emerald-800/40 bg-emerald-950/20 text-[8px] font-black uppercase text-emerald-300">In loadout</span></div></div>; }) : <button onClick={() => setShowGearManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-emerald-600/60 hover:text-emerald-300">No gear loadout yet. Open Manage to add items from the system database.</button>}
+                             </div>
+                           </div>
+
+                           <div>
+                             <div className="flex items-center justify-between gap-2 mb-2">
+                               <div>
+                                 <div className="text-[9px] font-bold uppercase tracking-wider text-amber-400">Armor</div>
+                                 <div className="text-[8px] text-slate-600">Track owned suits and mark which one is currently active.</div>
+                               </div>
+                               <button onClick={() => setShowArmorManager(true)} className="px-2 py-1 rounded border border-amber-700/40 bg-amber-950/20 text-amber-300 text-[9px] font-black uppercase hover:border-amber-500">Loadout</button>
+                             </div>
+                             {activeArmor ? (() => { const summary = armorSummary(activeArmor); return <div className="rounded-lg border border-amber-800/40 bg-amber-950/10 p-2.5"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-xs font-black text-slate-100">{summary.title}</span><span className="px-1.5 py-0.5 rounded border border-amber-700/40 bg-amber-500/10 text-[8px] font-black uppercase text-amber-300">Active</span>{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] text-slate-400">{summary.detail}</div>{summary.features && <div className="mt-1 text-[9px] text-slate-500">{summary.features}</div>}</div><button onClick={clearActiveArmor} className="shrink-0 px-2 py-1 rounded border border-slate-700 text-[8px] font-black uppercase text-slate-400 hover:text-white">Clear</button></div></div>; })() : <button onClick={() => setShowArmorManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-amber-600/60 hover:text-amber-300">No active armor. Open Loadout to assign one from your inventory.</button>}
+                             {armorArsenal.length > 0 && <div className="mt-2 flex flex-wrap gap-1">{armorArsenal.filter(item => !activeArmor || armorKey(item) !== armorKey(activeArmor)).slice(0,4).map(item => <span key={armorKey(item)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-[8px] text-slate-400">{item.name}</span>)}{armorArsenal.length > 5 && <span className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-[8px] text-slate-500">+{armorArsenal.length - 4} more</span>}</div>}
+                           </div>
+
+                           <div>
+                             <div className="flex items-center justify-between gap-2 mb-2">
+                               <div>
+                                 <div className="text-[9px] font-bold uppercase tracking-wider text-cyan-400">Augmentations</div>
+                                 <div className="text-[8px] text-slate-600">Keep owned augmentations in inventory and toggle which ones are currently active.</div>
+                               </div>
+                               <button onClick={() => setShowAugmentManager(true)} className="px-2 py-1 rounded border border-cyan-700/40 bg-cyan-950/20 text-cyan-300 text-[9px] font-black uppercase hover:border-cyan-500">Manage</button>
+                             </div>
+                             <div className="space-y-2">
+                               {augmentArsenal.length ? augmentArsenal.map((aug, i) => { const summary = augmentSummary(aug); const active = activeAugmentIds.includes(augmentKey(aug)); return <div key={augmentKey(aug) || i} className={`rounded border p-2 ${active ? 'border-cyan-700/50 bg-cyan-950/10' : 'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-[11px] font-black text-slate-100">{summary.title}</span>{active && <span className="px-1.5 py-0.5 rounded border border-cyan-700/40 bg-cyan-500/10 text-[8px] font-black uppercase text-cyan-300">Active</span>}{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] leading-snug text-slate-400">{summary.detail}</div><div className="mt-1 text-[8px] text-slate-500">{summary.meta}</div></div><button onClick={() => toggleAugmentActive(aug)} className={`shrink-0 px-2 py-1 rounded border text-[8px] font-black uppercase ${active ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-cyan-700/60 bg-cyan-950/20 text-cyan-300'}`}>{active ? 'Deactivate' : 'Activate'}</button></div></div>; }) : <button onClick={() => setShowAugmentManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-cyan-600/60 hover:text-cyan-300">No augmentations in inventory yet. Open Manage to add them from the canonical list.</button>}
+                             </div>
+                           </div>
                          </div>
                        </div>
                     </div>
@@ -3111,6 +3628,7 @@
           );
         };
 
+        window.VFLoading && window.VFLoading.complete();
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<CharacterSheet />);
         }).catch(function(error){

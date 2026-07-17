@@ -32,10 +32,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The Tech and Biolum Hope, Fear, Damage, neutral, and discarded material maps are original VeilFarers project assets. They are not third-party library assets. The Biolum family uses custom golden, violet, crimson, and switched-off gray crystal treatments designed to preserve numeral legibility.
 
-## VeilFarers Dice Box Compatibility Extension — v59.25
+## VeilFarers Dice Box Compatibility Extension — v59.24
 
 The locally bundled Dice Box browser distribution contains a narrowly scoped compatibility extension named `setDiceVisuals`. It exposes settled onscreen Babylon mesh presentation controls for outline, overlay, visibility, and per-instance colour. It does not alter dice physics, randomisation, result resolution, or the upstream roll/add/remove lifecycle. The extension is distributed under the same MIT terms as the bundled Dice Box code.
-
-## VeilFarers Quantum Acquisition HUD — v59.25
-
-The tactical tracking rings, telemetry labels, aperture scan, probability-branch rejection, and damage-vector shutdown are original VeilFarers CSS/JavaScript presentation layers. They project existing die positions into screen space and do not modify the upstream randomisation algorithm.

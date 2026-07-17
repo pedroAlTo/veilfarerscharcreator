@@ -1,0 +1,20 @@
+VeilFarers Portal v59.33 validation
+Date: 2026-07-17
+
+Checks performed
+----------------
+1. Copied v59.32 baseline into v59.33 working directory.
+2. Updated Character Creator to restore inline subclass selection.
+3. Replaced Character Creator Card Library mode with Level Up mode.
+4. Added creator level/proficiency/notes persistence.
+5. Updated Player Tool inventory with augmentation editing controls.
+6. Updated Player Tool + action into Character / Drone chooser (Drone disabled intentionally).
+7. Updated welcome page content and styling.
+8. Updated data/changelog.json with release entry v59.33.
+9. JS syntax check performed for creator inline script using Node (`node -c`) on extracted script content.
+10. Manual source inspection performed on modified Player Tool JSX blocks and welcome page markup/CSS.
+
+Notes
+-----
+- Player Tool uses inline React/JSX, so validation here was source-level inspection rather than a full browser compile log.
+- No canon-breaking mechanical additions were introduced. Level Up view is tracking-oriented and keeps detailed progression execution in the Charsheet flow.

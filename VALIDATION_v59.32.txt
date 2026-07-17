@@ -1,0 +1,21 @@
+VeilFarers Portal v59.32 — Validation Report
+
+Passed: 16
+Failed: 0
+
+[PASS] uploaded 59_25.zip extracted successfully
+[PASS] complete assets/3d-dice directory copied from uploaded v59.25 source
+[PASS] recursive assets/3d-dice comparison reports no differences
+[PASS] vf-dice3d.js SHA-256 matches uploaded v59.25 source
+[PASS] vf-dice3d.css SHA-256 matches uploaded v59.25 source
+[PASS] exact v59.25 rollVisualDice/showResolvedDice block copied
+[PASS] exact v59.25 weaponDamagePlan/rollWeaponDamage block copied
+[PASS] exact v59.25 rollDuality block copied
+[PASS] exact copied Player Tool block hashes match source
+[PASS] v59.25 renderer add() pathway is present
+[PASS] rejected probability-branch state is present
+[PASS] critical damage append calls use append:true
+[PASS] Player Tool JSX parses successfully
+[PASS] vf-dice3d.js parses successfully as an ES module
+[PASS] v59.28 loading-screen markup remains present
+[PASS] v59.31 Charsheet layout-fix marker remains present

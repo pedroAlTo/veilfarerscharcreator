@@ -28,3 +28,10 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-portal-nav{background:var(--vf-portal-surface);border-bottom-color:var(--vf-portal-border);box-shadow:0 8px 24px rgba(0,0,0,.28)}
 .vf-portal-nav a{min-height:32px;display:inline-flex;align-items:center;justify-content:center}
 .vf-portal-nav a.active{box-shadow:inset 0 0 0 1px rgba(233,192,104,.12),0 0 16px rgba(233,192,104,.10)}
+
+
+/* v59.27 temporary product-state banner for incomplete modules. */
+.vf-construction-banner{position:relative;z-index:9998;display:flex;align-items:center;justify-content:center;gap:12px;padding:9px 18px;border-bottom:1px solid rgba(233,192,104,.28);background:linear-gradient(90deg,rgba(71,49,12,.94),rgba(26,21,13,.98),rgba(71,49,12,.94));color:#f8e7a8;font:600 10px/1.4 Arial,sans-serif;letter-spacing:.045em;text-align:center}
+.vf-construction-banner strong{text-transform:uppercase;letter-spacing:.11em;color:#fff2c8}.vf-construction-banner span{color:rgba(248,231,168,.68)}
+[hidden]{display:none!important}
+@media(max-width:700px){.vf-construction-banner{align-items:flex-start;flex-direction:column;gap:2px;padding:8px 12px;text-align:left}}

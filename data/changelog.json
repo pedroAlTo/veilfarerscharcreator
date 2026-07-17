@@ -1,19 +1,102 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.25",
+  "currentVersion": "v59.35",
   "entries": [
+    {
+      "version": "v59.35",
+      "date": "2026-07-17",
+      "title": "Fix augmentation-manager React crash and remove tool-card images from welcome page",
+      "changes": [
+        "Fixed React error #31 triggered after adding or activating an augmentation by converting tier metadata objects into safe display strings before rendering.",
+        "Added a shared displayScalar guard for structured labels such as tier and drone grade so future canonical object metadata cannot blank the Player Tool UI.",
+        "Removed all character artwork from the welcome-page tool cards while preserving the original full-page background and LED activity treatment.",
+        "Kept the v59.34 armor, augmentation and gear loadout managers, subclass fallback, security baseline and exact v59.25 lock-on integration."
+      ]
+    },
+    {
+      "version": "v59.34",
+      "date": "2026-07-17",
+      "title": "Welcome image blending, creator subclass fallback, and Player Tool equipment loadout overhaul",
+      "changes": [
+        "Reworked homepage hero and portal-card artwork treatment so background art fills its space and fades into the dark UI with softer gradient transitions instead of abrupt cut edges.",
+        "Added a subclass quick-pick fallback inside Character Creator Step 3 so subclass selection is visible and the creator can always progress even if the card render path fails.",
+        "Converted Player Tool augmentations from freeform text boxes into a canonical inventory/activation manager backed by the shared rules-data augments collection.",
+        "Added armor inventory support in Player Tool, including canonical armor selection and a dedicated active-armor state.",
+        "Added database-backed gear loadout management to Player Tool while keeping free-text inventory lines for custom notes and loose objects.",
+        "Kept compatibility with prior local player saves by normalizing legacy augmentation entries into the new inventory structure."
+      ]
+    },
+    {
+      "version": "v59.32",
+      "date": "2026-07-17",
+      "title": "Exact v59.25 lock-on restored from uploaded reference package",
+      "changes": [
+        "Replaced the complete local 3D-dice module with the byte-identical assets/3d-dice folder from the user-supplied 59_25.zip reference.",
+        "Restored the exact v59.25 quantum lock-on visuals, rejected probability branch behavior, tactical solution panel, cue timing and animation.",
+        "Restored the exact v59.25 rollVisualDice, weaponDamagePlan, rollWeaponDamage and rollDuality integration blocks.",
+        "Base damage dice launch with Hope/Fear; critical-only additional dice are appended without removing the original physical dice.",
+        "Kept the later welcome portal, loading screen, security baseline and v59.31 Charsheet/PDF layout corrections."
+      ]
+    },
+    {
+      "version": "v59.31",
+      "date": "2026-07-17",
+      "title": "Restored v59.25-style roll flow and repaired Full Sheet stacking/layout issues",
+      "changes": [
+        "Player Tool attack rolls now launch damage dice together with Hope/Fear again, matching the requested v59.25 behavior.",
+        "Critical attacks now add extra damage dice without discarding the base damage dice already rolled.",
+        "3D lock behavior remains active while the non-selected outcome deactivates as in the earlier roll presentation.",
+        "Full Character Sheet pages now keep a minimum visual gap between stacked sheets and no longer overlap each other on screen.",
+        "Compacted the sheet headers, reduced Level/Evasion badge bulk, improved footer wrapping and reduced clipped/overprinted labels in the sheet and PDF-facing layout."
+      ]
+    },
+    {
+      "version": "v59.30",
+      "date": "2026-07-17",
+      "title": "Corrected restore target: return Player Tool dice behavior to v59.27 while keeping the loading screen upgrade",
+      "changes": [
+        "Supersedes the mistaken v59.29 attempt that targeted v59.24 instead of v59.27.",
+        "Restored the Player Tool 3D dice behavior, lock-on presentation and attack flow to the original v59.27 implementation.",
+        "Kept the improved v59.28 branded loading screen, progress bar, rotating lore snippets and staged loading telemetry.",
+        "No changes to canonical data, portal routing, welcome page, or security baseline."
+      ]
+    },
+    {
+      "version": "v59.27",
+      "date": "2026-07-17",
+      "title": "Welcome portal, responsive controls and public-launch hardening",
+      "changes": [
+        "Added a dedicated VeilFarers welcome homepage and moved Character Creator/Card Library to creator.html.",
+        "Added a persistent Player Tool option to enable or disable the 3D quantum tracking and lock-in HUD without changing the physical roll.",
+        "Replaced the large settings return action with a compact phone-only back button.",
+        "Marked Keeper Tool as under construction and retained the unified portal navigation.",
+        "Rebuilt the character-sheet control bar as one horizontal rail and corrected compact numeric fields and level controls that could overlap.",
+        "Added Netlify CDN role gates for Keeper/Admin, baseline security headers, no-store Firebase config, and private-by-default table discovery.",
+        "Removed the secrets-scanner suppression and documented the remaining Firebase Rules/App Check work required before private campaign data is considered production-secure."
+      ]
+    },
+    {
+      "version": "v59.26",
+      "date": "2026-07-17",
+      "title": "Box renderer proportion refinement",
+      "changes": [
+        "Refined 3D Box mode from a wide 16:9 frame to a 3:2 acquisition chamber matching the renderer\u2019s original physical arena more closely.",
+        "Capped Box width against both viewport width and viewport height so the canvas no longer stretches when opening on short desktop or landscape screens.",
+        "Kept the 4:3 portrait-phone Box frame and left full-viewport Overlay sizing unchanged.",
+        "Preserved the quantum targeting HUD, settled-die tracking, aperture lock, probability-branch shutdown, dice physics, online deployment and local testing behavior."
+      ]
+    },
     {
       "version": "v59.25",
       "date": "2026-07-17",
-      "title": "Quantum acquisition HUD and simultaneous attack damage dice",
+      "title": "Quantum targeting HUD and Box aspect-ratio calibration",
       "changes": [
-        "Added a CSS/JavaScript tactical acquisition HUD that follows each physical 3D die while it rolls, with rotating golden arcs, live pseudo-telemetry, crosshairs, scan sweeps and role labels.",
-        "Added a camera-aperture identification animation when Duality dice settle; the higher Hope or Fear die receives the locked outcome treatment after the scan completes.",
-        "Added a smooth probability-branch rejection state for the lower Duality interface without rerolling, removing or replacing either physical die.",
-        "Added a staged damage-vector shutdown for discarded damage dice, including HUD desaturation, quantum probability failure messaging and the existing renderer-backed darkening on the original settled mesh.",
-        "Weapon damage dice now join Hope and Fear in the initial attack roll. Only critical-only extra damage dice or rules-mandated Brutal rerolls are appended after the result is known.",
-        "Added a compact tactical solution panel summarizing WITH HOPE / WITH FEAR / CRITICAL and kept/discarded damage values.",
-        "Preserved Netlify production configuration, Firebase runtime configuration, Netlify Identity, local testing, books and canonical weapon data."
+        "Added a CSS/JavaScript sci-fi targeting HUD that follows each physical 3D die during its roll without changing dice physics or results.",
+        "The HUD displays rotating golden acquisition rings, rapidly changing positional telemetry, vector/entropy readouts and a scanning sweep around each die.",
+        "When Duality settles, a camera-aperture capture animation identifies the higher Hope or Fear die; the lower probability branch powers down to gray while critical results lock both dice.",
+        "Discarded damage dice retain the existing renderer darkening and now receive a synchronized HUD shutdown labelled as a failed quantum probability branch.",
+        "Calibrated Box mode to a stable 16:9 desktop/landscape frame and a 4:3 portrait-mobile frame, while leaving Overlay sizing and production deployment behavior unchanged.",
+        "Preserved the no-reroll guarantee: the HUD never invokes DiceBox roll, add, remove or reroll after the original roll settles."
       ]
     },
     {
@@ -164,7 +247,7 @@
       "date": "2026-07-16",
       "changes": [
         "Added a dedicated Resolve Moves panel beside Sleeper Actions in Player Tool.",
-        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/− controls.",
+        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/\u2212 controls.",
         "Added shared Resolve Move data for every Sleeping class, with approved Soldier and Vanguard review-draft moves included for Player Tool use.",
         "Added operational Resolve spending: fixed and variable costs, d4 Resolve Dice, local history and Firebase table callouts.",
         "Kept compact titles and short descriptions visible while full rules and executable controls remain behind expansion."
@@ -292,5 +375,5 @@
       ]
     }
   ],
-  "version": "v59.25"
+  "version": "v59.23"
 }

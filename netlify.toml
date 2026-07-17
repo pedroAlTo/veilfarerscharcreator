@@ -1,29 +1,94 @@
 functionsDirectory = "netlify/functions"
 functionsDirectoryOrigin = "default"
 plugins = []
-headers = []
-redirects = []
 
 [build]
 publish = "."
 publishOrigin = "config"
 functions = "netlify/functions"
 
-  [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "FIREBASE_API_KEY,FIREBASE_AUTH_DOMAIN,FIREBASE_PROJECT_ID,FIREBASE_STORAGE_BUCKET,FIREBASE_MESSAGING_SENDER_ID,FIREBASE_APP_ID,FIREBASE_MEASUREMENT_ID"
-
   [build.processing]
-
     [build.processing.css]
-
     [build.processing.html]
-
     [build.processing.images]
-
     [build.processing.js]
-
   [build.services]
 
 [functions]
-
   [functions."*"]
+
+# Role checks happen at Netlify's CDN edge. The browser-side gates remain as UX fallbacks.
+[[redirects]]
+from = "/keeper-tool"
+to = "/keeper-tool.html"
+status = 200
+force = true
+conditions = {Role = ["keeper", "admin"]}
+
+[[redirects]]
+from = "/keeper-tool"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/keeper-tool.html"
+to = "/keeper-tool.html"
+status = 200
+force = true
+conditions = {Role = ["keeper", "admin"]}
+
+[[redirects]]
+from = "/keeper-tool.html"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/admin"
+to = "/admin.html"
+status = 200
+force = true
+conditions = {Role = ["admin"]}
+
+[[redirects]]
+from = "/admin"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/admin.html"
+to = "/admin.html"
+status = 200
+force = true
+conditions = {Role = ["admin"]}
+
+[[redirects]]
+from = "/admin.html"
+to = "/login.html"
+status = 302
+force = true
+
+# Baseline public-site hardening. Inline/eval remain temporarily necessary for the current
+# single-file React/Babel tools and should be removed when dependencies are bundled.
+[[headers]]
+for = "/*"
+  [headers.values]
+  X-Content-Type-Options = "nosniff"
+  X-Frame-Options = "DENY"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+  Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+  Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+  Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://docs.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://www.gstatic.com https://identity.netlify.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identity.netlify.com https://api.netlify.com https://*.netlify.com; frame-src https://identity.netlify.com https://docs.google.com; worker-src 'self' blob:; media-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+
+[[headers]]
+for = "/*.html"
+  [headers.values]
+  Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/assets/*"
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"

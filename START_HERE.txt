@@ -1,24 +1,45 @@
-VeilFarers Portal v59.25
+VeilFarers Portal v59.35
 
-ONLINE DEPLOY — PRIMARY
------------------------
-Deploy the contents of this folder to Netlify exactly as before. Production continues to use Netlify Identity, Netlify Functions and Firebase environment variables. netlify.toml and the production Firebase configuration function are unchanged from v59.24.
+RELEASE PURPOSE
+---------------
+Fix the augmentation-manager React crash, remove tool-card character images from the welcome page while preserving its background, and retain the canonical armor, augmentation and gear loadout managers.
+
+ENTRY POINTS
+------------
+/                    Welcome page
+/creator.html         Character Creator
+/creator.html#level-up Level Up workspace inside Creator
+/charsheet.html       Digital Charsheet & PDF
+/player-tool.html     Player Tool
+/keeper-tool.html     Keeper Tool (role-gated in production; under construction)
+/admin.html           Admin (admin role required in production)
+
+ONLINE DEPLOY
+-------------
+Deploy the contents of this folder to Netlify. Keep the existing Firebase environment variables and set:
+
+FIREBASE_PUBLIC_TABLE_DIRECTORY=false
+
+Keeper/Admin routes use Netlify Identity role redirects. Verify roles in a Deploy Preview before replacing production.
+
+SECURITY POSITION
+-----------------
+This package preserves the prior public-launch hardening baseline. Private campaign data is still not production-secure until Firestore Security Rules, authenticated table membership and App Check are completed.
+
+Read SECURITY_PUBLIC_LAUNCH_v59.27.md before enabling public cloud-table traffic.
 
 LOCAL TESTING
 -------------
-Read LOCAL_TESTING.md, copy local/.env.local.example to local/.env.local, then run START_LOCAL_WINDOWS.bat or local/start-local.sh.
-
-THIS ITERATION
---------------
-The 3D roller now uses a CSS/JavaScript quantum-acquisition HUD that follows the original physical dice while they move. A camera-aperture scan identifies the higher Duality die; the lower branch powers down to gray. Discarded damage dice receive a staged quantum-vector shutdown and the existing renderer-backed darkening.
-
-Weapon damage dice now roll in the same initial physical throw as Hope and Fear. Critical-only extra damage dice and rules-mandated Brutal rerolls are appended only when actually required.
-
-The visual identification pipeline does not remove, replace or reroll settled dice.
+Read LOCAL_TESTING.md. Copy local/.env.local.example to local/.env.local, fill local Firebase values if needed, then run START_LOCAL_WINDOWS.bat or local/start-local.sh.
 
 DELIVERABLES
 ------------
-- GITHUB_DEPLOY_SUMMARY_v59.25.md
-- PORTAL_HANDOVER_v59.25.md
-- VALIDATION_v59.25.txt
+- GITHUB_DEPLOY_SUMMARY_v59.35.md
+- PORTAL_HANDOVER_v59.35.md
+- VALIDATION_v59.35.txt
 - LOCAL_TESTING.md
+
+CANON
+-----
+This release keeps using the current shared VeilFarers canonical dataset under /rules-data.
+The Player Tool now reads armor, augments and gear from that canonical source for its new loadout managers.

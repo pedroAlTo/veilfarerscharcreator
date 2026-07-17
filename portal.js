@@ -9,8 +9,9 @@
     </button>
     <div class="vf-portal-nav-track">
       <a class="brand" href="/">VEILFARERS</a>
-      <a href="/" data-root="creator">Character Creator</a>
-      <a href="/#cards" data-root="cards">Card Library</a>
+      <a href="/" data-page="home">Home</a>
+      <a href="/creator.html" data-creator-mode="creator">Character Creator</a>
+      <a href="/creator.html#cards" data-creator-mode="cards">Card Library</a>
       <a href="/charsheet.html">Charsheet & PDF</a>
       <a href="/player-tool.html">Player Tool</a>
       <a href="/keeper-tool.html">Keeper Tool</a>
@@ -20,7 +21,7 @@
       <a href="/feedback.html">Feedback</a>
       <span class="spacer"></span>
       <a id="vf-nav-account" class="vf-nav-account" href="/login.html"><span class="vf-account-dot" aria-hidden="true"></span><span class="vf-account-label">Log-in</span></a>
-      <a href="/admin.html">Admin</a>
+      <a id="vf-nav-admin" href="/admin.html" hidden>Admin</a>
     </div>
     <button class="vf-nav-scroll vf-nav-scroll-next" type="button" aria-label="Scroll portal navigation right" title="More portal links">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
@@ -52,20 +53,21 @@
   nav.querySelectorAll('a').forEach(a=>{
     const href=new URL(a.href,location.origin);
     const hrefPath=normalPath(href.pathname);
-    if(hrefPath===path && !a.dataset.root) a.classList.add('active');
-    if(path==='/' && a.dataset.root===(location.hash==='#cards'?'cards':'creator')) a.classList.add('active');
+    if(a.dataset.page==='home' && path==='/') a.classList.add('active');
+    else if(a.dataset.creatorMode && path==='/creator.html' && a.dataset.creatorMode===(location.hash==='#cards'?'cards':'creator')) a.classList.add('active');
+    else if(!a.classList.contains('brand') && !a.dataset.page && !a.dataset.creatorMode && hrefPath===path) a.classList.add('active');
   });
 
-  function syncRootMode(){
-    if(path!=='/')return;
+  function syncCreatorMode(){
+    if(path!=='/creator.html')return;
     const library=location.hash==='#cards';
     const mode=library?'library':'creator';
     const target=document.querySelector(`#mode-bar button[data-mode="${mode}"]`);
     if(target&&!target.classList.contains('active'))target.click();
-    nav.querySelectorAll('[data-root]').forEach(a=>a.classList.toggle('active',a.dataset.root===(library?'cards':'creator')));
+    nav.querySelectorAll('[data-creator-mode]').forEach(a=>a.classList.toggle('active',a.dataset.creatorMode===(library?'cards':'creator')));
   }
-  window.addEventListener('hashchange',syncRootMode);
-  setTimeout(syncRootMode,0);
+  window.addEventListener('hashchange',syncCreatorMode);
+  setTimeout(syncCreatorMode,0);
 
   function setPortalHeight(){
     document.documentElement.style.setProperty('--vf-portal-height',Math.ceil(nav.getBoundingClientRect().height||48)+'px');
@@ -78,12 +80,15 @@
 
   const account=nav.querySelector('#vf-nav-account');
   const accountLabel=account.querySelector('.vf-account-label');
+  const adminLink=nav.querySelector('#vf-nav-admin');
+  function rolesOf(user){ return user&&user.app_metadata&&Array.isArray(user.app_metadata.roles)?user.app_metadata.roles:[]; }
   function renderAccount(user){
     const signedIn=!!user;
     account.classList.toggle('is-authenticated',signedIn);
     account.classList.toggle('is-guest',!signedIn);
     accountLabel.textContent=signedIn?'Logged in':'Log-in';
     account.title=signedIn?(user.email||'Signed in with Netlify Identity'):'Log in with Netlify Identity';
+    if(adminLink) adminLink.hidden=!rolesOf(user).includes('admin');
   }
   if(window.VF_IS_LOCAL_TEST===true){
     account.classList.add('is-authenticated','vf-local-test');
@@ -91,6 +96,7 @@
     accountLabel.textContent='Local test';
     account.title='Local test server · Netlify Identity remains online-only';
     account.href='#';
+    if(adminLink) adminLink.hidden=false;
     account.addEventListener('click',event=>event.preventDefault());
   }else{
     renderAccount(null);

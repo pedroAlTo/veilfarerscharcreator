@@ -33,10 +33,10 @@ sh local/start-local-lan.sh
 
 ## What works locally
 
-- Character Creator, Card Library and local character storage.
+- Welcome page, Character Creator, Card Library and local character storage.
 - Character Sheet, PDF generation and JSON import/export.
 - Player Tool and Keeper Tool.
-- Shared Firebase tables when `local/.env.local` is configured.
+- Shared Firebase tables when `local/.env.local` is configured. Table discovery remains disabled unless `FIREBASE_PUBLIC_TABLE_DIRECTORY=true`.
 - 2D/3D dice, sounds, callouts, history and Time Travel.
 - Armory, items, downloads and feedback preview behavior.
 - Admin diagnostics in a clearly marked local-only bypass.
@@ -50,6 +50,6 @@ sh local/start-local-lan.sh
 ## Production safety
 
 - Netlify still serves Firebase configuration exclusively through `netlify/functions/firebase-config.mts`.
-- `window.VF_LOCAL_TEST` is `false` in the published static file. Only the local server overrides that route with `true`.
+- `window.VF_LOCAL_TEST` and `window.VF_IS_LOCAL_TEST` are false in the published static file. Only the bundled local server serves an override, and the privileged bypass activates only on a private/local hostname.
 - Keeper/Admin role bypasses run only when the bundled local server explicitly sets local test mode.
 - `local/.env.local` is ignored by Git and should never be committed.

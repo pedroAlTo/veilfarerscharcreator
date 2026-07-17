@@ -1,0 +1,17 @@
+VeilFarers Portal v59.31 — Validation Report
+
+Passed: 12
+Failed: 0
+
+[PASS] player-tool.html contains parseDamageFormula helper
+[PASS] player-tool.html includes initialDamageRollCount in rollDuality
+[PASS] player-tool.html passes initialDamageRolls into rollWeaponDamage
+[PASS] critical damage extension logic is present in rollWeaponDamage
+[PASS] charsheet.html contains vf-sheet-v59-31-layout-fixes
+[PASS] charsheet layout defines explicit page gap variables
+[PASS] charsheet stacked equipment face uses a top offset beyond page 1
+[PASS] charsheet stacked ship face uses a top offset beyond page 2
+[PASS] footer collision-reduction styles are present
+[PASS] data/changelog.json currentVersion updated to v59.31
+[PASS] START_HERE.txt updated to v59.31 companion documents
+[PASS] v59.28 loading-screen markup remains present in player-tool.html

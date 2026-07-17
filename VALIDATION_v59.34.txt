@@ -1,0 +1,20 @@
+VeilFarers Portal v59.34 validation
+Date: 2026-07-17
+
+Checks performed
+----------------
+1. Copied v59.33 baseline into v59.34 working directory.
+2. Updated welcome.css hero and card-art treatment to reduce abrupt image cut-offs and improve background blending.
+3. Added a Character Creator subclass quick-select fallback to prevent the class step from blocking progression.
+4. Extended Player Tool canonical runtime usage to include armor, augments and gear loadout flows.
+5. Added Armor Loadout manager with inventory and active-state handling.
+6. Rebuilt augmentation tracking into a database-backed inventory + active-state manager.
+7. Added Gear Loadout manager backed by the canonical gear collection.
+8. Preserved free-text inventory lines for open notes and custom objects.
+9. Updated data/changelog.json with release entry v59.34.
+10. Performed source inspection on the modified Creator, Player Tool JSX and welcome page CSS blocks.
+
+Notes
+-----
+- Player Tool still uses inline React/JSX, so validation here is source-level inspection rather than a compiled browser build log.
+- The new equipment managers are state-management/UI improvements only; they do not invent new rules beyond exposing existing canonical data.
