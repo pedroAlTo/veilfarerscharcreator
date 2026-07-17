@@ -1,13 +1,17 @@
-VeilFarers Portal v59.16
+VeilFarers Portal v59.17
 
 Deploy the contents of this folder to Netlify.
 
-This build is based on the exact v59.15 Firestore undefined-value fix and includes:
-- Official bundled @3d-dice Dice Box + DisplayResults integration.
-- Hope/Fear/Damage/Neutral VeilFarers dice themes.
+This build is based on v59.16 and fixes two production regressions:
+- Table connections failed because normalizeSessionKey was referenced but not defined.
+- The official 3D dice module used an invalid asset URL and did not parse the v1.1 result format correctly.
+
+Retained without change:
+- Corebook 11.1 RC3.1 and all other PDFs.
+- Firestore undefined-value sanitization.
 - Weapon Trait and feature resolution.
 - Six simultaneous callouts, Time Travel, sound, volume and mute.
-- Corebook 11.1 RC3.1 with restored backgrounds, corrected Contents, rebuilt bookmarks and one-point smaller typography.
+- Hope/Fear/Damage/Neutral VeilFarers dice themes and DisplayResults attribution.
 
 Required Netlify configuration remains unchanged:
 - Netlify Identity enabled.
@@ -16,7 +20,7 @@ Required Netlify configuration remains unchanged:
 - Firebase anonymous authentication enabled.
 
 Read:
-- GITHUB_DEPLOY_SUMMARY_v59.16.md
-- PORTAL_HANDOVER_v59.16.md
-- VALIDATION_v59.16.txt
+- GITHUB_DEPLOY_SUMMARY_v59.17.md
+- PORTAL_HANDOVER_v59.17.md
+- VALIDATION_v59.17.txt
 - THIRD_PARTY_NOTICES.md

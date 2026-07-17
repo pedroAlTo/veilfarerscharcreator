@@ -766,6 +766,7 @@
 
         // Stable per-character id. Spotlight is keyed by this id (never by name) so that
         // multiple unnamed players can still be selected/highlighted individually.
+        const normalizeSessionKey = (value) => String(value || '').trim() || 'Table';
         const mkCharId = () => 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
         const ensureIds = (arr) => (Array.isArray(arr) ? arr : []).map(c => (c && c.id) ? c : { ...(c || {}), id: mkCharId() });
 
@@ -974,6 +975,14 @@
               }
             } catch (error) { console.warn('Dice sound unavailable:', error); }
           };
+          const waitForDice3D = async (timeoutMs = 2500) => {
+            const started = Date.now();
+            while (Date.now() - started < timeoutMs) {
+              if (window.VFDice3D && typeof window.VFDice3D.roll === 'function') return window.VFDice3D;
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            return null;
+          };
           const randomDiceValues = (groups) => {
             const values = [];
             (groups || []).forEach(group => {
@@ -986,10 +995,13 @@
           const rollVisualDice = async (groups, label, options) => {
             const count = (groups || []).reduce((n,g)=>n+(Number(g.qty)||1),0);
             playDiceSound(count || 2);
-            if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.roll === 'function') {
+            if (diceMode === '3d') {
               try {
-                const result = await window.VFDice3D.roll(groups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults) });
+                const dice3D = await waitForDice3D();
+                if (!dice3D) throw new Error('The 3D dice module did not finish loading.');
+                const result = await dice3D.roll(groups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults) });
                 if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
+                throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
               } catch (error) {
                 console.warn('3D dice unavailable; using the standard roller.', error);
                 showAlert('The 3D renderer could not start. This roll used the standard roller instead.', '3D dice fallback');

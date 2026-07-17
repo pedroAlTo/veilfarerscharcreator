@@ -1,7 +1,19 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.16",
+  "currentVersion": "v59.17",
   "entries": [
+    {
+      "version": "v59.17",
+      "date": "2026-07-17",
+      "changes": [
+        "Restored the missing normalizeSessionKey helper in Player Tool, fixing table connection, history clearing, autosave and shared roll writes.",
+        "Corrected the bundled @3d-dice asset URL construction so themes, meshes and physics assets resolve correctly from Netlify and nested preview URLs.",
+        "Updated the Dice Box integration to the v1.1 config-object API and forced the stable onscreen renderer for broader browser compatibility.",
+        "Hardened 3D result parsing for both flat die-result arrays and grouped result objects, preserving Hope, Fear, Damage and Resolve role order.",
+        "Corrected custom theme configuration so Hope is yellow with black numerals, Fear is purple with black numerals, and Damage is red with white numerals.",
+        "Added a short module readiness wait before 3D rolls to prevent silent 2D fallback when the ESM bundle is still loading."
+      ]
+    },
     {
       "version": "v59.16",
       "date": "2026-07-17",
@@ -49,7 +61,7 @@
       "date": "2026-07-16",
       "changes": [
         "Added a dedicated Resolve Moves panel beside Sleeper Actions in Player Tool.",
-        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/\u2212 controls.",
+        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/− controls.",
         "Added shared Resolve Move data for every Sleeping class, with approved Soldier and Vanguard review-draft moves included for Player Tool use.",
         "Added operational Resolve spending: fixed and variable costs, d4 Resolve Dice, local history and Firebase table callouts.",
         "Kept compact titles and short descriptions visible while full rules and executable controls remain behind expansion."
@@ -177,5 +189,5 @@
       ]
     }
   ],
-  "version": "v59.16"
+  "version": "v59.17"
 }

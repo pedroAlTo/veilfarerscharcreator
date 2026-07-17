@@ -7,7 +7,10 @@
   "themeColor": "#f4c542",
   "material": {
     "type": "color",
-    "diffuseTexture": "diffuse-dark.png",
+    "diffuseTexture": {
+      "light": "diffuse-dark.png",
+      "dark": "diffuse-dark.png"
+    },
     "diffuseLevel": 1,
     "bumpTexture": "tech-normal.png",
     "bumpLevel": 0.16,
