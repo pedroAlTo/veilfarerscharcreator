@@ -5,8 +5,13 @@ const THEME_COLORS = {
   vfHope: '#f4c542',
   vfFear: '#8b5cf6',
   vfDamage: '#c92a38',
-  vfNeutral: '#168ca8'
+  vfNeutral: '#168ca8',
+  vfBioHope: '#ffffff',
+  vfBioFear: '#ffffff',
+  vfBioDamage: '#ffffff',
+  vfDiscarded: '#ffffff'
 };
+const PRELOAD_THEMES = ['vfHope','vfFear','vfDamage','vfBioHope','vfBioFear','vfBioDamage','vfDiscarded'];
 let box = null;
 let display = null;
 let initPromise = null;
@@ -14,19 +19,29 @@ let stage = null;
 let labelNode = null;
 let closeTimer = null;
 let lastError = null;
+let currentStyle = 'box';
 const ASSET_PATH = new URL('./assets/', import.meta.url).href;
 
+function normalizeStyle(value){ return value === 'overlay' ? 'overlay' : 'box'; }
+function applyStyle(value){
+  currentStyle = normalizeStyle(value);
+  if (!stage) return;
+  stage.classList.toggle('is-overlay', currentStyle === 'overlay');
+  stage.classList.toggle('is-boxed', currentStyle !== 'overlay');
+  stage.dataset.style = currentStyle;
+}
 function ensureStage(){
   if (stage) return stage;
   stage=document.createElement('section');
   stage.id='vf-dice3d-stage';
-  stage.className='vf-dice3d-stage is-hidden';
+  stage.className='vf-dice3d-stage is-hidden is-boxed';
   stage.setAttribute('aria-label','VeilFarers 3D dice roller');
   stage.innerHTML=`<div class="vf-dice3d-shell"><div id="vf-dice3d-box" class="vf-dice3d-box"></div><header class="vf-dice3d-hud"><div><span class="vf-dice3d-kicker">3D ROLL</span><strong id="vf-dice3d-label">Rolling…</strong></div><button type="button" id="vf-dice3d-close" aria-label="Close 3D dice">×</button></header><footer>Powered by @3d-dice/dice-box + DisplayResults · MIT</footer></div>`;
   document.body.append(stage);
   labelNode=stage.querySelector('#vf-dice3d-label');
   stage.querySelector('#vf-dice3d-close').addEventListener('click',hide);
   display=new DisplayResults('#vf-dice3d-box');
+  applyStyle(currentStyle);
   return stage;
 }
 async function init(){
@@ -39,7 +54,7 @@ async function init(){
       assetPath:ASSET_PATH,
       origin:'',
       theme:'vfNeutral',
-      preloadThemes:['vfHope','vfFear','vfDamage'],
+      preloadThemes:PRELOAD_THEMES,
       scale:5.2,
       gravity:1.15,
       mass:1.15,
@@ -52,6 +67,7 @@ async function init(){
       delay:12,
       lightIntensity:1.05,
       enableShadows:true,
+      shadowTransparency:0.72,
       offscreen:false
     });
     await box.init();
@@ -60,12 +76,14 @@ async function init(){
   })().catch(err=>{ box=null; initPromise=null; lastError=err; console.error('VeilFarers 3D dice initialization failed:', err); throw err; });
   return initPromise;
 }
-function show(label){
+function show(label, style){
   ensureStage();
+  applyStyle(style || currentStyle);
   if (labelNode) labelNode.textContent=label || 'Rolling…';
   stage.classList.remove('is-hidden');
   stage.classList.add('is-visible');
   clearTimeout(closeTimer);
+  try { box && box.show(); } catch(_) {}
 }
 function hide(){
   if (!stage) return;
@@ -109,10 +127,10 @@ function flattenResults(result){
 }
 async function roll(groups, options={}){
   const roller=await init();
-  show(options.label || 'Rolling…');
+  show(options.label || 'Rolling…', options.style);
   const prepared=(Array.isArray(groups)?groups:[groups]).map(group=>{
     const theme=group.theme || 'vfNeutral';
-    return {...group, theme, themeColor:group.themeColor || THEME_COLORS[theme]};
+    return {...group, theme, themeColor:group.themeColor || THEME_COLORS[theme] || '#ffffff'};
   });
   const result=await roller.roll(prepared);
   const flat=flattenResults(result);
@@ -124,5 +142,15 @@ async function roll(groups, options={}){
   closeTimer=setTimeout(hide,7600);
   return {raw:result, flat, values:flat.map(item=>item.value)};
 }
-function showResults(data){ ensureStage(); show(data && data.label); display.showResults(data || {}); clearTimeout(closeTimer); closeTimer=setTimeout(hide,7600); }
-window.VFDice3D={init,roll,showResults,hide,status:()=>({ready:!!box,assetPath:ASSET_PATH,error:lastError?String(lastError.message||lastError):null}),version:'@3d-dice/dice-box 1.1.4 + @3d-dice/dice-ui DisplayResults 0.5.2'};
+function showResults(data){
+  ensureStage();
+  show(data && data.label, data && data.style);
+  display.showResults(data || {});
+  clearTimeout(closeTimer);
+  closeTimer=setTimeout(hide,7600);
+}
+window.VFDice3D={
+  init,roll,showResults,hide,setStyle:applyStyle,
+  status:()=>({ready:!!box,assetPath:ASSET_PATH,style:currentStyle,error:lastError?String(lastError.message||lastError):null}),
+  version:'@3d-dice/dice-box 1.1.4 + @3d-dice/dice-ui DisplayResults 0.5.2'
+};

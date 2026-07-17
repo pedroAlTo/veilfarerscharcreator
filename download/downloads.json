@@ -6,12 +6,12 @@
     {
       "id": "corebook",
       "title": "VeilFarers Corebook",
-      "version": "11.1 RC3.1",
+      "version": "11.1 RC3.2",
       "type": "rulebook",
-      "file": "/download/VeilFarers_Corebook_11.1-RC3.1-PDF-Candidate.pdf",
-      "bytes": 12434626,
+      "file": "/download/VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+      "bytes": 13250982,
       "status": "PDF Candidate",
-      "description": "RC3.1 Corebook layout revision with the complete editorial background system, rebuilt PDF bookmarks and contents index, and body type reduced by one point."
+      "description": "RC3.2 editorial hotfix restoring the full class-banner system while preserving the approved one-point smaller type, Player/Awakened/Sleeping page backgrounds, contents page numbers, source Markdown, and the complete 797-entry PDF bookmark tree."
     },
     {
       "id": "keepers-companion",
@@ -52,5 +52,5 @@
       "downloadLabel": "Download fillable PDF"
     }
   ],
-  "pdfCandidateStatus": "Current 11.1 RC3 release set; Corebook RC3.1 layout revision restores backgrounds/navigation and reduces body type by one point; fillable physical character sheet retained."
+  "pdfCandidateStatus": "Current 11.1 RC3 release set; Corebook RC3.2 restores every class banner and preserves the approved backgrounds, reduced type size, contents index, bookmarks and source delivery; fillable physical character sheet retained."
 }

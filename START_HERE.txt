@@ -1,26 +1,27 @@
-VeilFarers Portal v59.17
+VeilFarers Portal v59.18
 
-Deploy the contents of this folder to Netlify.
+Deploy this folder directly to Netlify.
 
-This build is based on v59.16 and fixes two production regressions:
-- Table connections failed because normalizeSessionKey was referenced but not defined.
-- The official 3D dice module used an invalid asset URL and did not parse the v1.1 result format correctly.
+This build continues from v59.17 and adds:
+- Selectable Tech and Biolum 3D dice styles.
+- Optional transparent full-interface 3D overlay.
+- Simulated callout dice animation with smooth gray fade for discarded dice.
+- One active callout per player/character, with no six-player cap.
+- Roll History Reset and Close controls.
+- Top-layer 3D dice with 80% transparent HUD/result panels.
+- Corebook 11.1 RC3.2 with all 18 class banners restored.
 
-Retained without change:
-- Corebook 11.1 RC3.1 and all other PDFs.
-- Firestore undefined-value sanitization.
-- Weapon Trait and feature resolution.
-- Six simultaneous callouts, Time Travel, sound, volume and mute.
-- Hope/Fear/Damage/Neutral VeilFarers dice themes and DisplayResults attribution.
+Preserved:
+- Netlify Identity and role-gated admin/Keeper access.
+- Firebase runtime configuration through /api/firebase-config.
+- Firestore undefined-value sanitization and normalizeSessionKey table fix.
+- Tool-only Railgun d8+3 Massive playtest override.
+- Weapon Trait and operational feature handling.
+- Player, Awakened and Sleeping editorial backgrounds.
+- One-point smaller Corebook typography, TOC, bookmarks and source Markdown.
 
-Required Netlify configuration remains unchanged:
-- Netlify Identity enabled.
-- Firebase environment variables configured.
-- /api/firebase-config Function deployed.
-- Firebase anonymous authentication enabled.
-
-Read:
-- GITHUB_DEPLOY_SUMMARY_v59.17.md
-- PORTAL_HANDOVER_v59.17.md
-- VALIDATION_v59.17.txt
+Review:
+- GITHUB_DEPLOY_SUMMARY_v59.18.md
+- PORTAL_HANDOVER_v59.18.md
+- VALIDATION_v59.18.txt
 - THIRD_PARTY_NOTICES.md

@@ -206,9 +206,9 @@
 
         /* Operational damage dice: weapon mechanics must remain visible in callouts. */
         .vf-damage-dice{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:.38rem;margin:.2rem 0;}
-        .vf-damage-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:.08rem;min-width:38px;padding:.18rem .16rem .1rem;border:1px solid transparent;border-radius:.55rem;transition:opacity .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease;}
+        .vf-damage-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:.08rem;min-width:38px;padding:.18rem .16rem .1rem;border:1px solid transparent;border-radius:.55rem;transition:opacity .48s ease,filter .48s ease,box-shadow .48s ease,border-color .48s ease,background-color .48s ease,transform .48s ease;}
         .vf-damage-die.is-kept{border-color:rgba(248,113,113,.65);background:rgba(127,29,29,.22);box-shadow:0 0 12px rgba(248,113,113,.18);}
-        .vf-damage-die.is-discarded{opacity:.34;filter:grayscale(1) saturate(.15);border-color:rgba(100,116,139,.45);background:rgba(15,23,42,.42);}
+        .vf-damage-die.is-discarded{opacity:.34;filter:grayscale(1) saturate(.05) brightness(.72);transform:scale(.92);border-color:rgba(100,116,139,.45);background:rgba(15,23,42,.52);}
         .vf-damage-die.is-discarded .vf-damage-die-face:after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;background:#94a3b8;transform:rotate(-34deg);box-shadow:0 0 2px #020617;pointer-events:none;}
         .vf-damage-die-face{position:relative;display:grid;place-items:center;}
         .vf-damage-die-state{font-size:7px;line-height:1;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
@@ -333,8 +333,12 @@
         .vf-die.rolling { animation: vf-tumble 0.72s cubic-bezier(0.2,0.7,0.3,1); }
         .vf-chip { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px; padding:0 4px; border-radius:50%; background:radial-gradient(circle at 50% 38%, #475569, #0f172a); border:3px dashed #f59e0b; color:#fbbf24; font-weight:900; font-size:11px; box-shadow:0 2px 7px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(245,158,11,0.15); }
         .window-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8); }
-        .vf-callout-grid { position:fixed; right:14px; bottom:14px; z-index:180; display:grid; grid-template-columns:repeat(2,minmax(260px,320px)); gap:10px; max-height:calc(100vh - 80px); overflow:hidden; pointer-events:none; transform-origin:bottom right; }
+        .vf-callout-grid { position:fixed; right:14px; bottom:14px; z-index:180; display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,320px)); justify-content:end; gap:10px; width:min(96vw,1360px); max-height:calc(100vh - 80px); overflow-y:auto; overflow-x:hidden; scrollbar-width:none; pointer-events:none; transform-origin:bottom right; }
+        .vf-callout-grid::-webkit-scrollbar{display:none;}
         .vf-callout-card { pointer-events:auto; background:rgba(2,6,23,.94); backdrop-filter:blur(12px); border:1px solid #334155; border-left:3px solid #06b6d4; border-radius:12px; box-shadow:0 18px 45px rgba(0,0,0,.55); padding:10px; min-width:0; animation:vf-callout-in .22s ease-out; }
+        .vf-callout-result{transition:opacity .24s ease,transform .24s ease;}
+        .vf-callout-result.is-rolling{opacity:.35;transform:translateY(2px);}
+        .vf-callout-dice{min-height:32px;display:flex;align-items:center;}
         .vf-callout-card[data-kind="damage"] { border-left-color:#ef4444; }
         .vf-callout-card[data-kind="note"] { border-left-color:#f59e0b; }
         @keyframes vf-callout-in { from { opacity:0; transform:translateY(12px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
@@ -349,7 +353,7 @@
         .vf-3d-canvas { position:absolute; inset:0; overflow:hidden; }
         .vf-3d-canvas canvas { width:100% !important; height:100% !important; display:block; }
         .vf-3d-hud { position:relative; z-index:2; align-self:flex-end; width:min(680px,94vw); margin-bottom:20px; border:1px solid #334155; border-radius:12px; background:rgba(2,6,23,.88); padding:12px; box-shadow:0 16px 40px rgba(0,0,0,.6); }
-        @media (max-width:720px) { .vf-callout-grid { grid-template-columns:minmax(250px,320px); right:8px; bottom:8px; } }
+        @media (max-width:720px) { .vf-callout-grid { grid-template-columns:minmax(250px,320px); width:min(96vw,320px); right:8px; bottom:8px; } }
     </style>
 </head>
 <body>
@@ -409,10 +413,13 @@
           }, [rolling, value, sides]);
           const sh = dieShape(sides);
           const fillId = variant === 'hope' ? 'dieHope' : variant === 'fear' ? 'dieFear'
+                       : variant === 'damage' ? 'dieDamage' : variant === 'discarded' ? 'dieDiscarded'
                        : variant === 'max' ? 'dieMax' : variant === 'crit' ? 'dieCrit' : 'dieNeutral';
-          const stroke = variant === 'hope' ? '#22d3ee' : variant === 'fear' ? '#c084fc'
+          const stroke = variant === 'hope' ? '#facc15' : variant === 'fear' ? '#a855f7'
+                       : variant === 'damage' ? '#ef4444' : variant === 'discarded' ? '#94a3b8'
                        : variant === 'max' ? '#fde047' : variant === 'crit' ? '#f87171' : '#64748b';
-          const txt = (variant === 'hope') ? '#062c33' : (variant === 'fear') ? '#2a0a45'
+          const txt = (variant === 'hope') ? '#111827' : (variant === 'fear') ? '#111827'
+                       : (variant === 'damage') ? '#ffffff' : (variant === 'discarded') ? '#f1f5f9'
                        : (variant === 'max') ? '#3a2c00' : (variant === 'crit') ? '#3a0a0a' : '#e2e8f0';
           const px = size || 34;
           return (
@@ -445,7 +452,7 @@
           });
         };
 
-        const DamageDiceDisplay = ({ results, rolls, discardedIndices, rerolls, sides, rolling, compact }) => {
+        const DamageDiceDisplay = ({ results, rolls, discardedIndices, rerolls, sides, rolling, compact, revealDiscard = true }) => {
           const dice = normalizeDamageDiceResults(results, rolls, discardedIndices, rerolls);
           if (!dice.length) return null;
           const hasDiscarded = dice.some(die => die.status === 'discarded');
@@ -454,17 +461,61 @@
           return (
             <div className="flex flex-col items-center" aria-label={hasDiscarded ? `Kept ${keptValues.join(', ')}; discarded ${discardedValues.join(', ')}` : `Damage dice ${keptValues.join(', ')}`}>
               <div className="vf-damage-dice">
-                {dice.map((die, index) => (
-                  <div key={`${die.index}-${index}`} data-die-status={die.status} className={`vf-damage-die ${die.status === 'discarded' ? 'is-discarded' : 'is-kept'}`}>
-                    <div className="vf-damage-die-face">
-                      <ShapedDie sides={sides || 6} value={die.value} rolling={rolling} variant={die.status === 'discarded' ? 'neutral' : (die.value === 1 ? 'crit' : 'max')} size={compact ? 26 : 34} />
+                {dice.map((die, index) => {
+                  const discarded = die.status === 'discarded' && revealDiscard && !rolling;
+                  return (
+                    <div key={`${die.index}-${index}`} data-die-status={discarded ? 'discarded' : 'kept'} className={`vf-damage-die ${discarded ? 'is-discarded' : 'is-kept'}`}>
+                      <div className="vf-damage-die-face">
+                        <ShapedDie sides={sides || 6} value={die.value} rolling={rolling} variant={discarded ? 'discarded' : 'damage'} size={compact ? 26 : 34} />
+                      </div>
+                      {hasDiscarded && revealDiscard && !rolling && <span className="vf-damage-die-state">{discarded ? 'Drop' : 'Keep'}</span>}
+                      {die.rerolledFrom != null && <span className="vf-damage-die-reroll">{die.rerolledFrom}→{die.value}</span>}
                     </div>
-                    {hasDiscarded && <span className="vf-damage-die-state">{die.status === 'discarded' ? 'Drop' : 'Keep'}</span>}
-                    {die.rerolledFrom != null && <span className="vf-damage-die-reroll">{die.rerolledFrom}→{die.value}</span>}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-              {hasDiscarded && <div className="vf-damage-summary">Keep {keptValues.join(' + ')} · discard {discardedValues.join(', ')}</div>}
+              {hasDiscarded && revealDiscard && !rolling && <div className="vf-damage-summary">Keep {keptValues.join(' + ')} · discard {discardedValues.join(', ')}</div>}
+            </div>
+          );
+        };
+
+        const AnimatedCalloutCard = ({ callout, onClose }) => {
+          const hasAnimatedDice = callout && callout.type !== 'note';
+          const [rolling, setRolling] = useState(hasAnimatedDice);
+          const [revealDiscard, setRevealDiscard] = useState(false);
+          useEffect(() => {
+            if (!hasAnimatedDice) { setRolling(false); setRevealDiscard(true); return; }
+            setRolling(true); setRevealDiscard(false);
+            const settleTimer = setTimeout(() => setRolling(false), 760);
+            const discardTimer = setTimeout(() => setRevealDiscard(true), 1180);
+            return () => { clearTimeout(settleTimer); clearTimeout(discardTimer); };
+          }, [callout && callout.broadcastId, callout && callout.timestamp, hasAnimatedDice]);
+          const standardSides = callout.die || parseInt((String(callout.dice || '').match(/d(\d+)/) || [])[1]) || 6;
+          const damageSides = parseInt((String(callout.damageRolledDice || callout.damageDice || '').match(/d(\d+)/) || [])[1]) || 6;
+          return (
+            <div className="vf-callout-card" data-kind={callout.type || 'duality'}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0"><div className="text-[10px] font-black uppercase tracking-wide text-cyan-300 truncate">{callout.playerName || 'Player'}</div><div className="text-[9px] text-slate-400 truncate">{callout.label || 'Roll'}</div></div>
+                <button onClick={onClose} className="text-slate-600 hover:text-white shrink-0" aria-label="Close callout"><X className="w-3 h-3" /></button>
+              </div>
+              {callout.resourceCost && callout.resourceCost.amount > 0 && <div className="mt-1 text-[8px] font-black uppercase text-amber-300">Spent {callout.resourceCost.amount} {callout.resourceCost.resource}</div>}
+              {callout.type === 'duality' ? (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="vf-callout-dice gap-1"><ShapedDie sides={12} value={callout.hope} rolling={rolling} variant="hope" size={29} /><ShapedDie sides={12} value={callout.fear} rolling={rolling} variant="fear" size={29} /></div>
+                    <div className={`text-right vf-callout-result ${rolling ? 'is-rolling' : ''}`}><div className="text-2xl font-black text-white leading-none">{callout.total}</div><div className={`text-[8px] font-black ${callout.outcomeColor || ''}`}>{callout.outcome}</div></div>
+                  </div>
+                  {callout.attackBreakdown && callout.attackBreakdown.length > 0 && <div className="mt-1 flex flex-wrap gap-1">{callout.attackBreakdown.map((part,index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-700 bg-black text-[8px] text-slate-300">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>}
+                  {callout.damage != null && <div className="mt-2 rounded border border-red-900/60 bg-red-950/20 p-2 flex items-center justify-between gap-2"><div><div className="text-[8px] font-black uppercase text-red-300">Damage · {callout.damageBase || callout.damageDice}</div><DamageDiceDisplay results={callout.damageDiceResults} rolls={callout.damageRolls} discardedIndices={callout.damageDiscardedIndices} rerolls={callout.damageRerolls} sides={damageSides} compact={true} rolling={rolling} revealDiscard={revealDiscard} /><div className="text-[8px] text-slate-500 font-mono">{callout.damageDetail}</div></div><div className={`text-2xl font-black text-red-400 vf-callout-result ${rolling ? 'is-rolling' : ''}`}>{callout.damage}</div></div>}
+                  {(callout.damageRules || []).map((rule,index) => <div key={index} className="mt-1 text-[8px] text-yellow-300">{rule}</div>)}
+                  {callout.weaponEffects && callout.weaponEffects.length > 0 && <div className="mt-2 border-t border-slate-800 pt-1">{callout.weaponEffects.map((effect,index) => <div key={index} className="text-[8px] text-slate-400"><b className="text-slate-200">{effect.name}:</b> {effect.effect}</div>)}</div>}
+                </div>
+              ) : callout.type === 'note' ? (
+                <div className="mt-2 text-[10px] text-slate-200 whitespace-pre-wrap">{callout.label}</div>
+              ) : (
+                <div className="mt-2 flex items-center justify-between gap-2"><div><div className="vf-callout-dice flex-wrap gap-1">{(callout.rolls || []).map((value,index) => <ShapedDie key={index} sides={standardSides} value={value} rolling={rolling} variant={callout.type === 'damage' ? 'damage' : (value === 1 ? 'crit' : 'neutral')} size={27} />)}</div><div className="text-[8px] text-slate-500">{callout.count ? `${callout.count}d${callout.die}` : callout.dice}{callout.modifier ? ` ${callout.modifier > 0 ? '+' : ''}${callout.modifier}` : ''}</div></div><div className={`text-2xl font-black vf-callout-result ${rolling ? 'is-rolling' : ''} ${callout.type === 'damage' ? 'text-red-400' : 'text-white'}`}>{callout.total}</div></div>
+              )}
+              <div className="vf-callout-timer"><span></span></div>
             </div>
           );
         };
@@ -926,7 +977,7 @@
           const [errorMsg, setErrorMsg] = useState('');
           const unsubscribeRef = useRef(null); // Store listener unsubscription
           
-          // Real-time callouts: keep one current window per player, up to six.
+          // Real-time callouts: keep one current window per player; the grid grows with the table.
           const [activeCallouts, setActiveCallouts] = useState([]);
           const calloutTimersRef = useRef(new Map());
           const seenCalloutIdsRef = useRef(new Set());
@@ -939,6 +990,10 @@
           const audioContextRef = useRef(null);
           const [diceMode, setDiceMode] = useState(() => { try { return localStorage.getItem('veilfarers_dice_mode') === '3d' ? '3d' : '2d'; } catch (e) { return '2d'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_mode', diceMode); } catch (e) {} }, [diceMode]);
+          const [dice3DStyle, setDice3DStyle] = useState(() => { try { return localStorage.getItem('veilfarers_dice_3d_style') === 'overlay' ? 'overlay' : 'box'; } catch (e) { return 'box'; } });
+          useEffect(() => { try { localStorage.setItem('veilfarers_dice_3d_style', dice3DStyle); } catch (e) {} try { window.VFDice3D && window.VFDice3D.setStyle && window.VFDice3D.setStyle(dice3DStyle); } catch (e) {} }, [dice3DStyle]);
+          const [diceTextureSet, setDiceTextureSet] = useState(() => { try { return localStorage.getItem('veilfarers_dice_texture_set') === 'biolum' ? 'biolum' : 'tech'; } catch (e) { return 'tech'; } });
+          useEffect(() => { try { localStorage.setItem('veilfarers_dice_texture_set', diceTextureSet); } catch (e) {} }, [diceTextureSet]);
           const [timeTravelRevision, setTimeTravelRevision] = useState(0);
           // ===== NOTES / HANDOUTS =====
           const [handouts, setHandouts] = useState([]);        // incoming GM handouts (from session)
@@ -975,14 +1030,6 @@
               }
             } catch (error) { console.warn('Dice sound unavailable:', error); }
           };
-          const waitForDice3D = async (timeoutMs = 2500) => {
-            const started = Date.now();
-            while (Date.now() - started < timeoutMs) {
-              if (window.VFDice3D && typeof window.VFDice3D.roll === 'function') return window.VFDice3D;
-              await new Promise(resolve => setTimeout(resolve, 50));
-            }
-            return null;
-          };
           const randomDiceValues = (groups) => {
             const values = [];
             (groups || []).forEach(group => {
@@ -992,14 +1039,27 @@
             });
             return values;
           };
+          const waitForDice3D = async (timeoutMs = 3000) => {
+            const started = Date.now();
+            while (Date.now() - started < timeoutMs) {
+              if (window.VFDice3D && typeof window.VFDice3D.roll === 'function') return window.VFDice3D;
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            return null;
+          };
+          const applyDiceTextureSet = (groups) => {
+            const biolumThemes = { vfHope:'vfBioHope', vfFear:'vfBioFear', vfDamage:'vfBioDamage' };
+            return (groups || []).map(group => ({ ...group, theme: diceTextureSet === 'biolum' ? (biolumThemes[group.theme] || group.theme) : group.theme }));
+          };
           const rollVisualDice = async (groups, label, options) => {
-            const count = (groups || []).reduce((n,g)=>n+(Number(g.qty)||1),0);
+            const themedGroups = applyDiceTextureSet(groups);
+            const count = themedGroups.reduce((n,g)=>n+(Number(g.qty)||1),0);
             playDiceSound(count || 2);
             if (diceMode === '3d') {
               try {
                 const dice3D = await waitForDice3D();
                 if (!dice3D) throw new Error('The 3D dice module did not finish loading.');
-                const result = await dice3D.roll(groups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults) });
+                const result = await dice3D.roll(themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle });
                 if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
                 throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
               } catch (error) {
@@ -1007,11 +1067,11 @@
                 showAlert('The 3D renderer could not start. This roll used the standard roller instead.', '3D dice fallback');
               }
             }
-            return randomDiceValues(groups);
+            return randomDiceValues(themedGroups);
           };
           const showResolvedDice = (data) => {
             if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.showResults === 'function') {
-              try { window.VFDice3D.showResults(data); } catch (error) { console.warn(error); }
+              try { window.VFDice3D.showResults({ ...(data || {}), style:dice3DStyle }); } catch (error) { console.warn(error); }
             }
           };
           const seenNotesRef = useRef(null);                   // Set of note ids already auto-opened (per session)
@@ -1588,7 +1648,7 @@
               seenCalloutIdsRef.current.add(eventId);
               if (seenCalloutIdsRef.current.size > 240) seenCalloutIdsRef.current = new Set(Array.from(seenCalloutIdsRef.current).slice(-160));
               const actorKey = calloutActorKey(roll);
-              setActiveCallouts(prev => [{ ...roll, actorKey }, ...prev.filter(item => item.actorKey !== actorKey)].slice(0, 6));
+              setActiveCallouts(prev => [{ ...roll, actorKey }, ...prev.filter(item => item.actorKey !== actorKey)]);
               const prior = calloutTimersRef.current.get(actorKey);
               if (prior) clearTimeout(prior);
               calloutTimersRef.current.set(actorKey, setTimeout(() => {
@@ -1648,7 +1708,12 @@
           const takeSpotlight = (id) => { const nn = (id && id === spotlight) ? '' : (id || ''); setSpotlight(nn); writeSessionField({ spotlight: nn }); };
           const clearRollHistory = () => {
               setRollHistory([]);
-              if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(docRef, { rollHistory: [] }, { merge: true }).catch(e => console.error(e)); } catch(e){ console.error(e); } }
+              setActiveCallouts([]);
+              calloutTimersRef.current.forEach(timer => clearTimeout(timer));
+              calloutTimersRef.current.clear();
+              try { localStorage.removeItem(TIME_TRAVEL_KEY); } catch (e) {}
+              setTimeTravelRevision(value => value + 1);
+              if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(docRef, { rollHistory: [], lastRoll: null, lastRollUpdatedAt: null }, { merge: true }).catch(e => console.error(e)); } catch(e){ console.error(e); } }
           };
 
           // --- LOCAL SAVE / LOAD / CARD MANAGERS ---
@@ -2053,37 +2118,20 @@
                   <linearGradient id="dieCrit" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#fca5a5" /><stop offset="100%" stopColor="#991b1b" />
                   </linearGradient>
+                  <linearGradient id="dieDamage" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ef4444" /><stop offset="100%" stopColor="#7f1d1d" />
+                  </linearGradient>
+                  <linearGradient id="dieDiscarded" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#94a3b8" /><stop offset="100%" stopColor="#334155" />
+                  </linearGradient>
                 </defs>
               </svg>
               
-              {/* TOAST NOTIFICACIÓN */}
+              {/* REAL-TIME PLAYER CALLOUTS */}
               {activeCallouts.length > 0 && (
                 <div className="vf-callout-grid" style={{ transform:`scale(${calloutScale})` }}>
                   {activeCallouts.map((callout) => (
-                    <div key={rollEventKey(callout)} className="vf-callout-card" data-kind={callout.type || 'duality'}>
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0"><div className="text-[10px] font-black uppercase tracking-wide text-cyan-300 truncate">{callout.playerName || 'Player'}</div><div className="text-[9px] text-slate-400 truncate">{callout.label || 'Roll'}</div></div>
-                        <button onClick={() => setActiveCallouts(prev => prev.filter(item => rollEventKey(item) !== rollEventKey(callout)))} className="text-slate-600 hover:text-white shrink-0" aria-label="Close callout"><X className="w-3 h-3" /></button>
-                      </div>
-                      {callout.resourceCost && callout.resourceCost.amount > 0 && <div className="mt-1 text-[8px] font-black uppercase text-amber-300">Spent {callout.resourceCost.amount} {callout.resourceCost.resource}</div>}
-                      {callout.type === 'duality' ? (
-                        <div className="mt-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex gap-1"><ShapedDie sides={12} value={callout.hope} variant="hope" size={29} /><ShapedDie sides={12} value={callout.fear} variant="fear" size={29} /></div>
-                            <div className="text-right"><div className="text-2xl font-black text-white leading-none">{callout.total}</div><div className={`text-[8px] font-black ${callout.outcomeColor || ''}`}>{callout.outcome}</div></div>
-                          </div>
-                          {callout.attackBreakdown && callout.attackBreakdown.length > 0 && <div className="mt-1 flex flex-wrap gap-1">{callout.attackBreakdown.map((part,index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-700 bg-black text-[8px] text-slate-300">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>}
-                          {callout.damage != null && <div className="mt-2 rounded border border-red-900/60 bg-red-950/20 p-2 flex items-center justify-between gap-2"><div><div className="text-[8px] font-black uppercase text-red-300">Damage · {callout.damageBase || callout.damageDice}</div><DamageDiceDisplay results={callout.damageDiceResults} rolls={callout.damageRolls} discardedIndices={callout.damageDiscardedIndices} rerolls={callout.damageRerolls} sides={parseInt((String(callout.damageRolledDice || callout.damageDice || '').match(/d(\d+)/) || [])[1]) || 6} compact={true} /><div className="text-[8px] text-slate-500 font-mono">{callout.damageDetail}</div></div><div className="text-2xl font-black text-red-400">{callout.damage}</div></div>}
-                          {(callout.damageRules || []).map((rule,index) => <div key={index} className="mt-1 text-[8px] text-yellow-300">{rule}</div>)}
-                          {callout.weaponEffects && callout.weaponEffects.length > 0 && <div className="mt-2 border-t border-slate-800 pt-1">{callout.weaponEffects.map((effect,index) => <div key={index} className="text-[8px] text-slate-400"><b className="text-slate-200">{effect.name}:</b> {effect.effect}</div>)}</div>}
-                        </div>
-                      ) : callout.type === 'note' ? (
-                        <div className="mt-2 text-[10px] text-slate-200 whitespace-pre-wrap">{callout.label}</div>
-                      ) : (
-                        <div className="mt-2 flex items-center justify-between gap-2"><div><div className="flex flex-wrap gap-1">{(callout.rolls || []).map((value,index) => <ShapedDie key={index} sides={callout.die || parseInt((String(callout.dice || '').match(/d(\d+)/) || [])[1]) || 6} value={value} variant={value === 1 ? 'crit' : 'neutral'} size={27} />)}</div><div className="text-[8px] text-slate-500">{callout.count ? `${callout.count}d${callout.die}` : callout.dice}{callout.modifier ? ` ${callout.modifier > 0 ? '+' : ''}${callout.modifier}` : ''}</div></div><div className={`text-2xl font-black ${callout.type === 'damage' ? 'text-red-400' : 'text-white'}`}>{callout.total}</div></div>
-                      )}
-                      <div className="vf-callout-timer"><span></span></div>
-                    </div>
+                    <AnimatedCalloutCard key={rollEventKey(callout)} callout={callout} onClose={() => setActiveCallouts(prev => prev.filter(item => rollEventKey(item) !== rollEventKey(callout)))} />
                   ))}
                 </div>
               )}
@@ -2215,8 +2263,22 @@
                                 <button onClick={() => setDiceMode('3d')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceMode === '3d' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>3D</button>
                               </div>
                             </div>
+                            <div className="flex items-center justify-between gap-3">
+                              <div><label className="text-xs font-bold text-slate-500 uppercase block">3D stage</label><span className="text-[10px] text-slate-500">Box uses a contained arena. Overlay rolls over the interface on a transparent top layer.</span></div>
+                              <div className={`flex rounded-lg border border-slate-700 bg-slate-950 p-1 ${diceMode === '3d' ? '' : 'opacity-40 pointer-events-none'}`}>
+                                <button onClick={() => setDice3DStyle('box')} className={`px-3 py-1.5 rounded text-[10px] font-black ${dice3DStyle === 'box' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>BOX</button>
+                                <button onClick={() => setDice3DStyle('overlay')} className={`px-3 py-1.5 rounded text-[10px] font-black ${dice3DStyle === 'overlay' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>OVERLAY</button>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between gap-3">
+                              <div><label className="text-xs font-bold text-slate-500 uppercase block">3D texture set</label><span className="text-[10px] text-slate-500">Choose the approved technological plates or bioluminescent crystal materials.</span></div>
+                              <div className={`flex rounded-lg border border-slate-700 bg-slate-950 p-1 ${diceMode === '3d' ? '' : 'opacity-40 pointer-events-none'}`}>
+                                <button onClick={() => setDiceTextureSet('tech')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceTextureSet === 'tech' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>TECH</button>
+                                <button onClick={() => setDiceTextureSet('biolum')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceTextureSet === 'biolum' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>BIOLUM</button>
+                              </div>
+                            </div>
                             <div className="rounded border border-slate-800 bg-slate-950/50 p-3 text-[9px] text-slate-500 leading-relaxed">
-                              Optional 3D renderer: <a className="text-cyan-400 hover:text-cyan-200" href="https://github.com/3d-dice/dice-box" target="_blank" rel="noreferrer">@3d-dice/dice-box</a> with the <a className="text-cyan-400 hover:text-cyan-200" href="https://fantasticdice.games/docs/addons/displayResults" target="_blank" rel="noreferrer">DisplayResults</a> addon, used under the MIT License. Hope, Fear and Damage use distinct accessible VeilFarers themes. See THIRD_PARTY_NOTICES.md.
+                              Optional 3D renderer: <a className="text-cyan-400 hover:text-cyan-200" href="https://github.com/3d-dice/dice-box" target="_blank" rel="noreferrer">@3d-dice/dice-box</a> with the <a className="text-cyan-400 hover:text-cyan-200" href="https://fantasticdice.games/docs/addons/displayResults" target="_blank" rel="noreferrer">DisplayResults</a> addon, used under the MIT License. Hope, Fear and Damage use selectable Tech or Biolum VeilFarers themes. The gray-off crystal is used for discarded-result cues. See THIRD_PARTY_NOTICES.md.
                             </div>
                             <div>
                               <div className="flex items-center justify-between gap-3 mb-3">
@@ -2293,11 +2355,12 @@
               {/* HISTORY PANEL */}
               {showHistory && (
                  <div className="fixed inset-y-0 right-0 w-full sm:w-80 bg-slate-950 border-l border-slate-800 z-50 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                    <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900">
-                       <h2 className="text-sm font-bold text-white flex items-center gap-2"><ScrollText className="w-4 h-4 text-cyan-500" /> Roll History</h2>
-                       <button onClick={clearRollHistory} title="Clear log" className="text-[9px] text-slate-500 hover:text-red-400 uppercase font-bold ml-2">Clear</button>
-                       
-                       <button onClick={() => setShowHistory(false)}><X className="w-5 h-5 text-slate-400 hover:text-white" /></button>
+                    <div className="p-4 border-b border-slate-800 flex justify-between items-center gap-3 bg-slate-900">
+                       <h2 className="text-sm font-bold text-white flex items-center gap-2 min-w-0"><ScrollText className="w-4 h-4 text-cyan-500 shrink-0" /> <span className="truncate">Roll History</span></h2>
+                       <div className="flex items-center gap-2 shrink-0">
+                         <button onClick={() => showConfirm('Reset the complete roll log and remove its Time Travel snapshots for this table?', clearRollHistory, 'Reset roll history')} title="Reset roll history" className="px-2.5 py-1.5 rounded border border-red-900/70 bg-red-950/20 text-[9px] text-red-300 hover:border-red-500 uppercase font-black">Reset</button>
+                         <button onClick={() => setShowHistory(false)} title="Close roll history" className="px-2.5 py-1.5 rounded border border-slate-700 bg-slate-800 text-[9px] text-slate-200 hover:border-cyan-500 uppercase font-black inline-flex items-center gap-1"><X className="w-3 h-3" />Close</button>
+                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
                         {rollHistory.length === 0 && <div className="text-center text-slate-600 text-xs italic py-4">No rolls recorded yet.</div>}

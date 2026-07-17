@@ -1,7 +1,21 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.17",
+  "currentVersion": "v59.18",
   "entries": [
+    {
+      "version": "v59.18",
+      "date": "2026-07-17",
+      "changes": [
+        "Added an optional full-interface 3D overlay stage so physical dice can roll over a transparent layer above the Player Tool, while retaining the boxed 3D and standard 2D modes.",
+        "Added selectable Tech and Biolum 3D dice material families in Setup, with golden Hope, violet Fear, red Damage, and a gray switched-off visual language for discarded results.",
+        "Restored the simulated rolling animation inside every callout independently of the physical 3D renderer; Massive and other discarded dice now settle first and then fade smoothly to gray with explicit KEEP and DROP cues.",
+        "Removed the six-callout cap: Player Tool now keeps one current callout per rolling player or character and lays out all active callouts responsively.",
+        "Added explicit Reset and Close controls to Roll History; Reset clears the table log, active callouts and local Time Travel snapshots through a VeilFarers confirmation dialog.",
+        "Raised the 3D stage to the application top layer and made its HUD and results panels 80 percent transparent so interface banners cannot obscure dice or results.",
+        "Preserved the tool-only Railgun d8+3 Massive playtest override, weapon Trait modifiers, Reliable and other operational weapon features, Firestore undefined-value sanitization, and table-key normalization.",
+        "Regenerated the Corebook as RC3.2 with the full emblem-and-ribbon class banner restored for all 18 Awakened and Sleeping class entries while preserving backgrounds, one-point smaller typography, contents numbering, source Markdown and the 797-entry bookmark tree."
+      ]
+    },
     {
       "version": "v59.17",
       "date": "2026-07-17",
@@ -189,5 +203,5 @@
       ]
     }
   ],
-  "version": "v59.17"
+  "version": "v59.18"
 }
