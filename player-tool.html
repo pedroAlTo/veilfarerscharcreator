@@ -311,6 +311,8 @@
         @keyframes vf-crit-die-glow { 0%,100% { filter:drop-shadow(0 0 5px rgba(250,204,21,.72)) drop-shadow(0 0 10px rgba(168,85,247,.48)); transform:scale(1); } 50% { filter:drop-shadow(0 0 12px rgba(250,204,21,1)) drop-shadow(0 0 20px rgba(168,85,247,.86)); transform:scale(1.08); } }
         .vf-die3.is-critical { animation:vf-crit-die-glow .9s ease-in-out infinite; }
         .vf-die3.rolling.is-critical { animation:vf-tumble .72s cubic-bezier(0.2,0.7,0.3,1),vf-crit-die-glow .9s ease-in-out infinite; }
+        @keyframes vf-duality-winner-glow { 0%,100% { filter:drop-shadow(0 0 5px rgba(255,255,255,.72)) drop-shadow(0 0 10px rgba(255,255,255,.42)); transform:scale(1); } 50% { filter:drop-shadow(0 0 12px rgba(255,255,255,1)) drop-shadow(0 0 22px rgba(255,255,255,.8)); transform:scale(1.07); } }
+        .vf-die3.is-winner { animation:vf-duality-winner-glow .82s ease-in-out infinite; }
         /* Button press feedback: pronounced scale-up + glowing ring + brightness flash */
         @keyframes vf-btn-press { 0% { transform: scale(1); } 28% { transform: scale(1.13); box-shadow: 0 0 0 3px rgba(255,255,255,0.30), 0 0 20px 4px rgba(125,211,252,0.7); filter: brightness(1.35); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); filter: brightness(1); } }
         .vf-btn-pressed { animation: vf-btn-press 0.42s cubic-bezier(0.3,0,0.3,1); z-index: 5; position: relative; }
@@ -407,7 +409,7 @@
 
         /* One die: shape by `sides`, colour by `variant`, tumbles + scrambles faces while
            `rolling`, then settles on `value`. */
-        const ShapedDie = ({ sides, value, rolling, variant, size, critical }) => {
+        const ShapedDie = ({ sides, value, rolling, variant, size, critical, winner }) => {
           const [face, setFace] = useState(value);
           useEffect(() => {
             if (!rolling) { setFace(value); return; }
@@ -426,7 +428,7 @@
                        : (variant === 'max') ? '#3a2c00' : (variant === 'crit') ? '#3a0a0a' : '#e2e8f0';
           const px = size || 34;
           return (
-            <span className={`vf-die3 ${rolling ? 'rolling' : ''} ${critical ? 'is-critical' : ''}`} style={{ width: px, height: px }}>
+            <span className={`vf-die3 ${rolling ? 'rolling' : ''} ${critical ? 'is-critical' : ''} ${winner ? 'is-winner' : ''}`} style={{ width: px, height: px }}>
               <svg viewBox="0 0 40 42" width={px} height={px}>
                 <polygon points={sh.pts} fill={`url(#${fillId})`} stroke={stroke} strokeWidth="2" strokeLinejoin="round" />
                 {(sh.lines || []).map((ln, i) => (
@@ -505,7 +507,7 @@
               {callout.type === 'duality' ? (
                 <div className="mt-2">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="vf-callout-dice gap-1"><ShapedDie sides={12} value={callout.hope} rolling={rolling} variant="hope" size={29} critical={!!callout.crit} /><ShapedDie sides={12} value={callout.fear} rolling={rolling} variant="fear" size={29} critical={!!callout.crit} /></div>
+                    <div className="vf-callout-dice gap-1"><ShapedDie sides={12} value={callout.hope} rolling={rolling} variant="hope" size={29} critical={!!callout.crit} winner={!rolling && /WITH HOPE/i.test(callout.outcome || "")} /><ShapedDie sides={12} value={callout.fear} rolling={rolling} variant="fear" size={29} critical={!!callout.crit} winner={!rolling && /WITH FEAR/i.test(callout.outcome || "")} /></div>
                     <div className={`text-right vf-callout-result ${rolling ? 'is-rolling' : ''}`}><div className="text-2xl font-black text-white leading-none">{callout.total}</div><div className={`text-[8px] font-black ${callout.outcomeColor || ''}`}>{callout.outcome}</div></div>
                   </div>
                   {callout.attackBreakdown && callout.attackBreakdown.length > 0 && <div className="mt-1 flex flex-wrap gap-1">{callout.attackBreakdown.map((part,index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-700 bg-black text-[8px] text-slate-300">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>}
@@ -1082,7 +1084,8 @@
               try {
                 const dice3D = await waitForDice3D();
                 if (!dice3D) throw new Error('The 3D dice module did not finish loading.');
-                const result = await dice3D.roll(themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle });
+                const method = options && options.append && typeof dice3D.add === 'function' ? 'add' : 'roll';
+                const result = await dice3D[method](themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle });
                 if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
                 throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
               } catch (error) {
@@ -1438,40 +1441,101 @@
               }, move.name);
             } else execute(minimum);
           };
-          const rollWeaponDamage = async (dmgStr, mult, bonus, profile) => {
+          const weaponDamagePlan = (dmgStr, mult, profile) => {
               if (!dmgStr) return null;
-              mult = mult || 1; bonus = bonus || 0; profile = profile || {};
               const match = String(dmgStr).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i);
               if (!match) return null;
               const baseCount = parseInt(match[1] || '1', 10) || 1;
               const sides = parseInt(match[2], 10);
-              const keptCount = baseCount * mult;
-              const rolledCount = keptCount + (profile.massive ? 1 : 0);
-              const staticMod = match[3] ? parseInt(match[3].replace(/\s/g, ''), 10) : 0;
-              let rolls = await rollVisualDice([{ qty: rolledCount, sides, theme:'vfDamage', role:'Damage' }], profile.weapon ? `${profile.weapon.name} · Damage` : 'Damage', { deferResults:true });
+              const multiplier = Math.max(1, Number(mult) || 1);
+              const keptCount = baseCount * multiplier;
+              const massiveExtra = profile && profile.massive ? 1 : 0;
+              return {
+                baseCount,
+                sides,
+                keptCount,
+                rolledCount: keptCount + massiveExtra,
+                initialRolledCount: baseCount + massiveExtra,
+                staticMod: match[3] ? parseInt(match[3].replace(/\s/g, ''), 10) : 0
+              };
+          };
+          const rollWeaponDamage = async (dmgStr, mult, bonus, profile, preRolled) => {
+              if (!dmgStr) return null;
+              mult = mult || 1; bonus = bonus || 0; profile = profile || {};
+              const plan = weaponDamagePlan(dmgStr, mult, profile);
+              if (!plan) return null;
+              const { baseCount, sides, keptCount, rolledCount, staticMod } = plan;
+              let rolls = Array.isArray(preRolled) ? preRolled.slice(0, rolledCount).map(Number) : [];
+              if (rolls.length < rolledCount) {
+                const missing = rolledCount - rolls.length;
+                const additions = await rollVisualDice(
+                  [{ qty: missing, sides, theme:'vfDamage', role: mult > 1 ? 'Critical Damage' : 'Damage' }],
+                  profile.weapon ? `${profile.weapon.name} · ${mult > 1 ? 'Critical ' : ''}Damage` : 'Damage',
+                  { deferResults:true, append: rolls.length > 0 }
+                );
+                rolls = rolls.concat(additions);
+              }
+              const physicalInitial = rolls.slice();
               const rerolls = [];
+              const replacementPhysical = [];
               if (profile.brutal) {
                 const ones = rolls.map((v,i)=>v===1?i:-1).filter(i=>i>=0);
                 if (ones.length) {
-                  const replacements = await rollVisualDice([{ qty:ones.length, sides, theme:'vfDamage', role:'Brutal reroll' }], 'Brutal reroll', { deferResults:true });
-                  ones.forEach((idx,j)=>{ rerolls.push({index:idx,from:1,to:replacements[j]}); rolls[idx]=replacements[j]; });
+                  const replacements = await rollVisualDice(
+                    [{ qty:ones.length, sides, theme:'vfDamage', role:'Brutal reroll' }],
+                    'Brutal reroll',
+                    { deferResults:true, append:true }
+                  );
+                  ones.forEach((idx,j)=>{
+                    rerolls.push({index:idx,from:1,to:replacements[j]});
+                    replacementPhysical.push({logicalIndex:idx,value:replacements[j]});
+                    rolls[idx]=replacements[j];
+                  });
                 }
               }
-              const keptRolls = rolls.slice(); const discardedIndices=[];
+              const keptRolls = rolls.slice();
+              const discardedIndices=[];
               if (profile.massive && keptRolls.length > keptCount) {
-                let lowest=0; for(let i=1;i<keptRolls.length;i++) if(keptRolls[i]<keptRolls[lowest]) lowest=i;
-                discardedIndices.push(lowest); keptRolls.splice(lowest,1);
+                let lowest=0;
+                for(let i=1;i<keptRolls.length;i++) if(keptRolls[i]<keptRolls[lowest]) lowest=i;
+                discardedIndices.push(lowest);
+                keptRolls.splice(lowest,1);
               }
               const rerollMap=new Map(rerolls.map(item=>[item.index,item]));
-              const damageDiceResults=rolls.map((value,index)=>({index,value,status:discardedIndices.includes(index)?'discarded':'kept',rerolledFrom:rerollMap.has(index)?rerollMap.get(index).from:null}));
-              const paired=Number(profile.pairedBonus)||0; const extra=staticMod+bonus+paired;
-              const sum=keptRolls.reduce((total,value)=>total+value,0); const ruleParts=[];
+              const damageDiceResults=rolls.map((value,index)=>({
+                index,value,
+                status:discardedIndices.includes(index)?'discarded':'kept',
+                rerolledFrom:rerollMap.has(index)?rerollMap.get(index).from:null
+              }));
+              const cueDiceResults=physicalInitial.map((value,index)=>({
+                index,
+                value,
+                status:rerollMap.has(index)?'discarded':(discardedIndices.includes(index)?'discarded':'kept'),
+                role:rerollMap.has(index)?'REROLL':(discardedIndices.includes(index)?'DROP':'KEEP')
+              })).concat(replacementPhysical.map((item,offset)=>({
+                index:physicalInitial.length+offset,
+                value:item.value,
+                status:discardedIndices.includes(item.logicalIndex)?'discarded':'kept',
+                role:discardedIndices.includes(item.logicalIndex)?'DROP':'KEEP'
+              })));
+              const paired=Number(profile.pairedBonus)||0;
+              const extra=staticMod+bonus+paired;
+              const sum=keptRolls.reduce((total,value)=>total+value,0);
+              const ruleParts=[];
               if(profile.massive) ruleParts.push(`Massive: rolled ${rolledCount}d${sides}, discarded lowest`);
               if(profile.brutal&&rerolls.length) ruleParts.push(`Brutal: rerolled ${rerolls.length} result${rerolls.length===1?'':'s'} of 1`);
               if(paired) ruleParts.push(`Paired +${paired}`);
               const total=sum+extra;
-              showResolvedDice({label:profile.weapon?`${profile.weapon.name} · Damage`:'Damage',crit:mult>1,rolls:damageDiceResults.map(d=>({value:d.value,sides,drop:d.status==='discarded',reroll:d.rerolledFrom!=null,role:d.status==='discarded'?'DROP':'KEEP'})),modifier:extra,value:total});
-              return {total,detail:keptRolls.join('+')+(extra?(extra>0?'+'+extra:extra):''),dice:keptCount+'d'+sides,rolledDice:rolledCount+'d'+sides,rolls,keptRolls,discardedIndices,damageDiceResults,rerolls,modifier:extra,base:String(dmgStr),rules:ruleParts,modifierBreakdown:{weapon:staticMod,honed:bonus,paired}};
+              return {
+                total,
+                detail:keptRolls.join('+')+(extra?(extra>0?'+'+extra:extra):''),
+                dice:keptCount+'d'+sides,
+                rolledDice:rolledCount+'d'+sides,
+                rolls,keptRolls,discardedIndices,damageDiceResults,cueDiceResults,rerolls,
+                modifier:extra,base:String(dmgStr),rules:ruleParts,
+                modifierBreakdown:{weapon:staticMod,honed:bonus,paired},
+                sides,baseCount
+              };
           };
           const traitModForWeapon = (traitStr) => { if (!traitStr) return 0; var tt=String(traitStr).toLowerCase(); var ks=['agility','strength','finesse','instinct','presence','knowledge']; for (var n=0;n<ks.length;n++){ if (tt.indexOf(ks[n])!==-1) return (parseInt(character.stats && character.stats[ks[n]], 10) || 0); } return 0; };
           const rollDuality = async (opts) => {
@@ -1483,19 +1547,48 @@
               const lbl = (typeof o.label === 'string') ? o.label : (profile ? `Attack: ${profile.weapon.name}` : rollLabel);
               let hopeDie = o.hopeDie != null ? Number(o.hopeDie) : null;
               let fearDie = o.fearDie != null ? Number(o.fearDie) : null;
+              const hopeWasRolled = hopeDie == null;
+              const fearWasRolled = fearDie == null;
               const modVal = Math.max(-20, Math.min(20, parseInt(rollModifier, 10) || 0)) + extraMod;
               let effectiveRollType = o.rollType || playerRollType;
               if (profile && profile.heavyDisadvantage) {
                   effectiveRollType = effectiveRollType === 'advantage' ? 'normal' : 'disadvantage';
               }
+
+              // Weapon damage joins the initial tactical roll. Critical-only extra dice
+              // are appended after the Duality result because the multiplier is not known
+              // until Hope and Fear settle. This avoids speculative/unused extra dice.
+              const weaponDamage = profile ? profile.weapon.damage : o.weaponDamage;
+              const initialDamagePlan = weaponDamage ? weaponDamagePlan(weaponDamage, 1, profile || {}) : null;
               const dualGroups=[];
-              if (hopeDie == null) dualGroups.push({qty:1,sides:12,theme:'vfHope',role:'Hope'});
-              if (fearDie == null) dualGroups.push({qty:1,sides:12,theme:'vfFear',role:'Fear'});
+              if (hopeWasRolled) dualGroups.push({qty:1,sides:12,theme:'vfHope',role:'Hope'});
+              if (fearWasRolled) dualGroups.push({qty:1,sides:12,theme:'vfFear',role:'Fear'});
               if (effectiveRollType !== 'normal') dualGroups.push({qty:1,sides:6,theme:'vfNeutral',role:effectiveRollType});
-              const dualValues=dualGroups.length ? await rollVisualDice(dualGroups,lbl) : [];
-              let cursor=0; if(hopeDie==null) hopeDie=dualValues[cursor++]; if(fearDie==null) fearDie=dualValues[cursor++];
-              let extraDie=effectiveRollType==='normal'?0:dualValues[cursor++];
-              let total=hopeDie+fearDie+modVal+(effectiveRollType==='advantage'?extraDie:(effectiveRollType==='disadvantage'?-extraDie:0));
+              if (initialDamagePlan) dualGroups.push({qty:initialDamagePlan.initialRolledCount,sides:initialDamagePlan.sides,theme:'vfDamage',role:'Damage'});
+
+              const dualValues=dualGroups.length ? await rollVisualDice(dualGroups,lbl,{deferResults:true}) : [];
+              let cursor=0;
+              const physicalCueRolls=[];
+              if(hopeWasRolled) {
+                hopeDie=dualValues[cursor++];
+                physicalCueRolls.push({value:hopeDie,sides:12,role:'Hope'});
+              }
+              if(fearWasRolled) {
+                fearDie=dualValues[cursor++];
+                physicalCueRolls.push({value:fearDie,sides:12,role:'Fear'});
+              }
+              let extraDie=0;
+              if(effectiveRollType!=='normal') {
+                extraDie=dualValues[cursor++];
+                physicalCueRolls.push({value:extraDie,sides:6,role:effectiveRollType});
+              }
+              const preRolledDamage = initialDamagePlan
+                ? dualValues.slice(cursor, cursor + initialDamagePlan.initialRolledCount)
+                : null;
+              if (initialDamagePlan) {
+                preRolledDamage.forEach(value => physicalCueRolls.push({value,sides:initialDamagePlan.sides,role:'Damage'}));
+              }
+              const total=hopeDie+fearDie+modVal+(effectiveRollType==='advantage'?extraDie:(effectiveRollType==='disadvantage'?-extraDie:0));
 
               let outcome = '';
               let outcomeColor = '';
@@ -1512,14 +1605,40 @@
               }
 
               const isCrit = outcome.indexOf('CRITICAL') !== -1;
-              if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.setCritical === 'function') { try { window.VFDice3D.setCritical(isCrit); } catch (error) { console.warn(error); } }
+              if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.setCritical === 'function') {
+                try { window.VFDice3D.setCritical(isCrit); } catch (error) { console.warn(error); }
+              }
               let dmgInfo = null;
-              const weaponDamage = profile ? profile.weapon.damage : o.weaponDamage;
-              if (isCrit && weaponDamage && diceMode === '3d') await new Promise(resolve => setTimeout(resolve, 820));
               if (weaponDamage) {
                   const honed = (character.path === 'sleeping') ? Math.max(0, (parseInt(character.level) || 1) - 1) : 0;
-                  dmgInfo = await rollWeaponDamage(weaponDamage, isCrit ? 2 : 1, honed, profile || {});
+                  dmgInfo = await rollWeaponDamage(weaponDamage, isCrit ? 2 : 1, honed, profile || {}, preRolledDamage);
               }
+
+              const cueRolls=physicalCueRolls.slice(0, physicalCueRolls.length - (preRolledDamage ? preRolledDamage.length : 0));
+              if (dmgInfo && Array.isArray(dmgInfo.cueDiceResults)) {
+                dmgInfo.cueDiceResults.forEach(die=>cueRolls.push({
+                  value:die.value,
+                  sides:dmgInfo.sides,
+                  role:die.role || (die.status==='discarded'?'DROP':'KEEP'),
+                  drop:die.status==='discarded',
+                  status:die.status
+                }));
+              } else if (preRolledDamage) {
+                preRolledDamage.forEach(value=>cueRolls.push({value,sides:initialDamagePlan.sides,role:'Damage'}));
+              }
+              showResolvedDice({
+                  label: lbl || 'Duality Roll', outcome, crit:isCrit, value:total,
+                  modifier:total-hopeDie-fearDie,
+                  hope:hopeDie,fear:fearDie,
+                  rolls:[
+                    {value:hopeDie,sides:12,role:'Hope'},
+                    {value:fearDie,sides:12,role:'Fear'}
+                  ],
+                  cueRolls,
+                  damage:dmgInfo && dmgInfo.total,
+                  damageDiceResults:dmgInfo && dmgInfo.damageDiceResults
+              });
+
               let charUpd = { ...character }; let charChanged = false;
               if (o.spend && o.spend.resource) {
                   const resource = o.spend.resource, amount = o.spend.amount || 1;

@@ -106,6 +106,15 @@
     try{ if(button.dataset.action==='load')loadRecord(record); if(button.dataset.action==='export')exportRecord(record); if(button.dataset.action==='delete')deleteRecord(record).catch(err=>setStatus(err.message,'bad')); }catch(err){setStatus(err.message,'bad');}
   });
   renderLocal();
+  if(window.VF_IS_LOCAL_TEST===true){
+    signedOut.classList.add('vf-hidden');
+    signedIn.classList.add('vf-hidden');
+    el('account-email').textContent='Local test';
+    el('account-role').textContent='offline';
+    setStatus('Local test mode. Local character data and JSON tools work here; the Netlify Identity vault remains available only on the deployed site.');
+    list.innerHTML='<div class="vf-empty">Online account storage is intentionally disabled in local test mode.</div>';
+    return;
+  }
   if(!ID){ setStatus('Netlify Identity widget did not load. This page must be served from the Netlify deployment.','bad'); return; }
   ID.on('init',renderUser); ID.on('login',user=>{renderUser(user);ID.close();}); ID.on('logout',()=>renderUser(null)); ID.on('error',err=>setStatus(`Netlify Identity: ${err.message||err}`,'bad')); ID.init();
 })();

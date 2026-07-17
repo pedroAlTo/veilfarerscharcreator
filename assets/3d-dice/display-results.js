@@ -42,19 +42,23 @@ export default class DisplayResults {
     const modifier = Number(data && (data.modifier ?? 0)) || 0;
     let total = data && data.value != null ? data.value : rolls.filter(r=>!r.drop).reduce((n,r)=>n+(Number(r.value)||0),0)+modifier;
     const label = data && data.label ? `<span class="vf-results-label">${this.escape(data.label)}</span>` : '';
+    const outcome = String((data && data.outcome) || '');
+    const winnerRole = /WITH HOPE/i.test(outcome) ? 'hope' : /WITH FEAR/i.test(outcome) ? 'fear' : '';
+    const outcomeHtml = outcome ? `<span class="vf-results-outcome">${this.escape(outcome)}</span>` : '';
     const dice = rolls.map((roll) => {
       const sides = roll.die || roll.sides || 'fate';
       let cls = `vf-result-die d${sides}`;
       if (roll.drop) cls += ' die-dropped';
       if (roll.reroll) cls += ' die-rerolled';
       if (roll.explode) cls += ' die-exploded';
+      if (winnerRole && String(roll.role || '').toLowerCase() === winnerRole) cls += ' duality-winner';
       if (Number(roll.value) === Number(sides)) cls += ' crit-success';
       if (Number(roll.value) === 1 && sides !== 'fate') cls += ' crit-failure';
       const role = roll.role ? `<small>${this.escape(roll.role)}</small>` : '';
       return `<span class="${cls}"><b>${this.escape(String(roll.value ?? '…'))}</b>${role}</span>`;
     }).join('<span class="vf-result-plus">+</span>');
     const modHtml = modifier ? `<span class="vf-result-mod">${modifier > 0 ? '+' : '−'} ${Math.abs(modifier)}</span>` : '';
-    current.innerHTML = `${label}<span class="vf-results-equation">${dice}${modHtml}<span class="vf-result-equals">=</span><strong>${this.escape(String(total))}</strong></span>`;
+    current.innerHTML = `${label}${outcomeHtml}<span class="vf-results-equation">${dice}${modHtml}<span class="vf-result-equals">=</span><strong>${this.escape(String(total))}</strong></span>`;
     clearTimeout(current.hideTimer);
     current.classList.remove('hidden','hideEffect');
     current.classList.add('showEffect');

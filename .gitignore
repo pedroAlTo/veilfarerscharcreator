@@ -1,0 +1,6 @@
+# Local-only Firebase runtime values
+local/.env.local
+
+# Local tooling noise
+.DS_Store
+Thumbs.db

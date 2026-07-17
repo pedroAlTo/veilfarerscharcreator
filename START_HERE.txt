@@ -1,13 +1,24 @@
-VeilFarers Portal v59.20
+VeilFarers Portal v59.25
 
-Mobile Options Escape Hotfix
+ONLINE DEPLOY — PRIMARY
+-----------------------
+Deploy the contents of this folder to Netlify exactly as before. Production continues to use Netlify Identity, Netlify Functions and Firebase environment variables. netlify.toml and the production Firebase configuration function are unchanged from v59.24.
 
-Deploy the contents of this folder to Netlify.
+LOCAL TESTING
+-------------
+Read LOCAL_TESTING.md, copy local/.env.local.example to local/.env.local, then run START_LOCAL_WINDOWS.bat or local/start-local.sh.
 
-This release is built directly on v59.19 and changes only the Player Tool mobile Options experience plus release metadata. Books, PDFs, rules data, dice themes, weapon behavior, callouts, Firestore safeguards and the rest of the portal are preserved.
+THIS ITERATION
+--------------
+The 3D roller now uses a CSS/JavaScript quantum-acquisition HUD that follows the original physical dice while they move. A camera-aperture scan identifies the higher Duality die; the lower branch powers down to gray. Discarded damage dice receive a staged quantum-vector shutdown and the existing renderer-backed darkening.
 
-Included release documents:
-- GITHUB_DEPLOY_SUMMARY_v59.20.md
-- PORTAL_HANDOVER_v59.20.md
-- VALIDATION_v59.20.txt
-- THIRD_PARTY_NOTICES.md
+Weapon damage dice now roll in the same initial physical throw as Hope and Fear. Critical-only extra damage dice and rules-mandated Brutal rerolls are appended only when actually required.
+
+The visual identification pipeline does not remove, replace or reroll settled dice.
+
+DELIVERABLES
+------------
+- GITHUB_DEPLOY_SUMMARY_v59.25.md
+- PORTAL_HANDOVER_v59.25.md
+- VALIDATION_v59.25.txt
+- LOCAL_TESTING.md

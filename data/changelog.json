@@ -1,7 +1,71 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.20",
+  "currentVersion": "v59.25",
   "entries": [
+    {
+      "version": "v59.25",
+      "date": "2026-07-17",
+      "title": "Quantum acquisition HUD and simultaneous attack damage dice",
+      "changes": [
+        "Added a CSS/JavaScript tactical acquisition HUD that follows each physical 3D die while it rolls, with rotating golden arcs, live pseudo-telemetry, crosshairs, scan sweeps and role labels.",
+        "Added a camera-aperture identification animation when Duality dice settle; the higher Hope or Fear die receives the locked outcome treatment after the scan completes.",
+        "Added a smooth probability-branch rejection state for the lower Duality interface without rerolling, removing or replacing either physical die.",
+        "Added a staged damage-vector shutdown for discarded damage dice, including HUD desaturation, quantum probability failure messaging and the existing renderer-backed darkening on the original settled mesh.",
+        "Weapon damage dice now join Hope and Fear in the initial attack roll. Only critical-only extra damage dice or rules-mandated Brutal rerolls are appended after the result is known.",
+        "Added a compact tactical solution panel summarizing WITH HOPE / WITH FEAR / CRITICAL and kept/discarded damage values.",
+        "Preserved Netlify production configuration, Firebase runtime configuration, Netlify Identity, local testing, books and canonical weapon data."
+      ]
+    },
+    {
+      "version": "v59.24",
+      "date": "2026-07-17",
+      "title": "Renderer-backed settled die glow and discard dimming",
+      "changes": [
+        "Added a non-physical settled-mesh visual API to the local Dice Box renderer; it changes only Babylon presentation properties and never rolls, adds, removes or respawns dice.",
+        "The higher Hope or Fear die now receives a white renderer outline and white overlay directly on the original settled 3D mesh.",
+        "Critical Duality results apply the same renderer treatment to both original settled dice.",
+        "Discarded damage dice now receive an individual dark overlay, reduced visibility and gray instance colour on the original settled 3D mesh.",
+        "Added roll-index fallback matching so cues still target the correct die when a browser omits projected roll identifiers.",
+        "Strengthened screen-space glow/dimming only as a fallback while keeping Netlify, Firebase, local testing, books and canonical data unchanged."
+      ]
+    },
+    {
+      "version": "v59.23",
+      "date": "2026-07-17",
+      "title": "Settled 3D cues without extra dice",
+      "changes": [
+        "Removed the physical winner-theme replacement that used DiceBox remove/add and could visibly throw the winning Duality die again.",
+        "Removed the physical discarded-theme replacement that could spawn a second gray die after the original damage dice had settled.",
+        "Added read-only settled-die screen projection and applies the white winner glow and gray DROP power-down as screen-space cues over the original dice.",
+        "Critical Duality rolls now illuminate both settled Hope and Fear dice individually without rerolling either die.",
+        "Removed the whole-canvas discard fade so only the discarded die is visually powered down.",
+        "Kept Netlify production, Firebase runtime configuration, local testing, books and canonical weapon data unchanged."
+      ]
+    },
+    {
+      "version": "v59.22",
+      "date": "2026-07-17",
+      "title": "Resolution-safe 3D overlay and Duality winner cues",
+      "changes": [
+        "Resized the Dice Box world whenever Overlay mode, viewport size, or device orientation changes, preventing stretched or pixelated 3D rendering.",
+        "Added explicit WITH HOPE / WITH FEAR / CRITICAL outcome labels to the 3D HUD and DisplayResults panel.",
+        "Added a white glow to the winning Hope or Fear die in 2D callouts and DisplayResults after the dice settle.",
+        "Added per-theme winner-glow materials for Plain, Tech, and Crystal dice and attempts to replace the higher physical 3D die with the matching luminous material.",
+        "Preserved critical ties as a glow on both Duality dice and kept production/local Firebase behavior unchanged."
+      ]
+    },
+    {
+      "version": "v59.21",
+      "date": "2026-07-17",
+      "title": "Production-safe local test server",
+      "changes": [
+        "Added a dependency-free local Node server that serves the portal and emulates the existing /api/firebase-config endpoint from local/.env.local.",
+        "Kept the production Netlify Function and Firebase environment-variable flow unchanged.",
+        "Added an explicit local runtime flag so Keeper and Admin role bypasses are available only through the bundled local server, never on Netlify.",
+        "Added Windows, macOS/Linux and LAN launchers plus local testing documentation and a private environment template.",
+        "Clarified that Netlify Identity, account vault writes and Netlify Forms remain online-only while all local-first tools and Firebase tables can be tested locally."
+      ]
+    },
     {
       "version": "v59.20",
       "date": "2026-07-17",
@@ -228,5 +292,5 @@
       ]
     }
   ],
-  "version": "v59.20"
+  "version": "v59.25"
 }

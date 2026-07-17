@@ -16,6 +16,12 @@
     document.getElementById('firebase-health').textContent=firebaseCheck.ok?`Configuration endpoint healthy · ${present}/${required.length} required fields present`:`Configuration endpoint unavailable (${firebaseCheck.status})`;
     document.getElementById('changelog').innerHTML=(log.entries||[]).map(entry=>`<article class="vf-sheet-block"><h3>${esc(entry.version)} · ${esc(entry.date)}</h3><ul>${(entry.changes||[]).map(c=>`<li>${esc(c)}</li>`).join('')}</ul></article>`).join('');
   }
+  if(window.VF_IS_LOCAL_TEST===true){
+    setStatus('Local test mode · Netlify Identity role checks are bypassed only by the bundled local server.','ok');
+    content.hidden=false;
+    load().catch(err=>setStatus(err.message,'bad'));
+    return;
+  }
   if(!identity){setStatus('Netlify Identity is unavailable.','bad');return;}
   identity.on('init',user=>{
     const roles=user?.app_metadata?.roles||[];

@@ -85,7 +85,16 @@
     accountLabel.textContent=signedIn?'Logged in':'Log-in';
     account.title=signedIn?(user.email||'Signed in with Netlify Identity'):'Log in with Netlify Identity';
   }
-  renderAccount(null);
+  if(window.VF_IS_LOCAL_TEST===true){
+    account.classList.add('is-authenticated','vf-local-test');
+    account.classList.remove('is-guest');
+    accountLabel.textContent='Local test';
+    account.title='Local test server · Netlify Identity remains online-only';
+    account.href='#';
+    account.addEventListener('click',event=>event.preventDefault());
+  }else{
+    renderAccount(null);
+  }
 
   function bindIdentity(identity, shouldInit){
     if(!identity)return;
@@ -95,7 +104,9 @@
     identity.on('logout',()=>renderAccount(null));
     if(shouldInit){ try{identity.init();}catch(_){ } }
   }
-  if(window.netlifyIdentity){
+  if(window.VF_IS_LOCAL_TEST===true){
+    // The local server never initializes Netlify Identity. Production behavior is unchanged.
+  }else if(window.netlifyIdentity){
     bindIdentity(window.netlifyIdentity,false);
   }else{
     const script=document.createElement('script');
