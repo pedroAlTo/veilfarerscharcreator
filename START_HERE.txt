@@ -1,50 +1,22 @@
-VeilFarers Portal v59.15
-=======================
+VeilFarers Portal v59.16
 
-Deploy the contents of this folder directly to Netlify. This build replaces v59.14.
+Deploy the contents of this folder to Netlify.
 
-Player Tool Firestore save fix
-------------------------------
-Player Tool no longer fails to join or autosave a table when legacy imports,
-custom weapons, or optional character fields contain JavaScript `undefined` values.
-Firestore does not accept `undefined` in document data.
+This build is based on the exact v59.15 Firestore undefined-value fix and includes:
+- Official bundled @3d-dice Dice Box + DisplayResults integration.
+- Hope/Fear/Damage/Neutral VeilFarers dice themes.
+- Weapon Trait and feature resolution.
+- Six simultaneous callouts, Time Travel, sound, volume and mute.
+- Corebook 11.1 RC3.1 with restored backgrounds, corrected Contents, rebuilt bookmarks and one-point smaller typography.
 
-The fix uses three layers:
+Required Netlify configuration remains unchanged:
+- Netlify Identity enabled.
+- Firebase environment variables configured.
+- /api/firebase-config Function deployed.
+- Firebase anonymous authentication enabled.
 
-1. Firestore is initialized with `ignoreUndefinedProperties: true` before use.
-2. Every Player Tool write is recursively normalized before it reaches Firestore.
-   Undefined object properties are omitted; undefined array positions become null.
-3. Optional weapon `burden` values now normalize to null during import and hydration.
-
-The normalizer preserves Firestore-native values such as FieldValue.arrayUnion,
-Timestamp, GeoPoint, and DocumentReference.
-
-Session connection hardening
-----------------------------
-- Leading and trailing whitespace is removed from table names before the Firestore
-  document reference is created.
-- The table metadata write is awaited before the interface reports Connected.
-- Autosave clears a previous Save error after the next successful write.
-- Undefined field paths are logged to the browser console for diagnostics without
-  exposing character data to other services.
-
-Keeper Tool
------------
-Keeper Tool now enables the same Firestore SDK option for undefined optional fields.
-Its existing real-time session behavior and document schema are unchanged.
-
-Deploy Preview checks
----------------------
-1. Open Player Tool with a character imported from an older JSON file.
-2. Add or equip a custom weapon without a burden value.
-3. Join a table whose entered name contains leading or trailing spaces.
-4. Confirm the UI reports Connected and no unsupported-field error appears.
-5. Edit HP, Stress, Experiences, equipment, and weapon loadout; confirm autosave.
-6. Open a second Player Tool and Keeper Tool on the normalized table name.
-7. Confirm character updates, roll callouts, Fear, Spotlight, and roll history sync.
-8. Confirm an earlier Save error disappears after a successful save.
-
-Validation
-----------
-Read VALIDATION_v59.15.txt for automated checks. A live Netlify Deploy Preview is
-still required to verify the real Firebase project, authentication, and Firestore rules.
+Read:
+- GITHUB_DEPLOY_SUMMARY_v59.16.md
+- PORTAL_HANDOVER_v59.16.md
+- VALIDATION_v59.16.txt
+- THIRD_PARTY_NOTICES.md

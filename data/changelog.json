@@ -1,7 +1,19 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.15",
+  "currentVersion": "v59.16",
   "entries": [
+    {
+      "version": "v59.16",
+      "date": "2026-07-17",
+      "changes": [
+        "Rebuilt from the exact v59.15 Firestore-safe deployment and restored all v59.14 Player Tool features without regressing undefined-value sanitization.",
+        "Replaced the previous experimental 3D renderer with bundled @3d-dice/dice-box and the DisplayResults addon, including distinct Hope, Fear, Damage and neutral VeilFarers themes.",
+        "Restored weapon Trait modifiers and operational Reliable, Massive, Brutal, Paired, Accurate and Heavy handling; Railgun remains a Player Tool-only d8+3 Massive playtest override.",
+        "Retained Time Travel snapshots, six simultaneous per-character callouts, callout scaling, generated dice sound, volume and mute controls.",
+        "Regenerated the Corebook as RC3.1 with one-point smaller body type, restored Player/Awakened/Sleeping page backgrounds, corrected contents page numbers and rebuilt the full PDF bookmark tree.",
+        "Added complete DOCX and Markdown source deliverables plus third-party MIT notices."
+      ]
+    },
     {
       "version": "v59.15",
       "date": "2026-07-16",
@@ -16,23 +28,10 @@
       "version": "v59.14",
       "date": "2026-07-16",
       "changes": [
-        "Fixed Player Tool weapon attacks so their Trait modifier and Reliable/Accurate bonuses are included and shown in the attack breakdown.",
-        "Restored Massive/Railgun damage resolution with an extra damage die, highest result retained and discarded die visually muted in local and table callouts.",
-        "Kept Railgun at d8+3 with Massive as a Player Tool-only playtest override without modifying books or canonical rules data.",
-        "Added local Roll History time travel, storing bounded pre-action character snapshots that can be restored without increasing Firestore document size.",
-        "Replaced the single roll toast with up to six simultaneous per-player callout windows and added 50–150% callout scaling.",
-        "Added generated dice-roll audio with mute and volume controls, plus an optional attributed MIT 3D dice renderer with automatic 2D fallback."
-      ]
-    },
-    {
-      "version": "v59.14",
-      "date": "2026-07-16",
-      "changes": [
         "Restored the canonical alternating page backgrounds to every page of the 11.1 RC3 Corebook PDF.",
         "Applied Player/general, Awakened, and Sleeping background families to their correct RC3 page ranges with left/right parity.",
         "Preserved all 281 pages, searchable text, metadata, and the 725-entry PDF bookmark tree.",
         "Updated the Netlify Downloads package and PDF byte metadata without changing rules content."
-      ]
       ]
     },
     {
@@ -50,7 +49,7 @@
       "date": "2026-07-16",
       "changes": [
         "Added a dedicated Resolve Moves panel beside Sleeper Actions in Player Tool.",
-        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/− controls.",
+        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/\u2212 controls.",
         "Added shared Resolve Move data for every Sleeping class, with approved Soldier and Vanguard review-draft moves included for Player Tool use.",
         "Added operational Resolve spending: fixed and variable costs, d4 Resolve Dice, local history and Firebase table callouts.",
         "Kept compact titles and short descriptions visible while full rules and executable controls remain behind expansion."
@@ -178,5 +177,5 @@
       ]
     }
   ],
-  "version": "v59.15"
+  "version": "v59.16"
 }

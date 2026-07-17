@@ -1,0 +1,26 @@
+{
+  "name": "VeilFarers Damage",
+  "systemName": "vfDamage",
+  "author": "VeilFarers / Frank Ali",
+  "version": 1.0,
+  "meshFile": "default.json",
+  "themeColor": "#c92a38",
+  "material": {
+    "type": "color",
+    "diffuseTexture": "diffuse-light.png",
+    "diffuseLevel": 1,
+    "bumpTexture": "tech-normal.png",
+    "bumpLevel": 0.16,
+    "specularTexture": "tech-specular.jpg",
+    "specularPower": 0.42
+  },
+  "diceAvailable": [
+    "d4",
+    "d6",
+    "d8",
+    "d10",
+    "d12",
+    "d20",
+    "d100"
+  ]
+}

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veilfarers - Spectrum of Fate Edition</title>
     <link rel="stylesheet" href="portal.css">
+    <link rel="stylesheet" href="assets/3d-dice/vf-dice3d.css">
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
@@ -551,6 +552,11 @@
         const CORE_FEATURES = VF_CANON.features || [];
         const WEAPON_CATALOG = VF_CANON.weapons || [];
         const RESOLVE_MOVE_LIBRARY = VF_CANON.resolveMoves || [];
+        // Player Tool playtest overrides. These do not alter the books or canonical rules JSON.
+        const PLAYER_TOOL_WEAPON_OVERRIDES = {
+          'vf.core.weapon.railgun': { damage: 'd8+3 phys.', features: ['Massive'], feature: 'Massive' }
+        };
+        // Official local @3d-dice renderer is exposed as window.VFDice3D.
         const normalizeRuleName = (value) => String(value || '').toLowerCase().replace(/[+()]|\d+/g, ' ').replace(/[^a-z]+/g, ' ').trim();
         const weaponKey = (weapon) => String((weapon && (weapon.canonicalId || weapon.id || weapon.name)) || '').trim();
         const findCanonicalWeapon = (weapon) => {
@@ -795,7 +801,6 @@
         
         // ENV
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const normalizeSessionKey = (value) => String(value || '').trim() || 'Table';
 
         /* SVG lantern with spotlight state machine.
            on=false: unlit, pointing up. on=true: lens lights, rotates smoothly to the name,
@@ -933,10 +938,6 @@
           const audioContextRef = useRef(null);
           const [diceMode, setDiceMode] = useState(() => { try { return localStorage.getItem('veilfarers_dice_mode') === '3d' ? '3d' : '2d'; } catch (e) { return '2d'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_mode', diceMode); } catch (e) {} }, [diceMode]);
-          const [dice3DRequest, setDice3DRequest] = useState(null);
-          const dice3DContainerRef = useRef(null);
-          const dice3DBoxRef = useRef(null);
-          const [dice3DStatus, setDice3DStatus] = useState('');
           const [timeTravelRevision, setTimeTravelRevision] = useState(0);
           // ===== NOTES / HANDOUTS =====
           const [handouts, setHandouts] = useState([]);        // incoming GM handouts (from session)
@@ -973,46 +974,34 @@
               }
             } catch (error) { console.warn('Dice sound unavailable:', error); }
           };
-          const completeDice3D = (request) => {
-            if (!request || request.completed) return;
-            request.completed = true;
-            setDice3DRequest(null);
-            setDice3DStatus('');
-            try { if (request.onComplete) request.onComplete(); } catch (error) { console.error(error); }
-          };
-          const presentDiceResult = (notation, desiredResults, onComplete) => {
-            const results = (desiredResults || []).map(Number).filter(Number.isFinite);
-            playDiceSound(results.length || 2);
-            if (diceMode !== '3d') { onComplete(); return; }
-            const supported = /^\s*(?:\d+d(?:4|6|8|10|12|20)(?:\+|$))+\s*$/i.test(String(notation || ''));
-            if (!supported || results.length > 20) {
-              showAlert('This roll cannot be rendered in 3D. It will use the standard VeilFarers dice display.', '3D dice fallback');
-              onComplete(); return;
-            }
-            setDice3DRequest({ id:'3d-' + Date.now().toString(36), notation:String(notation), results, onComplete, completed:false });
-          };
-          useEffect(() => {
-            if (!dice3DRequest || !dice3DContainerRef.current) return;
-            let cancelled = false;
-            let fallbackTimer = null;
-            const request = dice3DRequest;
-            setDice3DStatus('Loading 3D dice…');
-            loadDice3DLibrary().then(() => {
-              if (cancelled || !dice3DContainerRef.current) return;
-              dice3DContainerRef.current.innerHTML = '';
-              const box = new window.DICE.dice_box(dice3DContainerRef.current);
-              dice3DBoxRef.current = box;
-              box.setDice(request.notation);
-              setDice3DStatus('Rolling…');
-              fallbackTimer = setTimeout(() => completeDice3D(request), 9000);
-              box.start_throw(() => request.results.slice(), () => { if (fallbackTimer) clearTimeout(fallbackTimer); completeDice3D(request); });
-            }).catch(error => {
-              console.error(error);
-              setDice3DStatus('3D renderer unavailable — using standard dice.');
-              setTimeout(() => completeDice3D(request), 650);
+          const randomDiceValues = (groups) => {
+            const values = [];
+            (groups || []).forEach(group => {
+              const qty = Math.max(1, Number(group.qty) || 1);
+              const sides = Math.max(2, Number(group.sides) || 20);
+              for (let i=0;i<qty;i++) values.push(Math.floor(Math.random()*sides)+1);
             });
-            return () => { cancelled = true; if (fallbackTimer) clearTimeout(fallbackTimer); };
-          }, [dice3DRequest && dice3DRequest.id]);
+            return values;
+          };
+          const rollVisualDice = async (groups, label, options) => {
+            const count = (groups || []).reduce((n,g)=>n+(Number(g.qty)||1),0);
+            playDiceSound(count || 2);
+            if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.roll === 'function') {
+              try {
+                const result = await window.VFDice3D.roll(groups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults) });
+                if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
+              } catch (error) {
+                console.warn('3D dice unavailable; using the standard roller.', error);
+                showAlert('The 3D renderer could not start. This roll used the standard roller instead.', '3D dice fallback');
+              }
+            }
+            return randomDiceValues(groups);
+          };
+          const showResolvedDice = (data) => {
+            if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.showResults === 'function') {
+              try { window.VFDice3D.showResults(data); } catch (error) { console.warn(error); }
+            }
+          };
           const seenNotesRef = useRef(null);                   // Set of note ids already auto-opened (per session)
           const connectedAtRef = useRef(0);                    // when this device joined — only auto-open handouts sent after
           const loadSeenNotes = (sid) => { try { seenNotesRef.current = new Set(JSON.parse(localStorage.getItem('veilfarers_seen_notes_' + sid) || '[]')); } catch (e) { seenNotesRef.current = new Set(); } };
@@ -1327,9 +1316,9 @@
             const available = Number((character.resolve && character.resolve.current) || 0);
             const minimum = resolveMoveMinimum(move);
             if (available < minimum) return;
-            const execute = (count) => {
+            const execute = async (count) => {
               const spend = Math.max(minimum, Math.min(available, Number(count) || minimum));
-              const rolls = move.rollResolve ? Array.from({ length: spend }, () => Math.floor(Math.random() * 4) + 1) : [];
+              const rolls = move.rollResolve ? await rollVisualDice([{qty:spend,sides:4,theme:'vfNeutral',role:'Resolve'}], `Resolve Move: ${move.name}`) : [];
               const total = rolls.reduce((sum, value) => sum + value, 0);
               updateCharacter({ ...character, resolve: { ...(character.resolve || { max: 2 }), current: Math.max(0, available - spend) } });
               const common = {
@@ -1354,7 +1343,7 @@
               }, move.name);
             } else execute(minimum);
           };
-          const rollWeaponDamage = (dmgStr, mult, bonus, profile) => {
+          const rollWeaponDamage = async (dmgStr, mult, bonus, profile) => {
               if (!dmgStr) return null;
               mult = mult || 1; bonus = bonus || 0; profile = profile || {};
               const match = String(dmgStr).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i);
@@ -1364,79 +1353,54 @@
               const keptCount = baseCount * mult;
               const rolledCount = keptCount + (profile.massive ? 1 : 0);
               const staticMod = match[3] ? parseInt(match[3].replace(/\s/g, ''), 10) : 0;
-              const rolls = [], rerolls = [];
-              for (let index = 0; index < rolledCount; index++) {
-                  const first = Math.floor(Math.random() * sides) + 1;
-                  let final = first;
-                  if (profile.brutal && first === 1) {
-                      final = Math.floor(Math.random() * sides) + 1;
-                      rerolls.push({ index, from: first, to: final });
-                  }
-                  rolls.push(final);
+              let rolls = await rollVisualDice([{ qty: rolledCount, sides, theme:'vfDamage', role:'Damage' }], profile.weapon ? `${profile.weapon.name} · Damage` : 'Damage', { deferResults:true });
+              const rerolls = [];
+              if (profile.brutal) {
+                const ones = rolls.map((v,i)=>v===1?i:-1).filter(i=>i>=0);
+                if (ones.length) {
+                  const replacements = await rollVisualDice([{ qty:ones.length, sides, theme:'vfDamage', role:'Brutal reroll' }], 'Brutal reroll', { deferResults:true });
+                  ones.forEach((idx,j)=>{ rerolls.push({index:idx,from:1,to:replacements[j]}); rolls[idx]=replacements[j]; });
+                }
               }
-              const keptRolls = rolls.slice();
-              const discardedIndices = [];
+              const keptRolls = rolls.slice(); const discardedIndices=[];
               if (profile.massive && keptRolls.length > keptCount) {
-                  let lowest = 0;
-                  for (let i = 1; i < keptRolls.length; i++) if (keptRolls[i] < keptRolls[lowest]) lowest = i;
-                  discardedIndices.push(lowest);
-                  keptRolls.splice(lowest, 1);
+                let lowest=0; for(let i=1;i<keptRolls.length;i++) if(keptRolls[i]<keptRolls[lowest]) lowest=i;
+                discardedIndices.push(lowest); keptRolls.splice(lowest,1);
               }
-              const rerollMap = new Map(rerolls.map(item => [item.index, item]));
-              const damageDiceResults = rolls.map((value, index) => ({
-                  index,
-                  value,
-                  status: discardedIndices.includes(index) ? 'discarded' : 'kept',
-                  rerolledFrom: rerollMap.has(index) ? rerollMap.get(index).from : null
-              }));
-              const paired = Number(profile.pairedBonus) || 0;
-              const extra = staticMod + bonus + paired;
-              const sum = keptRolls.reduce((total, value) => total + value, 0);
-              const ruleParts = [];
-              if (profile.massive) ruleParts.push(`Massive: rolled ${rolledCount}d${sides}, discarded lowest`);
-              if (profile.brutal && rerolls.length) ruleParts.push(`Brutal: rerolled ${rerolls.length} result${rerolls.length === 1 ? '' : 's'} of 1`);
-              if (paired) ruleParts.push(`Paired +${paired}`);
-              return {
-                  total: sum + extra,
-                  detail: keptRolls.join('+') + (extra ? (extra > 0 ? '+' + extra : extra) : ''),
-                  dice: keptCount + 'd' + sides,
-                  rolledDice: rolledCount + 'd' + sides,
-                  rolls,
-                  keptRolls,
-                  discardedIndices,
-                  damageDiceResults,
-                  rerolls,
-                  modifier: extra,
-                  base: String(dmgStr),
-                  rules: ruleParts,
-                  modifierBreakdown: { weapon: staticMod, honed: bonus, paired }
-              };
+              const rerollMap=new Map(rerolls.map(item=>[item.index,item]));
+              const damageDiceResults=rolls.map((value,index)=>({index,value,status:discardedIndices.includes(index)?'discarded':'kept',rerolledFrom:rerollMap.has(index)?rerollMap.get(index).from:null}));
+              const paired=Number(profile.pairedBonus)||0; const extra=staticMod+bonus+paired;
+              const sum=keptRolls.reduce((total,value)=>total+value,0); const ruleParts=[];
+              if(profile.massive) ruleParts.push(`Massive: rolled ${rolledCount}d${sides}, discarded lowest`);
+              if(profile.brutal&&rerolls.length) ruleParts.push(`Brutal: rerolled ${rerolls.length} result${rerolls.length===1?'':'s'} of 1`);
+              if(paired) ruleParts.push(`Paired +${paired}`);
+              const total=sum+extra;
+              showResolvedDice({label:profile.weapon?`${profile.weapon.name} · Damage`:'Damage',rolls:damageDiceResults.map(d=>({value:d.value,sides,drop:d.status==='discarded',reroll:d.rerolledFrom!=null,role:d.status==='discarded'?'DROP':'KEEP'})),modifier:extra,value:total});
+              return {total,detail:keptRolls.join('+')+(extra?(extra>0?'+'+extra:extra):''),dice:keptCount+'d'+sides,rolledDice:rolledCount+'d'+sides,rolls,keptRolls,discardedIndices,damageDiceResults,rerolls,modifier:extra,base:String(dmgStr),rules:ruleParts,modifierBreakdown:{weapon:staticMod,honed:bonus,paired}};
           };
           const traitModForWeapon = (traitStr) => { if (!traitStr) return 0; var tt=String(traitStr).toLowerCase(); var ks=['agility','strength','finesse','instinct','presence','knowledge']; for (var n=0;n<ks.length;n++){ if (tt.indexOf(ks[n])!==-1) return (parseInt(character.stats && character.stats[ks[n]], 10) || 0); } return 0; };
-          const rollDuality = (opts) => {
+          const rollDuality = async (opts) => {
               const o = (opts && typeof opts === 'object' && !opts.nativeEvent) ? opts : {};
               const profile = o.weapon ? weaponAttackProfile(o.weapon, character, character.weapons) : null;
               const traitBonus = profile ? profile.traitMod : 0;
               const featureAttackBonus = profile ? profile.attackBonus : 0;
               const extraMod = (parseInt(o.extraMod, 10) || 0) + traitBonus + featureAttackBonus;
               const lbl = (typeof o.label === 'string') ? o.label : (profile ? `Attack: ${profile.weapon.name}` : rollLabel);
-              const hopeDie = (o.hopeDie != null) ? o.hopeDie : Math.floor(Math.random() * 12) + 1;
-              const fearDie = (o.fearDie != null) ? o.fearDie : Math.floor(Math.random() * 12) + 1;
+              let hopeDie = o.hopeDie != null ? Number(o.hopeDie) : null;
+              let fearDie = o.fearDie != null ? Number(o.fearDie) : null;
               const modVal = Math.max(-20, Math.min(20, parseInt(rollModifier, 10) || 0)) + extraMod;
               let effectiveRollType = o.rollType || playerRollType;
               if (profile && profile.heavyDisadvantage) {
                   effectiveRollType = effectiveRollType === 'advantage' ? 'normal' : 'disadvantage';
               }
-              let extraDie = 0;
-              let total = hopeDie + fearDie + modVal;
-
-              if (effectiveRollType === 'advantage') {
-                  extraDie = Math.floor(Math.random() * 6) + 1;
-                  total += extraDie;
-              } else if (effectiveRollType === 'disadvantage') {
-                  extraDie = Math.floor(Math.random() * 6) + 1;
-                  total -= extraDie;
-              }
+              const dualGroups=[];
+              if (hopeDie == null) dualGroups.push({qty:1,sides:12,theme:'vfHope',role:'Hope'});
+              if (fearDie == null) dualGroups.push({qty:1,sides:12,theme:'vfFear',role:'Fear'});
+              if (effectiveRollType !== 'normal') dualGroups.push({qty:1,sides:6,theme:'vfNeutral',role:effectiveRollType});
+              const dualValues=dualGroups.length ? await rollVisualDice(dualGroups,lbl) : [];
+              let cursor=0; if(hopeDie==null) hopeDie=dualValues[cursor++]; if(fearDie==null) fearDie=dualValues[cursor++];
+              let extraDie=effectiveRollType==='normal'?0:dualValues[cursor++];
+              let total=hopeDie+fearDie+modVal+(effectiveRollType==='advantage'?extraDie:(effectiveRollType==='disadvantage'?-extraDie:0));
 
               let outcome = '';
               let outcomeColor = '';
@@ -1457,7 +1421,7 @@
               const weaponDamage = profile ? profile.weapon.damage : o.weaponDamage;
               if (weaponDamage) {
                   const honed = (character.path === 'sleeping') ? Math.max(0, (parseInt(character.level) || 1) - 1) : 0;
-                  dmgInfo = rollWeaponDamage(weaponDamage, isCrit ? 2 : 1, honed, profile || {});
+                  dmgInfo = await rollWeaponDamage(weaponDamage, isCrit ? 2 : 1, honed, profile || {});
               }
               let charUpd = { ...character }; let charChanged = false;
               if (o.spend && o.spend.resource) {
@@ -1496,17 +1460,11 @@
                   resourceCost: o.spend || null,
                   type: 'duality', timestamp: Date.now()
               };
-              const notationParts = ['1d12', '1d12'];
-              const desiredResults = [hopeDie, fearDie];
-              if (extraDie) { notationParts.push('1d6'); desiredResults.push(extraDie); }
-              if (dmgInfo && dmgInfo.rolledDice) { notationParts.push(dmgInfo.rolledDice); desiredResults.push(...dmgInfo.rolls); }
-              presentDiceResult(notationParts.join('+'), desiredResults, () => {
-                setRollResult(resultObj);
-                setRollModifier(0);
-                logRoll(resultObj);
-                setPlayerRollType('normal');
-                if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
-              });
+              setRollResult(resultObj);
+              setRollModifier(0);
+              logRoll(resultObj);
+              setPlayerRollType('normal');
+              if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
           };
           const canPayFeatureCost = (cost) => {
               if (!cost || !cost.resource || !cost.amount) return true;
@@ -1522,7 +1480,7 @@
               if (cost.resource === 'hope') options.push({ ...cost, resource: 'effort', alternativeFor: 'hope' });
               return options;
           };
-          const executeFeatureAction = (featureKind, summary, action, selectedCost) => {
+          const executeFeatureAction = async (featureKind, summary, action, selectedCost) => {
               const paymentCost = selectedCost === undefined ? (action && action.cost) : selectedCost;
               if (!action || !canPayFeatureCost(paymentCost)) return;
               const paymentLabel = paymentCost && paymentCost.amount ? ` · ${paymentCost.amount} ${paymentCost.resource}` : '';
@@ -1542,8 +1500,8 @@
               }
               if (action.type === 'die') {
                   const sides = Number(action.die) || 12;
-                  const value = Math.floor(Math.random() * sides) + 1;
-                  presentDiceResult(`1d${sides}`, [value], () => logRoll({ type:'generic', label, rolls:[value], die:sides, count:1, modifier:0, sum:value, total:value, feature:summary.title, dieName:action.dieName || `d${sides}`, resourceCost:paymentCost || null, playerName: character.name || character.playerName || 'Player', timestamp: Date.now() }));
+                  const value = (await rollVisualDice([{qty:1,sides,theme:'vfNeutral',role:action.dieName || `d${sides}`}], label))[0];
+                  logRoll({ type:'generic', label, rolls:[value], die:sides, count:1, modifier:0, sum:value, total:value, feature:summary.title, dieName:action.dieName || `d${sides}`, resourceCost:paymentCost || null, playerName: character.name || character.playerName || 'Player', timestamp: Date.now() });
                   return;
               }
               logRoll({ type:'note', label, playerName: character.name || character.playerName || 'Player', timestamp: Date.now(), feature: summary.title, resourceCost: paymentCost || null });
@@ -1570,17 +1528,11 @@
           }
 
           // --- LOGICA GENERIC ---
-          const rollGenericLogic = (dieType, count, modifier, setResultFn, broadcast) => {
-              const rolls = [];
-              let sum = 0;
+          const rollGenericLogic = async (dieType, count, modifier, setResultFn, broadcast) => {
               const c = Math.max(1, Math.min(99, parseInt(count) || 1));
               const sides = parseInt(dieType) || 20;
-
-              for (let i = 0; i < c; i++) {
-                  const val = Math.floor(Math.random() * sides) + 1;
-                  rolls.push(val);
-                  sum += val;
-              }
+              const rolls = await rollVisualDice([{qty:c,sides,theme:'vfNeutral',role:'Standard'}], `${c}d${sides}`);
+              const sum = rolls.reduce((n,v)=>n+v,0);
 
               const mod = Math.max(-20, Math.min(20, parseInt(modifier, 10) || 0));
               const total = sum + mod;
@@ -1591,10 +1543,8 @@
                   playerName: character.name || character.playerName || "Unknown",
                   timestamp: Date.now()
               };
-              presentDiceResult(`${c}d${sides}`, rolls, () => {
-                setResultFn(resultObj);
-                if (broadcast) logRoll(resultObj);
-              });
+              setResultFn(resultObj);
+              if (broadcast) logRoll(resultObj);
           };
 
           const rollGenericGM = () => {
@@ -1670,6 +1620,7 @@
               if (isConnected && fbServices) {
                   const { db, setDoc, doc, arrayUnion } = fbServices;
                   const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId));
+                  const remoteRoll = { ...enrichedRoll };
                   setDoc(docRef, {
                       lastRoll: remoteRoll,
                       rollHistory: arrayUnion(remoteRoll),
@@ -1736,10 +1687,9 @@
                   // Initialize and Wait for Auth using the runtime config inside initFirebase
                   // The function now handles auth persistence and anonymous login
                   const services = await window.initFirebase();
-                  const cleanSessionId = normalizeSessionKey(sessionId);
-                  if (cleanSessionId !== sessionId) setSessionId(cleanSessionId);
                   
                   if (services) {
+                      const cleanSessionId = normalizeSessionKey(sessionId);
                       // Password gate: check the table before joining.
                       const ref = services.doc(services.db, 'artifacts', appId, 'public', 'data', 'sessions', cleanSessionId);
                       const snap = await ref.get();
@@ -1759,8 +1709,6 @@
                           extra.passHash = await hashPass(tablePass);
                           localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, extra.passHash);
                       }
-                      // Verify write access before the UI reports a successful connection.
-                      await services.setDoc(ref, extra, { merge: true });
                       setFbServices(services); 
                       setIsConnected(true); 
                       setShowConfig(false);
@@ -1768,7 +1716,9 @@
                       startListening(services, cleanSessionId);
                       // New session start: everyone begins with 2 Hope / 2 Effort.
                       setCharacters(prev => prev.map(c => ({ ...c, hope: { ...(c.hope || { max: 5 }), current: 2 }, effort: { ...(c.effort || { max: 6 }), current: 2 } })));
+                      await services.setDoc(ref, extra, { merge: true });
                       localStorage.setItem('veilfarers_session_id', cleanSessionId);
+                      setSessionId(cleanSessionId);
                       setTablePass('');
                   }
               } catch (err) { 
@@ -1860,7 +1810,6 @@
                       if (undefinedPaths.length) console.warn('Character session contained optional undefined values; normalized before save:', undefinedPaths);
                       await setDoc(docRef, savePayload, { merge: true });
                       setIsSyncing(false);
-                      setErrorMsg(prev => prev && prev.startsWith('Save error:') ? '' : prev);
                   } catch (e) { 
                       console.error(e); 
                       setIsSyncing(false); 
@@ -2211,22 +2160,6 @@
                 </div>
               )}
 
-              {dice3DRequest && (
-                <div className="vf-3d-stage">
-                  <div ref={dice3DContainerRef} className="vf-3d-canvas" aria-label="3D dice animation"></div>
-                  <div className="vf-3d-hud">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-black text-white">3D Dice · {dice3DRequest.notation}</div>
-                        <div className="text-[10px] text-slate-400 mt-1">{dice3DStatus || 'Preparing roll…'}</div>
-                      </div>
-                      <button onClick={() => completeDice3D(dice3DRequest)} className="px-3 py-2 rounded border border-cyan-700 bg-cyan-950/40 text-cyan-200 text-[10px] font-black uppercase hover:border-cyan-400">Skip animation</button>
-                    </div>
-                    <div className="mt-2 text-[8px] text-slate-500">3D renderer: sarahRosannaBusch/dice, MIT License · derived from Anton Natarov (Teal) · three.js + cannon.js.</div>
-                  </div>
-                </div>
-              )}
-
               {showSettings && (
                   <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" onClick={() => setShowSettings(false)}>
                       <div className="bg-slate-900 border border-slate-600 rounded-xl p-6 max-w-lg w-full shadow-[0_0_30px_rgba(148,163,184,0.15)]" onClick={e => e.stopPropagation()}>
@@ -2264,14 +2197,14 @@
                               </div>
                             </div>
                             <div className="flex items-center justify-between gap-3">
-                              <div><label className="text-xs font-bold text-slate-500 uppercase block">Dice display</label><span className="text-[10px] text-slate-500">3D loads the optional external renderer only when used.</span></div>
+                              <div><label className="text-xs font-bold text-slate-500 uppercase block">Dice display</label><span className="text-[10px] text-slate-500">3D loads the bundled official Fantastic Dice renderer only when used.</span></div>
                               <div className="flex rounded-lg border border-slate-700 bg-slate-950 p-1">
                                 <button onClick={() => setDiceMode('2d')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceMode === '2d' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>2D</button>
                                 <button onClick={() => setDiceMode('3d')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceMode === '3d' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>3D</button>
                               </div>
                             </div>
                             <div className="rounded border border-slate-800 bg-slate-950/50 p-3 text-[9px] text-slate-500 leading-relaxed">
-                              Optional 3D renderer by <a className="text-cyan-400 hover:text-cyan-200" href="https://github.com/sarahRosannaBusch/dice" target="_blank" rel="noreferrer">sarahRosannaBusch/dice</a>, used under the MIT License. Derived from Anton Natarov (Teal), using three.js and cannon.js. See THIRD_PARTY_NOTICES.md.
+                              Optional 3D renderer: <a className="text-cyan-400 hover:text-cyan-200" href="https://github.com/3d-dice/dice-box" target="_blank" rel="noreferrer">@3d-dice/dice-box</a> with the <a className="text-cyan-400 hover:text-cyan-200" href="https://fantasticdice.games/docs/addons/displayResults" target="_blank" rel="noreferrer">DisplayResults</a> addon, used under the MIT License. Hope, Fear and Damage use distinct accessible VeilFarers themes. See THIRD_PARTY_NOTICES.md.
                             </div>
                             <div>
                               <div className="flex items-center justify-between gap-3 mb-3">
@@ -2940,6 +2873,7 @@
           document.getElementById('root').innerHTML = '<div style="max-width:720px;margin:80px auto;padding:24px;border:1px solid #7f1d1d;border-radius:12px;background:#1f0a0a;color:#fecaca;font-family:system-ui">Player Tool could not load the canonical RC3 rules data. Check that the <code>/rules-data</code> folder was deployed.</div>';
         });
     </script>
+  <script type="module" src="assets/3d-dice/vf-dice3d.js"></script>
   <script src="portal.js"></script>
 </body>
 </html>
