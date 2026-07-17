@@ -1,10 +1,10 @@
 {
-  "name": "VeilFarers Hope",
+  "name": "VeilFarers Hope Tech",
   "systemName": "vfHope",
   "author": "VeilFarers / Frank Ali",
   "version": 1.0,
   "meshFile": "default.json",
-  "themeColor": "#f4c542",
+  "themeColor": "#ffffff",
   "material": {
     "type": "color",
     "diffuseTexture": {

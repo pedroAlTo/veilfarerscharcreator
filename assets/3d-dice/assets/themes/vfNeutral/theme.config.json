@@ -1,10 +1,10 @@
 {
-  "name": "VeilFarers Neutral",
+  "name": "VeilFarers Neutral Tech",
   "systemName": "vfNeutral",
   "author": "VeilFarers / Frank Ali",
   "version": 1.0,
   "meshFile": "default.json",
-  "themeColor": "#168ca8",
+  "themeColor": "#ffffff",
   "material": {
     "type": "color",
     "diffuseTexture": {

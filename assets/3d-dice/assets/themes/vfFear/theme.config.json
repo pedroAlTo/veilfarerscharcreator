@@ -1,10 +1,10 @@
 {
-  "name": "VeilFarers Fear",
+  "name": "VeilFarers Fear Tech",
   "systemName": "vfFear",
   "author": "VeilFarers / Frank Ali",
   "version": 1.0,
   "meshFile": "default.json",
-  "themeColor": "#8b5cf6",
+  "themeColor": "#ffffff",
   "material": {
     "type": "color",
     "diffuseTexture": {

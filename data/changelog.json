@@ -1,7 +1,32 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.18",
+  "currentVersion": "v59.20",
   "entries": [
+    {
+      "version": "v59.20",
+      "date": "2026-07-17",
+      "title": "Mobile options escape hotfix",
+      "changes": [
+        "Rebuilt Player Tool Options as a mobile-safe full-height dialog with its own scroll region.",
+        "Added an always-visible Close control in the Options header and a persistent Back to Player Tool action in the footer.",
+        "Added Escape-key closing and body scroll locking while Options is open.",
+        "Added safe-area padding for phones with notches and home indicators.",
+        "Raised Options above the canonical navigation and other application layers."
+      ]
+    },
+    {
+      "version": "v59.19",
+      "date": "2026-07-17",
+      "title": "Dice themes, critical glow, gray discard and log controls",
+      "changes": [
+        "Added Plain, Tech and Crystal 3D dice theme options.",
+        "Rebuilt Tech atlases so the technological texture is clearly visible.",
+        "Changed textured Fear dice numerals to white.",
+        "Added critical glow to Hope and Fear dice in 2D callouts and the 3D stage.",
+        "Added gray-off replacement for discarded dice in the 3D scene and result display.",
+        "Raised Roll History above portal navigation and kept Reset / Close controls sticky and visible."
+      ]
+    },
     {
       "version": "v59.18",
       "date": "2026-07-17",
@@ -203,5 +228,5 @@
       ]
     }
   ],
-  "version": "v59.18"
+  "version": "v59.20"
 }

@@ -308,6 +308,9 @@
         .vf-die3 { display:inline-flex; align-items:center; justify-content:center; transform-style:preserve-3d; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.45)); }
         .vf-die3 svg { display:block; overflow:visible; }
         .vf-die3.rolling { animation: vf-tumble 0.72s cubic-bezier(0.2,0.7,0.3,1); }
+        @keyframes vf-crit-die-glow { 0%,100% { filter:drop-shadow(0 0 5px rgba(250,204,21,.72)) drop-shadow(0 0 10px rgba(168,85,247,.48)); transform:scale(1); } 50% { filter:drop-shadow(0 0 12px rgba(250,204,21,1)) drop-shadow(0 0 20px rgba(168,85,247,.86)); transform:scale(1.08); } }
+        .vf-die3.is-critical { animation:vf-crit-die-glow .9s ease-in-out infinite; }
+        .vf-die3.rolling.is-critical { animation:vf-tumble .72s cubic-bezier(0.2,0.7,0.3,1),vf-crit-die-glow .9s ease-in-out infinite; }
         /* Button press feedback: pronounced scale-up + glowing ring + brightness flash */
         @keyframes vf-btn-press { 0% { transform: scale(1); } 28% { transform: scale(1.13); box-shadow: 0 0 0 3px rgba(255,255,255,0.30), 0 0 20px 4px rgba(125,211,252,0.7); filter: brightness(1.35); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); filter: brightness(1); } }
         .vf-btn-pressed { animation: vf-btn-press 0.42s cubic-bezier(0.3,0,0.3,1); z-index: 5; position: relative; }
@@ -404,7 +407,7 @@
 
         /* One die: shape by `sides`, colour by `variant`, tumbles + scrambles faces while
            `rolling`, then settles on `value`. */
-        const ShapedDie = ({ sides, value, rolling, variant, size }) => {
+        const ShapedDie = ({ sides, value, rolling, variant, size, critical }) => {
           const [face, setFace] = useState(value);
           useEffect(() => {
             if (!rolling) { setFace(value); return; }
@@ -418,12 +421,12 @@
           const stroke = variant === 'hope' ? '#facc15' : variant === 'fear' ? '#a855f7'
                        : variant === 'damage' ? '#ef4444' : variant === 'discarded' ? '#94a3b8'
                        : variant === 'max' ? '#fde047' : variant === 'crit' ? '#f87171' : '#64748b';
-          const txt = (variant === 'hope') ? '#111827' : (variant === 'fear') ? '#111827'
+          const txt = (variant === 'hope') ? '#111827' : (variant === 'fear') ? '#ffffff'
                        : (variant === 'damage') ? '#ffffff' : (variant === 'discarded') ? '#f1f5f9'
                        : (variant === 'max') ? '#3a2c00' : (variant === 'crit') ? '#3a0a0a' : '#e2e8f0';
           const px = size || 34;
           return (
-            <span className={`vf-die3 ${rolling ? 'rolling' : ''}`} style={{ width: px, height: px }}>
+            <span className={`vf-die3 ${rolling ? 'rolling' : ''} ${critical ? 'is-critical' : ''}`} style={{ width: px, height: px }}>
               <svg viewBox="0 0 40 42" width={px} height={px}>
                 <polygon points={sh.pts} fill={`url(#${fillId})`} stroke={stroke} strokeWidth="2" strokeLinejoin="round" />
                 {(sh.lines || []).map((ln, i) => (
@@ -502,7 +505,7 @@
               {callout.type === 'duality' ? (
                 <div className="mt-2">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="vf-callout-dice gap-1"><ShapedDie sides={12} value={callout.hope} rolling={rolling} variant="hope" size={29} /><ShapedDie sides={12} value={callout.fear} rolling={rolling} variant="fear" size={29} /></div>
+                    <div className="vf-callout-dice gap-1"><ShapedDie sides={12} value={callout.hope} rolling={rolling} variant="hope" size={29} critical={!!callout.crit} /><ShapedDie sides={12} value={callout.fear} rolling={rolling} variant="fear" size={29} critical={!!callout.crit} /></div>
                     <div className={`text-right vf-callout-result ${rolling ? 'is-rolling' : ''}`}><div className="text-2xl font-black text-white leading-none">{callout.total}</div><div className={`text-[8px] font-black ${callout.outcomeColor || ''}`}>{callout.outcome}</div></div>
                   </div>
                   {callout.attackBreakdown && callout.attackBreakdown.length > 0 && <div className="mt-1 flex flex-wrap gap-1">{callout.attackBreakdown.map((part,index) => <span key={index} className="px-1.5 py-0.5 rounded border border-slate-700 bg-black text-[8px] text-slate-300">{part.label} {part.value >= 0 ? '+' : ''}{part.value}</span>)}</div>}
@@ -907,7 +910,8 @@
           const [weaponManagerView, setWeaponManagerView] = useState('arsenal');
           const [showCustomWeaponForm, setShowCustomWeaponForm] = useState(false);
           const [customWeaponDraft, setCustomWeaponDraft] = useState({ name:'', trait:'', range:'', damage:'', feature:'' });
-          const [showHistory, setShowHistory] = useState(false); 
+          const [showHistory, setShowHistory] = useState(false);
+          useEffect(() => { if (!showHistory) return; const closeHistory = (event) => { if (event.key === 'Escape') setShowHistory(false); }; window.addEventListener('keydown', closeHistory); return () => window.removeEventListener('keydown', closeHistory); }, [showHistory]); 
           const [selectedDomain, setSelectedDomain] = useState("Tech");
           const [expandedPanels, setExpandedPanels] = useState({});
           const panelExpanded = (id) => !!expandedPanels[id];
@@ -943,6 +947,20 @@
           const [showConfig, setShowConfig] = useState(false);
           // Settings (gear) — currently just the app background; extensible for more later.
           const [showSettings, setShowSettings] = useState(false);
+          useEffect(() => {
+            if (!showSettings) return;
+            const previousOverflow = document.body.style.overflow;
+            const previousOverscroll = document.body.style.overscrollBehavior;
+            document.body.style.overflow = 'hidden';
+            document.body.style.overscrollBehavior = 'none';
+            const closeSettings = (event) => { if (event.key === 'Escape') setShowSettings(false); };
+            window.addEventListener('keydown', closeSettings);
+            return () => {
+              document.body.style.overflow = previousOverflow;
+              document.body.style.overscrollBehavior = previousOverscroll;
+              window.removeEventListener('keydown', closeSettings);
+            };
+          }, [showSettings]);
           const [bgChoice, setBgChoice] = useState(() => { try { return localStorage.getItem('veilfarers_bg') || 'none'; } catch (e) { return 'none'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_bg', bgChoice); } catch (e) {} }, [bgChoice]);
           const BACKGROUNDS = {
@@ -992,7 +1010,7 @@
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_mode', diceMode); } catch (e) {} }, [diceMode]);
           const [dice3DStyle, setDice3DStyle] = useState(() => { try { return localStorage.getItem('veilfarers_dice_3d_style') === 'overlay' ? 'overlay' : 'box'; } catch (e) { return 'box'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_3d_style', dice3DStyle); } catch (e) {} try { window.VFDice3D && window.VFDice3D.setStyle && window.VFDice3D.setStyle(dice3DStyle); } catch (e) {} }, [dice3DStyle]);
-          const [diceTextureSet, setDiceTextureSet] = useState(() => { try { return localStorage.getItem('veilfarers_dice_texture_set') === 'biolum' ? 'biolum' : 'tech'; } catch (e) { return 'tech'; } });
+          const [diceTextureSet, setDiceTextureSet] = useState(() => { try { const saved=localStorage.getItem('veilfarers_dice_texture_set'); return saved === 'plain' ? 'plain' : (saved === 'crystal' || saved === 'biolum') ? 'crystal' : 'tech'; } catch (e) { return 'tech'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_texture_set', diceTextureSet); } catch (e) {} }, [diceTextureSet]);
           const [timeTravelRevision, setTimeTravelRevision] = useState(0);
           // ===== NOTES / HANDOUTS =====
@@ -1048,8 +1066,13 @@
             return null;
           };
           const applyDiceTextureSet = (groups) => {
-            const biolumThemes = { vfHope:'vfBioHope', vfFear:'vfBioFear', vfDamage:'vfBioDamage' };
-            return (groups || []).map(group => ({ ...group, theme: diceTextureSet === 'biolum' ? (biolumThemes[group.theme] || group.theme) : group.theme }));
+            const crystalThemes = { vfHope:'vfBioHope', vfFear:'vfBioFear', vfDamage:'vfBioDamage', vfNeutral:'vfPlainNeutral' };
+            const plainThemes = { vfHope:'vfPlainHope', vfFear:'vfPlainFear', vfDamage:'vfPlainDamage', vfNeutral:'vfPlainNeutral' };
+            return (groups || []).map(group => {
+              const base=group.theme || 'vfNeutral';
+              const theme=diceTextureSet === 'plain' ? (plainThemes[base] || base) : diceTextureSet === 'crystal' ? (crystalThemes[base] || base) : base;
+              return { ...group, theme };
+            });
           };
           const rollVisualDice = async (groups, label, options) => {
             const themedGroups = applyDiceTextureSet(groups);
@@ -1447,7 +1470,7 @@
               if(profile.brutal&&rerolls.length) ruleParts.push(`Brutal: rerolled ${rerolls.length} result${rerolls.length===1?'':'s'} of 1`);
               if(paired) ruleParts.push(`Paired +${paired}`);
               const total=sum+extra;
-              showResolvedDice({label:profile.weapon?`${profile.weapon.name} · Damage`:'Damage',rolls:damageDiceResults.map(d=>({value:d.value,sides,drop:d.status==='discarded',reroll:d.rerolledFrom!=null,role:d.status==='discarded'?'DROP':'KEEP'})),modifier:extra,value:total});
+              showResolvedDice({label:profile.weapon?`${profile.weapon.name} · Damage`:'Damage',crit:mult>1,rolls:damageDiceResults.map(d=>({value:d.value,sides,drop:d.status==='discarded',reroll:d.rerolledFrom!=null,role:d.status==='discarded'?'DROP':'KEEP'})),modifier:extra,value:total});
               return {total,detail:keptRolls.join('+')+(extra?(extra>0?'+'+extra:extra):''),dice:keptCount+'d'+sides,rolledDice:rolledCount+'d'+sides,rolls,keptRolls,discardedIndices,damageDiceResults,rerolls,modifier:extra,base:String(dmgStr),rules:ruleParts,modifierBreakdown:{weapon:staticMod,honed:bonus,paired}};
           };
           const traitModForWeapon = (traitStr) => { if (!traitStr) return 0; var tt=String(traitStr).toLowerCase(); var ks=['agility','strength','finesse','instinct','presence','knowledge']; for (var n=0;n<ks.length;n++){ if (tt.indexOf(ks[n])!==-1) return (parseInt(character.stats && character.stats[ks[n]], 10) || 0); } return 0; };
@@ -1489,8 +1512,10 @@
               }
 
               const isCrit = outcome.indexOf('CRITICAL') !== -1;
+              if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.setCritical === 'function') { try { window.VFDice3D.setCritical(isCrit); } catch (error) { console.warn(error); } }
               let dmgInfo = null;
               const weaponDamage = profile ? profile.weapon.damage : o.weaponDamage;
+              if (isCrit && weaponDamage && diceMode === '3d') await new Promise(resolve => setTimeout(resolve, 820));
               if (weaponDamage) {
                   const honed = (character.path === 'sleeping') ? Math.max(0, (parseInt(character.level) || 1) - 1) : 0;
                   dmgInfo = await rollWeaponDamage(weaponDamage, isCrit ? 2 : 1, honed, profile || {});
@@ -2221,10 +2246,30 @@
               )}
 
               {showSettings && (
-                  <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" onClick={() => setShowSettings(false)}>
-                      <div className="bg-slate-900 border border-slate-600 rounded-xl p-6 max-w-lg w-full shadow-[0_0_30px_rgba(148,163,184,0.15)]" onClick={e => e.stopPropagation()}>
-                          <h2 className="text-xl font-bold text-slate-200 mb-4 flex items-center gap-2"><Settings /> Settings</h2>
+                  <div
+                    className="fixed inset-0 bg-black/90 z-[30000] flex items-start sm:items-center justify-center overflow-hidden sm:p-4"
+                    role="presentation"
+                    onClick={() => setShowSettings(false)}
+                  >
+                      <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="vf-settings-title"
+                        className="relative bg-slate-900 border-0 sm:border border-slate-600 rounded-none sm:rounded-xl w-full max-w-lg h-[100dvh] sm:h-auto sm:max-h-[calc(100dvh-2rem)] shadow-[0_0_30px_rgba(148,163,184,0.15)] flex flex-col overflow-hidden"
+                        onClick={e => e.stopPropagation()}
+                      >
+                          <div className="shrink-0 flex items-center justify-between gap-3 px-4 sm:px-6 pt-[calc(env(safe-area-inset-top)+0.75rem)] sm:pt-5 pb-3 border-b border-slate-800 bg-slate-900/98 backdrop-blur">
+                            <h2 id="vf-settings-title" className="text-lg sm:text-xl font-bold text-slate-200 flex items-center gap-2"><Settings /> Options</h2>
+                            <button
+                              type="button"
+                              onClick={() => setShowSettings(false)}
+                              className="shrink-0 min-w-11 min-h-11 inline-flex items-center justify-center rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:text-white hover:border-cyan-500 active:bg-slate-800"
+                              aria-label="Close options and return to Player Tool"
+                              title="Close options"
+                            ><X className="w-5 h-5" /></button>
+                          </div>
 
+                          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4" style={{ WebkitOverflowScrolling: 'touch' }}>
                           <div className="mb-2">
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Background</label>
                             <div className="grid grid-cols-3 gap-2">
@@ -2271,14 +2316,15 @@
                               </div>
                             </div>
                             <div className="flex items-center justify-between gap-3">
-                              <div><label className="text-xs font-bold text-slate-500 uppercase block">3D texture set</label><span className="text-[10px] text-slate-500">Choose the approved technological plates or bioluminescent crystal materials.</span></div>
+                              <div><label className="text-xs font-bold text-slate-500 uppercase block">3D texture set</label><span className="text-[10px] text-slate-500">Choose flat colours, technological plates, or bioluminescent crystal materials.</span></div>
                               <div className={`flex rounded-lg border border-slate-700 bg-slate-950 p-1 ${diceMode === '3d' ? '' : 'opacity-40 pointer-events-none'}`}>
+                                <button onClick={() => setDiceTextureSet('plain')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceTextureSet === 'plain' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>PLAIN</button>
                                 <button onClick={() => setDiceTextureSet('tech')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceTextureSet === 'tech' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>TECH</button>
-                                <button onClick={() => setDiceTextureSet('biolum')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceTextureSet === 'biolum' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>BIOLUM</button>
+                                <button onClick={() => setDiceTextureSet('crystal')} className={`px-3 py-1.5 rounded text-[10px] font-black ${diceTextureSet === 'crystal' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>CRYSTAL</button>
                               </div>
                             </div>
                             <div className="rounded border border-slate-800 bg-slate-950/50 p-3 text-[9px] text-slate-500 leading-relaxed">
-                              Optional 3D renderer: <a className="text-cyan-400 hover:text-cyan-200" href="https://github.com/3d-dice/dice-box" target="_blank" rel="noreferrer">@3d-dice/dice-box</a> with the <a className="text-cyan-400 hover:text-cyan-200" href="https://fantasticdice.games/docs/addons/displayResults" target="_blank" rel="noreferrer">DisplayResults</a> addon, used under the MIT License. Hope, Fear and Damage use selectable Tech or Biolum VeilFarers themes. The gray-off crystal is used for discarded-result cues. See THIRD_PARTY_NOTICES.md.
+                              Optional 3D renderer: <a className="text-cyan-400 hover:text-cyan-200" href="https://github.com/3d-dice/dice-box" target="_blank" rel="noreferrer">@3d-dice/dice-box</a> with the <a className="text-cyan-400 hover:text-cyan-200" href="https://fantasticdice.games/docs/addons/displayResults" target="_blank" rel="noreferrer">DisplayResults</a> addon, used under the MIT License. Hope, Fear and Damage use selectable Plain, Tech, or Crystal VeilFarers themes. The gray-off crystal is used for discarded-result cues. See THIRD_PARTY_NOTICES.md.
                             </div>
                             <div>
                               <div className="flex items-center justify-between gap-3 mb-3">
@@ -2336,8 +2382,13 @@
                             </div>
                           </div>
 
-                          <div className="flex justify-end gap-2 mt-5">
-                              <button onClick={() => setShowSettings(false)} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-bold">Done</button>
+                          </div>
+                          <div className="shrink-0 px-4 sm:px-6 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:pb-4 border-t border-slate-800 bg-slate-900/98 backdrop-blur">
+                              <button
+                                type="button"
+                                onClick={() => setShowSettings(false)}
+                                className="w-full px-4 py-3 bg-cyan-700 hover:bg-cyan-600 active:bg-cyan-800 text-white rounded-lg font-black uppercase tracking-wide"
+                              >Back to Player Tool</button>
                           </div>
                       </div>
                   </div>
@@ -2354,8 +2405,8 @@
 
               {/* HISTORY PANEL */}
               {showHistory && (
-                 <div className="fixed inset-y-0 right-0 w-full sm:w-80 bg-slate-950 border-l border-slate-800 z-50 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                    <div className="p-4 border-b border-slate-800 flex justify-between items-center gap-3 bg-slate-900">
+                 <div className="fixed inset-y-0 right-0 w-full sm:w-80 bg-slate-950 border-l border-slate-800 z-[20050] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+                    <div className="sticky top-0 z-30 p-4 border-b border-slate-800 flex justify-between items-center gap-3 bg-slate-900/98 backdrop-blur">
                        <h2 className="text-sm font-bold text-white flex items-center gap-2 min-w-0"><ScrollText className="w-4 h-4 text-cyan-500 shrink-0" /> <span className="truncate">Roll History</span></h2>
                        <div className="flex items-center gap-2 shrink-0">
                          <button onClick={() => showConfirm('Reset the complete roll log and remove its Time Travel snapshots for this table?', clearRollHistory, 'Reset roll history')} title="Reset roll history" className="px-2.5 py-1.5 rounded border border-red-900/70 bg-red-950/20 text-[9px] text-red-300 hover:border-red-500 uppercase font-black">Reset</button>
@@ -2483,13 +2534,13 @@
                                         <div className="flex justify-center items-center gap-6 mb-2">
                                             <div className="flex flex-col items-center">
                                                 <span className="text-xs font-bold text-cyan-400 uppercase mb-1">HOPE</span>
-                                                <div className="w-14 h-14 bg-slate-800 border-2 border-cyan-500 rounded-xl flex items-center justify-center text-2xl font-black text-cyan-100">
+                                                <div className={`w-14 h-14 bg-slate-800 border-2 border-cyan-500 rounded-xl flex items-center justify-center text-2xl font-black text-cyan-100 ${rollResult && rollResult.crit ? 'shadow-[0_0_22px_rgba(250,204,21,.9)] animate-pulse' : ''}`}>
                                                     {rollResult ? rollResult.hope : "?"}
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-center">
                                                 <span className="text-xs font-bold text-purple-400 uppercase mb-1">FEAR</span>
-                                                <div className="w-14 h-14 bg-slate-800 border-2 border-purple-500 rounded-xl flex items-center justify-center text-2xl font-black text-purple-100">
+                                                <div className={`w-14 h-14 bg-slate-800 border-2 border-purple-500 rounded-xl flex items-center justify-center text-2xl font-black text-purple-100 ${rollResult && rollResult.crit ? 'shadow-[0_0_22px_rgba(168,85,247,.95)] animate-pulse' : ''}`}>
                                                     {rollResult ? rollResult.fear : "?"}
                                                 </div>
                                             </div>

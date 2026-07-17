@@ -1,27 +1,13 @@
-VeilFarers Portal v59.18
+VeilFarers Portal v59.20
 
-Deploy this folder directly to Netlify.
+Mobile Options Escape Hotfix
 
-This build continues from v59.17 and adds:
-- Selectable Tech and Biolum 3D dice styles.
-- Optional transparent full-interface 3D overlay.
-- Simulated callout dice animation with smooth gray fade for discarded dice.
-- One active callout per player/character, with no six-player cap.
-- Roll History Reset and Close controls.
-- Top-layer 3D dice with 80% transparent HUD/result panels.
-- Corebook 11.1 RC3.2 with all 18 class banners restored.
+Deploy the contents of this folder to Netlify.
 
-Preserved:
-- Netlify Identity and role-gated admin/Keeper access.
-- Firebase runtime configuration through /api/firebase-config.
-- Firestore undefined-value sanitization and normalizeSessionKey table fix.
-- Tool-only Railgun d8+3 Massive playtest override.
-- Weapon Trait and operational feature handling.
-- Player, Awakened and Sleeping editorial backgrounds.
-- One-point smaller Corebook typography, TOC, bookmarks and source Markdown.
+This release is built directly on v59.19 and changes only the Player Tool mobile Options experience plus release metadata. Books, PDFs, rules data, dice themes, weapon behavior, callouts, Firestore safeguards and the rest of the portal are preserved.
 
-Review:
-- GITHUB_DEPLOY_SUMMARY_v59.18.md
-- PORTAL_HANDOVER_v59.18.md
-- VALIDATION_v59.18.txt
+Included release documents:
+- GITHUB_DEPLOY_SUMMARY_v59.20.md
+- PORTAL_HANDOVER_v59.20.md
+- VALIDATION_v59.20.txt
 - THIRD_PARTY_NOTICES.md

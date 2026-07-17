@@ -1,10 +1,10 @@
 {
-  "name": "VeilFarers Damage",
+  "name": "VeilFarers Damage Tech",
   "systemName": "vfDamage",
   "author": "VeilFarers / Frank Ali",
   "version": 1.0,
   "meshFile": "default.json",
-  "themeColor": "#c92a38",
+  "themeColor": "#ffffff",
   "material": {
     "type": "color",
     "diffuseTexture": {
