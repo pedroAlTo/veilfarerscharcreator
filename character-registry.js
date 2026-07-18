@@ -142,6 +142,41 @@
     await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=src;script.onload=resolve;script.onerror=reject;document.head.appendChild(script);});
   }
 
+  async function identityAuthHeaders(extra={}){
+    const headers={...extra};
+    try{
+      const identity=window.netlifyIdentity;
+      const current=identity&&typeof identity.currentUser==='function'?identity.currentUser():null;
+      if(!current)return headers;
+      let token='';
+      try{if(typeof current.jwt==='function')token=await current.jwt();}catch(_){ }
+      if(!token&&current.token&&current.token.access_token)token=current.token.access_token;
+      if(token)headers.authorization=`Bearer ${token}`;
+    }catch(_){ }
+    return headers;
+  }
+
+  async function waitForIdentityUser(timeoutMs=5000){
+    const identity=window.netlifyIdentity;
+    if(!identity)throw Error('Netlify Identity is unavailable');
+    const current=()=>{try{return identity.currentUser&&identity.currentUser();}catch(_){return null;}};
+    const immediate=current();if(immediate)return immediate;
+    return new Promise((resolve,reject)=>{
+      let done=false,timer=null;const finish=(value,error)=>{if(done)return;done=true;if(timer)clearTimeout(timer);try{identity.off&&identity.off('login',onLogin);identity.off&&identity.off('init',onInit);}catch(_){ }error?reject(error):resolve(value)};
+      const onLogin=user=>finish(user);const onInit=user=>user&&finish(user);
+      try{identity.on('login',onLogin);identity.on('init',onInit);identity.init&&identity.init();}catch(_){ }
+      timer=setTimeout(()=>{const user=current();user?finish(user):finish(null,Error('Sign in required for Character Vault cloud sync'));},timeoutMs);
+    });
+  }
+
+  async function vaultApi(action,payload={}){
+    await waitForIdentityUser();
+    const response=await fetch('/api/character-vault',{method:'POST',credentials:'same-origin',cache:'no-store',headers:await identityAuthHeaders({'content-type':'application/json'}),body:JSON.stringify({action,...payload})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error(data.error||`Character Vault request failed (${response.status})`);
+    return data;
+  }
+
   async function firestore(){
     if(dbPromise)return dbPromise;
     dbPromise=(async()=>{
@@ -154,9 +189,11 @@
       });
       if(!firebase.apps.length)firebase.initializeApp(config);
       await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-      const response=await fetch('/api/firebase-auth-token',{credentials:'same-origin',cache:'no-store'});
-      if(!response.ok)throw Error('Sign in required for Character Vault cloud sync');
-      const data=await response.json();
+      const identityUser=window.netlifyIdentity&&typeof window.netlifyIdentity.currentUser==='function'?window.netlifyIdentity.currentUser():null;
+      if(!identityUser)throw Error('Sign in required for Character Vault cloud sync');
+      const response=await fetch('/api/firebase-auth-token',{credentials:'same-origin',cache:'no-store',headers:await identityAuthHeaders()});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw Error(data.error||'Sign in required for Character Vault cloud sync');
       if(!firebase.auth().currentUser||firebase.auth().currentUser.uid!==data.user.id){
         await firebase.auth().signInWithCustomToken(data.customToken);
       }
@@ -166,7 +203,7 @@
   }
 
   async function allocate(){
-    const response=await fetch('/api/allocate-character-id',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
+    const response=await fetch('/api/allocate-character-id',{method:'POST',credentials:'same-origin',cache:'no-store',headers:await identityAuthHeaders({'content-type':'application/json'}),body:'{}'});
     if(response.ok){
       const data=await response.json();
       if(isFinal(data.characterId))return normalizeId(data.characterId);
@@ -211,25 +248,11 @@
     if(!isFinal(record.characterId))record=await ensureId(record.characterData,opts);
     if(!isFinal(record.characterId))return record;
     try{
-      const db=await firestore();
-      const user=firebase.auth().currentUser;
-      record={
-        ...record,
-        ownerId:record.ownerId||user?.uid||null,
-        ownerEmail:record.ownerEmail||user?.email||null,
-        status:record.status||'active',
-        cloudState:'synced',
-        syncError:null,
-        updatedAt:now()
-      };
-      const cloudPayload={...record};
-      delete cloudPayload.cloudState;
-      delete cloudPayload.syncError;
-      cloudPayload.updatedAt=firebase.firestore.FieldValue.serverTimestamp();
-      await db.collection('characters').doc(record.characterId).set(cloudPayload,{merge:true});
-      replaceLocalRecord(record,{emit:false});
-      emit(record,opts.source||'cloud-sync',{cloudSynced:true});
-      return record;
+      const result=await vaultApi('upsert',{record});
+      const saved=normalizeRemoteRecord(record.characterId,result.record||record);
+      replaceLocalRecord(saved,{emit:false});
+      emit(saved,opts.source||'cloud-sync',{cloudSynced:true});
+      return saved;
     }catch(error){
       const failed={...record,cloudState:'deferred',syncError:error.message||String(error),updatedAt:now()};
       replaceLocalRecord(failed,{emit:false});
@@ -256,11 +279,8 @@
   async function refreshVault(options={}){
     if(vaultPromise&&!options.force)return vaultPromise;
     vaultPromise=(async()=>{
-      const db=await firestore();
-      const user=firebase.auth().currentUser;
-      if(!user)throw Error('Sign in required to open Character Vault');
-      const snapshot=await db.collection('characters').where('ownerId','==',user.uid).limit(MAX_VAULT_RECORDS).get();
-      const remote=snapshot.docs.map(doc=>normalizeRemoteRecord(doc.id,doc.data()));
+      const result=await vaultApi('list');
+      const remote=(result.records||[]).map(item=>normalizeRemoteRecord(item.characterId,item));
       mergeRemoteRecords(remote);
       const records=listForCurrentUser({includeUnowned:true,completedOnly:true});
       emitVault(records,'cloud');
@@ -271,16 +291,16 @@
     }).finally(()=>{vaultPromise=null;});
     return vaultPromise;
   }
+
   const listRemote=refreshVault;
 
   async function fetchRemote(id=currentId()){
     id=normalizeId(id);
     if(!isFinal(id))return get(id);
     try{
-      const db=await firestore();
-      const snapshot=await db.collection('characters').doc(id).get();
-      if(snapshot.exists){
-        const record=normalizeRemoteRecord(id,snapshot.data());
+      const result=await vaultApi('get',{characterId:id});
+      if(result.record){
+        const record=normalizeRemoteRecord(id,result.record);
         replaceLocalRecord(record,{source:'cloud-load',select:true});
         return record;
       }
@@ -355,7 +375,7 @@
     if(data?.type==='vault-refreshed')window.dispatchEvent(new CustomEvent('veilfarers:vault-refreshed',{detail:data.detail}));
   };
 
-  const start=()=>{injectStyle();renderBadge();fetchRemote();};
+  const start=()=>{injectStyle();renderBadge();setTimeout(()=>fetchRemote(),250);try{window.netlifyIdentity?.on?.('login',()=>{dbPromise=null;vaultPromise=null;fetchRemote();});window.netlifyIdentity?.on?.('logout',()=>{dbPromise=null;vaultPromise=null;});}catch(_){ }};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 
   window.VeilFarersCharacterRegistry=Object.freeze({

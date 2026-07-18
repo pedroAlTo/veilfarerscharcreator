@@ -1,7 +1,20 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.48",
+  "currentVersion": "v59.49",
   "entries": [
+    {
+      "version": "v59.49",
+      "date": "2026-07-18",
+      "title": "Identity, Character Vault permissions and 3D loader hotfix",
+      "changes": [
+        "Allowed the Netlify Identity authentication frame required by the current widget and permitted Firebase gstatic source-map diagnostics without relaxing other CSP boundaries.",
+        "Added explicit Netlify Identity bearer tokens to Firebase-token, character-ID and table API requests, with an initialization wait so cloud calls do not race the login session.",
+        "Moved Character Vault reads and writes behind the authenticated server-side /api/character-vault function, eliminating client Firestore permission failures during branch testing while preserving account ownership.",
+        "Added a hard timeout and always-visible 2D/Close controls to the 3D dice preparation modal so it cannot trap the interface indefinitely.",
+        "Made Player Tool connection alerts fully opaque and positioned them immediately below the shared navigation bar.",
+        "Regenerated package-lock.json against registry.npmjs.org and added a repository .npmrc so Netlify never attempts to fetch dependencies from an internal build registry."
+      ]
+    },
     {
       "version": "v59.48",
       "date": "2026-07-18",
@@ -544,5 +557,5 @@
       ]
     }
   ],
-  "version": "v59.48"
+  "version": "v59.49"
 }

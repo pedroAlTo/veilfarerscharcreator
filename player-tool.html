@@ -1518,6 +1518,7 @@
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_texture_set', diceTextureSet); } catch (e) {} }, [diceTextureSet]);
           const [dice3DLoad, setDice3DLoad] = useState({open:false,stage:'Idle',progress:0,error:''});
           const dice3DInitRef = useRef(null);
+          const dice3DReadyRef = useRef(false);
           const rollInFlightRef = useRef(false);
           const [shakeToRollEnabled, setShakeToRollEnabled] = useState(() => { try { return localStorage.getItem('veilfarers_shake_to_roll') === '1'; } catch (e) { return false; } });
           const [shakePermission, setShakePermission] = useState('unknown');
@@ -1576,23 +1577,35 @@
             }
             throw new Error('The bundled 3D dice module did not finish loading.');
           };
+          const promiseWithTimeout = (promise, timeoutMs, message) => new Promise((resolve, reject) => {
+            const timer=setTimeout(() => reject(new Error(message)), timeoutMs);
+            Promise.resolve(promise).then(value => { clearTimeout(timer); resolve(value); }, error => { clearTimeout(timer); reject(error); });
+          });
+          const closeDiceLoaderSoon = () => setTimeout(() => setDice3DLoad(current => current.error ? current : {...current,open:false}), 220);
           const ensureDice3DReady = async ({showProgress=true}={}) => {
             if (dice3DInitRef.current) {
-              if (showProgress) setDice3DLoad(current => ({...current,open:true,error:'',stage:current.stage && current.stage !== 'Idle' ? current.stage : 'Finishing 3D initialization…',progress:Math.max(12,current.progress||0)}));
+              if (dice3DReadyRef.current) return dice3DInitRef.current;
+              if (showProgress) {
+                setDice3DLoad(current => ({...current,open:true,error:'',stage:current.stage && current.stage !== 'Idle' ? current.stage : 'Finishing 3D initialization…',progress:Math.max(12,current.progress||0)}));
+                dice3DInitRef.current.then(closeDiceLoaderSoon).catch(()=>{});
+              }
               return dice3DInitRef.current;
             }
+            dice3DReadyRef.current=false;
             dice3DInitRef.current = (async () => {
               setDice3DLoad({open:showProgress,stage:'Loading renderer module…',progress:12,error:''});
               const dice3D = await waitForDice3DModule();
               setDice3DLoad(current => ({...current,open:showProgress||current.open,stage:'Preparing 3D scene…',progress:36,error:''}));
               if (typeof dice3D.init === 'function') {
                 const progressTimer = setTimeout(() => setDice3DLoad(current => ({...current,open:showProgress||current.open,stage:'Loading physics and dice themes…',progress:68,error:''})), 180);
-                try { await dice3D.init(); } finally { clearTimeout(progressTimer); }
+                try { await promiseWithTimeout(dice3D.init(),20000,'The 3D dice engine took too long to initialize.'); } finally { clearTimeout(progressTimer); }
               }
+              dice3DReadyRef.current=true;
               setDice3DLoad(current => ({...current,open:showProgress||current.open,stage:'Ready',progress:100,error:''}));
-              if (showProgress) setTimeout(() => setDice3DLoad(current => current.error ? current : {...current,open:false}), 280);
+              if (showProgress) closeDiceLoaderSoon();
               return dice3D;
             })().catch(error => {
+              dice3DReadyRef.current=false;
               dice3DInitRef.current = null;
               setDice3DLoad({open:showProgress,stage:'3D dice failed to load',progress:100,error:error.message || String(error)});
               throw error;
@@ -3563,14 +3576,18 @@
                     <p className={`mt-2 text-xs ${dice3DLoad.error ? 'text-red-200' : 'text-slate-400'}`}>{dice3DLoad.error || dice3DLoad.stage}</p>
                     <div className="mt-4 h-2 rounded-full bg-slate-800 overflow-hidden"><div className={`h-full transition-all duration-300 ${dice3DLoad.error ? 'bg-red-500' : 'bg-cyan-500'}`} style={{width:`${Math.max(4,Math.min(100,dice3DLoad.progress||0))}%`}}></div></div>
                     {!dice3DLoad.error && <p className="mt-2 text-[9px] text-slate-600">The pending roll will begin automatically when the renderer is ready.</p>}
-                    {dice3DLoad.error && <div className="mt-4 flex flex-wrap gap-2"><button onClick={() => { dice3DInitRef.current=null; setDice3DLoad({open:true,stage:'Retrying…',progress:8,error:''}); ensureDice3DReady({showProgress:true}).catch(()=>{}); }} className="px-3 py-2 rounded border border-cyan-700 bg-cyan-950/30 text-[10px] font-black uppercase text-cyan-200">Retry</button><button onClick={() => { setDiceMode('2d'); setDice3DLoad({open:false,stage:'Idle',progress:0,error:''}); }} className="px-3 py-2 rounded border border-slate-700 text-[10px] font-black uppercase text-slate-300">Use 2D dice</button><button onClick={() => setDice3DLoad(current => ({...current,open:false}))} className="ml-auto px-3 py-2 rounded border border-slate-800 text-[10px] font-black uppercase text-slate-500">Close</button></div>}
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {dice3DLoad.error && <button onClick={() => { dice3DReadyRef.current=false; dice3DInitRef.current=null; setDice3DLoad({open:true,stage:'Retrying…',progress:8,error:''}); ensureDice3DReady({showProgress:true}).catch(()=>{}); }} className="px-3 py-2 rounded border border-cyan-700 bg-cyan-950/30 text-[10px] font-black uppercase text-cyan-200">Retry</button>}
+                      <button onClick={() => { setDiceMode('2d'); setDice3DLoad({open:false,stage:'Idle',progress:0,error:''}); }} className="px-3 py-2 rounded border border-slate-700 text-[10px] font-black uppercase text-slate-300">Use 2D dice</button>
+                      <button onClick={() => setDice3DLoad(current => ({...current,open:false}))} className="ml-auto px-3 py-2 rounded border border-slate-800 text-[10px] font-black uppercase text-slate-400">Close</button>
+                    </div>
                   </div>
                 </div>, document.body
               )}
 
               {/* CONNECTION ERRORS — ALWAYS ABOVE NAVIGATION, MODALS AND 3D DICE */}
               {errorMsg && ReactDOM.createPortal(
-                  <div role="alert" aria-live="assertive" className="fixed left-1/2 -translate-x-1/2 w-[min(94vw,760px)] bg-red-950/98 border-2 border-red-400 text-white px-4 py-3 rounded-xl shadow-2xl flex items-start gap-3" style={{zIndex:2147483647,top:'max(8px, env(safe-area-inset-top))'}}>
+                  <div role="alert" aria-live="assertive" className="fixed left-1/2 -translate-x-1/2 w-[min(94vw,760px)] border-2 border-red-400 text-white px-4 py-3 rounded-xl shadow-2xl flex items-start gap-3" style={{zIndex:59998,top:'calc(var(--vf-portal-height, 48px) + 10px + env(safe-area-inset-top))',background:'#450a0a',boxShadow:'0 18px 48px rgba(0,0,0,.72)'}}>
                       <AlertCircle className="w-5 h-5 text-red-300 shrink-0 mt-0.5" />
                       <div className="min-w-0 flex-1"><div className="text-[9px] font-black uppercase tracking-[.16em] text-red-300">Connection error</div><div className="mt-1 text-xs font-mono break-words">{errorMsg}</div></div>
                       <button aria-label="Dismiss connection error" onClick={() => setErrorMsg('')} className="shrink-0 p-1 rounded hover:bg-red-900"><X className="w-4 h-4 text-red-200" /></button>
