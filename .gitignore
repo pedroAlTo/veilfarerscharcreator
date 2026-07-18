@@ -4,3 +4,7 @@ local/.env.local
 # Local tooling noise
 .DS_Store
 Thumbs.db
+node_modules/
+*.env
+.env*
+!.env.example

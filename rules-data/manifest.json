@@ -177,7 +177,7 @@
       "pack": "core",
       "collection": "drone-modules",
       "path": "core/drone-modules.json",
-      "count": 14
+      "count": 31
     },
     {
       "pack": "rust-and-steel",
@@ -208,6 +208,12 @@
       "collection": "drone-grades",
       "path": "rust-and-steel/drone-grades.json",
       "count": 5
+    },
+    {
+      "pack": "rust-and-steel",
+      "collection": "drone-modules",
+      "path": "rust-and-steel/drone-modules.json",
+      "count": 7
     },
     {
       "pack": "alien-species",

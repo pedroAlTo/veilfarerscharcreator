@@ -1,0 +1,67 @@
+VEILFARERS PORTAL v59.48
+===========================
+
+RELEASE PURPOSE
+---------------
+Complete the account-owned Character Vault and guided RC3.2 Level Up workflow, add mobile Shake to Roll and visible 3D-dice initialization, place Player Tool connection errors above every interface layer, and restore authenticated Keeper Tool navigation.
+
+BRANDING
+--------
+VeilFarers remains the active name throughout this release. No Sileris or Sileris Chronicles rename is included.
+
+DEPLOY PREVIEW
+--------------
+1. Deploy the contents of VeilFarers_Portal_v59.48.zip to the existing test branch. index.html must remain at the deploy root.
+2. Confirm Netlify installs package.json dependencies and bundles all Functions, including identity.mts.
+3. Log out and sign in again with each existing test account so the new member role is written into the Identity user/JWT.
+4. Test Character Vault with two different accounts. Each account must see only its own completed characters.
+5. Complete a new character. Confirm it receives one VF-###### ID and appears automatically in Vault, Charsheet and Player Tool.
+6. Level the same character using /creator.html#level-up. Confirm the same ID is updated and current Player Tool HP/Stress/Hope-Effort/Resolve/Armor/Conditions are preserved.
+7. Test Player Tool on a phone: Shake to Roll is opt-in, first-use permission is handled, and the normal roll button remains available.
+8. Test the first 3D roll: a milestone progress popup appears until the renderer is ready and offers Retry / Use 2D on failure.
+9. Cause a table connection error and confirm the red alert appears above navigation, modals and the dice layer.
+10. Open Keeper Tool signed out and signed in. Signed-out access must redirect/gate; any authenticated member can open it and the shared portal navigation must remain visible.
+
+FIRESTORE RULES
+---------------
+firestore_v59.48.rules is the same authenticated ownership/membership rules baseline introduced with v59.47. Rules are project-wide, not branch-specific. Do not deploy them against the shared production Firebase until the v59.47/v59.48 client cutover is coordinated. Use only disposable test tables in the preview.
+
+ENVIRONMENT
+-----------
+No new environment-variable names:
+FIREBASE_SERVICE_ACCOUNT_JSON
+FIREBASE_API_KEY
+FIREBASE_AUTH_DOMAIN
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+FIREBASE_MESSAGING_SENDER_ID
+FIREBASE_APP_ID
+FIREBASE_MEASUREMENT_ID
+FIREBASE_PUBLIC_TABLE_DIRECTORY=false
+
+ENTRY POINTS
+------------
+/                         Welcome
+/login.html               Account and Character Vault
+/creator.html             Character Creator
+/creator.html#cards       Card Library
+/creator.html#level-up    Guided Level Up
+/charsheet.html           Digital Charsheet / printable PDF
+/player-tool.html         Player Tool
+/keeper-tool.html         Authenticated Keeper Tool
+/admin.html               Admin role only
+
+DELIVERABLES
+------------
+VeilFarers_Portal_v59.48.zip
+VeilFarers_Portal_v59.48.sha256
+GITHUB_DEPLOY_SUMMARY_v59.48.md
+PORTAL_HANDOVER_v59.48.md
+PORTAL_HANDOVER_v59.48.docx
+SECURITY_TABLES_v59.48.md
+VALIDATION_v59.48.txt
+firestore_v59.48.rules
+
+ROLLBACK
+--------
+Preserve the complete v59.47 ZIP and the currently deployed Firestore Rules. A code rollback after authenticated membership Rules are active is not automatically compatible with older anonymous clients; treat code and Rules as one coordinated rollback decision.

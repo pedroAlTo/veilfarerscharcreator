@@ -8,7 +8,9 @@
   <title>Veilfarers - Keeper's Companion</title>
   <link rel="stylesheet" href="portal.css">
   <link rel="stylesheet" href="styles.css">
-  <style>.vf-spotlight{position:relative;border:1px solid rgba(250,204,21,0.85) !important;} .vf-spotlight::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(150% 150% at 23px 22px, rgba(250,204,21,0.30) 0%, rgba(250,204,21,0.13) 32%, rgba(250,204,21,0.04) 60%, transparent 82%);-webkit-mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);} .vf-spotlight > *{position:relative;z-index:1;} @keyframes vf-wash-flicker{0%{opacity:1;}2%{opacity:0.12;}5%{opacity:0.85;}8%{opacity:0.06;}11%{opacity:0.55;}14%{opacity:0;}60%{opacity:0;}64%{opacity:0.1;}68%{opacity:0.02;}73%{opacity:0.5;}77%{opacity:0.1;}83%{opacity:0.82;}88%{opacity:0.35;}94%{opacity:0.95;}100%{opacity:1;}} .vf-spotlight.flicker::before{animation:vf-wash-flicker 1.6s steps(1,end) 1;} .vf-spotlight .character-name, .vf-spotlight .stat-label, .vf-spotlight span, .vf-spotlight .text-gray{ text-shadow: 0 1px 2px rgba(0,0,0,0.85); } .vf-spot-toggle:hover{opacity:1 !important;}</style>
+  <style>body.vf-keeper-page .header{top:var(--vf-portal-height,49px)} body.vf-keeper-page .campaign-select-screen{min-height:calc(100vh - var(--vf-portal-height,49px))} .vf-spotlight{position:relative;border:1px solid rgba(250,204,21,0.85) !important;} .vf-spotlight::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(150% 150% at 23px 22px, rgba(250,204,21,0.30) 0%, rgba(250,204,21,0.13) 32%, rgba(250,204,21,0.04) 60%, transparent 82%);-webkit-mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);} .vf-spotlight > *{position:relative;z-index:1;} @keyframes vf-wash-flicker{0%{opacity:1;}2%{opacity:0.12;}5%{opacity:0.85;}8%{opacity:0.06;}11%{opacity:0.55;}14%{opacity:0;}60%{opacity:0;}64%{opacity:0.1;}68%{opacity:0.02;}73%{opacity:0.5;}77%{opacity:0.1;}83%{opacity:0.82;}88%{opacity:0.35;}94%{opacity:0.95;}100%{opacity:1;}} .vf-spotlight.flicker::before{animation:vf-wash-flicker 1.6s steps(1,end) 1;} .vf-spotlight .character-name, .vf-spotlight .stat-label, .vf-spotlight span, .vf-spotlight .text-gray{ text-shadow: 0 1px 2px rgba(0,0,0,0.85); } .vf-spot-toggle:hover{opacity:1 !important;}</style>
+  <script src="equipment-mods.js"></script>
+  <script src="compact-rules.js"></script>
   <script src="shared-data.js"></script>
   <script src="canonical-runtime.js"></script>
   <script src="veilfarers-import.js"></script>
@@ -16,9 +18,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="table-access.js"></script>
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
 </head>
 
-<body>
+<body class="vf-keeper-page">
+  <script src="portal.js"></script>
 
   <div class="vf-construction-banner" role="status"><strong>Keeper Tool · Under construction</strong><span>Navigation and campaign workflows are being rebuilt inside the unified VeilFarers portal.</span></div>
 
@@ -39,25 +45,29 @@
       var message = document.getElementById('vf-gate-msg');
       var login = document.getElementById('vf-gate-login');
       var logout = document.getElementById('vf-gate-logout');
-      if (window.VF_IS_LOCAL_TEST === true) { if (gate) gate.remove(); return; }
-      function rolesOf(user) { return user && user.app_metadata && Array.isArray(user.app_metadata.roles) ? user.app_metadata.roles : []; }
+      if (window.VF_IS_LOCAL_TEST === true) { window.VF_KEEPER_USER={id:'local-test',email:'local@test',name:'Local Test'}; if (gate) gate.remove(); return; }
       function render(user) {
         if (!user) {
-          userLabel.textContent = 'Sign in with a Netlify Identity account assigned the keeper or admin role.';
+          window.VF_KEEPER_USER = null;
+          userLabel.textContent = 'Sign in to use Keeper Tool or create and manage tables.';
           message.textContent = '';
           login.style.display = '';
           logout.style.display = 'none';
           return;
         }
-        var roles = rolesOf(user);
+        window.VF_KEEPER_USER = {
+          id: user.id,
+          email: user.email || '',
+          name: user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : (user.email || 'VeilFarer')
+        };
+        window.dispatchEvent(new CustomEvent('veilfarers:keeper-user',{detail:{user:window.VF_KEEPER_USER}}));
+        var badge=document.getElementById('vf-keeper-account');
+        if(badge){var text=badge.querySelector('span:last-child');if(text)text.textContent=window.VF_KEEPER_USER.name+' · '+window.VF_KEEPER_USER.email;}
         userLabel.textContent = user.email || user.id || 'Signed-in user';
         login.style.display = 'none';
         logout.style.display = '';
-        if (roles.indexOf('keeper') !== -1 || roles.indexOf('admin') !== -1) {
-          if (gate) gate.remove();
-        } else {
-          message.textContent = 'Access denied. Assign the keeper or admin role to this account in Netlify Identity.';
-        }
+        message.textContent = '';
+        if (gate) gate.remove();
       }
       if (!identity) {
         userLabel.textContent = 'Netlify Identity is unavailable. Open this page from the deployed Netlify site.';
@@ -72,6 +82,11 @@
       identity.on('logout', function () { render(null); });
       identity.on('error', function (error) { message.textContent = error && error.message ? error.message : String(error); });
       identity.init();
+      document.addEventListener('DOMContentLoaded', function(){
+        var badge=document.getElementById('vf-keeper-account');
+        var user=window.VF_KEEPER_USER;
+        if(badge&&user){var text=badge.querySelector('span:last-child');if(text)text.textContent=user.name+' · '+user.email;}
+      });
     })();
   </script>
 
@@ -233,6 +248,7 @@
             </div>
 
             <div class="header-controls">
+              <div id="vf-keeper-account" style="display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid rgba(52,211,153,.35);border-radius:999px;background:rgba(6,78,59,.28);font-size:10px;color:#d1fae5;white-space:nowrap;"><span style="width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.8)"></span><span>Authenticated Keeper</span></div>
               <!-- Save/Load Controls -->
               <div class="save-load-controls">
                 <button id="saveBtn" class="btn btn-save btn-small" title="Save campaign to JSON file">
@@ -382,7 +398,10 @@
         <div id="playersTab" class="tab-content">
           <div class="tab-header">
             <h2>Player Characters</h2>
-            <button id="addPlayerBtn" class="btn btn-blue keeper-only">+ Add Player</button>
+            <div class="tab-header-actions keeper-only">
+              <button id="importSheetPlayerBtn" class="btn btn-cyan" title="Import the latest filled Charsheet from this browser">⇢ Import Charsheet</button>
+              <button id="addPlayerBtn" class="btn btn-blue">+ Add Player</button>
+            </div>
           </div>
           <div id="playersGrid" class="character-cards-grid"></div>
         </div>
@@ -947,8 +966,9 @@
       <input id="vf-session-id" placeholder="Join or create a table" value="Table" style="flex:1;min-width:0;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
       <button id="vf-connect-btn" style="padding:6px 12px;border:0;border-radius:6px;background:#e2b45a;color:#111;font-weight:700;cursor:pointer;">Connect</button>
     </div>
-    <input id="vf-session-pass" type="password" placeholder="Password strongly recommended (unlock or protect new table)" style="width:100%;box-sizing:border-box;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
-    <div style="margin-top:4px;font-size:9px;color:#f59e0b;line-height:1.35;">Open tables are visible and joinable. Protect campaign tables with a password.</div>
+    <input id="vf-session-pass" type="password" placeholder="Password (also required with an invitation when protected)" style="width:100%;box-sizing:border-box;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
+    <input id="vf-session-invite" placeholder="Invitation passkey (new members)" style="width:100%;box-sizing:border-box;margin-top:5px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
+    <div style="margin-top:4px;font-size:9px;color:#67e8f9;line-height:1.35;">Tables are visible to logged-in users. Joining requires membership or an owner invitation; protected tables also require the password.</div>
     <div id="vf-password-change" style="display:none;margin-top:8px;padding:8px;border:1px solid #78350f;border-radius:7px;background:#1c1308;">
       <div style="display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:5px;"><span style="font-size:10px;color:#fbbf24;font-weight:800;">TABLE PASSWORD</span><span id="vf-password-state" style="font-size:9px;color:#94a3b8;">OPEN</span></div>
       <input id="vf-new-pass" type="password" placeholder="New password (minimum 4 characters)" style="width:100%;box-sizing:border-box;padding:5px;border-radius:5px;border:1px solid #475569;background:#111827;color:#fff;" />
@@ -1021,7 +1041,7 @@
       subtitle: ((c.heritage || '') + ' ' + (c.class || '')).trim() || 'Adventurer',
       hp: (hp.current) || 0, maxHp: (hp.max) || 6, stress: (st.current) || 0, maxStress: (st.max) || 6,
       hope: isSleeper ? ((c.effort && c.effort.current) || 0) : ((c.hope && c.hope.current) || 0),
-      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.shields)||0, armorMarked: [],
+      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.armorMax != null ? c.armorMax : c.shields)||0, armorMarked: [],
       effort: (c.effort && c.effort.current) || 0, maxEffort: (c.effort && c.effort.max) || 6,
       resolve: (c.resolve && c.resolve.current) || 0, maxResolve: (c.resolve && c.resolve.max) || 6, path: c.path || 'awakened',
       armorMinor: (thr.major) || 0, armorSevere: (thr.severe) || 0, evasion: c.evasion || 0,
@@ -1098,22 +1118,9 @@
     }).join('');
   }
   async function listTables() {
-    var box = document.getElementById('vf-tables');
-    if (box && !box.innerHTML) box.innerHTML = '<span style="font-size:10px;color:#64748b;font-style:italic;">Loading tables\u2026</span>';
-    try {
-      if (!db) await initFb();
-      if (!firebaseRuntimeConfig || firebaseRuntimeConfig.publicTableDirectory !== true) {
-        renderTables([]);
-        if (box) box.innerHTML = '<span style="font-size:10px;color:#64748b;font-style:italic;">For privacy, public table discovery is disabled. Enter the exact table name.</span>';
-        return;
-      }
-      var appId = 'default-app-id';
-      var snap = await db.collection('artifacts/' + appId + '/public/data/sessions').get();
-      var tables = [];
-      snap.forEach(function (d) { var dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!(dd.passAuth || dd.passHash) }); });
-      tables.sort(function (a, b) { return a.name.localeCompare(b.name); });
-      renderTables(tables);
-    } catch (e) { console.error('listTables', e); setStatus('Cannot list tables: ' + (e.code || e.message)); if (box) box.innerHTML = ''; }
+    var box=document.getElementById('vf-tables');if(box&&!box.innerHTML)box.innerHTML='<span style="font-size:10px;color:#64748b;font-style:italic;">Loading tables…</span>';
+    try{if(!db)await initFb();var tables=await window.VFTableAccess.list();renderTables(tables.map(function(tb){return {id:tb.id,name:tb.name,players:tb.members||0,locked:tb.locked};}));}
+    catch(e){console.error('listTables',e);setStatus('Cannot list tables: '+e.message);if(box)box.innerHTML='';}
   }
   async function initFb() {
     var response = await fetch('/api/firebase-config', { cache: 'no-store' });
@@ -1121,7 +1128,7 @@
     var cfg = await response.json();
     firebaseRuntimeConfig = cfg;
     if (!firebase.apps.length) firebase.initializeApp(cfg);
-    await firebase.auth().signInAnonymously();
+    await window.VFTableAccess.ensureFirebaseAuth(firebase.auth());
     db = firebase.firestore();
     try { db.settings({ ignoreUndefinedProperties: true }); }
     catch (settingsErr) { console.warn('Firestore settings already active.', settingsErr); }
@@ -1149,49 +1156,19 @@
     return true;
   }
   async function connect() {
-    var sid = (($id('vf-session-id') || {}).value || 'Table').trim() || 'Table';
-    setStatus('Connecting...');
-    try {
-      if (!db) await initFb();
-      var appId = 'default-app-id';
-      SESSION = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('sessions').doc(sid);
-      window.__keeperSession = SESSION;
-      window.__handouts = [];
-      // Password gate: check before joining/creating.
-      var pass = (($id('vf-session-pass') || {}).value || '').trim();
-      var pre = await SESSION.get();
-      var existing = (pre && pre.exists) ? (pre.data() || {}) : null;
-      var extra = { name: sid, lastActive: Date.now() };
-      var protectedTable = !!(existing && (existing.passAuth || existing.passHash));
-      if (protectedTable) {
-        var allowed = await verifyTablePassword(existing, pass, sid);
-        if (!allowed) { SESSION = null; window.__keeperSession = null; currentSessionId=''; setPasswordUi(false); setStatus('This table is closed. Type its password and press Connect.'); return; }
-      } else if (!existing && pass) {
-        extra.passAuth = await makePasswordRecord(pass); extra.passHash = null; extra.isOpen = false;
-        localStorage.setItem('veilfarers_tableauth_' + sid, passwordRecordToken(extra.passAuth)); protectedTable=true;
-      } else if (!existing) { extra.isOpen = true; }
-      currentSessionId=sid; setPasswordUi(protectedTable);
-      if ($id('vf-session-pass')) $id('vf-session-pass').value = '';
-      try { SESSION.set(extra, { merge: true }); } catch (e) { console.error(e); }
-      if (unsub) unsub();
-      unsub = SESSION.onSnapshot(function (snap) {
-        if (!snap.exists) { setStatus('Session "' + sid + '" is empty (waiting for players).'); return; }
-        var data = snap.data();
-        try {
-          if (data.characters && typeof state !== 'undefined') { window.__sessionCharsRaw = JSON.parse(JSON.stringify(data.characters)); if (!(window.__keeperLastEdit && (Date.now() - window.__keeperLastEdit < 2500))) { state.players = data.characters.reduce(function(list, entity, originalIndex){ if(entity && entity.entityType !== 'drone') list.push(toPlayer(entity, originalIndex)); return list; }, []); } }
-          if (typeof data.fearTokens === 'number' && typeof state !== 'undefined') { state.fearTokens = data.fearTokens; }
-          if (typeof state !== 'undefined') { state.spotlight = data.spotlight || ''; }
-        if (typeof renderAll === 'function') { renderAll(); }
-        renderSpotlight(data.spotlight || '');
-        renderDroneSignals(data.characters || []);
-        } catch (e) { console.error('keeper sync render error', e); }
-        var rolls = (data.rollHistory || []).slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
-        window.__handouts = Array.isArray(data.handouts) ? data.handouts : [];
-        renderSentNotes();
-        renderRolls(rolls);
-        setStatus('Connected to "' + sid + '" \u00b7 ' + ((data.characters || []).length) + ' players');
-      }, function (err) { setStatus('Error: ' + (err.code || err.message)); });
-    } catch (e) { setStatus('Error: ' + e.message); }
+    var sid=(($id('vf-session-id')||{}).value||'Table').trim()||'Table';setStatus('Authorizing table…');
+    try{
+      if(!db)await initFb();var pass=(($id('vf-session-pass')||{}).value||'').trim(),invite=(($id('vf-session-invite')||{}).value||'').trim();
+      var access=await window.VFTableAccess.authorize({tableId:sid,password:pass,invite:invite,createIfMissing:true});
+      var appId='default-app-id';SESSION=db.collection('artifacts').doc(appId).collection('public').doc('data').collection('sessions').doc(sid);window.__keeperSession=SESSION;window.__handouts=[];currentSessionId=sid;setPasswordUi(!!access.locked);
+      if($id('vf-session-pass'))$id('vf-session-pass').value='';if($id('vf-session-invite'))$id('vf-session-invite').value='';window.VFTableAccess.mountAdmin(sid,access.role);
+      if(unsub)unsub();unsub=SESSION.onSnapshot(function(snap){
+        if(!snap.exists){setStatus('Session "'+sid+'" is empty (waiting for players).');return;}var data=snap.data();
+        try{if(data.characters&&typeof state!=='undefined'){window.__sessionCharsRaw=JSON.parse(JSON.stringify(data.characters));if(!(window.__keeperLastEdit&&(Date.now()-window.__keeperLastEdit<2500))){state.players=data.characters.reduce(function(list,entity,originalIndex){if(entity&&entity.entityType!=='drone')list.push(toPlayer(entity,originalIndex));return list;},[]);}}if(typeof data.fearTokens==='number'&&typeof state!=='undefined')state.fearTokens=data.fearTokens;if(typeof state!=='undefined')state.spotlight=data.spotlight||'';if(typeof renderAll==='function')renderAll();renderSpotlight(data.spotlight||'');renderDroneSignals(data.characters||[]);}catch(e){console.error('keeper sync render error',e);}
+        var rolls=(data.rollHistory||[]).slice().sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0);});window.__handouts=Array.isArray(data.handouts)?data.handouts:[];renderSentNotes();renderRolls(rolls);setStatus('Connected to "'+sid+'" · '+((data.characters||[]).length)+' entities');
+      },function(err){setStatus('Error: '+(err.code||err.message));});
+      var cleanUrl=window.location.pathname+window.location.hash;window.history.replaceState({},'',cleanUrl);
+    }catch(e){setStatus('Error: '+e.message);}
   }
   window.keeperPushFear = function () { if (SESSION && typeof state !== 'undefined') { SESSION.set({ fearTokens: state.fearTokens }, { merge: true }).catch(function (e) { console.error(e); }); } };
   window.keeperWriteCharStat = function (syncIndex, stat, value) {
@@ -1212,10 +1189,10 @@
   }
   function setDroneSignal(index, signal) { if(!SESSION||!window.__sessionCharsRaw)return; var chars=window.__sessionCharsRaw; if(!chars[index]||chars[index].entityType!=='drone')return; chars[index].signalState=signal; SESSION.set({characters:chars},{merge:true}).catch(function(e){console.error(e);}); renderDroneSignals(chars); }
   async function changeTablePassword() {
-    if(!SESSION||!currentSessionId){setStatus('Connect to the table before changing its password.');return;}
-    var password=(($id('vf-new-pass')||{}).value||'').trim(), confirmPass=(($id('vf-confirm-pass')||{}).value||'').trim();
-    if(password.length<4){setStatus('Password must contain at least 4 characters.');return;} if(password!==confirmPass){setStatus('Password confirmation does not match.');return;}
-    try{var passAuth=await makePasswordRecord(password);await SESSION.set({passAuth:passAuth,passHash:null,isOpen:false,passwordUpdatedAt:Date.now()},{merge:true});localStorage.setItem('veilfarers_tableauth_'+currentSessionId,passwordRecordToken(passAuth));if($id('vf-new-pass'))$id('vf-new-pass').value='';if($id('vf-confirm-pass'))$id('vf-confirm-pass').value='';setPasswordUi(true);setStatus('Table password updated. The table is now closed.');listTables();}catch(e){setStatus('Password update failed: '+e.message);}
+    if(!SESSION||!currentSessionId){setStatus('Connect to the table first.');return;}
+    var password=(($id('vf-new-pass')||{}).value||'').trim(),confirmPass=(($id('vf-confirm-pass')||{}).value||'').trim();
+    if(password.length<4){setStatus('Use at least 4 characters. To remove the password, use Table Admin.');return;}if(password!==confirmPass){setStatus('Password confirmation does not match.');return;}
+    try{var out=await window.VFTableAccess.api('setPassword',{tableId:currentSessionId,password:password});if($id('vf-new-pass'))$id('vf-new-pass').value='';if($id('vf-confirm-pass'))$id('vf-confirm-pass').value='';setPasswordUi(!!out.locked);setStatus('Table password updated.');listTables();}catch(e){setStatus('Password update failed: '+e.message);}
   }
   function publishKeeperRoll(roll) {
     if (!SESSION || !roll) return;
@@ -1345,12 +1322,80 @@
     }
   });
   // Check whether table discovery is enabled; it is enabled unless explicitly disabled by environment configuration.
+  var inviteDefaults=window.VFTableAccess?window.VFTableAccess.inviteFromUrl():{table:'',invite:''};
+  if(inviteDefaults.table&&$id('vf-session-id'))$id('vf-session-id').value=inviteDefaults.table;
+  if(inviteDefaults.invite&&$id('vf-session-invite'))$id('vf-session-invite').value=inviteDefaults.invite;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { listTables(); });
   else listTables();
 })();
 </script>
 
-  <script src="portal.js"></script>
+  <script>
+(function(){
+  'use strict';
+  const TRANSFER_KEY='veilfarers.character.transfer.v1';
+  const LATEST_SHEET_KEY='veilfarers.sheet.latestPayload.v1';
+  function readSheetPayload(){
+    try{const queued=JSON.parse(localStorage.getItem(TRANSFER_KEY)||'null');if(queued&&queued.payload&&queued.payload.fields)return queued.payload;}catch(_){}
+    try{const latest=JSON.parse(localStorage.getItem(LATEST_SHEET_KEY)||'null');if(latest&&latest.fields)return latest;}catch(_){}
+    try{
+      const fields=JSON.parse(localStorage.getItem('veilfarers_sheet_fields_v2_40')||localStorage.getItem('veilfarers_sheet_fields_v2_41')||'null');
+      if(!fields)return null;
+      const tracks=JSON.parse(localStorage.getItem('veilfarers_sheet_tracks_v2_40')||localStorage.getItem('veilfarers_sheet_tracks_v2_41')||'{}');
+      return {app:'Veilfarers Character Sheet',version:'2.80-RC3.2',fields,tracks};
+    }catch(_){return null;}
+  }
+  function keeperPlayerFromSheet(payload){
+    const c=window.veilfarersImportSheet&&window.veilfarersImportSheet(payload);
+    if(!c)return null;
+    const path=String(c.path||'awakened').toLowerCase();
+    const resource=path==='sleeping'?(c.effort||{}):(c.hope||{});
+    const abilities=[];
+    (c.experiences||[]).forEach(exp=>{if(exp&&exp.description)abilities.push({name:exp.description,type:'Experience',cost:0,desc:'Experience bonus +'+(exp.bonus||2)});});
+    (c.moves||[]).forEach(move=>{if(move&&move.name)abilities.push({name:move.name,type:'Resolve Move',cost:0,desc:move.text||''});});
+    (c.domainCards||[]).forEach(power=>{if(power&&power.name)abilities.push({name:power.name,type:power.type||'Power',cost:power.cost||0,desc:power.text||power.costText||''});});
+    const equipment=[...(c.inventory||[]).filter(Boolean),...(c.weapons||[]).map(w=>w&&w.name).filter(Boolean),c.armor&&c.armor.name].filter(Boolean).join(', ');
+    return {
+      id:Date.now()+Math.floor(Math.random()*1000),name:c.name||'Unnamed Veilfarer',
+      subtitle:[c.heritage,c.class,c.subclass].filter(Boolean).join(' · '),
+      hp:Number(c.hp&&c.hp.current)||0,maxHp:Number(c.hp&&c.hp.max)||6,
+      stress:Number(c.stress&&c.stress.current)||0,maxStress:Number(c.stress&&c.stress.max)||6,
+      hope:Number(resource.current)||0,maxHope:Number(resource.max)||6,
+      effort:Number(c.effort&&c.effort.current)||0,maxEffort:Number(c.effort&&c.effort.max)||6,
+      resolve:Number(c.resolve&&c.resolve.current)||0,maxResolve:Number(c.resolve&&c.resolve.max)||2,
+      path,armor:Number(c.shields)||0,armorSlots:Number(c.armorMax != null ? c.armorMax : c.shields)||0,armorMarked:[],
+      armorMinor:Number(c.thresholds&&c.thresholds.major)||0,armorSevere:Number(c.thresholds&&c.thresholds.severe)||0,
+      evasion:Number(c.evasion)||0,description:[c.features,c.classFeature,c.ancestryGift,c.communityGift].filter(Boolean).join('\n\n'),
+      abilities,equipment,hidden:false,sheetCharacter:c,transferSource:'charsheet'
+    };
+  }
+  function importSheetToKeeper({automatic=false}={}){
+    try{
+      const payload=readSheetPayload();
+      const player=payload&&keeperPlayerFromSheet(payload);
+      if(!player)throw new Error('No compatible Charsheet character is available.');
+      if(typeof state==='undefined'||!Array.isArray(state.players))throw new Error('Keeper Tool player registry is not ready.');
+      state.players.push(player);
+      if(state.dashboardPins&&Array.isArray(state.dashboardPins.players))state.dashboardPins.players.push(player.id);
+      if(typeof renderAll==='function')renderAll();
+      document.querySelector('[data-tab="players"]')?.click();
+      if(automatic)localStorage.removeItem(TRANSFER_KEY);
+      alert('Charsheet transferred to Keeper Tool: '+player.name);
+      return true;
+    }catch(error){alert('Could not import the Charsheet into Keeper Tool: '+error.message);return false;}
+  }
+  function start(){
+    document.getElementById('importSheetPlayerBtn')?.addEventListener('click',()=>importSheetToKeeper());
+    const params=new URLSearchParams(location.search);
+    if(params.get('from')==='sheet'&&params.get('import')==='1'){
+      importSheetToKeeper({automatic:true});
+      history.replaceState({},'',location.pathname+location.hash);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+  </script>
+
 </body>
 
 </html>

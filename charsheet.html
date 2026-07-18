@@ -2469,6 +2469,8 @@ body.vf-full-sheet .path-switch-wrap{box-sizing:border-box}
 }
 </style>
 
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
 </head>
 
 
@@ -2518,8 +2520,13 @@ body.vf-full-sheet .path-switch-wrap{box-sizing:border-box}
     <div class="toolbar-section io-tools" data-label="Files">
       <div class="tool-subgroup" aria-label="JSON import and export">
         <span class="sub-label">JSON</span>
-        <button id="importBtn" title="Load/import a character JSON backup">Load</button>
+        <button id="importBtn" title="Load a Charsheet JSON or a compatible Character Creator JSON">Load</button>
         <button id="exportBtn" title="Save/export this character as a JSON backup">Save</button>
+      </div>
+      <div class="tool-subgroup" aria-label="Transfer this character to table tools">
+        <span class="sub-label">Send To</span>
+        <button id="sendPlayerToolBtn" title="Transfer the current filled Charsheet to Player Tool">Player Tool</button>
+        <button id="sendKeeperToolBtn" title="Transfer the current filled Charsheet to Keeper Tool">Keeper Tool</button>
       </div>
       <div class="tool-subgroup" aria-label="Visual PDF export">
         <span class="sub-label">Visual PDF</span>
@@ -2958,6 +2965,8 @@ body.vf-full-sheet .path-switch-wrap{box-sizing:border-box}
 
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script src="./veilfarers-data.js"></script>
+<script src="./equipment-mods.js"></script>
+<script src="./compact-rules.js"></script>
 <script>
 /* ============================================================
    Veilfarers character sheet — Sleeping (front) / Awakened (back)
@@ -3953,8 +3962,9 @@ function updateDamageThresholdsFromArmor(){
   const pair = parseThresholdPair(store.armor_thr);
   if (!pair) return;
   const level = levelNumber();
-  setStoreField("thr_major", pair[0] + level);
-  setStoreField("thr_severe", pair[1] + level);
+  const modBonus = window.VFEquipmentMods ? window.VFEquipmentMods.thresholdBonus(store.armor_mods) : 0;
+  setStoreField("thr_major", pair[0] + level + modBonus);
+  setStoreField("thr_severe", pair[1] + level + modBonus);
   saveFields();
 }
 function scaleDamageForProficiencyAndHoned(baseDamage, {includeHoned=false}={}){
@@ -3978,9 +3988,10 @@ function updateWeaponDamageCalculations(){
   for (const prefix of ["wpri", "wsec"]) {
     const base = store[`${prefix}_dmg`] || "";
     // Sleeping: weapon damage scales by Proficiency and adds Honed Edge.
-    setStoreField(`${prefix}_dmg_final`, scaleDamageForProficiencyAndHoned(base, {includeHoned:true}), {onlyIfEmpty:false});
+    const modBonus = window.VFEquipmentMods ? window.VFEquipmentMods.damageBonus(store[`${prefix}_mods`]) : 0;
+    setStoreField(`${prefix}_dmg_final`, window.VFEquipmentMods ? window.VFEquipmentMods.addDamageBonus(scaleDamageForProficiencyAndHoned(base, {includeHoned:true}), modBonus) : scaleDamageForProficiencyAndHoned(base, {includeHoned:true}), {onlyIfEmpty:false});
     // Awakened: weapon damage still scales by Proficiency, but does not add Honed Edge.
-    setStoreField(`${prefix}_dmg_final_aw`, scaleDamageForProficiencyAndHoned(base, {includeHoned:false}), {onlyIfEmpty:false});
+    setStoreField(`${prefix}_dmg_final_aw`, window.VFEquipmentMods ? window.VFEquipmentMods.addDamageBonus(scaleDamageForProficiencyAndHoned(base, {includeHoned:false}), modBonus) : scaleDamageForProficiencyAndHoned(base, {includeHoned:false}), {onlyIfEmpty:false});
   }
   saveFields();
 }
@@ -4256,6 +4267,13 @@ function selectedInventoryRowsForPdf(){
     const tierText = tier ? ` [${tier}]` : "";
     rows.push(shortPdfLine(`${prefix}${name}${tierText}${use ? " - " + use : ""}`, 112));
   }
+  if (window.VFEquipmentMods) {
+    [["wpri","weapon"],["wsec","weapon"],["armor","armor"]].forEach(([prefix,type])=>{
+      const name=String(store[`${prefix}_name`]||"").trim();
+      if(!name)return;
+      window.VFEquipmentMods.printLines(name,store[`${prefix}_mods`],type).forEach(line=>rows.push(shortPdfLine(line,112)));
+    });
+  }
   return rows;
 }
 function splitThresholdPairForPdf(value){
@@ -4327,15 +4345,21 @@ function sleepingMovesSummary() {
   if (!records.length) return "";
   return records.map(r => `${r.label}: ${r.text}`).join("\n");
 }
-function classFeatureSummary(data, pathKey) {
+function compactRulesText(value, fallback="Feature") {
+  return window.VFCompactRules ? window.VFCompactRules.compactBundle(value, fallback) : String(value || "").trim();
+}
+function classFeatureSummary(data, pathKey, compact=false) {
   const title = pathKey === "sleeping" ? data.slClassFeature : data.awClassFeature;
   const text = pathKey === "sleeping" ? data.slClassText : data.awClassText;
-  let out = `${title} — ${text || "See the class entry."}`;
+  let out = `${title}: ${text || "See the class entry."}`;
   if (pathKey === "sleeping") {
     const moves = sleepingMovesSummary();
-    if (moves) out += `\n\nRESOLVE MOVES\n${moves}`;
+    if (moves) out += `
+
+Resolve Moves:
+${moves}`;
   }
-  return out;
+  return compact ? compactRulesText(out, "Class Feature") : out.replace(/^([^:]+):/, "$1 —");
 }
 function subclassSummary(sub) {
   if (!sub) return "";
@@ -4431,11 +4455,11 @@ function applyClassAutofill(force=false){
   setStoreField("level", store.level || 1, {onlyIfEmpty:true});
   setStoreField("prof", store.prof || 1, {onlyIfEmpty:true});
   setStoreField("kit_class", isSleeping ? data.sleepingItems : data.awakenedItems, {onlyIfEmpty:!force});
-  setStoreField("features", classFeatureSummary(data, pathKey), {onlyIfEmpty:!force});
+  setStoreField("features", classFeatureSummary(data, pathKey, true), {onlyIfEmpty:!force});
   setStoreField("a_featname", data.hopeTitle, {onlyIfEmpty:!force});
-  setStoreField("a_feattext", data.hopeText, {onlyIfEmpty:!force});
+  setStoreField("a_feattext", compactRulesText(data.hopeText, data.hopeTitle || "Hope Feature"), {onlyIfEmpty:!force});
   setStoreField("s_featname", data.effortTitle, {onlyIfEmpty:!force});
-  setStoreField("s_feattext", data.effortText, {onlyIfEmpty:!force});
+  setStoreField("s_feattext", compactRulesText(data.effortText, data.effortTitle || "Effort Feature"), {onlyIfEmpty:!force});
   setStoreField("s_honed", "HONED EDGE", {onlyIfEmpty:true});
   setStoreField("a_domain_ref", buildDomainReference(), {onlyIfEmpty:false});
   updateTechnologyAccessSummary();
@@ -4457,12 +4481,12 @@ function applySubclassAutofill(force=false){
   const data = CLASS_DATA[store.class || ""];
   if (!sub) { setStoreField("a_domain_ref", buildDomainReference(), {onlyIfEmpty:false}); saveFields(); return; }
   if (pathKey === "sleeping") {
-    if (data) setStoreField("features", classFeatureSummary(data, pathKey), {onlyIfEmpty:!force});
+    if (data) setStoreField("features", classFeatureSummary(data, pathKey, true), {onlyIfEmpty:!force});
     updateTechnologyAccessSummary();
     refreshSignatureMoveControls({clearInvalid:force});
     applySignatureMoveAutofill(force);
   } else {
-    const summary = (data ? classFeatureSummary(data, pathKey) + "\n" : "") + "Subclass abilities:\n" + subclassSummary(sub);
+    const summary = (data ? classFeatureSummary(data, pathKey, true) + "\n" : "") + compactRulesText(subclassSummary(sub), "Subclass");
     setStoreField("features", summary, {onlyIfEmpty:!force});
   }
   setStoreField("signature_trait", sub.trait || (data?.trait || ""), {onlyIfEmpty:false});
@@ -4536,7 +4560,7 @@ function clearClassAutofill(){
 function clearSubclassAutofill(){
   clearStoreFields(["s_active_move", "s_active_move_text", "a_domain_ref"]);
   const data = CLASS_DATA[store.class || ""];
-  if (data) setStoreField("features", classFeatureSummary(data, chosenPathKey()), {onlyIfEmpty:false});
+  if (data) setStoreField("features", classFeatureSummary(data, chosenPathKey(), true), {onlyIfEmpty:false});
   refreshSignatureMoveControls({clearInvalid:true});
   refreshPowerControls({clearInvalid:true});
   refreshStaticSelectControls();
@@ -4605,6 +4629,7 @@ function applyAncestryAutofill(){
     gift += "\n\nSub-Strain: " + (variant ? AILURAN_VARIANT_NOTES[variant] : "Choose Shroud-Strain or Surge-Strain at character creation.");
   }
   setStoreField("ancestry_note", gift, {onlyIfEmpty:false});
+  gift = window.VFCompactRules ? window.VFCompactRules.compactBundle(gift,"Ancestry Gift") : gift;
   setStoreField("ancestry_gift", gift, {onlyIfEmpty:false});
   saveFields();
 }
@@ -4612,9 +4637,10 @@ function applyCommunityAutofill(){
   const name = (store.community || "").trim();
   const note = COMMUNITY_NOTES[name];
   if(!note) return;
+  const compact = compactRulesText(note, "Community Feature");
   setStoreField("community_note", note, {onlyIfEmpty:false});
-  setStoreField("community_gift", note, {onlyIfEmpty:false});
-  setStoreField("community_advantages", note, {onlyIfEmpty:false});
+  setStoreField("community_gift", compact, {onlyIfEmpty:false});
+  setStoreField("community_advantages", compact, {onlyIfEmpty:false});
   saveFields();
 }
 function applyGearAutofill(i, opts={}){
@@ -4746,6 +4772,8 @@ function armorBlock() {
       <div class="li-in"><label>Armor Slots</label><input data-f="armor_score"/></div>
       <div class="li-in li-feat"><label>Feature</label><textarea class="tag-field" data-f="armor_feat"></textarea></div>
     </div>
+    <textarea data-f="armor_tier" hidden></textarea><textarea data-f="armor_mods" hidden></textarea><textarea data-f="mod_inventory_armor" hidden></textarea>
+    <div data-vf-mod-manager data-mod-type="armor" data-mod-target="armor"></div>
     ${trackRow("Armor","armor_slots",8)}
   </div>`;
 }
@@ -4762,7 +4790,9 @@ function weaponsBlock(path="sleeper") {
       <div class="li-in"><label>Trait / Range</label><input data-f="${p}_trait"/></div>
       <div class="li-in"><label>${dmgLabel}</label><input data-f="${dmgKey}" ${readonly}/></div>
       <div class="li-in li-feat"><label>Feature</label><textarea class="tag-field" data-f="${p}_feat"></textarea></div>
-    </div>`;
+    </div>
+    <textarea data-f="${p}_tier" hidden></textarea><textarea data-f="${p}_mods" hidden></textarea><textarea data-f="mod_inventory_weapon" hidden></textarea>
+    <div data-vf-mod-manager data-mod-type="weapon" data-mod-target="${p}"></div>`;
   };
   return `<div class="block">
     <div class="sec-title">Active Weapons <span class="hint">${isSleeping ? "Sleep dmg = dice × Prof. + Honed Edge" : "Awakened dmg = dice × Prof."} · ${wtFilterToggle("wt_filter_weapons")}</span></div>
@@ -5269,7 +5299,8 @@ function handleFieldEdit(e){
   if (key === "level") { updateLevelDerivedStats(); updateTechnologyAccessSummary(); refreshStaticSelectControls(); }
   if (key === "wealth" || key === "tech_access" || /^wt_filter_/.test(key)) { updateTechnologyAccessSummary(); refreshStaticSelectControls(); }
   if (key === "s_active_move") applySignatureMoveAutofill(true);
-  if (key === "prof" || key === "wpri_dmg" || key === "wsec_dmg") updateWeaponDamageCalculations();
+  if (key === "prof" || key === "wpri_dmg" || key === "wsec_dmg" || key === "wpri_mods" || key === "wsec_mods") updateWeaponDamageCalculations();
+  if (key === "armor_mods") updateDamageThresholdsFromArmor();
   if (key === "wpri_name") applyWeaponAutofill("wpri");
   if (key === "wsec_name") applyWeaponAutofill("wsec");
   const gearMatch = key.match(/^eq_(\d+)_name$/);
@@ -6698,14 +6729,28 @@ document.getElementById("jsonInput")?.addEventListener("change", async e=>{
   if(!file) return;
   try {
     const data = JSON.parse(await file.text());
-    const fields = data.fields || data.store || data;
-    const importedTracks = data.tracks || {};
-    if (!fields || typeof fields !== "object") throw new Error("Invalid character JSON");
-    localStorage.setItem(LS_FIELDS, JSON.stringify(fields));
-    localStorage.setItem(LS_TRACKS, JSON.stringify(importedTracks));
+    let converted=null;
+    if(!window.VeilFarersSheetBridge && !(data && data.fields)) throw new Error("Creator compatibility bridge is unavailable.");
+    if(data && data.creatorState && typeof data.creatorState === "object"){
+      converted=await window.VeilFarersSheetBridge.convert(data.creatorState);
+    }else if(data && data.payload && data.payload.creatorState && typeof data.payload.creatorState === "object"){
+      converted=await window.VeilFarersSheetBridge.convert(data.payload.creatorState);
+    }else if(data && data.fields && typeof data.fields === "object"){
+      converted={fields:data.fields,tracks:data.tracks||{}};
+    }else if(data && data.payload && data.payload.fields){
+      converted={fields:data.payload.fields,tracks:data.payload.tracks||{}};
+    }else{
+      converted=await window.VeilFarersSheetBridge.convert(data);
+    }
+    if (!converted || !converted.fields || typeof converted.fields !== "object") throw new Error("Invalid or unsupported character JSON");
+    localStorage.setItem(LS_FIELDS, JSON.stringify(converted.fields));
+    localStorage.setItem(LS_TRACKS, JSON.stringify(converted.tracks||{}));
+    localStorage.setItem("veilfarers.sheet.latestPayload.v1",JSON.stringify({app:"Veilfarers Character Sheet",version:"2.80-RC3.2",exportedAt:new Date().toISOString(),fields:converted.fields,tracks:converted.tracks||{}}));
     location.reload();
   } catch(err) {
     alert("No se pudo importar el JSON: " + err.message);
+  } finally {
+    e.target.value="";
   }
 });
 
@@ -6727,6 +6772,22 @@ function captureLiveFields(){
   });
   saveFields();
 }
+
+function currentTransferPayload(){
+  captureLiveFields();
+  const payload={app:"Veilfarers Character Sheet",version:"2.80-RC3.2",exportedAt:new Date().toISOString(),fields:Object.assign({},store||{}),tracks:JSON.parse(JSON.stringify(tracks||{}))};
+  localStorage.setItem("veilfarers.sheet.latestPayload.v1",JSON.stringify(payload));
+  return payload;
+}
+function sendSheetToTool(target){
+  const payload=currentTransferPayload();
+  const envelope={schema:"veilfarers.character-transfer/1",source:"charsheet",target,createdAt:new Date().toISOString(),payload};
+  localStorage.setItem("veilfarers.character.transfer.v1",JSON.stringify(envelope));
+  const href=target==="keeper-tool"?"/keeper-tool.html?from=sheet&import=1":"/player-tool.html?from=sheet&import=1";
+  window.location.href=href;
+}
+document.getElementById("sendPlayerToolBtn")?.addEventListener("click",()=>sendSheetToTool("player-tool"));
+document.getElementById("sendKeeperToolBtn")?.addEventListener("click",()=>sendSheetToTool("keeper-tool"));
 
 function valueForPrint(el){
   const k = el.getAttribute('data-f');
@@ -7019,19 +7080,19 @@ function buildDigitalSheetValues(){
   const expPrefix = isAwakened ? "a_exp" : "s_exp";
   const primaryDmg = isAwakened ? firstFilled(store.wpri_dmg_final_aw, store.wpri_dmg_final) : firstFilled(store.wpri_dmg_final, store.wpri_dmg_final_aw);
   const secondaryDmg = isAwakened ? firstFilled(store.wsec_dmg_final_aw, store.wsec_dmg_final) : firstFilled(store.wsec_dmg_final, store.wsec_dmg_final_aw);
-  const hopeResolveFeatureText = isAwakened
+  const hopeResolveFeatureText = compactRulesText(isAwakened
     ? combineLines(store.a_featname, store.a_feattext)
-    : combineLines(store.s_featname, store.s_feattext);
+    : combineLines(store.s_featname, store.s_feattext), isAwakened ? "Hope Feature" : "Effort Feature");
   const dataForFeatures = CLASS_DATA[(store.class || "").trim()];
   const pathKeyForFeatures = isAwakened ? "awakened" : "sleeping";
   const selectedSubForFeatures = selectedSubclassData ? selectedSubclassData() : null;
-  let baseClassFeatureText = dataForFeatures ? classFeatureSummary(dataForFeatures, pathKeyForFeatures) : (store.features || "");
+  let baseClassFeatureText = dataForFeatures ? classFeatureSummary(dataForFeatures, pathKeyForFeatures, true) : compactRulesText(store.features || "", "Class Feature");
   baseClassFeatureText = appendUniqueLine(baseClassFeatureText, scoundrelSneakAttackFeature(pathKeyForFeatures));
   let subclassFeatureText = "";
   if (selectedSubForFeatures) {
     const t = selectedSubForFeatures.tiers && selectedSubForFeatures.tiers[0];
     subclassFeatureText = t
-      ? `${selectedSubForFeatures.name} (${selectedSubForFeatures.trait || ""}) - ${t.tier}: ${t.name} - ${t.text}`
+      ? compactRulesText(`${selectedSubForFeatures.name}: ${t.tier}: ${t.name} — ${t.text}`, "Subclass")
       : `${selectedSubForFeatures.name} (${selectedSubForFeatures.trait || ""})`;
   }
   const classFeaturesText = combineLines(baseClassFeatureText, subclassFeatureText);

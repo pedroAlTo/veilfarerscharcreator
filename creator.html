@@ -912,6 +912,8 @@ body.choice-open{overflow:hidden;}
 }
 </style>
   <link rel="stylesheet" href="portal.css">
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
 </head>
 <body>
 <div class="app">
@@ -922,6 +924,7 @@ body.choice-open{overflow:hidden;}
     </div>
     <div class="header-tools">
       <span id="save-status" class="save-status"></span>
+      <button class="btn btn-primary" id="creator-send-sheet" onclick="finishCreatorToSheet()">Send to Charsheet →</button>
       <button class="btn btn-ghost" onclick="saveCharacter()">&#9762; Save</button>
       <button class="btn btn-ghost" onclick="loadCharacter()">&#8682; Load</button>
       <input type="file" id="load-file-input" accept="application/json,.json" style="display:none"/>
@@ -1140,7 +1143,10 @@ body.choice-open{overflow:hidden;}
       <textarea class="field-input" id="char-wound" rows="2" placeholder="The thing the Keeper can pull on."></textarea></div>
     <div class="nav-row">
       <button class="btn btn-ghost" onclick="goStep(8)">&larr; Equipment</button>
-      <button class="btn btn-primary" onclick="buildSheet()">Generate Character Sheet &rarr;</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="btn btn-secondary" onclick="buildSheet()">Preview Character</button>
+        <button class="btn btn-primary" onclick="finishCreatorToSheet()">Send to Charsheet &rarr;</button>
+      </div>
     </div>
   </section>
 
@@ -2301,15 +2307,40 @@ function saveInputs(){
   set("char-bg-answer","bgAnswer"); set("char-anchor","anchor"); set("char-wound","wound");
 }
 
-function finishCreatorToSheet(){
+async function finishCreatorToSheet(){
   saveInputs();
   canonicalizeLevelState();
   autosave();
+  const button=document.getElementById("creator-send-sheet")||document.getElementById("wizard-next");
+  const previous=button&&button.textContent;
+  if(button){button.disabled=true;button.textContent="Transferring…";}
   try{
+    if(window.VeilFarersCharacterRegistry){
+      const ensured=await window.VeilFarersCharacterRegistry.ensureId({creatorState:state},{source:"creator-to-charsheet"});
+      state.characterId=ensured.characterId;autosave();
+    }
+    if(!window.VeilFarersSheetBridge) throw new Error("The Charsheet transfer bridge is not loaded.");
+    const out=await window.VeilFarersSheetBridge.convert(state);
+    window.VeilFarersSheetBridge.saveOutput(out,state);
+    if(window.VeilFarersCharacterRegistry&&state.characterId){
+      const payload={app:"Veilfarers Character Sheet",version:"2.83-RC3.2",schema:"veilfarers.character/2",characterId:state.characterId,fields:{...out.fields,character_id:state.characterId},tracks:out.tracks,advancementHistory:state.advancementHistory||[]};
+      const completedAt=new Date().toISOString();
+      const record=window.VeilFarersCharacterRegistry.saveLocalData(state.characterId,{creatorState:state,sheetPayload:payload,advancementHistory:state.advancementHistory||[]},{source:"creator-to-charsheet",status:"active",completedAt});
+      const synced=await window.VeilFarersCharacterRegistry.sync(record,{source:"creator-to-charsheet"});
+      if(synced&&synced.cloudState==='deferred'){
+        flashStatus("Saved locally · cloud sync pending");
+      }else{
+        flashStatus("Saved to Character Vault");
+      }
+    }
     localStorage.setItem("veilfarers.sheet.syncCreatorOnOpen.v1","1");
     localStorage.setItem("veilfarers.sheet.creatorRelease.v1",CREATOR_CANONICAL_RELEASE);
-  }catch(e){}
-  window.location.href="/charsheet.html?from=creator&sync=1";
+    window.location.href="/charsheet.html?from=creator&sync=1";
+  }catch(error){
+    flashStatus("Transfer failed");
+    alert("Could not send this character to the Charsheet: "+error.message);
+    if(button){button.disabled=false;button.textContent=previous;}
+  }
 }
 
 /* ── Sheet ── */
@@ -2467,10 +2498,10 @@ function buildSheet(){
 
 function freshState(){
   return {ancestry:null,subStrain:null,community:null,path:null,cls:null,subclass:null,
-    traits:{},experiences:["","",""],affiliation:null,veilAlignment:null,sleepingMysticDomains:[],powers:[],
+    traits:{},experiences:["","",""],experienceBonuses:[2,2,2],affiliation:null,veilAlignment:null,sleepingMysticDomains:[],powers:[],vaultPowers:[],resolveMoves:[],
     weapons:[],armors:[],kit:"",
     name:"",pronouns:"",appearance:"",voice:"",bgAnswer:"",anchor:"",wound:"",
-    level:1,proficiency:1,levelNotes:"",selectedArrayVal:null};
+    characterId:"",level:1,proficiency:1,hpMaxBonus:0,stressMaxBonus:0,evasionBonus:0,technologyAccessLevel:1,resolveMaxBonus:0,resolveDie:"d4",subclassRank:"Foundation",traitAdvances:{},multiclass:null,temperedResolve:false,advancementHistory:[],levelNotes:"",selectedArrayVal:null};
 }
 function resetAll(){
   if(!confirm("Start a new character? Unsaved progress will be lost.")) return;
@@ -2501,20 +2532,33 @@ function syncFieldsFromState(){
     if(anchor) anchor.style.display=state.path==="Sleeping"?"block":"none";
   }
 }
-function saveCharacter(){
+async function saveCharacter(){
   saveInputs();
-  const data=JSON.stringify(state,null,2);
-  try{ localStorage.setItem(STORAGE_KEY,data); }catch(e){}
+  canonicalizeLevelState();
+  autosave();
+  let payload={app:"Veilfarers Character Creator",version:CREATOR_CANONICAL_RELEASE,schema:"veilfarers.creator-state/1",exportedAt:new Date().toISOString(),creatorState:state};
+  try{
+    if(window.VeilFarersSheetBridge){
+      const out=await window.VeilFarersSheetBridge.convert(state);
+      payload=window.VeilFarersSheetBridge.makeEnvelope(out,state,"creator","portable-json");
+      payload.app="Veilfarers Character Creator";
+      payload.version=CREATOR_CANONICAL_RELEASE;
+    }
+  }catch(error){ console.warn("Charsheet-compatible export could not be embedded; saving Creator state only.",error); }
+  const data=JSON.stringify(payload,null,2);
+  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }catch(e){}
   const blob=new Blob([data],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
   const nm=(state.name||"veilfarers-character").trim().replace(/[^a-z0-9]+/gi,"-").toLowerCase();
   a.download=nm+".json";
   document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(a.href);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   flashStatus("Character saved");
 }
 function loadCharacterData(obj){
+  if(obj&&obj.creatorState)obj=obj.creatorState;
+  if(obj&&obj.payload&&obj.payload.creatorState)obj=obj.payload.creatorState;
   const fresh=freshState();
   for(const k in fresh){ if(k in obj) fresh[k]=obj[k]; }
   // Migrate older single-item saves to the budget-pool format
@@ -2939,6 +2983,8 @@ async function loadData(){
   }
 })();
 </script>
+  <script src="sheet-bridge.js"></script>
+  <script src="/level-up.js"></script>
   <script src="portal.js"></script>
 </body>
 </html>

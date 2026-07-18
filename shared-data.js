@@ -20,7 +20,7 @@
     features: ['core/features.json'],
     featureRegistry: ['features-registry.json'],
     droneGrades: ['core/drone-grades.json', 'rust-and-steel/drone-grades.json'],
-    droneModules: ['core/drone-modules.json']
+    droneModules: ['core/drone-modules.json', 'rust-and-steel/drone-modules.json']
   });
   const cache = new Map();
 
