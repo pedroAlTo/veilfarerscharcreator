@@ -1,45 +1,52 @@
-VeilFarers Portal v59.35
+VeilFarers Portal v59.43
 
 RELEASE PURPOSE
 ---------------
-Fix the augmentation-manager React crash, remove tool-card character images from the welcome page while preserving its background, and retain the canonical armor, augmentation and gear loadout managers.
+Extend Player and Keeper live play with canonical armor automation, resource-aware augmentation use, playable drone sheets, synchronized drone signal controls, and an OPEN/CLOSED table directory with protected passwords.
 
 ENTRY POINTS
 ------------
-/                    Welcome page
-/creator.html         Character Creator
-/creator.html#level-up Level Up workspace inside Creator
-/charsheet.html       Digital Charsheet & PDF
-/player-tool.html     Player Tool
-/keeper-tool.html     Keeper Tool (role-gated in production; under construction)
-/admin.html           Admin (admin role required in production)
+/                     Welcome page
+/creator.html          Character Creator
+/creator.html#cards    Card Library
+/creator.html#level-up Level Up
+/charsheet.html        Digital Charsheet & PDF
+/player-tool.html      Character and Drone Player Tool
+/keeper-tool.html      Keeper Tool and table signal controls
+/downloads.html        Current downloads only
 
-ONLINE DEPLOY
--------------
-Deploy the contents of this folder to Netlify. Keep the existing Firebase environment variables and set:
+PLAYER TOOL
+-----------
+- New characters start at full HP, 2 Hope/Effort and full Resolve.
+- Active armor applies its thresholds, armor slots and supported modifiers.
+- Augmentation activation automatically marks Stress or spends Hope/Effort.
+- Drone tabs use canonical frames/modules, have no Hope/Effort/Resolve/Stress tracks, and start at full HP and armor.
+- A drone never owns Spotlight; its sheet displays and changes the current character Spotlight with the same lantern component used in the tabs.
+- Drone Signal uses Stable, Unstable and Lost and can be changed by players or the Keeper.
 
-FIREBASE_PUBLIC_TABLE_DIRECTORY=false
+TABLES AND PASSWORDS
+--------------------
+- Table discovery is enabled unless FIREBASE_PUBLIC_TABLE_DIRECTORY=false is set.
+- The directory clearly labels OPEN and CLOSED tables.
+- Creating an open table requires an explicit warning confirmation in Player Tool.
+- Passwords are stored as salted PBKDF2-SHA256 records, never as plaintext.
+- A password can only be added or changed after the user has successfully connected to that table.
 
-Keeper/Admin routes use Netlify Identity role redirects. Verify roles in a Deploy Preview before replacing production.
-
-SECURITY POSITION
+SECURITY BOUNDARY
 -----------------
-This package preserves the prior public-launch hardening baseline. Private campaign data is still not production-secure until Firestore Security Rules, authenticated table membership and App Check are completed.
-
-Read SECURITY_PUBLIC_LAUNCH_v59.27.md before enabling public cloud-table traffic.
+The password is a client-side entry gate and protects against casual access. It is not a substitute for Firestore Security Rules, authenticated table membership or App Check. Read SECURITY_TABLES_v59.43.md before treating cloud table data as private.
 
 LOCAL TESTING
 -------------
-Read LOCAL_TESTING.md. Copy local/.env.local.example to local/.env.local, fill local Firebase values if needed, then run START_LOCAL_WINDOWS.bat or local/start-local.sh.
+Read LOCAL_TESTING.md. Table discovery is enabled by default locally unless FIREBASE_PUBLIC_TABLE_DIRECTORY=false is explicitly set.
 
 DELIVERABLES
 ------------
-- GITHUB_DEPLOY_SUMMARY_v59.35.md
-- PORTAL_HANDOVER_v59.35.md
-- VALIDATION_v59.35.txt
-- LOCAL_TESTING.md
+- GITHUB_DEPLOY_SUMMARY_v59.43.md
+- PORTAL_HANDOVER_v59.43.md
+- VALIDATION_v59.43.txt
+- SECURITY_TABLES_v59.43.md
 
-CANON
------
-This release keeps using the current shared VeilFarers canonical dataset under /rules-data.
-The Player Tool now reads armor, augments and gear from that canonical source for its new loadout managers.
+DEPLOY
+------
+Upload the contents of this folder to Netlify with index.html at the deploy root.

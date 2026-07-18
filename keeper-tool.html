@@ -947,13 +947,25 @@
       <input id="vf-session-id" placeholder="Join or create a table" value="Table" style="flex:1;min-width:0;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
       <button id="vf-connect-btn" style="padding:6px 12px;border:0;border-radius:6px;background:#e2b45a;color:#111;font-weight:700;cursor:pointer;">Connect</button>
     </div>
-    <input id="vf-session-pass" type="password" placeholder="Table password (optional: sets on new, unlocks protected)" style="width:100%;box-sizing:border-box;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
+    <input id="vf-session-pass" type="password" placeholder="Password strongly recommended (unlock or protect new table)" style="width:100%;box-sizing:border-box;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
+    <div style="margin-top:4px;font-size:9px;color:#f59e0b;line-height:1.35;">Open tables are visible and joinable. Protect campaign tables with a password.</div>
+    <div id="vf-password-change" style="display:none;margin-top:8px;padding:8px;border:1px solid #78350f;border-radius:7px;background:#1c1308;">
+      <div style="display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:5px;"><span style="font-size:10px;color:#fbbf24;font-weight:800;">TABLE PASSWORD</span><span id="vf-password-state" style="font-size:9px;color:#94a3b8;">OPEN</span></div>
+      <input id="vf-new-pass" type="password" placeholder="New password (minimum 4 characters)" style="width:100%;box-sizing:border-box;padding:5px;border-radius:5px;border:1px solid #475569;background:#111827;color:#fff;" />
+      <input id="vf-confirm-pass" type="password" placeholder="Confirm new password" style="width:100%;box-sizing:border-box;margin-top:4px;padding:5px;border-radius:5px;border:1px solid #475569;background:#111827;color:#fff;" />
+      <button id="vf-change-pass" style="width:100%;margin-top:5px;padding:5px;border:1px solid #b45309;border-radius:5px;background:#78350f;color:#fde68a;font-weight:800;cursor:pointer;">ADD / CHANGE PASSWORD</button>
+      <div style="margin-top:4px;font-size:9px;color:#94a3b8;">Available only after this Keeper has successfully joined the table.</div>
+    </div>
     <div id="vf-live-status" style="margin-top:6px;color:#94a3b8;font-size:11px;">Not connected.</div>
     <div id="vf-live-rolls" style="margin-top:8px;max-height:150px;overflow-y:auto;"></div>
     <div style="margin-top:8px;border-top:1px solid #1e293b;padding-top:8px;">
       <div style="font-size:10px;color:#e2b45a;font-weight:700;letter-spacing:1px;">SPOTLIGHT</div>
       <div id="vf-spot-current" style="font-size:11px;color:#facc15;margin:2px 0;">None</div>
       <div id="vf-spot-buttons" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="margin-top:8px;border-top:1px solid #1e293b;padding-top:8px;">
+      <div style="font-size:10px;color:#67e8f9;font-weight:700;letter-spacing:1px;margin-bottom:4px;">DRONE SIGNAL</div>
+      <div id="vf-drone-signals" style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;color:#64748b;font-style:italic;">No drones connected.</span></div>
     </div>
     <div style="margin-top:8px;border-top:1px solid #1e293b;padding-top:8px;">
       <div style="font-size:10px;color:#e2b45a;font-weight:700;letter-spacing:1px;margin-bottom:4px;">SEND TO PLAYERS</div>
@@ -998,7 +1010,7 @@
 </div>
 <script>
 (function () {
-  var db = null, unsub = null, SESSION = null, firebaseRuntimeConfig = null;
+  var db = null, unsub = null, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false;
   function $id(id) { return document.getElementById(id); }
   function setStatus(m) { var e = $id('vf-live-status'); if (e) e.textContent = m; }
   function toPlayer(c, idx) {
@@ -1082,7 +1094,7 @@
     var box = document.getElementById('vf-tables'); if (!box) return;
     if (!tables || !tables.length) { box.innerHTML = '<span style="font-size:10px;color:#64748b;font-style:italic;">No tables yet. Type a name and Connect to create one.</span>'; return; }
     box.innerHTML = tables.map(function (tb) {
-      return '<button data-table="' + esc(tb.id) + '" style="padding:3px 7px;border-radius:5px;border:1px solid #334155;background:#111827;color:#cbd5e1;font-size:10px;cursor:pointer;">' + (tb.locked ? '\uD83D\uDD12 ' : '') + esc(tb.name) + ' <span style="color:#64748b;">(' + tb.players + ')</span></button>';
+      return '<button data-table="' + esc(tb.id) + '" style="padding:3px 7px;border-radius:5px;border:1px solid ' + (tb.locked ? '#92400e' : '#166534') + ';background:#111827;color:#cbd5e1;font-size:10px;cursor:pointer;"><span style="font-weight:800;color:' + (tb.locked ? '#fbbf24' : '#86efac') + ';">' + (tb.locked ? 'CLOSED' : 'OPEN') + '</span> · ' + esc(tb.name) + ' <span style="color:#64748b;">(' + tb.players + ')</span></button>';
     }).join('');
   }
   async function listTables() {
@@ -1098,7 +1110,7 @@
       var appId = 'default-app-id';
       var snap = await db.collection('artifacts/' + appId + '/public/data/sessions').get();
       var tables = [];
-      snap.forEach(function (d) { var dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!dd.passHash }); });
+      snap.forEach(function (d) { var dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!(dd.passAuth || dd.passHash) }); });
       tables.sort(function (a, b) { return a.name.localeCompare(b.name); });
       renderTables(tables);
     } catch (e) { console.error('listTables', e); setStatus('Cannot list tables: ' + (e.code || e.message)); if (box) box.innerHTML = ''; }
@@ -1114,9 +1126,27 @@
     try { db.settings({ ignoreUndefinedProperties: true }); }
     catch (settingsErr) { console.warn('Firestore settings already active.', settingsErr); }
   }
-  async function hashPass(txt) {
-    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('veilfarers:' + txt));
-    return Array.prototype.map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  function bytesBase64(bytes) { var binary=''; Array.prototype.forEach.call(bytes,function(b){binary+=String.fromCharCode(b);}); return btoa(binary); }
+  function base64Bytes(value) { return Uint8Array.from(atob(String(value||'')),function(ch){return ch.charCodeAt(0);}); }
+  async function legacyHashPass(txt) { var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('veilfarers:' + txt)); return Array.prototype.map.call(new Uint8Array(buf),function(b){return b.toString(16).padStart(2,'0');}).join(''); }
+  async function derivePasswordHash(txt, saltValue, iterations) {
+    var key = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(txt || '')), 'PBKDF2', false, ['deriveBits']);
+    var bits = await crypto.subtle.deriveBits({ name:'PBKDF2', hash:'SHA-256', salt:base64Bytes(saltValue), iterations:Number(iterations)||150000 }, key, 256);
+    return bytesBase64(new Uint8Array(bits));
+  }
+  async function makePasswordRecord(txt) { var salt=crypto.getRandomValues(new Uint8Array(16)); var record={algorithm:'PBKDF2-SHA256',iterations:150000,salt:bytesBase64(salt)}; record.hash=await derivePasswordHash(txt,record.salt,record.iterations); return record; }
+  function passwordRecordToken(record) { return record ? JSON.stringify({algorithm:record.algorithm,iterations:record.iterations,salt:record.salt,hash:record.hash}) : ''; }
+  function setPasswordUi(locked) { currentSessionLocked=!!locked; var wrap=$id('vf-password-change'), stateEl=$id('vf-password-state'); if(wrap)wrap.style.display=SESSION?'block':'none'; if(stateEl){stateEl.textContent=locked?'CLOSED':'OPEN';stateEl.style.color=locked?'#fbbf24':'#86efac';} }
+  async function verifyTablePassword(existing, supplied, sid) {
+    if (existing && existing.passAuth && existing.passAuth.hash) {
+      var cached=localStorage.getItem('veilfarers_tableauth_'+sid); var token=passwordRecordToken(existing.passAuth);
+      if (cached && cached===token) return true;
+      if (!supplied) return false;
+      var candidate=await derivePasswordHash(supplied, existing.passAuth.salt, existing.passAuth.iterations);
+      if(candidate===existing.passAuth.hash){localStorage.setItem('veilfarers_tableauth_'+sid,token);return true;} return false;
+    }
+    if(existing&&existing.passHash){var cachedLegacy=localStorage.getItem('veilfarers_tablepass_'+sid);var candidateLegacy=supplied?await legacyHashPass(supplied):cachedLegacy;if(candidateLegacy===existing.passHash){localStorage.setItem('veilfarers_tablepass_'+sid,existing.passHash);return true;}return false;}
+    return true;
   }
   async function connect() {
     var sid = (($id('vf-session-id') || {}).value || 'Table').trim() || 'Table';
@@ -1132,15 +1162,15 @@
       var pre = await SESSION.get();
       var existing = (pre && pre.exists) ? (pre.data() || {}) : null;
       var extra = { name: sid, lastActive: Date.now() };
-      if (existing && existing.passHash) {
-        var cached = localStorage.getItem('veilfarers_tablepass_' + sid);
-        var candidate = pass ? await hashPass(pass) : cached;
-        if (candidate !== existing.passHash) { SESSION = null; window.__keeperSession = null; setStatus('This table is password-protected. Type the password above and press Connect.'); return; }
-        localStorage.setItem('veilfarers_tablepass_' + sid, existing.passHash);
+      var protectedTable = !!(existing && (existing.passAuth || existing.passHash));
+      if (protectedTable) {
+        var allowed = await verifyTablePassword(existing, pass, sid);
+        if (!allowed) { SESSION = null; window.__keeperSession = null; currentSessionId=''; setPasswordUi(false); setStatus('This table is closed. Type its password and press Connect.'); return; }
       } else if (!existing && pass) {
-        extra.passHash = await hashPass(pass);
-        localStorage.setItem('veilfarers_tablepass_' + sid, extra.passHash);
-      }
+        extra.passAuth = await makePasswordRecord(pass); extra.passHash = null; extra.isOpen = false;
+        localStorage.setItem('veilfarers_tableauth_' + sid, passwordRecordToken(extra.passAuth)); protectedTable=true;
+      } else if (!existing) { extra.isOpen = true; }
+      currentSessionId=sid; setPasswordUi(protectedTable);
       if ($id('vf-session-pass')) $id('vf-session-pass').value = '';
       try { SESSION.set(extra, { merge: true }); } catch (e) { console.error(e); }
       if (unsub) unsub();
@@ -1148,11 +1178,12 @@
         if (!snap.exists) { setStatus('Session "' + sid + '" is empty (waiting for players).'); return; }
         var data = snap.data();
         try {
-          if (data.characters && typeof state !== 'undefined') { window.__sessionCharsRaw = JSON.parse(JSON.stringify(data.characters)); if (!(window.__keeperLastEdit && (Date.now() - window.__keeperLastEdit < 2500))) { state.players = data.characters.map(toPlayer); } }
+          if (data.characters && typeof state !== 'undefined') { window.__sessionCharsRaw = JSON.parse(JSON.stringify(data.characters)); if (!(window.__keeperLastEdit && (Date.now() - window.__keeperLastEdit < 2500))) { state.players = data.characters.reduce(function(list, entity, originalIndex){ if(entity && entity.entityType !== 'drone') list.push(toPlayer(entity, originalIndex)); return list; }, []); } }
           if (typeof data.fearTokens === 'number' && typeof state !== 'undefined') { state.fearTokens = data.fearTokens; }
           if (typeof state !== 'undefined') { state.spotlight = data.spotlight || ''; }
         if (typeof renderAll === 'function') { renderAll(); }
         renderSpotlight(data.spotlight || '');
+        renderDroneSignals(data.characters || []);
         } catch (e) { console.error('keeper sync render error', e); }
         var rolls = (data.rollHistory || []).slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         window.__handouts = Array.isArray(data.handouts) ? data.handouts : [];
@@ -1174,6 +1205,18 @@
     else if (stat === 'shields') { c.shields = value; }
     SESSION.set({ characters: chars }, { merge: true }).catch(function (e) { console.error(e); });
   };
+  function renderDroneSignals(chars) {
+    var box=$id('vf-drone-signals'); if(!box)return; var drones=(chars||[]).map(function(c,i){return {c:c,i:i};}).filter(function(entry){return entry.c&&entry.c.entityType==='drone';});
+    if(!drones.length){box.innerHTML='<span style="font-size:10px;color:#64748b;font-style:italic;">No drones connected.</span>';return;}
+    box.innerHTML=drones.map(function(entry){var c=entry.c,stateId=c.signalState||'stable';return '<div style="padding:6px;border:1px solid #1e3a5f;border-radius:6px;background:#07111f;"><div style="display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:4px;"><b style="font-size:10px;color:#e2e8f0;">'+esc(c.name||('Drone '+(entry.i+1)))+'</b><span style="font-size:9px;color:#64748b;">'+esc(c.signalRange||'Close')+' · '+esc(c.linkMode||'Direct RF Link')+'</span></div><div style="display:flex;gap:3px;">'+['stable','unstable','lost'].map(function(sig){var active=sig===stateId;var color=sig==='stable'?'#22c55e':sig==='unstable'?'#f59e0b':'#ef4444';return '<button data-drone-signal="'+entry.i+'" data-signal="'+sig+'" style="flex:1;padding:3px;border-radius:4px;border:1px solid '+(active?color:'#334155')+';background:'+(active?'#111827':'#0b1220')+';color:'+(active?color:'#64748b')+';font-size:8px;font-weight:800;text-transform:uppercase;cursor:pointer;">'+sig+'</button>';}).join('')+'</div></div>';}).join('');
+  }
+  function setDroneSignal(index, signal) { if(!SESSION||!window.__sessionCharsRaw)return; var chars=window.__sessionCharsRaw; if(!chars[index]||chars[index].entityType!=='drone')return; chars[index].signalState=signal; SESSION.set({characters:chars},{merge:true}).catch(function(e){console.error(e);}); renderDroneSignals(chars); }
+  async function changeTablePassword() {
+    if(!SESSION||!currentSessionId){setStatus('Connect to the table before changing its password.');return;}
+    var password=(($id('vf-new-pass')||{}).value||'').trim(), confirmPass=(($id('vf-confirm-pass')||{}).value||'').trim();
+    if(password.length<4){setStatus('Password must contain at least 4 characters.');return;} if(password!==confirmPass){setStatus('Password confirmation does not match.');return;}
+    try{var passAuth=await makePasswordRecord(password);await SESSION.set({passAuth:passAuth,passHash:null,isOpen:false,passwordUpdatedAt:Date.now()},{merge:true});localStorage.setItem('veilfarers_tableauth_'+currentSessionId,passwordRecordToken(passAuth));if($id('vf-new-pass'))$id('vf-new-pass').value='';if($id('vf-confirm-pass'))$id('vf-confirm-pass').value='';setPasswordUi(true);setStatus('Table password updated. The table is now closed.');listTables();}catch(e){setStatus('Password update failed: '+e.message);}
+  }
   function publishKeeperRoll(roll) {
     if (!SESSION || !roll) return;
     roll.timestamp = Date.now();
@@ -1276,8 +1319,10 @@
   document.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'vf-connect-btn') connect();
     if (e.target && e.target.id === 'vf-list-tables') listTables();
+    if (e.target && e.target.id === 'vf-change-pass') changeTablePassword();
     var tbtn = e.target && e.target.closest ? e.target.closest('[data-table]') : null;
     if (tbtn) { var inp = document.getElementById('vf-session-id'); if (inp) inp.value = tbtn.getAttribute('data-table'); connect(); }
+    var sigbtn = e.target.closest('[data-drone-signal]'); if(sigbtn){setDroneSignal(parseInt(sigbtn.getAttribute('data-drone-signal'),10),sigbtn.getAttribute('data-signal'));}
     if (e.target && e.target.id === 'vf-live-min') { var b = $id('vf-live-body'); if (b) b.style.display = (b.style.display === 'none' ? 'block' : 'none'); }
     if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-spot')) { setSpotlight(e.target.getAttribute('data-spot')); }
     var st = e.target && e.target.closest ? e.target.closest('.vf-spot-toggle') : null; if (st && st.getAttribute('data-spot-id') != null) { e.stopPropagation(); toggleSpotlight(st.getAttribute('data-spot-id')); }
@@ -1299,7 +1344,7 @@
       if (vol && (parseInt(e.target.value) || 0) > 0) { vol.checked = true; }
     }
   });
-  // Check whether table discovery is enabled; the production default is private.
+  // Check whether table discovery is enabled; it is enabled unless explicitly disabled by environment configuration.
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { listTables(); });
   else listTables();
 })();

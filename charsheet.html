@@ -1353,6 +1353,25 @@
     font-family: "Inter", sans-serif; font-size: 10.5px; line-height: 1.42; color: var(--ink);
     min-height: 38px;
   }
+  textarea.area.feature-detail {
+    box-sizing: border-box;
+    height: 42px; min-height: 42px; max-height: 42px;
+    padding: 4px 7px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: rgba(255,255,255,.28);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+  }
+  textarea.area.feature-detail::-webkit-scrollbar { width: 7px; }
+  textarea.area.feature-detail::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+  #printRoot textarea.area.feature-detail,
+  #printRoot .print-area.feature-detail {
+    height: auto!important; min-height: 38px!important; max-height: none!important;
+    overflow: visible!important; border-color: transparent!important; padding: 0!important;
+    background: transparent!important;
+  }
 
   .feat-name {
     width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line);
@@ -1840,7 +1859,7 @@
 
 
 <style>
-  /* v2.74: intermediate-width toolbar anti-overflow.
+  /* v2.75 RC3: intermediate-width toolbar anti-overflow.
      Between tablet and large desktop the previous nowrap rule forced the action
      groups off-canvas to the right. These overrides keep the brand and actions
      in flow, allow the groups to wrap visibly, and let the measured toolbar
@@ -2108,6 +2127,345 @@ body.vf-full-sheet .foot .accent{text-align:right;white-space:nowrap}
   body.vf-full-sheet .idstrip{grid-template-columns:repeat(2,minmax(0,1fr))}
   body.vf-full-sheet .foot{grid-template-columns:1fr}
   body.vf-full-sheet .foot .accent{text-align:left}
+}
+</style>
+
+
+<style id="vf-sheet-v59-39-armor-fixes">
+/* v59.39 — Active Armor geometry: keep labels, feature text and Armor track inside the block. */
+.armor-block{padding:8px 11px 12px!important;overflow:hidden!important}
+.armor-block .sec-title{display:flex;align-items:center;flex-wrap:wrap;gap:5px 9px;margin-bottom:8px;min-width:0}
+.armor-block .sec-title .hint{margin-left:auto;min-width:0}
+.armor-block .sec-title::after{min-width:44px}
+.armor-block .wt-filter{font-size:6.5px;letter-spacing:.08em;white-space:nowrap}
+.armor-loadout{grid-template-columns:minmax(0,1.55fr) minmax(88px,.78fr) minmax(70px,.52fr)!important;column-gap:12px!important;row-gap:5px!important;margin:0!important;padding:0 0 8px!important}
+.armor-loadout>.li-in{min-width:0}
+.armor-loadout>.li-in label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:6px!important;letter-spacing:.1em!important}
+.armor-loadout>.li-in input,.armor-loadout>.li-in select{font-size:10.2px!important;min-height:23px!important;line-height:1.15!important;padding:1px 22px 2px 0!important;text-overflow:ellipsis}
+.armor-loadout>.li-in:nth-child(2) input,.armor-loadout>.li-in:nth-child(3) input{padding-right:2px!important}
+.armor-loadout .li-feat{grid-column:1/-1!important}
+.armor-loadout .li-feat .tag-field{display:block;width:100%;height:34px!important;min-height:34px!important;max-height:34px!important;padding:4px 6px!important;font-size:8.4px!important;line-height:1.22!important;overflow:auto!important;resize:none}
+.armor-block .track-row{margin:0!important;padding-top:8px;border-top:1px dashed var(--line);align-items:center;min-height:30px}
+.armor-block .track-lbl{width:66px!important;line-height:1.2}
+.armor-block .pips{align-items:center;row-gap:4px}
+#printRoot .armor-loadout .li-feat .tag-field.print-area{height:auto!important;min-height:28px!important;max-height:none!important;overflow:hidden!important}
+#printRoot .armor-block .track-row{padding-top:6px}
+@media(max-width:760px){
+  .armor-loadout{grid-template-columns:minmax(0,1fr) minmax(74px,.55fr)!important}
+  .armor-loadout>.li-in:first-child{grid-column:1/-1}
+  .armor-loadout>.li-in:nth-child(2){grid-column:1}
+  .armor-loadout>.li-in:nth-child(3){grid-column:2}
+  .armor-block .sec-title .hint{margin-left:0;width:100%}
+}
+</style>
+
+
+<style id="vf-sheet-v59-40-audit-fixes">
+/* v59.40 full-sheet audit: containment, legibility, path parity, screen + PDF. */
+.vf-full-sheet .face .paper{box-sizing:border-box;overflow:hidden}
+.vf-full-sheet .face .body,.vf-full-sheet .face .col,.vf-full-sheet .face .block,.vf-full-sheet .face .twocol,.vf-full-sheet .face .li,.vf-full-sheet .face .li-in{min-width:0;box-sizing:border-box}
+.vf-full-sheet .face .block{overflow:hidden}
+.vf-full-sheet .face input,.vf-full-sheet .face select,.vf-full-sheet .face textarea{box-sizing:border-box;max-width:100%;min-width:0;overflow-wrap:anywhere}
+.vf-full-sheet .face select{white-space:nowrap;text-overflow:ellipsis}
+.vf-full-sheet .face textarea{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+
+/* Active Armor: one stable row + full-width feature + contained pips. */
+.vf-full-sheet .armor-block{padding:8px 10px 10px!important;overflow:hidden!important}
+.vf-full-sheet .armor-block .sec-title{display:grid!important;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:5px 8px;margin-bottom:7px!important}
+.vf-full-sheet .armor-block .sec-title:after{display:none!important}
+.vf-full-sheet .armor-block .sec-title .hint{justify-self:end;max-width:100%;font-size:6.4px!important;line-height:1.2;text-align:right;white-space:normal!important}
+.vf-full-sheet .armor-block .wt-filter{display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;white-space:normal!important;line-height:1.15}
+.vf-full-sheet .armor-loadout{display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(82px,.72fr) minmax(62px,.45fr)!important;gap:7px!important;align-items:start;padding:0 0 7px!important;margin:0!important;border-bottom:none!important}
+.vf-full-sheet .armor-loadout>.li-in{min-width:0!important;width:auto!important}
+.vf-full-sheet .armor-loadout>.li-in label{display:block;min-height:18px;font-size:6.5px!important;line-height:1.2!important;letter-spacing:.08em!important;white-space:normal!important;overflow-wrap:anywhere}
+.vf-full-sheet .armor-loadout>.li-in input,.vf-full-sheet .armor-loadout>.li-in select{display:block;width:100%!important;min-height:25px!important;height:25px!important;font-size:9.4px!important;line-height:1.1!important;padding:2px 20px 3px 2px!important;text-overflow:ellipsis!important}
+.vf-full-sheet .armor-loadout>.li-in:nth-child(2) input,.vf-full-sheet .armor-loadout>.li-in:nth-child(3) input{padding-right:3px!important;text-align:center}
+.vf-full-sheet .armor-loadout .li-feat{grid-column:1/-1!important;width:100%!important}
+.vf-full-sheet .armor-loadout .li-feat label{min-height:auto!important;margin-bottom:3px}
+.vf-full-sheet .armor-loadout .li-feat .tag-field{display:block;width:100%!important;height:40px!important;min-height:40px!important;max-height:40px!important;padding:5px 6px!important;font-size:8.2px!important;line-height:1.25!important;overflow:auto!important;resize:none!important}
+.vf-full-sheet .armor-block .track-row{display:grid!important;grid-template-columns:60px minmax(0,1fr);gap:7px!important;margin:0!important;padding-top:8px!important;border-top:1px dashed var(--line);align-items:center!important;min-height:31px!important}
+.vf-full-sheet .armor-block .track-lbl{width:auto!important;font-size:7px!important;line-height:1.2!important}
+.vf-full-sheet .armor-block .pips{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:4px!important;max-width:100%!important;overflow:visible!important}
+
+/* Signature Move / Awakened powers: reserve text height and keep controls inside. */
+.vf-full-sheet [data-f="s_active_move"]{width:100%!important;min-height:26px!important;font-size:9.2px!important;text-overflow:ellipsis}
+.vf-full-sheet [data-f="s_active_move_text"]{display:block;width:100%!important;height:58px!important;min-height:58px!important;max-height:58px!important;padding:5px 6px!important;font-size:8.2px!important;line-height:1.25!important;overflow:auto!important;resize:none!important}
+.vf-full-sheet .access-brief{display:block;width:100%!important;height:45px!important;min-height:45px!important;max-height:45px!important;padding:5px 6px!important;font-size:8.1px!important;line-height:1.24!important;overflow:auto!important;resize:none!important}
+.vf-full-sheet .power .pwr-dom{font-size:7.5px!important;text-overflow:ellipsis!important}
+
+/* Bottom blocks: exactly 3 Experiences and independent, contained columns. */
+.vf-full-sheet .body + .twocol{margin-bottom:5px!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;align-items:start!important;margin-top:8px!important;clear:both}
+.vf-full-sheet .body + .twocol>.block{height:auto!important;min-height:0!important;overflow:hidden!important}
+.vf-full-sheet .exp-row{display:grid!important;grid-template-columns:minmax(0,1fr) 58px!important;gap:7px!important;align-items:center!important;min-height:29px!important;margin:0!important;padding:3px 0!important}
+.vf-full-sheet .exp-row input{width:100%!important;min-width:0!important;height:24px!important;font-size:9.4px!important;line-height:1.2!important;padding:2px 3px!important}
+.vf-full-sheet .exp-row select{width:58px!important;min-width:58px!important;height:24px!important;font-size:9px!important;padding:2px 16px 2px 3px!important}
+.vf-full-sheet .effort-table{display:grid!important;grid-template-columns:50px minmax(0,1fr)!important;min-width:0!important;width:100%!important}
+.vf-full-sheet .effort-table>div{min-width:0!important;overflow-wrap:anywhere!important;word-break:normal!important;font-size:7.4px!important;line-height:1.25!important;padding:4px 5px!important}
+.vf-full-sheet [data-f="a_quick_notes"]{width:100%!important;min-height:92px!important;height:92px!important;font-size:8.5px!important;line-height:1.3!important}
+
+/* Reputation rows must remain readable with all RC3 values. */
+.vf-full-sheet .reputation-row{grid-template-columns:minmax(105px,1.2fr) minmax(86px,.78fr) minmax(116px,1.05fr) minmax(52px,.42fr) minmax(46px,.38fr) minmax(105px,1fr)!important;gap:6px!important}
+.vf-full-sheet .reputation-row select,.vf-full-sheet .reputation-row input{font-size:8.1px!important;padding-right:17px!important;text-overflow:ellipsis!important}
+
+@media(max-width:760px){
+  .vf-full-sheet .armor-loadout{grid-template-columns:minmax(0,1fr) minmax(78px,.52fr)!important}
+  .vf-full-sheet .armor-loadout>.li-in:first-child{grid-column:1/-1!important}
+  .vf-full-sheet .armor-loadout>.li-in:nth-child(2){grid-column:1!important}
+  .vf-full-sheet .armor-loadout>.li-in:nth-child(3){grid-column:2!important}
+  .vf-full-sheet .body + .twocol{grid-template-columns:1fr!important}
+  .vf-full-sheet .reputation-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+/* Print/PDF: static controls expand to their content and never scroll. */
+#printRoot .armor-loadout .li-feat .tag-field.print-area,
+#printRoot [data-f="s_active_move_text"].print-area,
+#printRoot .access-brief.print-area{height:auto!important;min-height:28px!important;max-height:none!important;overflow:hidden!important}
+#printRoot .body + .twocol{break-inside:avoid;page-break-inside:avoid}
+#printRoot .exp-row{min-height:25px!important}
+#printRoot .armor-block .track-row{padding-top:6px!important}
+</style>
+
+
+<style id="vf-sheet-v59-40-height-balance">
+/* Keep the body in normal flow: it must own the height of both columns. */
+.vf-full-sheet .face.sleeper .body,.vf-full-sheet .face.awakened .body{flex:0 0 auto!important;height:auto!important;overflow:visible!important}
+/* Compact the left column without sacrificing readable labels. */
+.vf-full-sheet .traits{gap:5px!important}
+.vf-full-sheet .trait{padding:4px 5px 5px!important;gap:1px!important;min-height:0!important}
+.vf-full-sheet .trait .tmod{width:37px!important;height:37px!important}
+.vf-full-sheet .trait .tmod input,.vf-full-sheet .trait .tmod select{font-size:18px!important}
+.vf-full-sheet .trait .tname{font-size:10.4px!important;line-height:1.15!important}
+.vf-full-sheet .trait .tacts{font-size:6.15px!important;line-height:1.25!important}
+.vf-full-sheet .health-block{padding-top:6px!important;padding-bottom:6px!important}
+.vf-full-sheet .health-block .sec-title{margin-bottom:4px!important}
+.vf-full-sheet .health-block .pip-legend{margin:-1px 0 4px!important;gap:10px!important}
+.vf-full-sheet .health-block .track-row{margin-bottom:4px!important}
+.vf-full-sheet .health-block .thresholds{min-height:58px!important;margin-top:2px!important}
+.vf-full-sheet .health-block .thr{min-height:56px!important;padding:5px 3px 4px!important}
+.vf-full-sheet .health-block .thr .thr-top{margin-bottom:19px!important}
+.vf-full-sheet .health-block .thr .thr-blank{top:22px!important;font-size:16px!important}
+.vf-full-sheet .health-block .thr-chip{top:22px!important;height:23px!important;font-size:15px!important}
+.vf-full-sheet .health-block .note{margin-top:4px!important;font-size:6.8px!important;line-height:1.25!important}
+.vf-full-sheet .armor-loadout .li-feat .tag-field{height:34px!important;min-height:34px!important;max-height:34px!important}
+.vf-full-sheet .armor-block .track-row{min-height:28px!important;padding-top:6px!important}
+</style>
+
+<style id="vf-sheet-v59-40-print-fit">
+/* Export/PDF uses the full RC3.2 sheet content. Fit the complete flat paper to the
+   fixed 860 × 1114 export surface instead of clipping the footer or Common Effort. */
+#printRoot.pdf-stage .paper{
+  position:absolute!important;
+  inset:0 auto auto 0!important;
+  width:106.383%!important;
+  height:106.383%!important;
+  transform:scale(.94)!important;
+  transform-origin:top left!important;
+  border-radius:0!important;
+}
+@media print{
+  #printRoot .paper{
+    position:absolute!important;
+    inset:0 auto auto 0!important;
+    width:106.383%!important;
+    height:106.383%!important;
+    transform:scale(.94)!important;
+    transform-origin:top left!important;
+    border-radius:0!important;
+  }
+}
+</style>
+
+<style id="vf-sheet-v59-40-toolbar-containment">
+/* v59.40 final toolbar containment. Brand and controls always occupy separate rows;
+   compact viewports wrap every control instead of hiding them in a clipped rail. */
+body.vf-full-sheet .toolbar,
+body.vf-full-sheet .tb-actions,
+body.vf-full-sheet .toolbar-section,
+body.vf-full-sheet .tool-subgroup,
+body.vf-full-sheet .path-switch-wrap{box-sizing:border-box}
+
+@media (min-width:901px){
+  body.vf-full-sheet .toolbar{
+    flex-wrap:wrap!important;
+    align-items:flex-start!important;
+    justify-content:flex-start!important;
+    overflow:visible!important;
+  }
+  body.vf-full-sheet .toolbar>.brand{
+    flex:1 0 100%!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    min-height:auto!important;
+  }
+  body.vf-full-sheet .toolbar>.brand small{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    line-height:1.35!important;
+  }
+  body.vf-full-sheet .tb-actions{
+    flex:1 0 100%!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    justify-content:flex-start!important;
+    align-items:center!important;
+    align-content:flex-start!important;
+    flex-wrap:wrap!important;
+    overflow:visible!important;
+  }
+}
+
+@media (max-width:900px){
+  body.vf-full-sheet .toolbar{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:flex-start!important;
+    justify-content:flex-start!important;
+    width:100%!important;
+    max-width:100vw!important;
+    overflow:visible!important;
+    padding:10px 12px 12px!important;
+    gap:8px!important;
+  }
+  body.vf-full-sheet .toolbar>.brand{
+    flex:1 0 100%!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+  body.vf-full-sheet .toolbar>.brand small{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    line-height:1.35!important;
+  }
+  body.vf-full-sheet .tb-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    align-items:start!important;
+    align-content:start!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:0!important;
+    gap:8px!important;
+    overflow:visible!important;
+  }
+  body.vf-full-sheet .toolbar-section{
+    display:flex!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    flex-wrap:wrap!important;
+    gap:5px!important;
+    padding:6px!important;
+    border:1px solid rgba(233,192,104,.14)!important;
+    border-radius:7px!important;
+    background:rgba(0,0,0,.18)!important;
+  }
+  body.vf-full-sheet .toolbar-section.io-tools,
+  body.vf-full-sheet .toolbar-section.path-tools,
+  body.vf-full-sheet .toolbar-section.support-tools,
+  body.vf-full-sheet .toolbar-section.account-tools{
+    grid-column:1/-1!important;
+  }
+  body.vf-full-sheet .tool-subgroup,
+  body.vf-full-sheet .path-switch-wrap,
+  body.vf-full-sheet .zoom-controls{
+    display:flex!important;
+    max-width:100%!important;
+    min-width:0!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    flex-wrap:wrap!important;
+    gap:4px!important;
+  }
+  body.vf-full-sheet .tb-actions button,
+  body.vf-full-sheet .flip-indicator,
+  body.vf-full-sheet .zoom-pct,
+  body.vf-full-sheet .sub-label{
+    max-width:100%!important;
+    white-space:normal!important;
+  }
+}
+
+@media (max-width:760px){
+  body.vf-full-sheet .toolbar{position:relative!important;top:auto!important;left:auto!important;right:auto!important}
+  body.vf-full-sheet .tb-actions{grid-template-columns:1fr!important}
+  body.vf-full-sheet .toolbar-section{grid-column:1!important}
+  body.vf-full-sheet .tool-subgroup{width:100%!important}
+}
+
+@media (max-width:430px){
+  body.vf-full-sheet .toolbar{padding:9px 8px 10px!important}
+  body.vf-full-sheet .toolbar-section{padding:5px!important}
+  body.vf-full-sheet .tb-actions button{font-size:8px!important;padding:7px 8px!important}
+  body.vf-full-sheet .toolbar>.brand{font-size:14px!important;letter-spacing:.18em!important}
+  body.vf-full-sheet .toolbar>.brand small{font-size:7px!important;letter-spacing:.15em!important}
+}
+</style>
+
+
+<style id="vf-sheet-v59-42-digital-page-flow">
+/* v59.42 — digital sheet pages use normal document flow. Each virtual paper may
+   expand with its content; only a controlled 90px separator remains between pages. */
+@media screen {
+  :root{--vf-digital-page-gap:75px}
+  body.vf-full-sheet .sheet{
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    width:860px!important;
+    height:auto!important;
+    min-height:0!important;
+    gap:var(--vf-digital-page-gap)!important;
+  }
+  body.vf-full-sheet .sheet > .face{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    width:860px!important;
+    height:auto!important;
+    min-height:1112px!important;
+    overflow:visible!important;
+    flex:0 0 auto!important;
+  }
+  body.vf-full-sheet .sheet > .face.front,
+  body.vf-full-sheet .sheet > .face.back,
+  body.vf-full-sheet .sheet > .face.equipment,
+  body.vf-full-sheet .sheet > .face.ship{top:auto!important}
+  body.vf-full-sheet .sheet > .face .paper{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:1112px!important;
+    overflow:visible!important;
+  }
+  body.vf-full-sheet .sheet > .face .frame{
+    position:absolute!important;
+    inset:0!important;
+  }
+  body.vf-full-sheet .sheet .face.front{display:block!important}
+  body.vf-full-sheet .sheet .face.back{display:none!important}
+  body.vf-full-sheet .sheet.flipped .face.front{display:none!important}
+  body.vf-full-sheet .sheet.flipped .face.back{display:block!important}
+  body.vf-full-sheet .sheet .face.equipment,
+  body.vf-full-sheet .sheet .face.ship{display:block!important}
 }
 </style>
 
@@ -2589,9 +2947,9 @@ body.vf-full-sheet .foot .accent{text-align:right;white-space:nowrap}
 <datalist id="classOptions"><option value="Diplomat"></option><option value="Engineer"></option><option value="Explorer"></option><option value="Mystic"></option><option value="Pilot"></option><option value="Scholar"></option><option value="Scoundrel"></option><option value="Soldier"></option><option value="Vanguard"></option></datalist>
 <datalist id="traitOptions"><option value="Agility"></option><option value="Strength"></option><option value="Finesse"></option><option value="Knowledge"></option><option value="Instinct"></option><option value="Presence"></option></datalist>
 <datalist id="wealthOptions"><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option></datalist>
-<datalist id="standingOptions"><option value="Favored"></option><option value="Trusted"></option><option value="Neutral"></option><option value="Watched"></option><option value="Compromised"></option></datalist>
-<datalist id="reputationOptions"><option value="Unknown"></option><option value="Reliable"></option><option value="Useful"></option><option value="Dangerous"></option><option value="Infamous"></option></datalist>
-<datalist id="affiliations"><option value="House Amaranth"></option><option value="House Joric"></option><option value="House Kurogane"></option><option value="House Solari"></option><option value="House Valerius"></option><option value="House Volkov"></option><option value="Free Fleet"></option><option value="Explorers' Guild"></option><option value="Independent"></option><option value="Solara Compact"></option><option value="Stellar Commerce Guild"></option></datalist>
+<datalist id="standingOptions"><option value="+5"></option><option value="+4"></option><option value="+3"></option><option value="+2"></option><option value="+1 Good Standing"></option><option value="0"></option><option value="-1"></option><option value="-2"></option><option value="-3"></option><option value="-4"></option><option value="-5"></option></datalist>
+<datalist id="reputationOptions"><option value="Hated (-3)"></option><option value="Scorned (-2)"></option><option value="Distrusted (-1)"></option><option value="Unknown (0)"></option><option value="Recognized (+1)"></option><option value="Respected (+2)"></option><option value="Trusted (+3)"></option><option value="Honored (+4)"></option><option value="Revered (+5)"></option><option value="Legendary (+6)"></option></datalist>
+<datalist id="affiliations"><option value="House Amaranth"></option><option value="House Joric"></option><option value="House Kaelen"></option><option value="House Kurogane"></option><option value="House Solari"></option><option value="House Valerius"></option><option value="House Volkov"></option><option value="Free Fleet"></option><option value="Explorers' Guild"></option><option value="Independent"></option><option value="Church of the Eternal Veil"></option><option value="Solara Compact"></option><option value="Stellar Commerce Guild"></option></datalist>
 <datalist id="subclassOptions"></datalist>
 <datalist id="domainPowerOptions"></datalist>
 <datalist id="weaponOptions"><option value="Combat Knife"></option><option value="Shock Baton"></option><option value="Plasma Cutter"></option><option value="Mono-Blade"></option><option value="Energy Dagger"></option><option value="Slug Pistol"></option><option value="Flechette Pistol"></option><option value="Plasma Pistol"></option><option value="Needle Gun"></option><option value="Holdout Blaster"></option><option value="Combat Pistol"></option><option value="Plasma Sidearm"></option><option value="Gauss Pistol"></option><option value="Disruptor Pistol"></option><option value="Phase Pistol"></option><option value="Quantum Sidearm"></option><option value="Veil Pistol"></option><option value="Void Pistol"></option><option value="Assault Rifle"></option><option value="Sniper Rifle"></option><option value="Plasma Rifle"></option><option value="Gauss Rifle"></option><option value="Pulse Rifle"></option><option value="Battle Rifle"></option><option value="Sniper System"></option><option value="Plasma Carbine"></option><option value="Mass Driver Rifle"></option><option value="Suppression Rifle"></option></datalist>
@@ -2639,6 +2997,12 @@ const SHIP_CLASS_DATA = {
   "Light Cruiser": {tier:"5", hull:"60+", shields:"16+", heat:"24+", evasion:"7"}
 };
 
+Object.entries(DOMAIN_POWER_DATA).forEach(([domain,list])=>{
+  (list||[]).forEach(power=>{
+    if(!power.domain) power.domain=domain;
+    if(power.rc==null || power.rc==='') power.rc=String(power.recallCost ?? '0');
+  });
+});
 const POWER_BY_NAME = Object.values(DOMAIN_POWER_DATA).flat().reduce((acc,p)=>{ acc[p.name] = p; return acc; }, {});
 const OPTION_SETS = {
   ancestryOptions: Object.keys(ANCESTRY_NOTES),
@@ -2648,9 +3012,9 @@ const OPTION_SETS = {
   attributeOptions: Array.from({length:13}, (_,i)=>i-3).map(n => n >= 0 ? "+" + n : String(n)),
   augmentCapacityTraitOptions: ["Strength", "Agility", "Finesse", "Presence"],
   wealthOptions: ["0", "1", "2", "3", "4"],
-  standingOptions: ["Favored", "Trusted", "Neutral", "Watched", "Compromised"],
-  reputationOptions: ["Unknown", "Reliable", "Useful", "Dangerous", "Infamous"],
-  affiliations: ["House Amaranth", "House Joric", "House Kurogane", "House Solari", "House Valerius", "House Volkov", "Free Fleet", "Explorers' Guild", "Independent", "Solara Compact", "Stellar Commerce Guild"],
+  standingOptions: ["+5", "+4", "+3", "+2", "+1 Good Standing", "0", "-1", "-2", "-3", "-4", "-5"],
+  reputationOptions: ["Hated (-3)", "Scorned (-2)", "Distrusted (-1)", "Unknown (0)", "Recognized (+1)", "Respected (+2)", "Trusted (+3)", "Honored (+4)", "Revered (+5)", "Legendary (+6)"],
+  affiliations: ["House Amaranth", "House Joric", "House Kaelen", "House Kurogane", "House Solari", "House Valerius", "House Volkov", "Free Fleet", "Explorers' Guild", "Independent", "Church of the Eternal Veil", "Solara Compact", "Stellar Commerce Guild"],
   yesNoOptions: ["No", "Yes"],
   weaponOptions: Object.keys(WEAPON_DATA),
   armorOptions: Object.keys(ARMOR_DATA),
@@ -4351,7 +4715,7 @@ function traitsBlock() {
 }
 
 function healthBlock() {
-  return `<div class="block">
+  return `<div class="block health-block">
     <div class="sec-title">Damage &amp; Health <span class="hint">threshold values sit on band borders</span></div>
     <div class="pip-legend">
       <span class="lg"><i class="pip lg-pip"></i>owned \u2014 fill in pencil</span>
@@ -4370,13 +4734,13 @@ function healthBlock() {
   </div>`;
 }
 
-function wtFilterToggle(key){
-  return `<label class="wt-filter" title="Show only items whose Credit cost is usable by current Wealth Tier"><input type="checkbox" data-f="${key}" /> only usable WT</label>`;
+function wtFilterToggle(key,label="only usable WT"){
+  return `<label class="wt-filter" title="Show only items whose Credit cost is usable by current Wealth Tier"><input type="checkbox" data-f="${key}" /> ${label}</label>`;
 }
 function armorBlock() {
-  return `<div class="block">
-    <div class="sec-title">Active Armor <span class="hint">${wtFilterToggle("wt_filter_armor")}</span></div>
-    <div class="li weapon" style="grid-template-columns:1.5fr 1fr 1fr">
+  return `<div class="block armor-block">
+    <div class="sec-title">Active Armor <span class="hint">${wtFilterToggle("wt_filter_armor","WT eligible only")}</span></div>
+    <div class="li weapon armor-loadout">
       <div class="li-in"><label>Name</label><select data-f="armor_name" data-options="armorOptions"></select></div>
       <div class="li-in"><label>Base Thresholds</label><input data-f="armor_thr"/></div>
       <div class="li-in"><label>Armor Slots</label><input data-f="armor_score"/></div>
@@ -4415,7 +4779,7 @@ function experiencesBlock(prefix, hint) {
   </div>`;
   return `<div class="block">
     <div class="sec-title">Experiences <span class="hint">${hint} · bonus starts at +2</span></div>
-    <div class="rows">${Array.from({length:5}, (_,i)=>row(i)).join("")}</div>
+    <div class="rows">${Array.from({length:3}, (_,i)=>row(i)).join("")}</div>
   </div>`;
 }
 
@@ -4444,7 +4808,7 @@ function sleeperEngine() {
     <div class="note" style="margin-top:0">Spend on Signature Moves. Starts each session full · Short Rest +1 · Long Rest full.</div>
     <div style="margin-top:7px">
       <input class="feat-name" data-f="s_featname" placeholder="EFFORT FEATURE — name"/>
-      <textarea class="area" data-f="s_feattext" placeholder="Your class's Effort Feature…"></textarea>
+      <textarea class="area feature-detail" data-f="s_feattext" title="Full class feature text — scroll inside this field to read the complete rule." placeholder="Your class's Effort Feature…"></textarea>
     </div>
     <div class="twocol" style="margin-top:6px">
       <div>
@@ -4478,7 +4842,7 @@ function awakenedEngine() {
     <div class="note" style="margin-top:0">Spend a Hope to use an Experience or help an ally.</div>
     <div style="margin-top:9px">
       <input class="feat-name" data-f="a_featname" placeholder="HOPE FEATURE — name"/>
-      <textarea class="area" data-f="a_feattext" placeholder="Your class's Hope Feature…"></textarea>
+      <textarea class="area feature-detail" data-f="a_feattext" title="Full class feature text — scroll inside this field to read the complete rule." placeholder="Your class's Hope Feature…"></textarea>
     </div>
     <div class="li" style="grid-template-columns:1fr;border-bottom:none;margin-top:6px;margin-bottom:0;padding-bottom:0">
       <div class="li-in li-feat"><label>Proficiencies / Access</label><textarea class="tag-field access-brief" data-f="class_proficiencies"></textarea></div>
@@ -4776,7 +5140,6 @@ function face(path) {
     ${traitsBlock()}
     ${healthBlock()}
     ${armorBlock()}
-    ${isAwk ? "" : sleeperMovesMenuBlock()}
   </div>`;
   const engine = isAwk ? awakenedEngine() : sleeperEngine();
   const second = isAwk ? domainPowers() : sleeperMoves();
@@ -4814,13 +5177,13 @@ document.getElementById("sheet").insertAdjacentHTML("beforeend", shipFace());
 /* ============================================================
    Persistence + interactions
    ============================================================ */
-const LS_FIELDS = "veilfarers_sheet_fields_v2_36";
-const LS_TRACKS = "veilfarers_sheet_tracks_v2_36";
-const LS_FLIP   = "veilfarers_sheet_flipped_v2_36";
-const LS_MODE   = "veilfarers_sheet_track_mode_v2_36";
+const LS_FIELDS = "veilfarers_sheet_fields_v2_40";
+const LS_TRACKS = "veilfarers_sheet_tracks_v2_40";
+const LS_FLIP   = "veilfarers_sheet_flipped_v2_40";
+const LS_MODE   = "veilfarers_sheet_track_mode_v2_40";
 
-const oldStore = JSON.parse(localStorage.getItem("veilfarers_sheet_fields_v2_17") || localStorage.getItem("veilfarers_sheet_fields_v2_16") || localStorage.getItem("veilfarers_sheet_fields_v2_15") || localStorage.getItem("veilfarers_sheet_fields_v2_14") || localStorage.getItem("veilfarers_sheet_fields_v2_13") || localStorage.getItem("veilfarers_sheet_fields_v2_12") || localStorage.getItem("veilfarers_sheet_fields_v2_11") || localStorage.getItem("veilfarers_sheet_fields_v2_10") || localStorage.getItem("veilfarers_sheet_fields_v2_9") || localStorage.getItem("veilfarers_sheet_fields_v2_8") || localStorage.getItem("veilfarers_sheet_fields_v2_7") || localStorage.getItem("veilfarers_sheet_fields_v2_6") || localStorage.getItem("veilfarers_sheet_fields_v2_5") || localStorage.getItem("veilfarers_sheet_fields_v2_4") || localStorage.getItem("veilfarers_sheet_fields_v2_3") || localStorage.getItem("veilfarers_sheet_fields_v2_2") || localStorage.getItem("veilfarers_sheet_fields_v2_1") || localStorage.getItem("veilfarers_sheet_fields_v2") || localStorage.getItem("voidlight_sheet_fields_v1") || "{}");
-const oldTracks = JSON.parse(localStorage.getItem("veilfarers_sheet_tracks_v2_7") || localStorage.getItem("veilfarers_sheet_tracks_v2_6") || localStorage.getItem("veilfarers_sheet_tracks_v2_5") || localStorage.getItem("veilfarers_sheet_tracks_v2_4") || localStorage.getItem("veilfarers_sheet_tracks_v2_3") || localStorage.getItem("veilfarers_sheet_tracks_v2_2") || localStorage.getItem("veilfarers_sheet_tracks_v2_1") || localStorage.getItem("veilfarers_sheet_tracks_v2") || localStorage.getItem("voidlight_sheet_tracks_v1") || "{}");
+const oldStore = JSON.parse(localStorage.getItem("veilfarers_sheet_fields_v2_37") || localStorage.getItem("veilfarers_sheet_fields_v2_36") || localStorage.getItem("veilfarers_sheet_fields_v2_17") || localStorage.getItem("veilfarers_sheet_fields_v2_16") || localStorage.getItem("veilfarers_sheet_fields_v2_15") || localStorage.getItem("veilfarers_sheet_fields_v2_14") || localStorage.getItem("veilfarers_sheet_fields_v2_13") || localStorage.getItem("veilfarers_sheet_fields_v2_12") || localStorage.getItem("veilfarers_sheet_fields_v2_11") || localStorage.getItem("veilfarers_sheet_fields_v2_10") || localStorage.getItem("veilfarers_sheet_fields_v2_9") || localStorage.getItem("veilfarers_sheet_fields_v2_8") || localStorage.getItem("veilfarers_sheet_fields_v2_7") || localStorage.getItem("veilfarers_sheet_fields_v2_6") || localStorage.getItem("veilfarers_sheet_fields_v2_5") || localStorage.getItem("veilfarers_sheet_fields_v2_4") || localStorage.getItem("veilfarers_sheet_fields_v2_3") || localStorage.getItem("veilfarers_sheet_fields_v2_2") || localStorage.getItem("veilfarers_sheet_fields_v2_1") || localStorage.getItem("veilfarers_sheet_fields_v2") || localStorage.getItem("voidlight_sheet_fields_v1") || "{}");
+const oldTracks = JSON.parse(localStorage.getItem("veilfarers_sheet_tracks_v2_37") || localStorage.getItem("veilfarers_sheet_tracks_v2_36") || localStorage.getItem("veilfarers_sheet_tracks_v2_7") || localStorage.getItem("veilfarers_sheet_tracks_v2_6") || localStorage.getItem("veilfarers_sheet_tracks_v2_5") || localStorage.getItem("veilfarers_sheet_tracks_v2_4") || localStorage.getItem("veilfarers_sheet_tracks_v2_3") || localStorage.getItem("veilfarers_sheet_tracks_v2_2") || localStorage.getItem("veilfarers_sheet_tracks_v2_1") || localStorage.getItem("veilfarers_sheet_tracks_v2") || localStorage.getItem("voidlight_sheet_tracks_v1") || "{}");
 const store = JSON.parse(localStorage.getItem(LS_FIELDS) || JSON.stringify(oldStore || {}));
 const tracks = JSON.parse(localStorage.getItem(LS_TRACKS) || JSON.stringify(oldTracks || {}));
 if (store.house && !store.affiliation) store.affiliation = store.house.startsWith("House ") ? store.house : "House " + store.house;
@@ -4829,7 +5192,7 @@ if (!tracks.current) tracks.current = {};
 for (const [k,v] of Object.entries({...oldTracks, ...tracks})) {
   if (typeof v === "number" && tracks.max[k] == null) tracks.max[k] = v;
 }
-let trackMode = localStorage.getItem(LS_MODE) || "setup";
+let trackMode = localStorage.getItem(LS_MODE) || localStorage.getItem("veilfarers_sheet_track_mode_v2_37") || localStorage.getItem("veilfarers_sheet_track_mode_v2_36") || "setup";
 const TRACK_DEFAULTS = { hp:6, stress:6, armor_slots:6, s_effort:6, s_resolve:2, a_hope:6 };
 
 function saveFields(){ localStorage.setItem(LS_FIELDS, JSON.stringify(store)); }
@@ -4859,7 +5222,7 @@ refreshAiluranVariantVisibility();
 // v2.14: Experiences now have an explicit bonus field. If an older sheet stored
 // "Smuggler contacts / +2" in the text line, split it once for convenience.
 ["s_exp", "a_exp"].forEach(prefix => {
-  for (let i=0;i<5;i++) {
+  for (let i=0;i<3;i++) {
     const key = `${prefix}_${i}`;
     const bkey = `${prefix}_${i}_bonus`;
     const raw = String(store[key] || "").trim();
@@ -5352,7 +5715,7 @@ function setFlip(on, animate=true){
   saveFields();
 }
 flipBtn.addEventListener("click", ()=> setFlip(!sheet.classList.contains("flipped")));
-setFlip(localStorage.getItem(LS_FLIP) === "1", false);
+setFlip((localStorage.getItem(LS_FLIP) || localStorage.getItem("veilfarers_sheet_flipped_v2_36")) === "1", false);
 
 
 // random legal level-1 character generator
@@ -5452,8 +5815,8 @@ function fillRandomLevelOneCharacter(){
   setStoreField("subclass", subclass, {onlyIfEmpty:false});
   setStoreField("wealth", "1", {onlyIfEmpty:false});
   setStoreField("affiliation", randomPick(OPTION_SETS.affiliations), {onlyIfEmpty:false});
-  setStoreField("aff_standing", "Neutral", {onlyIfEmpty:false});
-  setStoreField("aff_reputation", "Unknown", {onlyIfEmpty:false});
+  setStoreField("aff_standing", "+1 Good Standing", {onlyIfEmpty:false});
+  setStoreField("aff_reputation", "Unknown (0)", {onlyIfEmpty:false});
   setStoreField("aff_call", "No", {onlyIfEmpty:false});
   setStoreField("aff_tokens", "0", {onlyIfEmpty:false});
   setStoreField("ship_role", cls, {onlyIfEmpty:false});
@@ -5736,8 +6099,8 @@ function vfOnlineCurrentPayload(){
   const fields = Object.assign({}, store || {});
   const payloadTracks = JSON.parse(JSON.stringify(tracks || {}));
   return {
-    app: "Veilfarers Character Creator",
-    version: "2.74",
+    app: "Veilfarers Character Sheet",
+    version: "2.80-RC3.2",
     exportedAt: new Date().toISOString(),
     fields,
     tracks: payloadTracks
@@ -6319,7 +6682,7 @@ document.querySelector(".stage")?.addEventListener("scroll", positionGuide, {pas
 document.addEventListener("keydown", e=>{ if(e.key === "Escape") closeGuide(); });
 
 document.getElementById("exportBtn")?.addEventListener("click", ()=>{
-  const payload = { app:"Veilfarers Character Creator", version:"2.74", exportedAt:new Date().toISOString(), fields:store, tracks };
+  const payload = { app:"Veilfarers Character Sheet", version:"2.80-RC3.2", exportedAt:new Date().toISOString(), fields:store, tracks };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
   const a = document.createElement("a");
   const nm = (store.name || "Veilfarer").replace(/[^\p{L}\p{N} _-]/gu,"").trim() || "Veilfarer";
@@ -6967,10 +7330,10 @@ if (flatSheetPdfBtn) flatSheetPdfBtn.addEventListener("click", () => exportDigit
 
 /* ---------- responsive zoom controls ---------- */
 const wrap = document.getElementById("sheetWrap");
-const LS_ZOOM_MODE = "veilfarers_sheet_zoom_mode_v2_36";
-const LS_ZOOM_VALUE = "veilfarers_sheet_zoom_value_v2_36";
-let zoomMode = localStorage.getItem(LS_ZOOM_MODE) || "fit-width";
-let manualZoom = parseFloat(localStorage.getItem(LS_ZOOM_VALUE) || "1");
+const LS_ZOOM_MODE = "veilfarers_sheet_zoom_mode_v2_40";
+const LS_ZOOM_VALUE = "veilfarers_sheet_zoom_value_v2_40";
+let zoomMode = localStorage.getItem(LS_ZOOM_MODE) || localStorage.getItem("veilfarers_sheet_zoom_mode_v2_36") || "fit-width";
+let manualZoom = parseFloat(localStorage.getItem(LS_ZOOM_VALUE) || localStorage.getItem("veilfarers_sheet_zoom_value_v2_36") || "1");
 if (!Number.isFinite(manualZoom)) manualZoom = 1;
 manualZoom = Math.max(0.35, Math.min(1.8, manualZoom));
 
@@ -7002,18 +7365,22 @@ function setZoomButtonState(scale){
 function applySheetZoom(s){
   if (!wrap) return;
   s = clampZoom(s);
+  // Keep the visible separator stable at 75px regardless of CSS zoom.
+  document.documentElement.style.setProperty("--vf-digital-page-gap", (75 / s) + "px");
   wrap.style.transform = "none";
   wrap.style.transformOrigin = "top center";
   wrap.style.width = "860px";
-  // Three visible pages are stacked vertically: the active path page, shared character sheet, and ship/augmentations sheet.
-  wrap.style.height = "3382px";
+  // v59.42: the digital sheet owns its natural height. Pages are in normal flow
+  // with a controlled separator, so no synthetic multi-page height is reserved.
+  wrap.style.height = "auto";
   if ("zoom" in wrap.style) {
     wrap.style.zoom = String(s);
   } else {
-    // Fallback for engines without CSS zoom.
+    // Fallback for engines without CSS zoom: reserve only the scaled natural height.
+    const naturalHeight = Math.max(1, Math.ceil(sheet?.scrollHeight || 1112));
     wrap.style.transform = `scale(${s})`;
     wrap.style.width = (860*s) + "px";
-    wrap.style.height = (2248*s) + "px";
+    wrap.style.height = (naturalHeight*s) + "px";
   }
   setZoomButtonState(s);
 }

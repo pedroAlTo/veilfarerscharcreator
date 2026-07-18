@@ -60,11 +60,9 @@
 
   function syncCreatorMode(){
     if(path!=='/creator.html')return;
-    const library=location.hash==='#cards';
-    const mode=library?'library':'creator';
-    const target=document.querySelector(`#mode-bar button[data-mode="${mode}"]`);
-    if(target&&!target.classList.contains('active'))target.click();
-    nav.querySelectorAll('[data-creator-mode]').forEach(a=>a.classList.toggle('active',a.dataset.creatorMode===(library?'cards':'creator')));
+    const route=location.hash==='#cards'?'cards':(location.hash==='#level-up'?'level-up':'creator');
+    if(typeof window.VeilFarersSetCreatorRoute==='function') window.VeilFarersSetCreatorRoute(route,false);
+    nav.querySelectorAll('[data-creator-mode]').forEach(a=>a.classList.toggle('active',a.dataset.creatorMode===(route==='cards'?'cards':'creator')));
   }
   window.addEventListener('hashchange',syncCreatorMode);
   setTimeout(syncCreatorMode,0);

@@ -714,6 +714,8 @@
         const ARMOR_CATALOG = VF_CANON.armor || [];
         const AUGMENT_CATALOG = VF_CANON.augments || [];
         const GEAR_CATALOG = VF_CANON.gear || [];
+        const DRONE_GRADE_CATALOG = VF_CANON.droneGrades || [];
+        const DRONE_MODULE_CATALOG = VF_CANON.droneModules || [];
         const RESOLVE_MOVE_LIBRARY = VF_CANON.resolveMoves || [];
         // Player Tool playtest overrides. These do not alter the books or canonical rules JSON.
         const PLAYER_TOOL_WEAPON_OVERRIDES = {
@@ -812,6 +814,12 @@
             if (weaponFeatureMatches(entry, 'reliable')) { attackBonus += 1; attackBonuses.push('Reliable +1'); }
             if (weaponFeatureMatches(entry, 'accurate') && (range.indexOf('far') !== -1)) { attackBonus += 1; attackBonuses.push('Accurate +1'); }
           });
+          const wornArmor = character && (character.armor || ((character.armorArsenal || []).find(item => armorKey(item) === character.activeArmorId)));
+          const wornArmorProfile = armorProfile(wornArmor);
+          if (wornArmorProfile.attackBonus && entries.some(entry => weaponFeatureMatches(entry, 'automatic'))) {
+            attackBonus += wornArmorProfile.attackBonus;
+            attackBonuses.push('Armor Assault +1');
+          }
           const heavy = entries.some(entry => weaponFeatureMatches(entry, 'heavy'));
           const massive = entries.some(entry => weaponFeatureMatches(entry, 'massive'));
           const brutal = entries.some(entry => weaponFeatureMatches(entry, 'brutal'));
@@ -974,6 +982,92 @@
           };
         };
 
+        const droneGradeKey = (grade) => baseItemKey(grade, 'drone-grade');
+        const droneModuleKey = (module) => baseItemKey(module, 'drone-module');
+        const findDroneGrade = (value) => {
+          const key = typeof value === 'string' ? value : droneGradeKey(value);
+          const name = String((value && value.name) || value || '').trim().toLowerCase();
+          return DRONE_GRADE_CATALOG.find(item => item.id === key || item.slug === key || String(item.name || '').trim().toLowerCase() === name) || DRONE_GRADE_CATALOG.find(item => item.slug === 'common-drone' || normalizeRuleName(item.name) === 'common drone') || DRONE_GRADE_CATALOG[0] || null;
+        };
+        const findDroneModule = (value) => {
+          const key = typeof value === 'string' ? value : droneModuleKey(value);
+          const name = String((value && value.name) || value || '').trim().toLowerCase();
+          return DRONE_MODULE_CATALOG.find(item => item.id === key || item.slug === key || String(item.name || '').trim().toLowerCase() === name) || null;
+        };
+        const parseThresholdPair = (raw) => {
+          if (raw && typeof raw === 'object') return { major:Number(raw.major)||0, severe:Number(raw.severe)||0 };
+          const parts = String(raw || '').split('/').map(part => Number(String(part).replace(/[^0-9-]/g,'')) || 0);
+          return { major:parts[0] || 0, severe:parts[1] > 0 ? parts[1] : 0 };
+        };
+        const droneGradeStats = (gradeValue) => {
+          const grade = findDroneGrade(gradeValue);
+          const stats = (grade && grade.statistics) || {};
+          const thresholds = parseThresholdPair(stats.thresholds || stats.thr);
+          return {
+            grade,
+            hp:Number(stats.hp)||1,
+            evasion:Number(stats.evasion != null ? stats.evasion : stats.eva)||10,
+            thresholds,
+            armor:Number(stats.armor)||0,
+            moduleSlots:Number(stats.modules != null ? stats.modules : stats.slots)||0,
+            availability:String(stats.availability || stats.access || '')
+          };
+        };
+        const droneModuleAccessRank = (gradeValue) => {
+          const name = normalizeRuleName((findDroneGrade(gradeValue) || {}).name);
+          if (name === 'experimental drone' || name === 'black site chimera') return 3;
+          if (name === 'military drone' || name === 'house sentinel' || name === 'war frame') return 2;
+          return 1;
+        };
+        const droneModuleSlots = (module) => Math.max(0, Number((findDroneModule(module) || module || {}).slots) || 0);
+        const droneModuleAllowed = (module, gradeValue) => Number((((findDroneModule(module) || module || {}).tier || {}).rank) || 1) <= droneModuleAccessRank(gradeValue);
+        const SIGNAL_STATES = [
+          { id:'stable', label:'Stable', summary:'Real-time command. The drone works normally.' },
+          { id:'unstable', label:'Unstable', summary:'Simple commands work; complex tasks may take Disadvantage, a higher DC, Stress, or become impossible.' },
+          { id:'lost', label:'Lost', summary:'No useful command link. The drone follows its loaded protocol, returns, freezes, or becomes dead weight.' }
+        ];
+        const LINK_MODES = ['Local Mesh','Direct RF Link','Private Relay Chain'];
+        const DRONE_RANGES = ['Melee','Very Close','Close','Far','Very Far','Beyond Very Far'];
+        const defaultSignalForRange = (range) => {
+          const value = String(range || '').toLowerCase();
+          if (value.indexOf('beyond') !== -1) return 'lost';
+          if (value.indexOf('very far') !== -1) return 'unstable';
+          return 'stable';
+        };
+        const armorFeatureRule = (display) => {
+          const wanted = normalizeRuleName(display);
+          return FEATURE_REGISTRY.find(rule => (!rule.appliesTo || rule.appliesTo.indexOf('armor') !== -1) && normalizeRuleName(rule.name) === wanted) || null;
+        };
+        const armorProfile = (armor) => {
+          const item = armor ? hydrateArmor(armor) : null;
+          if (!item) return { item:null, evasionModifier:0, attackBonus:0, traitModifiers:[], entries:[] };
+          const entries = featureList(item.features).map(display => ({ display, rule:armorFeatureRule(display) }));
+          const names = entries.map(entry => normalizeRuleName(entry.display));
+          const has = name => names.some(value => value === normalizeRuleName(name) || value.startsWith(normalizeRuleName(name) + ' '));
+          let evasionModifier = 0;
+          if (has('flexible')) evasionModifier += 1;
+          if (has('heavy') && !has('powered')) evasionModifier -= 1;
+          if (has('very heavy')) evasionModifier -= 2;
+          if (has('massive')) evasionModifier -= 2;
+          const traitModifiers = [];
+          if (has('servo assisted')) traitModifiers.push({ trait:'Strength', amount:1, context:'physical exertion and carrying capacity' });
+          if (has('low profile')) traitModifiers.push({ trait:'Finesse', amount:1, context:'avoid visual detection' });
+          if (has('silent')) traitModifiers.push({ trait:'Finesse', amount:2, context:'avoid detection by sound' });
+          if (has('tactical')) traitModifiers.push({ trait:'Instinct', amount:1, context:'perception and Spotlight contests' });
+          if (has('intimidating')) traitModifiers.push({ trait:'Presence', amount:1, context:'threaten, coerce, or frighten' });
+          return { item, evasionModifier, attackBonus:has('assault') ? 1 : 0, traitModifiers, entries };
+        };
+        const augmentActivationCost = (augment, character) => {
+          const item = hydrateAugment(augment);
+          const stress = Number(item.activationStress);
+          if (Number.isFinite(stress) && stress > 0) return { resource:'stress', amount:stress, mode:'mark' };
+          const source = [item.benefit, item.drawback, item.use, item.raw && item.raw.use].filter(Boolean).join(' ');
+          const parsed = parseFeatureCost(source);
+          if (!parsed) return null;
+          if (parsed.resource === 'hope' && character && character.path === 'sleeping') return { ...parsed, resource:'effort', alternativeFor:'hope' };
+          return parsed;
+        };
+
         const ensureThreeExperiences = (list) => {
           const out = (Array.isArray(list) ? list : []).map(exp => ({ description: String((exp && exp.description) || ''), bonus: Number(exp && exp.bonus) || 2 }));
           while (out.length < 3) out.push({ description: '', bonus: 2 });
@@ -981,7 +1075,7 @@
         };
         const parseFeatureCost = (text) => {
           const source = String(text || '');
-          const match = source.match(/(?:spend|cost\s*:?|\()\s*(\d+)\s*(hope|effort|resolve|stress)\b/i);
+          const match = source.match(/(?:spend|mark|cost\s*:?|\()\s*(\d+)\s*(hope|effort|resolve|stress)\b/i);
           if (!match) return null;
           return { amount: Number(match[1]) || 0, resource: match[2].toLowerCase(), mode: match[2].toLowerCase() === 'stress' ? 'mark' : 'spend' };
         };
@@ -1066,8 +1160,8 @@
           entityType: 'character',
           name: '', playerName: '', heritage: '', background: '', class: '', subclass: '', level: 1, pronouns: '',
           stats: { agility: 0, strength: 0, finesse: 0, instinct: 0, presence: 0, knowledge: 0 },
-          hp: { current: 0, max: 6 }, thresholds: { severe: 4, major: 8 },
-          stress: { current: 0, max: 6 }, hope: { current: 2, max: 5 }, effort: { current: 2, max: 6 }, resolve: { current: 0, max: 2 }, path: 'awakened',
+          hp: { current: 6, max: 6 }, thresholds: { severe: 8, major: 4 },
+          stress: { current: 0, max: 6 }, hope: { current: 2, max: 5 }, effort: { current: 2, max: 6 }, resolve: { current: 2, max: 2 }, path: 'awakened',
           experiences: [{ description: '', bonus: 2 }, { description: '', bonus: 2 }, { description: '', bonus: 2 }],
           evasion: 10, shields: 0, wealth: 1, credits: 0,
           playerNotes: '', savedNotes: [],
@@ -1088,6 +1182,18 @@
           activeWeaponId: '',
           domainCards: []
         };
+
+        const EMPTY_DRONE = (() => {
+          const defaults = droneGradeStats(DRONE_GRADE_CATALOG.find(item => item.slug === 'common-drone' || normalizeRuleName(item.name) === 'common drone') || DRONE_GRADE_CATALOG[0]);
+          return {
+            entityType:'drone', name:'', playerName:'', operatorId:'', droneGradeId:defaults.grade ? defaults.grade.id : '',
+            hp:{ current:defaults.hp, max:defaults.hp }, thresholds:defaults.thresholds, evasion:defaults.evasion,
+            shields:defaults.armor, armorMax:defaults.armor, moduleSlots:defaults.moduleSlots,
+            installedModules:[], moduleInventory:[],
+            signalState:'stable', signalRange:'Close', linkMode:'Direct RF Link', loadedProtocol:'Return to the operator or nearest safe point.',
+            playerNotes:'', savedNotes:[], inventory:Array(6).fill(''), weapons:[], weaponInventory:[], weaponArsenal:[], activeWeaponId:''
+          };
+        })();
 
         const PLAYER_STORAGE_KEY = 'veilfarers-player-tool-characters';
         const loadInitialCharacters = () => {
@@ -1158,6 +1264,7 @@
           const [showArmorManager, setShowArmorManager] = useState(false);
           const [showAugmentManager, setShowAugmentManager] = useState(false);
           const [showGearManager, setShowGearManager] = useState(false);
+          const [showDroneModuleManager, setShowDroneModuleManager] = useState(false);
           const [weaponSearch, setWeaponSearch] = useState('');
           const [weaponManagerView, setWeaponManagerView] = useState('arsenal');
           const [armorSearch, setArmorSearch] = useState('');
@@ -1166,6 +1273,7 @@
           const [augmentManagerView, setAugmentManagerView] = useState('inventory');
           const [gearSearch, setGearSearch] = useState('');
           const [gearManagerView, setGearManagerView] = useState('inventory');
+          const [droneModuleSearch, setDroneModuleSearch] = useState('');
           const [showCustomWeaponForm, setShowCustomWeaponForm] = useState(false);
           const [customWeaponDraft, setCustomWeaponDraft] = useState({ name:'', trait:'', range:'', damage:'', feature:'' });
           const [showHistory, setShowHistory] = useState(false);
@@ -1258,6 +1366,10 @@
           const [tablesLoading, setTablesLoading] = useState(false);
           const [tableDirectoryEnabled, setTableDirectoryEnabled] = useState(null);
           const [tablePass, setTablePass] = useState('');
+          const [connectedTableLocked, setConnectedTableLocked] = useState(false);
+          const [newTablePass, setNewTablePass] = useState('');
+          const [confirmTablePass, setConfirmTablePass] = useState('');
+          const [passwordChanging, setPasswordChanging] = useState(false);
           const [isConnected, setIsConnected] = useState(false);
           const [fbServices, setFbServices] = useState(null);
           const [isSyncing, setIsSyncing] = useState(false);
@@ -1428,6 +1540,35 @@
           
           const normChar = (c) => {
             c = c || {};
+            if (c.entityType === 'drone') {
+              const gradeStats = droneGradeStats(c.droneGradeId || c.droneGrade || DRONE_GRADE_CATALOG[0]);
+              const rawModules = (Array.isArray(c.installedModules) ? c.installedModules : []).map(item => findDroneModule(item) || item).filter(item => item && item.name);
+              const uniqueModules = Array.from(new Map(rawModules.map(item => [droneModuleKey(item), item])).values());
+              const maxHp = Number(c.hp && c.hp.max) || gradeStats.hp;
+              const currentHp = c.hp && c.hp.current != null ? Number(c.hp.current) : maxHp;
+              const armorMax = c.armorMax != null ? Number(c.armorMax) : gradeStats.armor;
+              return {
+                ...c,
+                entityType:'drone',
+                droneGradeId:gradeStats.grade ? gradeStats.grade.id : (c.droneGradeId || ''),
+                hp:{ current:Math.max(0, Math.min(maxHp, Number.isFinite(currentHp) ? currentHp : maxHp)), max:maxHp },
+                thresholds:c.thresholds && (c.thresholds.major || c.thresholds.severe) ? c.thresholds : gradeStats.thresholds,
+                evasion:c.evasion != null ? Number(c.evasion) : gradeStats.evasion,
+                shields:c.shields != null ? Number(c.shields) : armorMax,
+                armorMax,
+                moduleSlots:c.moduleSlots != null ? Number(c.moduleSlots) : gradeStats.moduleSlots,
+                installedModules:uniqueModules,
+                moduleInventory:uniqueModules.map(droneModuleKey),
+                signalState:SIGNAL_STATES.some(state => state.id === c.signalState) ? c.signalState : defaultSignalForRange(c.signalRange),
+                signalRange:DRONE_RANGES.includes(c.signalRange) ? c.signalRange : 'Close',
+                linkMode:LINK_MODES.includes(c.linkMode) ? c.linkMode : 'Direct RF Link',
+                loadedProtocol:c.loadedProtocol || 'Return to the operator or nearest safe point.',
+                inventory:Array.isArray(c.inventory) && c.inventory.length ? c.inventory : Array(6).fill(''),
+                playerNotes:c.playerNotes || '', savedNotes:c.savedNotes || [],
+                hope:undefined, effort:undefined, resolve:undefined, stress:undefined,
+                augments:undefined, augmentInventory:undefined, augmentArsenal:undefined, activeAugmentIds:undefined
+              };
+            }
             const weapons = (Array.isArray(c.weapons) ? c.weapons : []).map(hydratePlayerWeapon).filter(w => w.name);
             const storedArsenal = (Array.isArray(c.weaponArsenal) ? c.weaponArsenal : []).map(hydratePlayerWeapon).filter(w => w.name);
             const inventoryIds = Array.from(new Set((Array.isArray(c.weaponInventory) ? c.weaponInventory : []).concat(storedArsenal.map(weaponKey), weapons.map(weaponKey)).filter(Boolean)));
@@ -2197,7 +2338,7 @@
                   }
                   const snap = await svc.db.collection('artifacts/' + appId + '/public/data/sessions').get();
                   const tables = [];
-                  snap.forEach(function (d) { const dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!dd.passHash }); });
+                  snap.forEach(function (d) { const dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!(dd.passAuth || dd.passHash) }); });
                   tables.sort(function (a, b) { return a.name.localeCompare(b.name); });
                   setAvailableTables(tables);
               } catch (e) { console.error('fetchTables', e); setStatusMsg('Could not list tables: ' + e.message); }
@@ -2205,59 +2346,119 @@
           };
           // Tables list is always shown: refresh it every time the config modal opens.
           useEffect(() => { if (showConfig) fetchTables(); }, [showConfig]);
-          // SHA-256 hex for table passwords (client-side gate; see note in modal)
-          const hashPass = async (txt) => {
+          // Table passwords use PBKDF2-SHA256 with a random salt. Legacy SHA-256
+          // records remain readable and are replaced the next time the password changes.
+          const bytesToBase64 = (bytes) => btoa(String.fromCharCode(...bytes));
+          const base64ToBytes = (value) => Uint8Array.from(atob(String(value || '')), ch => ch.charCodeAt(0));
+          const legacyHashPass = async (txt) => {
               const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('veilfarers:' + txt));
               return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
           };
-          const connectToCloud = async () => {
+          const derivePasswordHash = async (txt, saltValue, iterations) => {
+              const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(txt || '')), 'PBKDF2', false, ['deriveBits']);
+              const bits = await crypto.subtle.deriveBits({ name:'PBKDF2', hash:'SHA-256', salt:base64ToBytes(saltValue), iterations:Number(iterations)||150000 }, key, 256);
+              return bytesToBase64(new Uint8Array(bits));
+          };
+          const makePasswordRecord = async (txt) => {
+              const salt = crypto.getRandomValues(new Uint8Array(16));
+              const record = { algorithm:'PBKDF2-SHA256', iterations:150000, salt:bytesToBase64(salt) };
+              record.hash = await derivePasswordHash(txt, record.salt, record.iterations);
+              return record;
+          };
+          const passwordRecordToken = (record) => record ? JSON.stringify({ algorithm:record.algorithm, iterations:record.iterations, salt:record.salt, hash:record.hash }) : '';
+          const verifyTablePassword = async (existing, cleanSessionId, suppliedPass) => {
+              if (existing && existing.passAuth && existing.passAuth.hash) {
+                  const expectedToken = passwordRecordToken(existing.passAuth);
+                  const cached = localStorage.getItem('veilfarers_tableauth_' + cleanSessionId);
+                  if (!suppliedPass && cached === expectedToken) return true;
+                  if (!suppliedPass) return false;
+                  const candidate = await derivePasswordHash(suppliedPass, existing.passAuth.salt, existing.passAuth.iterations);
+                  const ok = candidate === existing.passAuth.hash;
+                  if (ok) localStorage.setItem('veilfarers_tableauth_' + cleanSessionId, expectedToken);
+                  return ok;
+              }
+              if (existing && existing.passHash) {
+                  const cached = localStorage.getItem('veilfarers_tablepass_' + cleanSessionId);
+                  const candidate = suppliedPass ? await legacyHashPass(suppliedPass) : cached;
+                  const ok = candidate === existing.passHash;
+                  if (ok) localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, existing.passHash);
+                  return ok;
+              }
+              return true;
+          };
+          const connectToCloud = async (allowOpenTable = false) => {
+              if (allowOpenTable && typeof allowOpenTable === 'object') allowOpenTable = false;
               setErrorMsg('');
               if (!window.initFirebase) { setStatusMsg("Error: Firebase SDK not loaded."); return; }
               try {
                   setStatusMsg("Connecting...");
-                  
-                  // Initialize and Wait for Auth using the runtime config inside initFirebase
-                  // The function now handles auth persistence and anonymous login
                   const services = await window.initFirebase();
-                  
                   if (services) {
                       const cleanSessionId = normalizeSessionKey(sessionId);
-                      // Password gate: check the table before joining.
                       const ref = services.doc(services.db, 'artifacts', appId, 'public', 'data', 'sessions', cleanSessionId);
                       const snap = await ref.get();
                       const existing = (snap && snap.exists) ? (snap.data() || {}) : null;
-                      const extra = { name: cleanSessionId, lastActive: Date.now() };
-                      if (existing && existing.passHash) {
-                          const cached = localStorage.getItem('veilfarers_tablepass_' + cleanSessionId);
-                          let candidate = tablePass ? await hashPass(tablePass) : cached;
-                          if (candidate !== existing.passHash) {
+                      const protectedTable = !!(existing && (existing.passAuth || existing.passHash));
+                      if (protectedTable) {
+                          const valid = await verifyTablePassword(existing, cleanSessionId, tablePass);
+                          if (!valid) {
                               setStatusMsg('');
-                              setErrorMsg('This table is password-protected. Enter the correct password in the "Table password" field.');
+                              setErrorMsg('This table is closed. Enter the correct password to join it.');
                               return;
                           }
-                          localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, existing.passHash);
-                      } else if (!existing && tablePass) {
-                          // Creating a new table with password protection.
-                          extra.passHash = await hashPass(tablePass);
-                          localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, extra.passHash);
                       }
-                      setFbServices(services); 
-                      setIsConnected(true); 
+                      if (!existing && !String(tablePass || '').trim() && !allowOpenTable) {
+                          setStatusMsg('');
+                          showConfirm('This will create an OPEN table visible in the table directory. A password is strongly recommended. Create it without a password anyway?', () => connectToCloud(true), 'Create open table?');
+                          return;
+                      }
+                      const extra = { name:cleanSessionId, lastActive:Date.now() };
+                      let createdLocked = protectedTable;
+                      if (!existing && String(tablePass || '').trim()) {
+                          extra.passAuth = await makePasswordRecord(tablePass.trim());
+                          extra.passHash = null;
+                          extra.isOpen = false;
+                          localStorage.setItem('veilfarers_tableauth_' + cleanSessionId, passwordRecordToken(extra.passAuth));
+                          createdLocked = true;
+                      } else if (!existing) {
+                          extra.isOpen = true;
+                      }
+                      setFbServices(services);
+                      setIsConnected(true);
+                      setConnectedTableLocked(createdLocked);
                       setShowConfig(false);
-                      setStatusMsg("Connected."); 
+                      setStatusMsg("Connected.");
                       startListening(services, cleanSessionId);
-                      // New session start: everyone begins with 2 Hope / 2 Effort.
-                      setCharacters(prev => prev.map(c => ({ ...c, hope: { ...(c.hope || { max: 5 }), current: 2 }, effort: { ...(c.effort || { max: 6 }), current: 2 } })));
-                      await services.setDoc(ref, extra, { merge: true });
+                      await services.setDoc(ref, extra, { merge:true });
                       localStorage.setItem('veilfarers_session_id', cleanSessionId);
                       setSessionId(cleanSessionId);
                       setTablePass('');
                   }
-              } catch (err) { 
+              } catch (err) {
                   setStatusMsg("Connection failed.");
-                  setErrorMsg(err.message); 
-                  console.error(err); 
+                  setErrorMsg(err.message);
+                  console.error(err);
               }
+          };
+          const changeConnectedTablePassword = async () => {
+              if (!isConnected || !fbServices) { setErrorMsg('Connect to the table before adding or changing its password.'); return; }
+              const password = String(newTablePass || '');
+              if (password.length < 4) { setErrorMsg('Use at least 4 characters for the table password.'); return; }
+              if (password !== String(confirmTablePass || '')) { setErrorMsg('The new password fields do not match.'); return; }
+              setPasswordChanging(true); setErrorMsg('');
+              try {
+                  const cleanSessionId = normalizeSessionKey(sessionId);
+                  const ref = fbServices.doc(fbServices.db, 'artifacts', appId, 'public', 'data', 'sessions', cleanSessionId);
+                  const passAuth = await makePasswordRecord(password);
+                  await fbServices.setDoc(ref, { passAuth, passHash:null, isOpen:false, passwordUpdatedAt:Date.now() }, { merge:true });
+                  localStorage.setItem('veilfarers_tableauth_' + cleanSessionId, passwordRecordToken(passAuth));
+                  localStorage.removeItem('veilfarers_tablepass_' + cleanSessionId);
+                  setConnectedTableLocked(true);
+                  setNewTablePass(''); setConfirmTablePass('');
+                  setStatusMsg('Table password updated.');
+                  fetchTables();
+              } catch (error) { setErrorMsg('Password update failed: ' + error.message); }
+              setPasswordChanging(false);
           };
 
           const disconnectFromCloud = () => {
@@ -2267,6 +2468,8 @@
               }
               setFbServices(null);
               setIsConnected(false);
+              setConnectedTableLocked(false);
+              setNewTablePass(''); setConfirmTablePass('');
               setStatusMsg("Disconnected.");
               setHandouts([]); setOpenNotes([]); seenNotesRef.current = null;
           };
@@ -2355,9 +2558,9 @@
           const updateCharacter = (updates) => { lastLocalEditRef.current = Date.now(); setCharacters(prev => { const newChars = [...prev]; const currentVal = newChars[activeTab]; const newVal = typeof updates === 'function' ? updates(currentVal) : { ...currentVal, ...updates }; newChars[activeTab] = newVal; return newChars; }); };
           const addNewCharacter = (entityType = 'character') => {
             setShowAddMenu(false);
-            if (entityType !== 'character') { showAlert('Drone tabs are planned, but not available in this build yet.', 'Coming soon'); return; }
-            setCharacters(prev => [...prev, { ...JSON.parse(JSON.stringify(EMPTY_CHARACTER)), id: mkCharId(), entityType: 'character' }]);
-            setActiveTab(characters.length);
+            const template = entityType === 'drone' ? EMPTY_DRONE : EMPTY_CHARACTER;
+            const nextEntity = { ...JSON.parse(JSON.stringify(template)), id: mkCharId(), entityType: entityType === 'drone' ? 'drone' : 'character' };
+            setCharacters(prev => { setActiveTab(prev.length); return [...prev, nextEntity]; });
           };
           const deleteCharacter = (e, index) => { e.stopPropagation(); const nm = (characters[index] && characters[index].name) || ('P' + (index + 1)); showConfirm('Close the tab for "' + nm + '"? This character will be removed from this device (cloud/saved copies are not affected).', () => { if (characters.length === 1) { setCharacters([{ ...JSON.parse(JSON.stringify(EMPTY_CHARACTER)), id: mkCharId(), entityType: 'character' }]); return; } const newChars = characters.filter((_, i) => i !== index); setCharacters(newChars); if (activeTab >= index && activeTab > 0) setActiveTab(activeTab - 1); }); };
           const handleStatChange = (stat, value) => updateCharacter(prev => ({ ...prev, stats: { ...prev.stats, [stat]: parseInt(value) || 0 } }));
@@ -2384,7 +2587,6 @@
           const arsenalKeys = new Set(arsenalWeapons.map(weaponKey));
           const activeWeapon = equippedWeapons.find(weapon => weaponKey(weapon) === character.activeWeaponId) || equippedWeapons[0] || null;
           const activeWeaponProfile = activeWeapon ? weaponAttackProfile(activeWeapon, character, equippedWeapons) : null;
-          const effectiveEvasion = (Number(character.evasion) || 0) + (activeWeaponProfile ? activeWeaponProfile.evasionModifier : 0);
           const setActiveWeapon = (weapon) => updateCharacter({ ...character, activeWeaponId: weaponKey(weapon) });
           const toggleWeaponEquip = (weapon) => {
               const hydrated = hydratePlayerWeapon(weapon);
@@ -2434,8 +2636,15 @@
           const armorArsenal = (Array.isArray(character.armorArsenal) ? character.armorArsenal : []).map(hydrateArmor).filter(item => item.name).sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')));
           const armorInventoryKeys = new Set(armorArsenal.map(armorKey));
           const activeArmor = armorArsenal.find(item => armorKey(item) === character.activeArmorId) || null;
-          const setActiveArmor = (armor) => { const hydrated = hydrateArmor(armor); updateCharacter({ ...character, activeArmorId: armorKey(hydrated), armor: hydrated }); };
-          const clearActiveArmor = () => updateCharacter({ ...character, activeArmorId: '', armor: null });
+          const activeArmorProfile = armorProfile(activeArmor);
+          const effectiveEvasion = (Number(character.evasion) || 0) + (activeWeaponProfile ? activeWeaponProfile.evasionModifier : 0) + (activeArmorProfile ? activeArmorProfile.evasionModifier : 0);
+          const setActiveArmor = (armor) => {
+            const hydrated = hydrateArmor(armor);
+            const slots = Math.max(0, Number(hydrated.armorSlots) || 0);
+            const thresholds = hydrated.thresholds || character.thresholds;
+            updateCharacter({ ...character, activeArmorId: armorKey(hydrated), armor: hydrated, thresholds, armorMax:slots, shields:slots });
+          };
+          const clearActiveArmor = () => updateCharacter({ ...character, activeArmorId: '', armor: null, armorMax:0, shields:0 });
           const toggleArmorOwned = (armor) => {
             const hydrated = hydrateArmor(armor);
             const key = armorKey(hydrated);
@@ -2443,7 +2652,8 @@
             const nextArsenal = exists ? armorArsenal.filter(item => armorKey(item) !== key) : armorArsenal.concat([hydrated]);
             const nextActive = exists && character.activeArmorId === key ? '' : (character.activeArmorId || '');
             const nextArmor = nextActive ? (nextArsenal.find(item => armorKey(item) === nextActive) || null) : null;
-            updateCharacter({ ...character, armorInventory: nextArsenal.map(armorKey), armorArsenal: nextArsenal, activeArmorId: nextActive, armor: nextArmor });
+            const nextSlots = nextArmor ? Math.max(0, Number(nextArmor.armorSlots) || 0) : 0;
+            updateCharacter({ ...character, armorInventory: nextArsenal.map(armorKey), armorArsenal: nextArsenal, activeArmorId: nextActive, armor: nextArmor, armorMax:nextSlots, shields:nextArmor ? Math.min(Number(character.shields)||nextSlots, nextSlots) : 0, thresholds:nextArmor ? (nextArmor.thresholds || character.thresholds) : character.thresholds });
           };
           const normalizedArmorSearch = String(armorSearch || '').trim().toLowerCase();
           const armorManagerPool = armorManagerView === 'catalog' ? ARMOR_CATALOG.map(hydrateArmor) : armorArsenal;
@@ -2469,8 +2679,26 @@
             const hydrated = hydrateAugment(augment);
             const key = augmentKey(hydrated);
             if (!augmentInventoryKeys.has(key)) return;
-            const nextActive = activeAugmentIds.includes(key) ? activeAugmentIds.filter(id => id !== key) : activeAugmentIds.concat([key]);
-            updateCharacter({ ...character, activeAugmentIds: nextActive });
+            const isActive = activeAugmentIds.includes(key);
+            if (isActive) {
+              updateCharacter({ ...character, activeAugmentIds: activeAugmentIds.filter(id => id !== key) });
+              logRoll({ type:'note', label:`Augmentation deactivated: ${hydrated.name}`, playerName:character.name || character.playerName || 'Player', timestamp:Date.now() });
+              return;
+            }
+            const cost = augmentActivationCost(hydrated, character);
+            if (!canPayFeatureCost(cost)) {
+              const label = cost ? `${cost.amount} ${cost.resource}` : 'the required resource';
+              showAlert(`You cannot activate ${hydrated.name}: not enough ${label}.`, 'Activation blocked');
+              return;
+            }
+            let next = { ...character, activeAugmentIds:activeAugmentIds.concat([key]) };
+            if (cost && next[cost.resource]) {
+              const track = next[cost.resource];
+              const mark = cost.mode === 'mark' || cost.resource === 'stress';
+              next = { ...next, [cost.resource]:{ ...track, current:mark ? Math.min(Number(track.max)||99, (Number(track.current)||0) + cost.amount) : Math.max(0, (Number(track.current)||0) - cost.amount) } };
+            }
+            updateCharacter(next);
+            logRoll({ type:'note', label:`Augmentation activated: ${hydrated.name}${cost ? ` · ${cost.amount} ${cost.resource}` : ''}`, playerName:character.name || character.playerName || 'Player', resourceCost:cost || null, timestamp:Date.now() });
           };
           const normalizedAugmentSearch = String(augmentSearch || '').trim().toLowerCase();
           const augmentManagerPool = augmentManagerView === 'catalog' ? AUGMENT_CATALOG.map(hydrateAugment) : augmentArsenal;
@@ -2496,6 +2724,69 @@
             const summary = gearSummary(gear);
             return [summary.title, summary.tier, summary.cost, summary.detail].join(' ').toLowerCase().includes(normalizedGearSearch);
           });
+          const isDrone = character.entityType === 'drone';
+          const currentDroneGrade = isDrone ? droneGradeStats(character.droneGradeId) : null;
+          const installedDroneModules = isDrone ? (Array.isArray(character.installedModules) ? character.installedModules.map(item => findDroneModule(item) || item).filter(item => item && item.name) : []) : [];
+          const installedDroneModuleKeys = new Set(installedDroneModules.map(droneModuleKey));
+          const usedDroneModuleSlots = installedDroneModules.reduce((sum, module) => sum + droneModuleSlots(module), 0);
+          const availableDroneModuleSlots = Math.max(0, Number(character.moduleSlots || (currentDroneGrade && currentDroneGrade.moduleSlots) || 0) - usedDroneModuleSlots);
+          const filteredDroneModules = DRONE_MODULE_CATALOG.filter(module => {
+            if (!isDrone || !droneModuleAllowed(module, character.droneGradeId)) return false;
+            const q = String(droneModuleSearch || '').trim().toLowerCase();
+            return !q || [module.name, itemTierLabel(module), module.use, module.slots].join(' ').toLowerCase().includes(q);
+          });
+          const spotlightHolder = characters.find(item => item && item.entityType !== 'drone' && item.id === spotlight) || null;
+          const droneOperator = characters.find(item => item && item.entityType !== 'drone' && item.id === character.operatorId) || null;
+          const changeDroneGrade = (gradeId) => {
+            const profile = droneGradeStats(gradeId);
+            const allowedModules = installedDroneModules.filter(module => droneModuleAllowed(module, gradeId));
+            let remaining = profile.moduleSlots;
+            const fitted = [];
+            allowedModules.forEach(module => { const slots = droneModuleSlots(module); if (slots <= remaining) { fitted.push(module); remaining -= slots; } });
+            updateCharacter({
+              ...character,
+              droneGradeId:profile.grade ? profile.grade.id : gradeId,
+              hp:{ current:profile.hp, max:profile.hp }, thresholds:profile.thresholds,
+              evasion:profile.evasion, shields:profile.armor, armorMax:profile.armor,
+              moduleSlots:profile.moduleSlots, installedModules:fitted, moduleInventory:fitted.map(droneModuleKey)
+            });
+          };
+          const toggleDroneModule = (module) => {
+            if (!isDrone) return;
+            const canonical = findDroneModule(module) || module;
+            const key = droneModuleKey(canonical);
+            const installed = installedDroneModuleKeys.has(key);
+            if (installed) {
+              const next = installedDroneModules.filter(item => droneModuleKey(item) !== key);
+              updateCharacter({ ...character, installedModules:next, moduleInventory:next.map(droneModuleKey) });
+              return;
+            }
+            if (!droneModuleAllowed(canonical, character.droneGradeId)) { showAlert('This module grade is outside the selected drone frame access.', 'Installation blocked'); return; }
+            const slots = droneModuleSlots(canonical);
+            if (slots > availableDroneModuleSlots) { showAlert(`${canonical.name} needs ${slots} module slot${slots === 1 ? '' : 's'}, but only ${availableDroneModuleSlots} remain.`, 'Not enough module slots'); return; }
+            const next = installedDroneModules.concat([canonical]);
+            updateCharacter({ ...character, installedModules:next, moduleInventory:next.map(droneModuleKey) });
+          };
+          const useDroneModule = (module) => {
+            const canonical = findDroneModule(module) || module;
+            const rawCost = parseFeatureCost(canonical.use || '');
+            let cost = rawCost;
+            if (cost && cost.resource === 'hope' && droneOperator && droneOperator.path === 'sleeping') cost = { ...cost, resource:'effort', alternativeFor:'hope' };
+            if (cost) {
+              if (!droneOperator) { showAlert(`Assign an operator before using ${canonical.name}; its ${cost.amount} ${cost.resource} cost belongs to the operator.`, 'Operator required'); return; }
+              const track = droneOperator[cost.resource];
+              const canPay = track && ((cost.mode === 'mark' || cost.resource === 'stress') ? (Number(track.current)||0) + cost.amount <= (Number(track.max)||99) : (Number(track.current)||0) >= cost.amount);
+              if (!canPay) { showAlert(`${droneOperator.name || 'The operator'} cannot pay ${cost.amount} ${cost.resource}.`, 'Module use blocked'); return; }
+              setCharacters(prev => prev.map(item => {
+                if (!item || item.id !== droneOperator.id) return item;
+                const currentTrack = item[cost.resource] || track;
+                const mark = cost.mode === 'mark' || cost.resource === 'stress';
+                return { ...item, [cost.resource]:{ ...currentTrack, current:mark ? Math.min(Number(currentTrack.max)||99, (Number(currentTrack.current)||0) + cost.amount) : Math.max(0, (Number(currentTrack.current)||0) - cost.amount) } };
+              }));
+            }
+            logRoll({ type:'note', label:`Drone module: ${canonical.name}${cost ? ` · operator ${cost.amount} ${cost.resource}` : ''}\n${canonical.use || ''}`, playerName:character.name || 'Drone', actorId:character.id, resourceCost:cost || null, timestamp:Date.now() });
+          };
+
           const featureAccent = {
             ancestry: { label:'Ancestry Gift', text:'text-amber-300', border:'border-amber-800/50', bg:'bg-amber-950/20' },
             class: { label:'Class Feature', text:'text-emerald-300', border:'border-emerald-800/50', bg:'bg-emerald-950/20' },
@@ -2685,13 +2976,24 @@
                               {tablesLoading && <span className="text-[11px] text-slate-500 italic animate-pulse">Checking table access…</span>}
                               {!tablesLoading && tableDirectoryEnabled === false && <span className="text-[11px] text-slate-500 italic">For privacy, public table discovery is disabled. Enter the exact table name below.</span>}
                               {!tablesLoading && tableDirectoryEnabled === true && availableTables.length === 0 && <span className="text-[11px] text-slate-600 italic">No tables yet — type a name below to create one.</span>}
-                              {!tablesLoading && tableDirectoryEnabled === true && availableTables.map(function (tb) { return (<button key={tb.id} onClick={() => setSessionId(tb.id)} className={`px-3 py-1 rounded text-xs font-bold border ${sessionId === tb.id ? 'border-cyan-500 bg-cyan-950 text-cyan-300' : 'border-slate-700 bg-slate-950 text-slate-400 hover:border-cyan-500'}`}>{tb.locked ? '🔒 ' : ''}{tb.name} <span className="text-slate-600">({tb.players})</span></button>); })}
+                              {!tablesLoading && tableDirectoryEnabled === true && availableTables.map(function (tb) { return (<button key={tb.id} onClick={() => setSessionId(tb.id)} className={`px-3 py-1 rounded text-xs font-bold border ${sessionId === tb.id ? 'border-cyan-500 bg-cyan-950 text-cyan-300' : 'border-slate-700 bg-slate-950 text-slate-400 hover:border-cyan-500'}`}><span className={tb.locked ? 'text-amber-300' : 'text-emerald-300'}>{tb.locked ? 'CLOSED' : 'OPEN'}</span> · {tb.name} <span className="text-slate-600">({tb.players})</span></button>); })}
                             </div>
                           </div>
                           <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Join or create a table</label>
                           <input type="text" value={sessionId} onChange={e => setSessionId(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-3 text-white font-mono text-xs" placeholder="Table name (e.g. Friday Night)" />
-                          <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Table password <span className="text-slate-600 normal-case font-normal">(optional — sets it on new tables, unlocks protected ones)</span></label>
-                          <input type="password" value={tablePass} onChange={e => setTablePass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-4 text-white font-mono text-xs" placeholder="Leave empty for an open table" />
+                          <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Table password <span className="text-slate-600 normal-case font-normal">(creates a closed table or unlocks one)</span></label>
+                          <input type="password" value={tablePass} onChange={e => setTablePass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="Password strongly recommended" />
+                          <div className="rounded border border-amber-800/50 bg-amber-950/20 p-2 mb-4 text-[10px] text-amber-200"><strong>Recommended:</strong> protect every table with a password. Open tables appear in the directory and anyone with access to the portal can join them.</div>
+
+                          {isConnected && (
+                            <div className="rounded border border-slate-700 bg-slate-950/60 p-3 mb-4">
+                              <div className="flex items-center justify-between gap-2 mb-2"><span className="text-xs font-black uppercase tracking-wide text-white">{connectedTableLocked ? 'Change table password' : 'Add table password'}</span><span className={`text-[9px] font-black uppercase ${connectedTableLocked ? 'text-amber-300' : 'text-emerald-300'}`}>{connectedTableLocked ? 'Closed' : 'Open'}</span></div>
+                              <p className="text-[10px] text-slate-500 mb-2">This control is available only after successfully joining the table.</p>
+                              <input type="password" value={newTablePass} onChange={e => setNewTablePass(e.target.value)} className="w-full bg-black border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="New password" />
+                              <input type="password" value={confirmTablePass} onChange={e => setConfirmTablePass(e.target.value)} className="w-full bg-black border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="Confirm new password" />
+                              <button disabled={passwordChanging} onClick={changeConnectedTablePassword} className="w-full px-3 py-2 rounded border border-amber-600/50 bg-amber-950/30 text-amber-200 text-[10px] font-black uppercase disabled:opacity-40">{passwordChanging ? 'Updating…' : (connectedTableLocked ? 'Change password' : 'Protect table')}</button>
+                            </div>
+                          )}
                           
                           <div className="bg-slate-950/50 p-3 rounded border border-green-900/30 mb-4">
                               <p className="text-xs text-green-400 font-bold mb-1">Configuration Status:</p>
@@ -2701,7 +3003,7 @@
                           <div className="flex justify-end gap-2">
                               {isConnected && <button onClick={disconnectFromCloud} className="px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded">Disconnect</button>}
                               <button onClick={() => setShowConfig(false)} className="px-4 py-2 text-slate-400">Cancel</button>
-                              <button onClick={connectToCloud} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold">Connect</button>
+                              <button onClick={() => connectToCloud(false)} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold">Connect</button>
                           </div>
                       </div>
                   </div>
@@ -3298,6 +3600,17 @@
               )}
 
 
+              {/* DRONE MODULE MANAGER */}
+              {showDroneModuleManager && isDrone && (
+                <div className="fixed inset-0 bg-black/90 z-[75] flex items-center justify-center p-3 md:p-5" onMouseDown={event=>{if(event.target===event.currentTarget)setShowDroneModuleManager(false);}}>
+                  <div className="bg-slate-900 border border-emerald-700/50 rounded-xl w-[96vw] max-w-5xl h-[84vh] flex flex-col min-w-0 shadow-2xl overflow-hidden">
+                    <header className="p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between bg-slate-950"><div><h2 className="text-lg font-black text-white flex items-center gap-2"><Settings className="text-emerald-400"/> Drone installation options</h2><p className="text-[10px] text-slate-500 mt-1">Only modules permitted by the current frame are listed. Higher-grade installations remain a separate downtime modification procedure.</p></div><button onClick={()=>setShowDroneModuleManager(false)} className="self-end sm:self-auto p-2 rounded border border-slate-700 text-slate-400 hover:text-white"><X className="w-5 h-5"/></button></header>
+                    <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex flex-col md:flex-row gap-3 md:items-center"><div className="px-3 py-2 rounded-lg border border-emerald-700/40 bg-emerald-950/25 text-[10px] font-black uppercase text-emerald-300">{usedDroneModuleSlots}/{character.moduleSlots||0} slots · {availableDroneModuleSlots} free</div><input value={droneModuleSearch} onChange={e=>setDroneModuleSearch(e.target.value)} placeholder="Search module name, tier or use…" className="flex-1 bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"/></div>
+                    <div className="flex-grow min-h-0 overflow-y-auto p-4"><div className="grid grid-cols-1 lg:grid-cols-2 gap-3">{filteredDroneModules.map(module=>{const key=droneModuleKey(module);const installed=installedDroneModuleKeys.has(key);const slots=droneModuleSlots(module);const canFit=installed||slots<=availableDroneModuleSlots;const cost=parseFeatureCost(module.use||'');return <div key={key} className={`rounded-lg border p-3 ${installed?'border-emerald-600/60 bg-emerald-950/15':'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span>{installed&&<span className="px-1.5 py-0.5 rounded border border-emerald-600/40 text-[8px] font-black uppercase text-emerald-300">Installed</span>}</div><div className="mt-1.5 flex flex-wrap gap-1 text-[8px]"><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{itemTierLabel(module)}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{slots} slot{slots===1?'':'s'}</span>{cost&&<span className="px-1.5 py-0.5 rounded border border-amber-800/50 text-amber-300">Operator: {cost.mode==='mark'?'mark':'spend'} {cost.amount} {cost.resource}</span>}</div><div className="mt-2 text-[9px] leading-relaxed text-slate-400">{module.use}</div></div><div className="flex flex-col gap-2 shrink-0"><button disabled={!canFit} onClick={()=>toggleDroneModule(module)} className={`px-2.5 py-1.5 rounded border text-[9px] font-black uppercase disabled:opacity-30 ${installed?'border-red-800/60 bg-red-950/20 text-red-300':'border-emerald-700/60 bg-emerald-950/20 text-emerald-300'}`}>{installed?'Uninstall':'Install'}</button>{installed&&<button onClick={()=>useDroneModule(module)} className="px-2.5 py-1.5 rounded border border-cyan-700/60 bg-cyan-950/20 text-cyan-300 text-[9px] font-black uppercase">Use</button>}</div></div></div>;})}</div>{!filteredDroneModules.length&&<div className="h-full grid place-items-center text-sm text-slate-600 italic">No compatible modules match this search.</div>}</div>
+                  </div>
+                </div>
+              )}
+
               {/* CARD MANAGER */}
               {showCardManager && (
                   <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
@@ -3341,9 +3654,9 @@
                    <div className="vf-player-tabs vf-no-browser-scrollbar flex flex-wrap gap-1 w-full mb-1">
                      {characters.map((char, idx) => (
                        <div key={idx} onClick={() => setActiveTab(idx)}
-                          className={`group relative px-4 py-2 rounded-t-lg text-xs font-bold uppercase tracking-wide cursor-pointer flex items-center gap-2 select-none transition-colors whitespace-nowrap ${(char.id && char.id === spotlight) ? 'vf-tab-spot ' : ''}${(flick && char.id === spotlight) ? 'flicker ' : ''}${activeTab === idx ? 'bg-slate-900 text-cyan-400 border-t-2 border-cyan-500' : 'bg-slate-950 text-slate-500 hover:bg-slate-900 border-t-2 border-transparent'}`}>
-                          <Lantern on={!!(char.id && char.id === spotlight)} flicker={!!(flick && char.id === spotlight)} onClick={(e) => { e.stopPropagation(); takeSpotlight(char.id); }} />
-                          <User className="w-3 h-3" /> <span className="max-w-[100px] truncate vf-tabname">{char.name || `P${idx + 1}`}</span>
+                          className={`group relative px-4 py-2 rounded-t-lg text-xs font-bold uppercase tracking-wide cursor-pointer flex items-center gap-2 select-none transition-colors whitespace-nowrap ${(char.entityType !== 'drone' && char.id && char.id === spotlight) ? 'vf-tab-spot ' : ''}${(char.entityType !== 'drone' && flick && char.id === spotlight) ? 'flicker ' : ''}${activeTab === idx ? 'bg-slate-900 text-cyan-400 border-t-2 border-cyan-500' : 'bg-slate-950 text-slate-500 hover:bg-slate-900 border-t-2 border-transparent'}`}>
+                          {char.entityType !== 'drone' && <Lantern on={!!(char.id && char.id === spotlight)} flicker={!!(flick && char.id === spotlight)} onClick={(e) => { e.stopPropagation(); takeSpotlight(char.id); }} />}
+                          {char.entityType === 'drone' ? <Settings className="w-3 h-3 text-emerald-400" /> : <User className="w-3 h-3" />} <span className="max-w-[100px] truncate vf-tabname">{char.name || (char.entityType === 'drone' ? `D${idx + 1}` : `P${idx + 1}`)}</span>
                           <button onClick={(e) => deleteCharacter(e, idx)} className={`ml-1 opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity ${characters.length === 1 ? 'hidden' : ''}`}><X className="w-3 h-3" /></button>
                        </div>
                      ))}
@@ -3352,7 +3665,7 @@
                        {showAddMenu && (
                          <div className="absolute right-0 top-full mt-2 w-44 rounded-lg border border-slate-700 bg-slate-950/95 shadow-2xl overflow-hidden z-30">
                            <button onClick={() => addNewCharacter('character')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-300 hover:bg-slate-900 flex items-center justify-between"><span>Character</span><span className="text-slate-500">Ready</span></button>
-                           <button disabled onClick={() => addNewCharacter('drone')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 border-t border-slate-800 cursor-not-allowed flex items-center justify-between"><span>Drone</span><span>Soon</span></button>
+                           <button onClick={() => addNewCharacter('drone')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-300 border-t border-slate-800 hover:bg-slate-900 flex items-center justify-between"><span>Drone</span><span className="text-slate-500">Ready</span></button>
                          </div>
                        )}
                      </div>
@@ -3361,7 +3674,7 @@
                    {/* ROW 2: TOOLS */}
                    <div className="vf-player-tools vf-no-browser-scrollbar flex flex-wrap gap-2 items-center w-full pb-1 justify-start">
                        <input type="file" ref={fileInputRef} onChange={loadFromFile} className="hidden" accept=".json" />
-                       <button onClick={importCreatorDraft} title="Import the current draft saved by Character Creator" className="flex items-center gap-1 px-3 py-1 bg-cyan-950/60 hover:bg-cyan-900/70 text-cyan-300 text-[10px] rounded border border-cyan-800 uppercase font-bold transition-colors whitespace-nowrap"><User className="w-3 h-3" /> Creator</button>
+                       {!isDrone && <button onClick={importCreatorDraft} title="Import the current draft saved by Character Creator" className="flex items-center gap-1 px-3 py-1 bg-cyan-950/60 hover:bg-cyan-900/70 text-cyan-300 text-[10px] rounded border border-cyan-800 uppercase font-bold transition-colors whitespace-nowrap"><User className="w-3 h-3" /> Creator</button>}
                        <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><Upload className="w-3 h-3" /> Load</button>
                        <button onClick={saveToFile} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><Save className="w-3 h-3" /> Save</button>
 
@@ -3369,7 +3682,7 @@
                        <button onClick={() => setShowHistory(true)} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><ScrollText className="w-3 h-3" /> Log</button>
                        <button onClick={() => setShowDiceTray(true)} className="flex items-center gap-1 px-3 py-1 bg-yellow-900/20 hover:bg-yellow-900/40 text-yellow-500 text-[10px] rounded border border-yellow-500/30 uppercase font-bold transition-colors whitespace-nowrap"><Crown className="w-3 h-3" /> GM Tray</button>
                        <button onClick={openMainRoller} className="flex items-center gap-1 px-3 py-1 bg-purple-900/20 hover:bg-purple-900/40 text-purple-400 text-[10px] rounded border border-purple-500/30 uppercase font-bold transition-colors whitespace-nowrap"><Dices className="w-3 h-3" /> Roller</button>
-                       <button onClick={() => setShowCardManager(true)} className="flex items-center gap-1 px-3 py-1 bg-emerald-900/20 hover:bg-emerald-900/40 text-emerald-400 text-[10px] rounded border border-emerald-500/30 uppercase font-bold transition-colors whitespace-nowrap"><CreditCard className="w-3 h-3" /> Cards</button>
+                       {!isDrone && <button onClick={() => setShowCardManager(true)} className="flex items-center gap-1 px-3 py-1 bg-emerald-900/20 hover:bg-emerald-900/40 text-emerald-400 text-[10px] rounded border border-emerald-500/30 uppercase font-bold transition-colors whitespace-nowrap"><CreditCard className="w-3 h-3" /> Cards</button>}
                       
                        {/* CLOUD */}
                       {isConnected ? (
@@ -3387,6 +3700,56 @@
                 </div>
 
                 {/* SHEET CONTENT */}
+                {isDrone ? (
+                  <div className="animate-in fade-in duration-300 space-y-3">
+                    <header className="bg-slate-900/80 p-4 rounded-xl border border-emerald-800/50 grid grid-cols-1 lg:grid-cols-[1.3fr_.8fr_.8fr] gap-4 items-end">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-14 h-14 rounded-xl border border-emerald-500/50 bg-emerald-950/30 grid place-items-center shrink-0"><Settings className="w-7 h-7 text-emerald-300" /></div>
+                        <div className="min-w-0 flex-1"><label className="block text-[9px] uppercase tracking-widest text-emerald-500 font-black">Drone designation</label><input value={character.name || ''} onChange={e => updateCharacter({...character,name:e.target.value})} placeholder="DRONE NAME" className="w-full bg-transparent border-b border-slate-700 text-xl font-black text-white outline-none focus:border-emerald-500" /><div className="mt-1 text-[9px] text-slate-500">Equipment entity · uses its operator's Actions, Traits, Experiences and paid resources.</div></div>
+                      </div>
+                      <div><label className="block text-[9px] uppercase tracking-widest text-slate-500 font-black mb-1">Frame / grade</label><select value={character.droneGradeId || ''} onChange={e => changeDroneGrade(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-emerald-500">{DRONE_GRADE_CATALOG.map(grade => <option key={grade.id} value={grade.id}>{grade.name} · {itemTierLabel(grade)}</option>)}</select></div>
+                      <div><label className="block text-[9px] uppercase tracking-widest text-slate-500 font-black mb-1">Operator</label><select value={character.operatorId || ''} onChange={e => updateCharacter({...character,operatorId:e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500"><option value="">Unassigned</option>{characters.filter(item => item && item.entityType !== 'drone').map(item => <option key={item.id} value={item.id}>{item.name || 'Unnamed character'}</option>)}</select></div>
+                    </header>
+
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
+                      <section className="xl:col-span-2 rounded-xl border border-slate-800 bg-slate-900/45 p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4"><div><h2 className="text-xs font-black uppercase tracking-widest text-white">Drone integrity</h2><p className="text-[9px] text-slate-500 mt-1">Frames start at full HP and full armor slots.</p></div><div className="text-[9px] text-slate-500">{currentDroneGrade && currentDroneGrade.availability}</div></div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <div className="rounded-lg border border-red-900/40 bg-red-950/15 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-red-400">HP</div><div className="mt-2 flex items-end gap-2"><NumField min="0" max={(character.hp&&character.hp.max)||1} value={(character.hp&&character.hp.current)||0} onChange={e => updateCharacter({...character,hp:{...(character.hp||{}),current:Math.max(0,Math.min(Number((character.hp&&character.hp.max)||1),Number(e.target.value)||0))}})} className="w-16 bg-transparent text-3xl font-black text-white outline-none"/><span className="pb-1 text-sm text-slate-500">/ {(character.hp&&character.hp.max)||1}</span></div></div>
+                          <div className="rounded-lg border border-cyan-900/40 bg-cyan-950/15 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-cyan-400">Armor</div><div className="mt-2 flex flex-wrap gap-1">{Array.from({length:Number(character.armorMax||0)}).map((_,i)=><button key={i} onClick={() => updateCharacter({...character,shields:i+1===(Number(character.shields)||0)?i:i+1})} className={`w-5 h-6 rounded-sm border ${i < (Number(character.shields)||0) ? 'bg-cyan-500 border-cyan-300' : 'bg-slate-950 border-slate-700'}`} title={`Armor slot ${i+1}`}></button>)}{!Number(character.armorMax||0)&&<span className="text-xs text-slate-600">0</span>}</div></div>
+                          <div className="rounded-lg border border-slate-800 bg-slate-950/30 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-slate-500">Evasion</div><div className="mt-2 text-3xl font-black text-white">{character.evasion || 0}</div></div>
+                          <div className="rounded-lg border border-slate-800 bg-slate-950/30 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-slate-500">Thresholds</div><div className="mt-2 text-lg font-black text-white">{(character.thresholds&&character.thresholds.major)||0} / {(character.thresholds&&character.thresholds.severe)||'—'}</div></div>
+                        </div>
+                      </section>
+
+                      <section className="rounded-xl border border-yellow-800/40 bg-yellow-950/10 p-4">
+                        <div className="flex items-center gap-2"><Lantern on={!!spotlightHolder} flicker={!!(flick&&spotlightHolder)} title="Current table spotlight"/><div><h2 className="text-xs font-black uppercase tracking-widest text-yellow-300">Table spotlight</h2><div className="text-sm font-bold text-white">{spotlightHolder ? (spotlightHolder.name || 'Unnamed character') : 'None'}</div></div></div>
+                        <p className="mt-3 text-[9px] leading-relaxed text-slate-500">The drone never owns Spotlight. Choose which character currently has it.</p>
+                        <div className="mt-3 flex flex-wrap gap-2">{characters.filter(item=>item&&item.entityType!=='drone').map(item=><button key={item.id} onClick={()=>takeSpotlight(item.id)} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-[9px] font-black uppercase ${item.id===spotlight?'border-yellow-500 bg-yellow-950/50 text-yellow-200':'border-slate-700 bg-slate-950 text-slate-400 hover:border-yellow-700'}`}><Lantern on={item.id===spotlight} flicker={!!(flick&&item.id===spotlight)}/>{item.name||'Character'}</button>)}<button onClick={()=>takeSpotlight('')} className="px-2.5 py-1.5 rounded border border-slate-700 bg-slate-950 text-[9px] font-black uppercase text-slate-500">Clear</button></div>
+                      </section>
+                    </div>
+
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                      <section className="rounded-xl border border-cyan-800/40 bg-cyan-950/10 p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xs font-black uppercase tracking-widest text-cyan-300">Signal strength</h2><p className="mt-1 text-[9px] text-slate-500">Manual controls are synchronized with the Keeper Tool.</p></div><span className={`px-2.5 py-1 rounded border text-[9px] font-black uppercase ${character.signalState==='stable'?'border-emerald-600 text-emerald-300':character.signalState==='unstable'?'border-amber-600 text-amber-300':'border-red-700 text-red-300'}`}>{SIGNAL_STATES.find(item=>item.id===character.signalState)?.label||'Stable'}</span></div>
+                        <div className="mt-4 grid grid-cols-3 gap-2">{SIGNAL_STATES.map(signal=><button key={signal.id} onClick={()=>updateCharacter({...character,signalState:signal.id})} className={`rounded-lg border px-3 py-2 text-[10px] font-black uppercase ${character.signalState===signal.id?(signal.id==='stable'?'border-emerald-500 bg-emerald-950/40 text-emerald-200':signal.id==='unstable'?'border-amber-500 bg-amber-950/40 text-amber-200':'border-red-600 bg-red-950/40 text-red-200'):'border-slate-700 bg-slate-950 text-slate-500'}`}>{signal.label}</button>)}</div>
+                        <div className="mt-3 text-[10px] leading-relaxed text-slate-400">{SIGNAL_STATES.find(item=>item.id===character.signalState)?.summary}</div>
+                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3"><div><label className="block text-[8px] font-black uppercase tracking-widest text-slate-500 mb-1">Range from operator</label><select value={character.signalRange||'Close'} onChange={e=>updateCharacter({...character,signalRange:e.target.value,signalState:defaultSignalForRange(e.target.value)})} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">{DRONE_RANGES.map(item=><option key={item}>{item}</option>)}</select></div><div><label className="block text-[8px] font-black uppercase tracking-widest text-slate-500 mb-1">Link mode</label><select value={character.linkMode||'Direct RF Link'} onChange={e=>updateCharacter({...character,linkMode:e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">{LINK_MODES.map(item=><option key={item}>{item}</option>)}</select></div></div>
+                      </section>
+
+                      <section className="rounded-xl border border-emerald-800/40 bg-emerald-950/10 p-4">
+                        <div className="flex items-center justify-between gap-3"><div><h2 className="text-xs font-black uppercase tracking-widest text-emerald-300">Installed modules</h2><p className="mt-1 text-[9px] text-slate-500">{usedDroneModuleSlots}/{character.moduleSlots||0} slots used · {availableDroneModuleSlots} free</p></div><button onClick={()=>setShowDroneModuleManager(true)} className="px-3 py-2 rounded-lg border border-emerald-600/50 bg-emerald-950/40 text-emerald-200 text-[9px] font-black uppercase">Installation options</button></div>
+                        <div className="mt-3 space-y-2">{installedDroneModules.length?installedDroneModules.map(module=><div key={droneModuleKey(module)} className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{itemTierLabel(module)} · {droneModuleSlots(module)} slot{droneModuleSlots(module)===1?'':'s'}</span></div><div className="mt-1.5 text-[9px] leading-relaxed text-slate-400">{module.use}</div></div><button onClick={()=>useDroneModule(module)} className="shrink-0 px-2.5 py-1.5 rounded border border-cyan-700/50 bg-cyan-950/30 text-cyan-200 text-[9px] font-black uppercase">Use</button></div></div>):<button onClick={()=>setShowDroneModuleManager(true)} className="w-full p-4 rounded-lg border border-dashed border-slate-700 text-[10px] text-slate-500">No modules installed.</button>}</div>
+                      </section>
+                    </div>
+
+                    <section className="rounded-xl border border-slate-800 bg-slate-900/45 p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div><label className="block text-[9px] uppercase tracking-widest text-slate-500 font-black mb-1">Loaded protocol when signal is Lost</label><textarea value={character.loadedProtocol||''} onChange={e=>updateCharacter({...character,loadedProtocol:e.target.value})} className="w-full min-h-[100px] rounded-lg border border-slate-700 bg-slate-950 p-3 text-xs text-slate-200 outline-none focus:border-cyan-600" placeholder="Return to operator, hold position, continue task, freeze…"></textarea></div>
+                      <div><label className="block text-[9px] uppercase tracking-widest text-slate-500 font-black mb-1">Drone notes / cargo</label><textarea value={character.playerNotes||''} onChange={e=>updateCharacter({...character,playerNotes:e.target.value})} className="w-full min-h-[100px] rounded-lg border border-slate-700 bg-slate-950 p-3 text-xs text-slate-200 outline-none focus:border-emerald-600" placeholder="Serial, quirks, carried equipment, maintenance…"></textarea></div>
+                    </section>
+                  </div>
+                ) : (
+                  <>
                 <div className="animate-in fade-in duration-300">
                   <header className="bg-slate-900/80 p-3 rounded-lg border border-slate-800 flex flex-col md:flex-row gap-4 items-center mb-2">
                      <div className="flex items-center gap-4 w-full md:w-auto border-r border-slate-800 pr-4">
@@ -3431,8 +3794,8 @@
                          </div>
                        </div>
                        <div className="grid grid-cols-2 gap-2 h-24">
-                         <div className="bg-slate-900/60 rounded border border-slate-800 p-2 relative flex flex-col items-center justify-center"><div className="absolute top-1 left-2 text-[9px] text-slate-500 font-bold uppercase tracking-wider">Evasion</div>{activeWeaponProfile && activeWeaponProfile.evasionModifier !== 0 && <div title={`${activeWeaponProfile.weapon.name}: ${activeWeaponProfile.effects.find(effect => normalizeRuleName(effect.name) === 'massive')?.effect || 'weapon modifier'}`} className="absolute top-1 right-2 px-1.5 py-0.5 rounded border border-red-800/50 bg-red-950/30 text-[8px] font-black text-red-300">{activeWeaponProfile.evasionModifier > 0 ? '+' : ''}{activeWeaponProfile.evasionModifier} · {effectiveEvasion}</div>}<Shield className="w-12 h-12 text-slate-800 absolute opacity-30" /><NumField className="bg-transparent text-3xl font-black text-white text-center z-10 w-full outline-none" value={character.evasion} onChange={e => updateCharacter({...character, evasion: e.target.value})} /></div>
-                         <div className="bg-slate-900/60 rounded border border-cyan-900/30 p-2 relative flex flex-col items-center justify-center"><div className="absolute top-1 left-2 text-[9px] text-cyan-600 font-bold uppercase tracking-wider" data-resicon="shields">Shields</div><Zap className="w-12 h-12 text-cyan-900 absolute opacity-30" /><div className="flex flex-wrap gap-1 justify-center items-center z-10 mt-3 max-w-[130px]">{Array.from({length:6}).map(function(_,i){ var filled = i < (character.shields||0) && !pending['shields-'+i]; return (<button key={i} data-token={"shields-"+i} onClick={() => updateCharacter({...character, shields: (i+1===(character.shields||0) ? i : i+1)})} title={"Shields "+(i+1)} style={{clipPath:"polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%)"}} className={"w-4 h-5 shrink-0 transition-all "+(filled ? "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)]" : "bg-slate-800 hover:bg-cyan-900/60")} />); })}</div></div>
+                         <div className="bg-slate-900/60 rounded border border-slate-800 p-2 relative flex flex-col items-center justify-center"><div className="absolute top-1 left-2 text-[9px] text-slate-500 font-bold uppercase tracking-wider">Evasion</div>{((activeWeaponProfile && activeWeaponProfile.evasionModifier) || (activeArmorProfile && activeArmorProfile.evasionModifier)) !== 0 && <div title={[activeWeaponProfile && activeWeaponProfile.evasionModifier ? `${activeWeaponProfile.weapon.name}: ${activeWeaponProfile.evasionModifier > 0 ? '+' : ''}${activeWeaponProfile.evasionModifier}` : '', activeArmorProfile && activeArmorProfile.evasionModifier ? `${activeArmor && activeArmor.name}: ${activeArmorProfile.evasionModifier > 0 ? '+' : ''}${activeArmorProfile.evasionModifier}` : ''].filter(Boolean).join(' · ')} className="absolute top-1 right-2 px-1.5 py-0.5 rounded border border-amber-700/50 bg-amber-950/30 text-[8px] font-black text-amber-300">Effective {effectiveEvasion}</div>}<Shield className="w-12 h-12 text-slate-800 absolute opacity-30" /><NumField className="bg-transparent text-3xl font-black text-white text-center z-10 w-full outline-none" value={character.evasion} onChange={e => updateCharacter({...character, evasion: e.target.value})} /></div>
+                         <div className="bg-slate-900/60 rounded border border-cyan-900/30 p-2 relative flex flex-col items-center justify-center"><div className="absolute top-1 left-2 text-[9px] text-cyan-600 font-bold uppercase tracking-wider" data-resicon="shields">Armor</div><Zap className="w-12 h-12 text-cyan-900 absolute opacity-30" /><div className="flex flex-wrap gap-1 justify-center items-center z-10 mt-3 max-w-[160px]">{Array.from({length:Math.max(0, Number(character.armorMax != null ? character.armorMax : (activeArmor && activeArmor.armorSlots)) || 0)}).map(function(_,i){ var filled = i < (character.shields||0) && !pending['shields-'+i]; return (<button key={i} data-token={"shields-"+i} onClick={() => updateCharacter({...character, shields: (i+1===(character.shields||0) ? i : i+1)})} title={"Armor slot "+(i+1)} style={{clipPath:"polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%)"}} className={"w-4 h-5 shrink-0 transition-all "+(filled ? "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)]" : "bg-slate-800 hover:bg-cyan-900/60")} />); })}{!(Number(character.armorMax != null ? character.armorMax : (activeArmor && activeArmor.armorSlots)) > 0) && <span className="text-[9px] text-slate-600">No active armor</span>}</div></div>
                        </div>
                        
                        {/* ARMOUR THRESHOLD */}
@@ -3602,7 +3965,7 @@
                                </div>
                                <button onClick={() => setShowArmorManager(true)} className="px-2 py-1 rounded border border-amber-700/40 bg-amber-950/20 text-amber-300 text-[9px] font-black uppercase hover:border-amber-500">Loadout</button>
                              </div>
-                             {activeArmor ? (() => { const summary = armorSummary(activeArmor); return <div className="rounded-lg border border-amber-800/40 bg-amber-950/10 p-2.5"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-xs font-black text-slate-100">{summary.title}</span><span className="px-1.5 py-0.5 rounded border border-amber-700/40 bg-amber-500/10 text-[8px] font-black uppercase text-amber-300">Active</span>{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] text-slate-400">{summary.detail}</div>{summary.features && <div className="mt-1 text-[9px] text-slate-500">{summary.features}</div>}</div><button onClick={clearActiveArmor} className="shrink-0 px-2 py-1 rounded border border-slate-700 text-[8px] font-black uppercase text-slate-400 hover:text-white">Clear</button></div></div>; })() : <button onClick={() => setShowArmorManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-amber-600/60 hover:text-amber-300">No active armor. Open Loadout to assign one from your inventory.</button>}
+                             {activeArmor ? (() => { const summary = armorSummary(activeArmor); return <div className="rounded-lg border border-amber-800/40 bg-amber-950/10 p-2.5"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-xs font-black text-slate-100">{summary.title}</span><span className="px-1.5 py-0.5 rounded border border-amber-700/40 bg-amber-500/10 text-[8px] font-black uppercase text-amber-300">Active</span>{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] text-slate-400">{summary.detail}</div>{summary.features && <div className="mt-1 text-[9px] text-slate-500">{summary.features}</div>}<div className="mt-2 flex flex-wrap gap-1">{activeArmorProfile.evasionModifier !== 0 && <span className="px-1.5 py-0.5 rounded border border-amber-800/40 text-[8px] text-amber-300">Evasion {activeArmorProfile.evasionModifier > 0 ? '+' : ''}{activeArmorProfile.evasionModifier}</span>}{activeArmorProfile.attackBonus !== 0 && <span className="px-1.5 py-0.5 rounded border border-emerald-800/40 text-[8px] text-emerald-300">Automatic attacks +{activeArmorProfile.attackBonus}</span>}{activeArmorProfile.traitModifiers.map((mod,i)=><span key={i} title={mod.context} className="px-1.5 py-0.5 rounded border border-cyan-900/50 text-[8px] text-cyan-300">{mod.trait} +{mod.amount} · {mod.context}</span>)}</div></div><button onClick={clearActiveArmor} className="shrink-0 px-2 py-1 rounded border border-slate-700 text-[8px] font-black uppercase text-slate-400 hover:text-white">Clear</button></div></div>; })() : <button onClick={() => setShowArmorManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-amber-600/60 hover:text-amber-300">No active armor. Open Loadout to assign one from your inventory.</button>}
                              {armorArsenal.length > 0 && <div className="mt-2 flex flex-wrap gap-1">{armorArsenal.filter(item => !activeArmor || armorKey(item) !== armorKey(activeArmor)).slice(0,4).map(item => <span key={armorKey(item)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-[8px] text-slate-400">{item.name}</span>)}{armorArsenal.length > 5 && <span className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-[8px] text-slate-500">+{armorArsenal.length - 4} more</span>}</div>}
                            </div>
 
@@ -3615,7 +3978,7 @@
                                <button onClick={() => setShowAugmentManager(true)} className="px-2 py-1 rounded border border-cyan-700/40 bg-cyan-950/20 text-cyan-300 text-[9px] font-black uppercase hover:border-cyan-500">Manage</button>
                              </div>
                              <div className="space-y-2">
-                               {augmentArsenal.length ? augmentArsenal.map((aug, i) => { const summary = augmentSummary(aug); const active = activeAugmentIds.includes(augmentKey(aug)); return <div key={augmentKey(aug) || i} className={`rounded border p-2 ${active ? 'border-cyan-700/50 bg-cyan-950/10' : 'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-[11px] font-black text-slate-100">{summary.title}</span>{active && <span className="px-1.5 py-0.5 rounded border border-cyan-700/40 bg-cyan-500/10 text-[8px] font-black uppercase text-cyan-300">Active</span>}{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] leading-snug text-slate-400">{summary.detail}</div><div className="mt-1 text-[8px] text-slate-500">{summary.meta}</div></div><button onClick={() => toggleAugmentActive(aug)} className={`shrink-0 px-2 py-1 rounded border text-[8px] font-black uppercase ${active ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-cyan-700/60 bg-cyan-950/20 text-cyan-300'}`}>{active ? 'Deactivate' : 'Activate'}</button></div></div>; }) : <button onClick={() => setShowAugmentManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-cyan-600/60 hover:text-cyan-300">No augmentations in inventory yet. Open Manage to add them from the canonical list.</button>}
+                               {augmentArsenal.length ? augmentArsenal.map((aug, i) => { const summary = augmentSummary(aug); const active = activeAugmentIds.includes(augmentKey(aug)); return <div key={augmentKey(aug) || i} className={`rounded border p-2 ${active ? 'border-cyan-700/50 bg-cyan-950/10' : 'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-[11px] font-black text-slate-100">{summary.title}</span>{active && <span className="px-1.5 py-0.5 rounded border border-cyan-700/40 bg-cyan-500/10 text-[8px] font-black uppercase text-cyan-300">Active</span>}{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] leading-snug text-slate-400">{summary.detail}</div><div className="mt-1 text-[8px] text-slate-500">{summary.meta}</div></div><button onClick={() => toggleAugmentActive(aug)} title={(() => { const cost=augmentActivationCost(aug, character); return cost ? `${active ? 'Deactivate' : 'Activate'} · ${cost.mode === 'mark' ? 'Mark' : 'Spend'} ${cost.amount} ${cost.resource}` : (active ? 'Deactivate' : 'Activate · Passive'); })()} className={`shrink-0 px-2 py-1 rounded border text-[8px] font-black uppercase ${active ? 'border-red-800/60 bg-red-950/20 text-red-300' : 'border-cyan-700/60 bg-cyan-950/20 text-cyan-300'}`}>{active ? 'Deactivate' : (() => { const cost=augmentActivationCost(aug, character); return cost ? `Activate · ${cost.amount} ${cost.resource}` : 'Activate'; })()}</button></div></div>; }) : <button onClick={() => setShowAugmentManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-cyan-600/60 hover:text-cyan-300">No augmentations in inventory yet. Open Manage to add them from the canonical list.</button>}
                              </div>
                            </div>
                          </div>
@@ -3623,6 +3986,8 @@
                     </div>
                   </div>
                 </div>
+                  </>
+                )}
               </div>
             </div>
           );

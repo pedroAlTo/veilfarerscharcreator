@@ -15,7 +15,8 @@
   ]).then(([manifest,canonical])=>{
     release.textContent = canonical.release || manifest.release;
     status.textContent = manifest.pdfCandidateStatus || '';
-    list.innerHTML = (manifest.items||[]).map(item=>`<article class="vf-download-card">
+    const currentItems = (manifest.items||[]).filter(item => item && item.current !== false && !['deprecated','superseded','withdrawn'].includes(String(item.lifecycle || item.status || '').toLowerCase()));
+    list.innerHTML = currentItems.map(item=>`<article class="vf-download-card">
       <div class="vf-eyebrow">${esc(item.type)} · ${esc(item.status || '')}</div>
       <h2>${esc(item.title)}</h2>
       <p>${esc(item.description || `Canonical VeilFarers ${item.version} PDF candidate.`)}</p>

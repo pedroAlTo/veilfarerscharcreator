@@ -36,7 +36,7 @@ sh local/start-local-lan.sh
 - Welcome page, Character Creator, Card Library and local character storage.
 - Character Sheet, PDF generation and JSON import/export.
 - Player Tool and Keeper Tool.
-- Shared Firebase tables when `local/.env.local` is configured. Table discovery remains disabled unless `FIREBASE_PUBLIC_TABLE_DIRECTORY=true`.
+- Shared Firebase tables when `local/.env.local` is configured. Table discovery is enabled unless `FIREBASE_PUBLIC_TABLE_DIRECTORY=false` is set explicitly.
 - 2D/3D dice, sounds, callouts, history and Time Travel.
 - Armory, items, downloads and feedback preview behavior.
 - Admin diagnostics in a clearly marked local-only bypass.

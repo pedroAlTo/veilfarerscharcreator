@@ -54,7 +54,7 @@ function firebaseConfig() {
     messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID || '639672297658',
     appId: env.FIREBASE_APP_ID || '1:639672297658:web:974ddf6ad725cc176e7a83',
     measurementId: env.FIREBASE_MEASUREMENT_ID || 'G-L1Z048Y3L2',
-    publicTableDirectory: env.FIREBASE_PUBLIC_TABLE_DIRECTORY === 'true'
+    publicTableDirectory: env.FIREBASE_PUBLIC_TABLE_DIRECTORY !== 'false'
   };
 }
 

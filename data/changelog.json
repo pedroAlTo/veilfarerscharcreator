@@ -1,7 +1,107 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.35",
+  "currentVersion": "v59.43",
   "entries": [
+    {
+      "version": "v59.43",
+      "date": "2026-07-18",
+      "title": "Armor automation, resource-aware augmentations, drone sheets and protected table directory",
+      "changes": [
+        "Applied active armor thresholds, armor slots, Evasion modifiers, Automatic-attack modifiers and contextual Trait modifiers inside Player Tool.",
+        "Augmentation activation now marks Stress or spends Hope/Effort from the correct character resource track; Sleeper Hope costs convert to Effort.",
+        "Enabled Drone tabs with canonical frame statistics, full starting integrity, installation/module slots, operator-paid module costs, shared Spotlight display and Stable/Unstable/Lost signal controls.",
+        "Added Keeper-side drone signal controls synchronized through the table session.",
+        "Characters now begin new local/imported records at full HP, 2 Hope/Effort and full Resolve; drones have no Hope, Effort, Resolve or Stress tracks.",
+        "Enabled the public table directory unless explicitly disabled and labelled listed sessions as OPEN or CLOSED.",
+        "Replaced plaintext-equivalent table gates with salted PBKDF2-SHA256 password records, retained legacy SHA-256 compatibility and limited password changes to already connected users."
+      ]
+    },
+    {
+      "version": "v59.42",
+      "date": "2026-07-18",
+      "title": "Controlled digital page spacing for the fluid Charsheet",
+      "changes": [
+        "Replaced synthetic fixed multi-page positioning with normal document flow for the digital Charsheet.",
+        "Kept each virtual paper fully expandable while limiting the visible separator between consecutive sheets to 75 px.",
+        "Made the separator compensate for Fit Width, Fit Height and manual zoom so it remains 75 px on screen from mobile to large desktop viewports.",
+        "Removed the hard-coded 3382 px wrapper height that could reserve hundreds of pixels of empty space between dynamically sized sheets.",
+        "Kept print/PDF rules isolated and unchanged; this release affects screen layout only."
+      ]
+    },
+    {
+      "version": "v59.41",
+      "date": "2026-07-18",
+      "title": "Fluid digital Charsheet and independently paginated PDF layout",
+      "changes": [
+        "Replaced the fixed-height digital paper model with a fluid document: every visible sheet face grows with its content and shared pages move down automatically.",
+        "Added automatic textarea expansion across Active Armor, Hope/Effort features, Signature Move, access summaries, notes, equipment, reputations, augmentations, drones and ship data; no internal text scrollbars are required.",
+        "Separated print/PDF layout from the digital sheet. Printed content uses a readable single-column flow and may continue onto additional A4 pages instead of clipping or overlapping.",
+        "Updated visual-PDF pagination to render tall sections and split them at safe section boundaries rather than forcing each face into a fixed 860x1114 capture.",
+        "Updated Charsheet storage to v2_41 / export model 2.81-RC3.2 and updated the Creator-to-Charsheet bridge to the same keys, with migration from v2_40.",
+        "Kept Downloads current-only and removed references to discarded candidates from the Downloads presentation."
+      ]
+    },
+    {
+      "version": "v59.40",
+      "date": "2026-07-18",
+      "title": "Full RC3.2 class/path audit, Charsheet containment and current-only Downloads",
+      "changes": [
+        "Audited and refreshed the complete Character Creator and Charsheet rules layer for all nine classes in both Sleeping and Awakened paths, including class features, signature moves, subclasses, Technology Access, proficiencies and starting items.",
+        "Rebuilt Creator-to-Charsheet synchronization against storage schema v2_40 / export model 2.80-RC3.2 and validated all 18 class/path combinations.",
+        "Corrected Charsheet geometry so Active Armor, Experiences, Signature Move, Resolve Moves, Common Effort, reputation fields and footer content remain contained and readable in screen and visual/PDF clone layouts.",
+        "Expanded and validated dropdown registries: 9 classes, 3 subclasses per class/path, 13 affiliations, 10 reputation levels and 11 standing values.",
+        "Made long Hope/Effort feature rules explicitly scrollable on screen while retaining full text in PDF/print output.",
+        "Rebuilt the Charsheet toolbar so brand text and controls never overlap and every control remains accessible at 1920, 1600, 1440, 1366, 1200, 1024, 900, 760 and 390 pixel widths.",
+        "Restricted Downloads to the five current release files only: Corebook 11.1 RC3.2, current RC3 companion books and the RC3-compatible fillable character sheet; superseded candidates are absent from the manifest and package."
+      ]
+    },
+    {
+      "version": "v59.39",
+      "date": "2026-07-17",
+      "title": "Restore global Card Library route and repair Active Armor layout",
+      "changes": [
+        "Restored Card Library as a global top-navigation destination while keeping it removed from the Character Creator internal mode switcher.",
+        "Added a dedicated Card Library route state at /creator.html#cards with Domains, Classes, Subclasses, Ancestries and Communities tabs.",
+        "Kept Character Creator internal modes limited to Character Creator and Level Up, avoiding the duplicate Card Library entry that was previously inside the creator.",
+        "Reworked the Charsheet Active Armor block so the Wealth Tier filter, armor name, thresholds, slots, feature text and Armor track remain inside the section without clipping or colliding with Resolve Moves."
+      ]
+    },
+    {
+      "version": "v59.38",
+      "date": "2026-07-17",
+      "title": "Character Sheet Resolve Moves containment and canonical recommended Trait assignment",
+      "changes": [
+        "Contained the Sleeping Resolve Moves menu inside a fixed, scrollable section so it no longer overlaps the three Experience rows or Common Effort reference.",
+        "Preserved Experience text exactly as entered, including numeric test values; no numeric-value sanitization is applied.",
+        "Added Use recommended array to Character Creator Trait assignment, following Corebook Chapter 8 Step 4: +2 Signature Trait, +1 secondary class Trait, +1 Ancestry/Community-relevant Trait, then the remaining 0, 0, -1 values.",
+        "Recommended Trait assignment is derived from the selected Class, Subclass, Ancestry and Community data and remains fully editable before continuing."
+      ]
+    },
+    {
+      "version": "v59.37",
+      "date": "2026-07-17",
+      "title": "Character Creator equipment eligibility and class Technology Access repair",
+      "changes": [
+        "Fixed the Creator equipment step by merging the canonical class Technology Access table from data/classes.json into the live rules-data class model.",
+        "Engineer and every other class now resolve their Level 1 weapon and armor permissions instead of displaying No Technology Access record.",
+        "Reset weapon/armor category and search filters when the selected class or path changes, preventing stale filters such as Melee from hiding a new class's eligible Pistols.",
+        "Added a defensive class-access registry and normalized incompatible category filters before rendering the equipment catalogue.",
+        "Validated that all nine classes expose at least one eligible Common weapon and armor option; Engineer resolves 6 eligible Core pistols and 5 eligible Core Light/Medium armor choices."
+      ]
+    },
+    {
+      "version": "v59.36",
+      "date": "2026-07-17",
+      "title": "Character Creator workflow repair and canonical RC3 Charsheet bridge",
+      "changes": [
+        "Fixed Character Creator initialization by defining and live-loading the six canonical Traits from /rules-data/core/traits.json.",
+        "Restored viewport-level dependent-choice overlays: Ailuran Sub-Strain and Class Subclass selections now appear immediately without requiring the user to scroll below the current cards.",
+        "Rebuilt fixed-array trait assignment so each duplicate +1/+0 token is consumed individually, invalid distributions cannot advance, and saved legacy assignments are sanitized.",
+        "Changed the final Creator action to save the complete draft and open Charsheet with an explicit forced sync.",
+        "Upgraded the Charsheet data model to v2_37 / export 2.75-RC3 with migration from v2_36 and refreshed its compatibility dataset from rules-data 11.1-RC3.",
+        "Expanded Creator-to-Charsheet transfer to include level, proficiency, Sleeping Honed Edge, all six traits, three Experiences, ancestry/sub-strain, community, class/subclass, affiliation, weapons, armor, powers, kit, narrative details and resource tracks."
+      ]
+    },
     {
       "version": "v59.35",
       "date": "2026-07-17",
