@@ -1,120 +1,136 @@
 (function(){
   'use strict';
-  const ID = window.netlifyIdentity;
-  const CHARACTER_KEY = 'veilfarers-character';
-  const INVENTORY_KEY = 'veilfarers.inventory.v1';
-  const VAULT_KEY = 'veilfarers_characters_rc2';
-  const LINK_KEY = 'veilfarers_online_character_id_rc2';
-  let activeUser = null;
 
-  const el = id => document.getElementById(id);
-  const status = el('account-status');
-  const list = el('vault-list');
-  const localSummary = el('local-summary');
-  const signedOut = el('signed-out-actions');
-  const signedIn = el('signed-in-actions');
-  const esc = value => String(value ?? '').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
-  const uid = () => crypto.randomUUID ? crypto.randomUUID() : `vf_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+  const ID=window.netlifyIdentity;
+  const REGISTRY=window.VeilFarersCharacterRegistry;
+  const CREATOR_KEY='veilfarers-character';
+  let activeUser=null;
+  let showTrash=false;
+  let pendingTrashId='';
+  let pendingRestoreId='';
+  let vaultBusy=false;
 
-  function userData(user){ return Object.assign({}, user?.user_metadata || {}, user?.data || {}); }
-  function vault(user){
-    let value = userData(user)[VAULT_KEY] || [];
-    if(typeof value === 'string'){ try{ value=JSON.parse(value); }catch(_){ value=[]; } }
-    return Array.isArray(value) ? value : [];
-  }
-  function currentState(){ try{ return JSON.parse(localStorage.getItem(CHARACTER_KEY)||'null'); }catch(_){ return null; } }
-  function currentInventory(){ try{ return JSON.parse(localStorage.getItem(INVENTORY_KEY)||'null'); }catch(_){ return null; } }
-  function metadata(state){
-    return { name:state?.name || 'Unnamed VeilFarer', path:state?.path || '', classId:state?.cls || '', subclass:state?.subclass || '', ancestryId:state?.ancestry || '', level:1 };
-  }
+  const el=id=>document.getElementById(id);
+  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+  const accountStatus=el('account-status');
+  const list=el('vault-list');
+  const signedOut=el('signed-out-actions');
+  const signedIn=el('signed-in-actions');
+
   function setStatus(text,type=''){
-    status.textContent=text; status.className='vf-status'+(type?` ${type}`:'');
+    accountStatus.textContent=text;
+    accountStatus.className='vf-status'+(type?` ${type}`:'');
   }
-  function renderLocal(){
-    const state=currentState();
-    if(!state){ localSummary.innerHTML='<p>No canonical character is saved in this browser. Create one on the homepage first.</p>'; return; }
-    const meta=metadata(state);
-    localSummary.innerHTML=`<h3>${esc(meta.name)}</h3><p>${esc([meta.path,meta.classId,meta.subclass].filter(Boolean).join(' · ') || 'Incomplete character')}</p><p class="vf-muted">Creator draft available locally. ${Object.keys(currentInventory()?.entries||{}).length} inventory records linked.</p>`;
+  function summary(record){return REGISTRY?.summary(record)||{characterId:record?.characterId||'',name:'Unnamed Veilfarer',level:1,path:'',className:'',subclass:'',status:record?.status||'active',cloudState:record?.cloudState||'local',updatedAt:record?.updatedAt||''};}
+  function allRecords(){return REGISTRY?(REGISTRY.listForCurrentUser?REGISTRY.listForCurrentUser({includeDeleted:true,includeUnowned:true,completedOnly:true}):REGISTRY.list({includeDeleted:true})):[];}
+  function visibleRecords(){return allRecords().filter(record=>showTrash?record.status==='trashed':record.status!=='trashed');}
+  function dateText(value){try{return value?new Date(value).toLocaleString():'—';}catch(_){return '—';}}
+
+  function makeCurrent(record,source){
+    if(!record)return;
+    const creator=record.characterData?.creatorState;
+    if(creator)localStorage.setItem(CREATOR_KEY,JSON.stringify({...creator,characterId:record.characterId}));
+    REGISTRY?.replaceLocalRecord(record,{select:true,source:source||'account-vault-open'});
   }
+  function openRecord(record,destination){makeCurrent(record,`account-open-${destination}`);location.href=destination;}
+  function exportRecord(record){
+    const item=summary(record);
+    const blob=new Blob([JSON.stringify(record,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=`${(item.name||'veilfarers-character').replace(/[^a-z0-9]+/gi,'-').toLowerCase()}-${item.characterId||'vault'}.json`;
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  }
+
+  function renderVault(){
+    const records=visibleRecords();
+    el('vault-mode').textContent=showTrash?'Trash':'Active characters';
+    el('toggle-trash').textContent=showTrash?'Show active characters':'Open Trash';
+    if(!records.length){
+      list.innerHTML=`<div class="vf-empty">${showTrash?'Trash is empty.':'No completed characters are available in this Vault yet.'}</div>`;
+      return;
+    }
+    list.innerHTML=records.map(record=>{
+      const item=summary(record);const trashConfirm=pendingTrashId===item.characterId;const restoreConfirm=pendingRestoreId===item.characterId;
+      const meta=[item.path,item.className,item.subclass].filter(Boolean).join(' · ')||'Incomplete build';
+      const state=item.cloudState==='deferred'?'Cloud pending':item.cloudState==='synced'?'Cloud synced':'Local';
+      return `<article class="vf-character-row" data-id="${esc(item.characterId)}">
+        <div><div class="vf-eyebrow">${esc(item.characterId)}</div><h3>${esc(item.name)}</h3><p>${esc(meta)} · Level ${Number(item.level||1)}</p><p class="vf-muted">${esc(state)} · Updated ${esc(dateText(item.updatedAt))}</p></div>
+        <div class="vf-actions">
+          ${showTrash?`${restoreConfirm?'<span class="vf-status bad">Restore this character?</span>':''}<button class="vf-button ${restoreConfirm?'primary':''}" data-action="restore">${restoreConfirm?'Confirm restore':'Restore'}</button>${restoreConfirm?'<button class="vf-button" data-action="cancel">Cancel</button>':''}`:
+          `<button class="vf-button primary" data-action="sheet">Charsheet</button><button class="vf-button" data-action="player">Player Tool</button><button class="vf-button" data-action="level">Level Up</button><button class="vf-button" data-action="export">Export</button>${trashConfirm?'<span class="vf-status bad">Move this character to Trash?</span>':''}<button class="vf-button ${trashConfirm?'danger':''}" data-action="trash">${trashConfirm?'Confirm Trash':'Trash'}</button>${trashConfirm?'<button class="vf-button" data-action="cancel">Cancel</button>':''}`}
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  async function refreshVault(){
+    if(!REGISTRY||vaultBusy)return;
+    vaultBusy=true;el('refresh-vault').disabled=true;setStatus(activeUser?'Refreshing your Character Vault…':'Loading local character records…');
+    try{
+      if(activeUser&&window.VF_IS_LOCAL_TEST!==true)await REGISTRY.refreshVault({force:true});
+      renderVault();setStatus(activeUser?'Character Vault synchronized.':'Local character records loaded.','ok');
+    }catch(error){
+      renderVault();setStatus(`Cloud Vault unavailable: ${error.message||error}. Local saved records remain available.`,'bad');
+    }finally{vaultBusy=false;el('refresh-vault').disabled=false;}
+  }
+
+  async function syncCurrent(){
+    const record=REGISTRY?.get();
+    if(!record){setStatus('No current completed character is selected.','bad');return;}
+    setStatus(`Synchronizing ${summary(record).name}…`);
+    const result=await REGISTRY.sync(record,{source:'account-manual-sync'});
+    renderVault();
+    setStatus(result?.cloudState==='deferred'?`Saved locally; cloud sync is pending: ${result.syncError||'connection unavailable'}`:'Current character synchronized. ',result?.cloudState==='deferred'?'bad':'ok');
+  }
+
   function renderUser(user){
-    activeUser=user||null;
-    const logged=!!activeUser;
-    signedOut.classList.toggle('vf-hidden',logged);
-    signedIn.classList.toggle('vf-hidden',!logged);
+    activeUser=user||null;const logged=!!activeUser;
+    signedOut.classList.toggle('vf-hidden',logged);signedIn.classList.toggle('vf-hidden',!logged);
     if(logged){
       el('account-email').textContent=activeUser.email||activeUser.id;
-      const roles=activeUser.app_metadata?.roles||[];
-      el('account-role').textContent=roles.length?roles.join(', '):'member';
-      setStatus('Signed in. The canonical character vault is available.','ok');
-      renderVault();
+      const roles=activeUser.app_metadata?.roles||activeUser.appMetadata?.roles||[];
+      el('account-role').textContent=roles.length?roles.join(', '):'member pending refresh';
+      setStatus('Signed in. Loading the Firebase-backed Character Vault…');refreshVault();
     }else{
-      el('account-email').textContent='Guest'; el('account-role').textContent='—';
-      setStatus('Not signed in. Local creator data and JSON exports remain available.');
-      list.innerHTML='<div class="vf-empty">Sign in to list account-backed characters.</div>';
+      el('account-email').textContent='Guest';el('account-role').textContent='—';
+      setStatus('Sign in to synchronize your Character Vault. Local and exported backups remain available.');renderVault();
     }
   }
-  function renderVault(){
-    const records=vault(activeUser).sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
-    if(!records.length){ list.innerHTML='<div class="vf-empty">No canonical characters saved to this account.</div>'; return; }
-    list.innerHTML=records.map(record=>`<article class="vf-character-row" data-id="${esc(record.id)}"><div><h3>${esc(record.name||'Unnamed VeilFarer')}</h3><p>${esc([record.path,record.classId,record.subclass].filter(Boolean).join(' · ')||'Incomplete character')} · Level ${Number(record.level||1)}</p><p>Updated ${esc(record.updatedAt?new Date(record.updatedAt).toLocaleString():'—')}</p></div><div class="vf-actions"><button class="vf-button primary" data-action="load">Load</button><button class="vf-button" data-action="export">Export</button><button class="vf-button danger" data-action="delete">Delete</button></div></article>`).join('');
-  }
-  async function updateVault(records){
-    if(!activeUser || typeof activeUser.update!=='function') throw new Error('Netlify Identity profile updates are unavailable.');
-    const data=userData(activeUser); data[VAULT_KEY]=records;
-    const updated=await activeUser.update({data});
-    activeUser=updated||ID.currentUser()||activeUser;
-    renderVault();
-  }
-  async function saveCurrent(asCopy){
-    const state=currentState();
-    if(!state) throw new Error('No local canonical character exists to save.');
-    let records=vault(activeUser); const linked=asCopy?'':localStorage.getItem(LINK_KEY);
-    const id=linked&&records.some(r=>r.id===linked)?linked:uid();
-    const existing=records.find(r=>r.id===id); const now=new Date().toISOString();
-    const record=Object.assign({},existing||{},metadata(state),{id,schema:'veilfarers.character.vault/1',rulesRelease:'11.1-RC3',state,inventory:currentInventory(),createdAt:existing?.createdAt||now,updatedAt:now});
-    records=records.filter(r=>r.id!==id); records.unshift(record);
-    await updateVault(records); localStorage.setItem(LINK_KEY,id);
-    setStatus(`Saved ${record.name} to Netlify Identity.`, 'ok');
-  }
-  function loadRecord(record){
-    if(!record?.state) throw new Error('This vault record has no canonical character state.');
-    localStorage.setItem(CHARACTER_KEY,JSON.stringify(record.state));
-    if(record.inventory) localStorage.setItem(INVENTORY_KEY,JSON.stringify(record.inventory));
-    localStorage.setItem(LINK_KEY,record.id);
-    location.href='/charsheet.html';
-  }
-  function exportRecord(record){
-    const blob=new Blob([JSON.stringify(record,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a');
-    a.href=url;a.download=`${(record.name||'veilfarers-character').replace(/[^a-z0-9]+/gi,'-').toLowerCase()}-vault.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-  }
-  async function deleteRecord(record){
-    if(!confirm(`Delete ${record.name||'this character'} from the account vault?`))return;
-    await updateVault(vault(activeUser).filter(r=>r.id!==record.id));
-    if(localStorage.getItem(LINK_KEY)===record.id)localStorage.removeItem(LINK_KEY);
-    setStatus('Vault record deleted.','ok');
-  }
 
+  list.addEventListener('click',event=>{
+    const row=event.target.closest('[data-id]'),button=event.target.closest('[data-action]');if(!row||!button)return;
+    const record=REGISTRY?.get(row.dataset.id);if(!record)return;
+    const action=button.dataset.action;
+    if(action==='cancel'){pendingTrashId='';pendingRestoreId='';renderVault();return;}
+    if(action==='sheet')openRecord(record,'/charsheet.html');
+    if(action==='player')openRecord(record,'/player-tool.html');
+    if(action==='level')openRecord(record,'/creator.html#level-up');
+    if(action==='export')exportRecord(record);
+    if(action==='trash'){
+      if(pendingTrashId!==record.characterId){pendingTrashId=record.characterId;pendingRestoreId='';renderVault();return;}
+      pendingTrashId='';REGISTRY.trash(record.characterId,{source:'account-vault-trash'}).then(()=>{renderVault();setStatus('Character moved to Trash.','ok');}).catch(error=>setStatus(error.message||String(error),'bad'));
+    }
+    if(action==='restore'){
+      if(pendingRestoreId!==record.characterId){pendingRestoreId=record.characterId;pendingTrashId='';renderVault();return;}
+      pendingRestoreId='';REGISTRY.restore(record.characterId,{source:'account-vault-restore'}).then(()=>{renderVault();setStatus('Character restored.','ok');}).catch(error=>setStatus(error.message||String(error),'bad'));
+    }
+  });
+
+  el('toggle-trash').addEventListener('click',()=>{showTrash=!showTrash;pendingTrashId='';pendingRestoreId='';renderVault();});
+  el('refresh-vault').addEventListener('click',refreshVault);
+  el('sync-current').addEventListener('click',()=>syncCurrent().catch(error=>setStatus(error.message||String(error),'bad')));
+  el('new-character').addEventListener('click',()=>location.href='/creator.html');
   el('login-button').addEventListener('click',()=>ID?.open('login'));
   el('signup-button').addEventListener('click',()=>ID?.open('signup'));
   el('logout-button').addEventListener('click',()=>ID?.logout());
-  el('save-current').addEventListener('click',()=>saveCurrent(false).catch(err=>setStatus(err.message,'bad')));
-  el('save-copy').addEventListener('click',()=>saveCurrent(true).catch(err=>setStatus(err.message,'bad')));
-  el('open-creator').addEventListener('click',()=>location.href='/');
-  list.addEventListener('click',e=>{
-    const row=e.target.closest('[data-id]'),button=e.target.closest('[data-action]'); if(!row||!button)return;
-    const record=vault(activeUser).find(r=>r.id===row.dataset.id); if(!record)return;
-    try{ if(button.dataset.action==='load')loadRecord(record); if(button.dataset.action==='export')exportRecord(record); if(button.dataset.action==='delete')deleteRecord(record).catch(err=>setStatus(err.message,'bad')); }catch(err){setStatus(err.message,'bad');}
-  });
-  renderLocal();
+
+  renderVault();
   if(window.VF_IS_LOCAL_TEST===true){
-    signedOut.classList.add('vf-hidden');
-    signedIn.classList.add('vf-hidden');
-    el('account-email').textContent='Local test';
-    el('account-role').textContent='offline';
-    setStatus('Local test mode. Local character data and JSON tools work here; the Netlify Identity vault remains available only on the deployed site.');
-    list.innerHTML='<div class="vf-empty">Online account storage is intentionally disabled in local test mode.</div>';
+    signedOut.classList.add('vf-hidden');signedIn.classList.remove('vf-hidden');
+    el('logout-button').classList.add('vf-hidden');el('account-email').textContent='Local test';el('account-role').textContent='offline';
+    setStatus('Local test mode. The same Character Vault UI uses local records; cloud synchronization requires the deployed authenticated site.');
     return;
   }
-  if(!ID){ setStatus('Netlify Identity widget did not load. This page must be served from the Netlify deployment.','bad'); return; }
-  ID.on('init',renderUser); ID.on('login',user=>{renderUser(user);ID.close();}); ID.on('logout',()=>renderUser(null)); ID.on('error',err=>setStatus(`Netlify Identity: ${err.message||err}`,'bad')); ID.init();
+  if(!ID){setStatus('Netlify Identity did not load. Open this page from the deployed Netlify site.','bad');return;}
+  ID.on('init',renderUser);ID.on('login',user=>{renderUser(user);ID.close();});ID.on('logout',()=>renderUser(null));ID.on('error',error=>setStatus(`Netlify Identity: ${error.message||error}`,'bad'));ID.init();
 })();

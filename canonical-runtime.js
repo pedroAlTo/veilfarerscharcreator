@@ -10,6 +10,8 @@
     return match ? Number(match[1]) : 0;
   }
 
+  function readJSON(path){return fetch(path,{cache:'no-store'}).then(function(response){if(!response.ok)throw new Error('Failed to load '+path);return response.json();});}
+
   function domainCards(powers){
     const groups = {};
     powers.forEach(power => {
@@ -50,10 +52,11 @@
     api.loadCollection('communities'),
     api.loadCollection('traits'),
     api.loadCollection('droneGrades'),
-    api.loadCollection('droneModules')
-  ]).then(([manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,resolveMoves,drills,ancestries,communities,traits,droneGrades,droneModules]) => {
+    api.loadCollection('droneModules'),
+    readJSON('/data/classes.json')
+  ]).then(([manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,resolveMoves,drills,ancestries,communities,traits,droneGrades,droneModules,classCompat]) => {
     const data = {
-      manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,resolveMoves,drills,ancestries,communities,traits,droneGrades,droneModules,
+      manifest,powers,weapons,armor,gear,augments,features,featureRegistry,classes,subclasses,resolveMoves,drills,ancestries,communities,traits,droneGrades,droneModules,classCompat,
       domainCards: domainCards(powers)
     };
     global.VF_CANONICAL_DATA = data;

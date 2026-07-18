@@ -12,6 +12,7 @@
       <a href="/" data-page="home">Home</a>
       <a href="/creator.html" data-creator-mode="creator">Character Creator</a>
       <a href="/creator.html#cards" data-creator-mode="cards">Card Library</a>
+      <a href="/creator.html#level-up" data-creator-mode="level-up">Level Up</a>
       <a href="/charsheet.html">Charsheet & PDF</a>
       <a href="/player-tool.html">Player Tool</a>
       <a href="/keeper-tool.html">Keeper Tool</a>
@@ -54,7 +55,7 @@
     const href=new URL(a.href,location.origin);
     const hrefPath=normalPath(href.pathname);
     if(a.dataset.page==='home' && path==='/') a.classList.add('active');
-    else if(a.dataset.creatorMode && path==='/creator.html' && a.dataset.creatorMode===(location.hash==='#cards'?'cards':'creator')) a.classList.add('active');
+    else if(a.dataset.creatorMode && path==='/creator.html' && a.dataset.creatorMode===(location.hash==='#cards'?'cards':(location.hash==='#level-up'?'level-up':'creator'))) a.classList.add('active');
     else if(!a.classList.contains('brand') && !a.dataset.page && !a.dataset.creatorMode && hrefPath===path) a.classList.add('active');
   });
 
@@ -62,7 +63,7 @@
     if(path!=='/creator.html')return;
     const route=location.hash==='#cards'?'cards':(location.hash==='#level-up'?'level-up':'creator');
     if(typeof window.VeilFarersSetCreatorRoute==='function') window.VeilFarersSetCreatorRoute(route,false);
-    nav.querySelectorAll('[data-creator-mode]').forEach(a=>a.classList.toggle('active',a.dataset.creatorMode===(route==='cards'?'cards':'creator')));
+    nav.querySelectorAll('[data-creator-mode]').forEach(a=>a.classList.toggle('active',a.dataset.creatorMode===route));
   }
   window.addEventListener('hashchange',syncCreatorMode);
   setTimeout(syncCreatorMode,0);
