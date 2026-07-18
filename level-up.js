@@ -428,8 +428,8 @@ async function apply(){
     if(window.VeilFarersSheetBridge){out=await window.VeilFarersSheetBridge.convert(state);window.VeilFarersSheetBridge.saveOutput(out,state);}
     const payload=out?{app:'Veilfarers Character Sheet',version:'2.84-RC3.2',schema:'veilfarers.character/2',characterId:id,fields:{...out.fields,character_id:id},tracks:out.tracks,advancementHistory:state.advancementHistory}:null;
     const registry=window.VeilFarersCharacterRegistry;
-    const record=registry.saveLocalData(id,{creatorState:copy(state),sheetPayload:payload,advancementHistory:copy(state.advancementHistory)},{source:'level-up-v59.49',status:'active',completedAt:registry.get(id)?.completedAt||new Date().toISOString()});
-    const synced=await registry.sync(record,{source:'level-up-v59.49'});
+    const record=registry.saveLocalData(id,{creatorState:copy(state),sheetPayload:payload,advancementHistory:copy(state.advancementHistory)},{source:'level-up-v59.50',status:'active',completedAt:registry.get(id)?.completedAt||new Date().toISOString()});
+    const synced=await registry.sync(record,{source:'level-up-v59.50'});
     plan=freshPlan();plan.applied=true;plan.message=`Level ${target} applied to ${id}${synced?.cloudState==='deferred'?' locally; cloud sync is pending.':'. Vault, Charsheet and Player Tool payloads were updated.'}`;
     selectedVaultId=id;render();
   }catch(error){plan.message=error.message||String(error);plan.applied=false;render();}

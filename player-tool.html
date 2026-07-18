@@ -102,7 +102,7 @@
                 // when Firestore has already been initialized elsewhere on the page.
                 if (!window.__vfIgnoreUndefinedConfigured) {
                     try {
-                        db.settings({ ignoreUndefinedProperties: true });
+                        db.settings({ ignoreUndefinedProperties: true, merge: true });
                         window.__vfIgnoreUndefinedConfigured = true;
                     } catch (settingsErr) {
                         console.warn('Firestore settings already active; using the VeilFarers write sanitizer.', settingsErr);
@@ -1287,6 +1287,43 @@
         })();
 
         const PLAYER_STORAGE_KEY = 'veilfarers-player-tool-characters';
+        const normalizeCharacterId = value => String(value || '').trim().toUpperCase();
+        const isPendingCharacterId = value => normalizeCharacterId(value).startsWith('PENDING-');
+        const playerCharacterFingerprint = item => [item && item.name,item && item.playerName,item && item.class,item && item.subclass,item && item.heritage,item && item.background].map(value => String(value || '').trim().toLowerCase()).join('|');
+        const samePlayerCharacter = (left,right) => {
+          if (!left || !right || left.entityType === 'drone' || right.entityType === 'drone') return false;
+          const a = normalizeCharacterId(left.characterId || left.id), b = normalizeCharacterId(right.characterId || right.id);
+          if (a && b && a === b) return true;
+          const fpA = playerCharacterFingerprint(left), fpB = playerCharacterFingerprint(right);
+          return !!fpA.replace(/\|/g,'') && fpA === fpB && (isPendingCharacterId(a) || isPendingCharacterId(b));
+        };
+        const mergePlayerCharacterRuntime = (existing,incoming) => {
+          const merged = { ...(existing || {}), ...(incoming || {}) };
+          ['hp','stress','hope','effort','resolve'].forEach(key => { if (existing && existing[key] && incoming && incoming[key]) merged[key] = { ...incoming[key], current:existing[key].current }; });
+          ['shields','armorMarked','conditions','savedNotes','signalState'].forEach(key => { if (existing && existing[key] != null) merged[key] = existing[key]; });
+          return merged;
+        };
+        const dedupePlayerCharacters = input => {
+          const out = [];
+          (Array.isArray(input) ? input : []).forEach(item => {
+            if (!item) return;
+            if (item.entityType === 'drone') {
+              const index = out.findIndex(candidate => candidate && candidate.entityType === 'drone' && normalizeCharacterId(candidate.id || candidate.characterId) === normalizeCharacterId(item.id || item.characterId));
+              if (index >= 0) out[index] = { ...out[index], ...item }; else out.push(item);
+              return;
+            }
+            const index = out.findIndex(candidate => samePlayerCharacter(candidate,item));
+            if (index >= 0) {
+              const current = out[index];
+              const currentId = normalizeCharacterId(current && (current.characterId || current.id));
+              const itemId = normalizeCharacterId(item.characterId || item.id);
+              out[index] = currentId && itemId && currentId === itemId
+                ? mergePlayerCharacterRuntime(item,{ ...current, ...item })
+                : mergePlayerCharacterRuntime(current,item);
+            } else out.push(item);
+          });
+          return out;
+        };
         const CHARACTER_TRANSFER_KEY = 'veilfarers.character.transfer.v1';
         const LATEST_SHEET_KEY = 'veilfarers.sheet.latestPayload.v1';
         const localSheetPayload = () => {
@@ -1308,7 +1345,7 @@
         const loadInitialCharacters = () => {
           try {
             const saved = JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY) || 'null');
-            if (Array.isArray(saved) && saved.length) return ensureIds(saved);
+            if (Array.isArray(saved) && saved.length) return ensureIds(dedupePlayerCharacters(saved));
           } catch (e) {}
           try {
             const draft = JSON.parse(localStorage.getItem('veilfarers-character') || 'null');
@@ -1363,7 +1400,20 @@
         const CharacterSheet = () => {
           const [characters, setCharacters] = useState(loadInitialCharacters);
           const [activeTab, setActiveTab] = useState(0);
-          useEffect(() => { try { localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(characters)); } catch (e) {} }, [characters]);
+          useEffect(() => { try { localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(dedupePlayerCharacters(characters))); } catch (e) {} }, [characters]);
+          useEffect(() => {
+            const refreshFromRegistry = () => {
+              try {
+                const stored = JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY) || '[]');
+                const next = ensureIds(dedupePlayerCharacters(stored));
+                if (!next.length) return;
+                setCharacters(next);
+                setActiveTab(current => Math.max(0, Math.min(current, next.length - 1)));
+              } catch (error) { console.warn('Player Tool registry refresh failed:', error); }
+            };
+            window.addEventListener('veilfarers:player-record-updated', refreshFromRegistry);
+            return () => window.removeEventListener('veilfarers:player-record-updated', refreshFromRegistry);
+          }, []);
           
           // Estados UI
           const [showRoller, setShowRoller] = useState(false);
@@ -2528,20 +2578,16 @@
           const removeCard = (cardIndex) => { const newCards = [...(character.domainCards || [])]; const removed=newCards.splice(cardIndex, 1)[0]; const vault=[...(character.powerVault||[])]; if(removed && !vault.some(item=>item.id===removed.id))vault.push(removed); updateCharacter({ ...character, domainCards: newCards, powerVault:vault }); };
           const mergePlayerRuntime = (existing, incoming) => {
             if (!existing) return incoming;
-            const merged = { ...existing, ...incoming, id: existing.id, characterId: incoming.characterId || existing.characterId };
-            ['hp','stress','hope','effort','resolve'].forEach(key => {
-              if (existing[key] && incoming[key]) merged[key] = { ...incoming[key], current: existing[key].current };
-            });
-            ['shields','armorMarked','conditions','savedNotes','signalState'].forEach(key => {
-              if (existing[key] != null) merged[key] = existing[key];
-            });
+            const merged = mergePlayerCharacterRuntime(existing,incoming);
+            merged.id = incoming.characterId || existing.id || incoming.id;
+            merged.characterId = incoming.characterId || existing.characterId;
             return merged;
           };
           const addOrUpdateMappedCharacter = (mapped, title='Character imported') => {
             if (!mapped) { showAlert('No compatible character record was found.'); return false; }
             const persistentId = mapped.characterId || mapped.id || mkCharId();
             const incoming = { ...mapped, characterId: mapped.characterId || persistentId, id: persistentId, transferSource: mapped.transferSource || 'vault' };
-            const existingIndex = characters.findIndex(item => item && item.entityType !== 'drone' && ((incoming.characterId && item.characterId === incoming.characterId) || item.id === persistentId));
+            const existingIndex = characters.findIndex(item => samePlayerCharacter(item,incoming));
             const replaceBlank = existingIndex < 0 && characters.length === 1 && (!characters[0] || !characters[0].name);
             if (existingIndex >= 0) {
               const next = characters.slice();
@@ -2551,7 +2597,7 @@
             } else if (replaceBlank) {
               setCharacters([incoming]); setActiveTab(0); showAlert('The saved character was opened in Player Tool.', title);
             } else {
-              setCharacters([...characters, incoming]); setActiveTab(characters.length); showAlert('The saved character was added to Player Tool.', title);
+              setCharacters(dedupePlayerCharacters([...characters, incoming])); setActiveTab(characters.length); showAlert('The saved character was added to Player Tool.', title);
             }
             return true;
           };

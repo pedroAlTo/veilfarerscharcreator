@@ -1,7 +1,20 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.49",
+  "currentVersion": "v59.50",
   "entries": [
+    {
+      "version": "v59.50",
+      "date": "2026-07-19",
+      "title": "Authenticated tool reload-loop, character identity and Firestore initialization hotfix",
+      "changes": [
+        "Removed registry-triggered page reloads from Player Tool and Keeper Tool; authenticated Vault refreshes now update Player Tool state in place instead of restarting either application.",
+        "Added deterministic Player Tool character deduplication by permanent Character ID, with a controlled pending-to-final ID migration so completing or reopening one Vault character updates the existing tab rather than creating a copy.",
+        "Moved the current Character ID from the floating corner callout into the shared portal navigation on every page.",
+        "Serialized Keeper Tool Firebase initialization and merged Firestore settings to prevent repeated initialization, host-override warnings and loading loops.",
+        "Deferred Keeper table listing until Netlify Identity has emitted an authenticated Keeper user.",
+        "Documented that Segment and Bugsnag ERR_BLOCKED_BY_CLIENT messages originate from the Netlify Deploy Preview interface or browser privacy blocking, not from VeilFarers application code."
+      ]
+    },
     {
       "version": "v59.49",
       "date": "2026-07-18",
@@ -557,5 +570,5 @@
       ]
     }
   ],
-  "version": "v59.49"
+  "version": "v59.50"
 }

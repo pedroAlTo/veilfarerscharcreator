@@ -1030,7 +1030,7 @@
 </div>
 <script>
 (function () {
-  var db = null, unsub = null, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false;
+  var db = null, firebaseInitPromise = null, unsub = null, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false;
   function $id(id) { return document.getElementById(id); }
   function setStatus(m) { var e = $id('vf-live-status'); if (e) e.textContent = m; }
   function toPlayer(c, idx) {
@@ -1123,15 +1123,22 @@
     catch(e){console.error('listTables',e);setStatus('Cannot list tables: '+e.message);if(box)box.innerHTML='';}
   }
   async function initFb() {
-    var response = await fetch('/api/firebase-config', { cache: 'no-store' });
-    if (!response.ok) throw new Error('Firebase configuration unavailable (' + response.status + ').');
-    var cfg = await response.json();
-    firebaseRuntimeConfig = cfg;
-    if (!firebase.apps.length) firebase.initializeApp(cfg);
-    await window.VFTableAccess.ensureFirebaseAuth(firebase.auth());
-    db = firebase.firestore();
-    try { db.settings({ ignoreUndefinedProperties: true }); }
-    catch (settingsErr) { console.warn('Firestore settings already active.', settingsErr); }
+    if (db) return db;
+    if (firebaseInitPromise) return firebaseInitPromise;
+    firebaseInitPromise = (async function(){
+      var response = await fetch('/api/firebase-config', { cache: 'no-store' });
+      if (!response.ok) throw new Error('Firebase configuration unavailable (' + response.status + ').');
+      var cfg = await response.json();
+      firebaseRuntimeConfig = cfg;
+      if (!firebase.apps.length) firebase.initializeApp(cfg);
+      await window.VFTableAccess.ensureFirebaseAuth(firebase.auth());
+      var instance = firebase.firestore();
+      try { instance.settings({ ignoreUndefinedProperties: true, merge: true }); }
+      catch (settingsErr) { console.warn('Firestore settings already active.', settingsErr); }
+      db = instance;
+      return db;
+    })().catch(function(error){ firebaseInitPromise = null; throw error; });
+    return firebaseInitPromise;
   }
   function bytesBase64(bytes) { var binary=''; Array.prototype.forEach.call(bytes,function(b){binary+=String.fromCharCode(b);}); return btoa(binary); }
   function base64Bytes(value) { return Uint8Array.from(atob(String(value||'')),function(ch){return ch.charCodeAt(0);}); }
@@ -1325,8 +1332,10 @@
   var inviteDefaults=window.VFTableAccess?window.VFTableAccess.inviteFromUrl():{table:'',invite:''};
   if(inviteDefaults.table&&$id('vf-session-id'))$id('vf-session-id').value=inviteDefaults.table;
   if(inviteDefaults.invite&&$id('vf-session-invite'))$id('vf-session-invite').value=inviteDefaults.invite;
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { listTables(); });
-  else listTables();
+  var vfKeeperTablesStarted=false;
+  function startKeeperTables(){if(vfKeeperTablesStarted)return;vfKeeperTablesStarted=true;listTables();}
+  window.addEventListener('veilfarers:keeper-user',startKeeperTables,{once:true});
+  if(window.VF_KEEPER_USER)startKeeperTables();
 })();
 </script>
 

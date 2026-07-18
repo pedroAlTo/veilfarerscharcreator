@@ -1,53 +1,48 @@
-VEILFARERS PORTAL v59.49 — HOTFIX DEPLOY
-========================================
+VEILFARERS PORTAL v59.50 — START HERE
+Date: 2026-07-19
 
 PURPOSE
 -------
-Fix the observed Deploy Preview failures:
-- Netlify Identity login frame blocked by CSP;
-- authenticated Functions returning 401 because the browser did not send the Identity JWT;
-- Character Vault direct Firestore permission errors;
-- 3D dice preparation modal remaining open;
-- transparent/incorrectly positioned Player Tool connection alerts;
-- Netlify npm install attempting an inaccessible internal registry.
+Code-only hotfix for authenticated Player/Keeper reload loops, duplicate Player characters, pending-to-final Character ID migration, Character ID placement and repeated Keeper Firebase initialization.
 
 DEPLOY
 ------
-1. Commit the CONTENTS of this folder/ZIP to the test branch. index.html must be at repository root.
-2. Confirm package-lock.json and .npmrc reference registry.npmjs.org only.
-3. Let Netlify create a new Deploy Preview.
-4. Do not deploy Firestore Rules merely to fix Character Vault. v59.49 Vault uses /api/character-vault server-side.
-5. Hard-refresh the preview after it publishes.
+1. Create or use a clean test branch based on the intended current base.
+2. Replace the branch contents with the contents of VeilFarers_Portal_v59.50.zip. index.html must remain at repository root.
+3. Commit and push the complete release.
+4. Confirm Netlify dependency installation uses registry.npmjs.org.
+5. Hard-refresh the Deploy Preview after publication.
+6. Sign out and sign in once before authenticated QA.
 
-REQUIRED ENVIRONMENT
---------------------
-FIREBASE_API_KEY
-FIREBASE_AUTH_DOMAIN
-FIREBASE_PROJECT_ID
-FIREBASE_STORAGE_BUCKET
-FIREBASE_MESSAGING_SENDER_ID
-FIREBASE_APP_ID
-FIREBASE_MEASUREMENT_ID
-FIREBASE_PUBLIC_TABLE_DIRECTORY=false
-FIREBASE_SERVICE_ACCOUNT_JSON
+DO NOT
+------
+- Do not deploy project-wide Firestore Rules merely to test this code hotfix.
+- Do not copy only player-tool.html or keeper-tool.html; the fix also changes character-registry.js, character-sync-adapter.js, portal.js and portal.css.
+- Do not relax the portal CSP for Segment/Bugsnag Deploy Preview analytics.
+- Do not modify assets/3d-dice.
 
-FIRST TESTS
------------
-1. Open Log-in and verify the modal opens without a frame-src CSP error.
-2. Sign in, then inspect Network:
-   - /api/character-vault should return 200;
-   - /api/firebase-auth-token should return 200 when connecting to a table;
-   - requests should include an Authorization bearer header.
-3. Create and finish a disposable character. Confirm Vault reports cloud sync.
-4. Refresh/open another browser session with the same account and confirm the character appears.
-5. Sign in as another account and confirm it does not appear.
-6. Test 3D dice loading. The modal must close at Ready or expose Close/Use 2D; after 20 seconds it must become an error state.
-7. Trigger a connection error. It must have an opaque dark-red background and sit below the navigation.
+MANDATORY QA
+------------
+PLAYER TOOL
+1. Sign in and open Player Tool.
+2. Confirm the main loading shell completes once and does not restart.
+3. Open the same Vault character repeatedly; one Player tab must remain.
+4. Refresh Vault; the open character should update in place.
+5. Complete/sync a pending character; PENDING-* must become one VF-###### record.
+6. Change current HP/Stress before a build refresh and confirm current values remain.
 
-FIRESTORE RULES
----------------
-firestore_v59.49.rules is included for the coordinated table-security cutover. Rules are project-wide. Character Vault no longer requires this Rules deployment, but real-time table membership security still does.
+CHARACTER ID
+7. Confirm the current VF-###### appears in shared navigation.
+8. Confirm there is no fixed bottom-corner Character ID callout.
 
-ROLLBACK
---------
-Redeploy the complete v59.48 artifact. Keep code and project-wide Firestore Rules decisions coordinated.
+KEEPER TOOL
+9. Sign in and open Keeper Tool.
+10. Confirm tables load once, no page reload loop occurs and no Firestore host-override warning appears.
+11. Connect to a disposable table, disconnect/reconnect and verify only one live listener is reflected in behavior.
+
+CONSOLE
+12. Segment/Bugsnag ERR_BLOCKED_BY_CLIENT under cdp/?deployID are Netlify preview UI noise. Investigate only errors that reference VeilFarers files, Firestore or /api endpoints.
+
+ACCEPTANCE
+----------
+Merge only after Player and Keeper remain stable for several minutes while authenticated and repeated Vault/table operations produce no reload.

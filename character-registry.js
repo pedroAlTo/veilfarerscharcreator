@@ -225,15 +225,17 @@
     let record=saveLocalData(id,{...characterData},opts);
     if(!isFinal(id)){
       try{
+        const previousCharacterId=id;
         const finalId=await allocate();
         const registry=read();
-        delete registry[id];
+        delete registry[previousCharacterId];
         write(registry);
         id=finalId;
         const data={...(record.characterData||{})};
         if(data.creatorState)data.creatorState={...data.creatorState,characterId:id};
         if(data.sheetPayload)data.sheetPayload={...data.sheetPayload,characterId:id,fields:{...(data.sheetPayload.fields||{}),character_id:id}};
-        record=saveLocalData(id,data,{...opts,source:opts.source||'id-allocation'});
+        record=saveLocalData(id,data,{...opts,source:opts.source||'id-allocation',emit:false});
+        emit(record,opts.source||'id-allocation',{previousCharacterId});
       }catch(error){
         console.warn('Character ID allocation deferred:',error.message);
         record=saveLocalData(id,record.characterData,{...opts,select:true,emit:false,cloudState:'deferred',syncError:error.message});
@@ -349,19 +351,15 @@
     id=normalizeId(id);
     const record=id&&get(id);
     if(record&&record.status==='trashed')id='';
-    let element=document.getElementById('vf-character-id-badge');
-    if(!id){element&&element.remove();return;}
-    if(!element){element=document.createElement('div');element.id='vf-character-id-badge';document.body.appendChild(element);}
-    element.innerHTML=`<span>CHARACTER ID</span><strong>${cleanText(id)}</strong>`;
+    const element=document.getElementById('vf-nav-character-id');
+    const value=element&&element.querySelector('strong');
+    if(!element)return;
+    element.hidden=!id;
+    if(value)value.textContent=cleanText(id);
+    element.title=id?`Current character: ${cleanText(id)}`:'';
   }
 
-  function injectStyle(){
-    if(document.getElementById('vf-character-registry-style'))return;
-    const style=document.createElement('style');
-    style.id='vf-character-registry-style';
-    style.textContent='#vf-character-id-badge{position:fixed;right:18px;bottom:18px;z-index:9997;background:rgba(8,12,18,.94);border:1px solid rgba(233,192,104,.7);border-radius:12px;padding:8px 12px;box-shadow:0 8px 28px #0008;color:#f5e8bd;font:600 12px/1.2 system-ui;pointer-events:none}#vf-character-id-badge span{display:block;font-size:8px;letter-spacing:.16em;opacity:.68;margin-bottom:3px}#vf-character-id-badge strong{letter-spacing:.08em}@media(max-width:600px){#vf-character-id-badge{right:10px;bottom:10px}}';
-    document.head.appendChild(style);
-  }
+  function injectStyle(){ /* Character ID presentation is owned by the shared portal navigation. */ }
 
   if(bc)bc.onmessage=event=>{
     const data=event.data;

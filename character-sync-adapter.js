@@ -4,10 +4,37 @@
   const PLAYER_KEY='veilfarers-player-tool-characters';
   const stableDroneId=(characterId,index)=>`drone-${characterId}-${index}`;
 
-  function parseList(){
-    try{const value=JSON.parse(localStorage.getItem(PLAYER_KEY)||'[]');return Array.isArray(value)?value:[];}catch(_){return [];}
+  const norm=value=>String(value||'').trim().toUpperCase();
+  const isPending=value=>norm(value).startsWith('PENDING-');
+  const identityKey=item=>item&&item.entityType==='drone'?`DRONE:${norm(item.id||item.characterId)}`:norm(item&&item.characterId||item&&item.id);
+  const fingerprint=item=>[item&&item.name,item&&item.playerName,item&&item.class,item&&item.subclass,item&&item.heritage,item&&item.background].map(value=>String(value||'').trim().toLowerCase()).join('|');
+  function mergeRuntime(existing,incoming){
+    const merged={...(existing||{}),...(incoming||{})};
+    ['hp','stress','hope','effort','resolve'].forEach(key=>{if(existing&&existing[key]&&incoming&&incoming[key])merged[key]={...incoming[key],current:existing[key].current};});
+    ['shields','armorMarked','conditions','savedNotes','signalState'].forEach(key=>{if(existing&&existing[key]!=null)merged[key]=existing[key];});
+    return merged;
   }
-  function writeList(list){localStorage.setItem(PLAYER_KEY,JSON.stringify(list));}
+  function dedupeList(input){
+    const out=[];const byKey=new Map();
+    (Array.isArray(input)?input:[]).forEach(item=>{
+      if(!item)return;
+      const key=identityKey(item);
+      if(key&&byKey.has(key)){
+        const index=byKey.get(key);out[index]=mergeRuntime(item,{...out[index],...item});return;
+      }
+      if(item.entityType!=='drone'&&!isPending(item.characterId||item.id)){
+        const fp=fingerprint(item);
+        const pendingIndex=out.findIndex(candidate=>candidate&&candidate.entityType!=='drone'&&isPending(candidate.characterId||candidate.id)&&fingerprint(candidate)===fp);
+        if(fp.replace(/\|/g,'')&&pendingIndex>=0){out[pendingIndex]=mergeRuntime(out[pendingIndex],item);byKey.set(key,pendingIndex);return;}
+      }
+      if(key)byKey.set(key,out.length);out.push(item);
+    });
+    return out;
+  }
+  function parseList(){
+    try{const value=JSON.parse(localStorage.getItem(PLAYER_KEY)||'[]');return dedupeList(Array.isArray(value)?value:[]);}catch(_){return [];}
+  }
+  function writeList(list){localStorage.setItem(PLAYER_KEY,JSON.stringify(dedupeList(list)));}
 
   function droneRecord(owner,drone,index){
     const modules=(drone.modules||[]).map(item=>typeof item==='string'?{name:item}:{...item});
@@ -43,9 +70,9 @@
   }
 
   function mergeOwner(existing,mapped,record,source){
-    const ownerId=existing&&existing.id?existing.id:(mapped.id||record.characterId||('char-'+Date.now()));
+    const ownerId=record.characterId||mapped.id||(existing&&existing.id)||('char-'+Date.now());
     const merged={...(existing||{}),...mapped,id:ownerId,characterId:record.characterId,registrySource:source||record.source||'registry'};
-    const preserveRuntime=!!existing&&String(source||'').startsWith('level-up');
+    const preserveRuntime=!!existing;
     if(preserveRuntime){
       ['hp','stress','hope','effort','resolve'].forEach(key=>{merged[key]=preserveTrack(existing,mapped,key);});
       if(existing.shields!=null)merged.shields=existing.shields;
@@ -66,7 +93,7 @@
     }
   }
 
-  function applyToPlayer(record,source){
+  function applyToPlayer(record,source,previousCharacterId){
     if(!record)return;
     if(record.status==='trashed'){removeTrashed(record);return;}
     const payload=record?.characterData?.sheetPayload;
@@ -75,9 +102,12 @@
       const mapped=window.veilfarersImportSheet(payload,window.VF_CANON||window.VeilFarersCanonical);
       if(!mapped)return;
       mapped.characterId=record.characterId;
-      const list=parseList();
-      const index=list.findIndex(item=>item&&item.entityType!=='drone'&&item.characterId===record.characterId);
-      const existing=index>=0?list[index]:null;
+      let list=parseList();
+      const previousId=norm(previousCharacterId);
+      const previousExisting=previousId?list.find(item=>item&&item.entityType!=='drone'&&norm(item.characterId||item.id)===previousId):null;
+      if(previousId&&previousId!==norm(record.characterId))list=list.filter(item=>!(item&&((item.entityType!=='drone'&&norm(item.characterId||item.id)===previousId)||(item.entityType==='drone'&&norm(item.operatorId)===previousId))));
+      const index=list.findIndex(item=>item&&item.entityType!=='drone'&&norm(item.characterId||item.id)===norm(record.characterId));
+      const existing=index>=0?list[index]:previousExisting;
       const owner=mergeOwner(existing,mapped,record,source);
       if(index>=0)list[index]=owner;else list.push(owner);
 
@@ -112,17 +142,13 @@
   function start(){
     const registry=window.VeilFarersCharacterRegistry;
     if(!registry)return;
-    registry.subscribe(({record,source})=>{
+    registry.subscribe(({record,source,previousCharacterId})=>{
       if(!record)return;
       applyToSheet(record);
-      applyToPlayer(record,source);
-      const path=location.pathname;
-      const playerExternal=path.endsWith('/player-tool.html')&&!String(source||'').startsWith('player-tool');
-      const keeperExternal=path.endsWith('/keeper-tool.html')&&!String(source||'').startsWith('keeper-tool');
-      if(playerExternal||keeperExternal){
-        clearTimeout(window.__vfRegistryReload);
-        window.__vfRegistryReload=setTimeout(()=>location.reload(),350);
-      }
+      applyToPlayer(record,source,previousCharacterId);
+      // Player Tool listens to veilfarers:player-record-updated and updates in place.
+      // Never reload Player or Keeper pages from a cloud/registry event: authenticated
+      // Vault refreshes would otherwise create an endless reload cycle.
     });
     const current=registry.get();
     if(current){applyToSheet(current);applyToPlayer(current,'initial-registry');}

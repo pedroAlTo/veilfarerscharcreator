@@ -21,6 +21,7 @@
       <a href="/downloads.html">Downloads</a>
       <a href="/feedback.html">Feedback</a>
       <span class="spacer"></span>
+      <span id="vf-nav-character-id" class="vf-nav-character-id" hidden aria-label="Current Character ID"><span>Character</span><strong></strong></span>
       <a id="vf-nav-account" class="vf-nav-account" href="/login.html"><span class="vf-account-dot" aria-hidden="true"></span><span class="vf-account-label">Log-in</span></a>
       <a id="vf-nav-admin" href="/admin.html" hidden>Admin</a>
     </div>
@@ -76,6 +77,23 @@
   window.addEventListener('resize',setPortalHeight,{passive:true});
   if('ResizeObserver' in window)new ResizeObserver(updateScroller).observe(track);
   setTimeout(updateScroller,50);
+
+  const characterBadge=nav.querySelector('#vf-nav-character-id');
+  const characterBadgeValue=characterBadge&&characterBadge.querySelector('strong');
+  function currentCharacterId(){
+    try{return String(localStorage.getItem('veilfarers.character.currentId.v1')||'').trim().toUpperCase();}catch(_){return '';}
+  }
+  function renderCharacterId(id=currentCharacterId()){
+    id=String(id||'').trim().toUpperCase();
+    if(!characterBadge)return;
+    characterBadge.hidden=!id;
+    if(characterBadgeValue)characterBadgeValue.textContent=id;
+    characterBadge.title=id?`Current character: ${id}`:'';
+    setTimeout(updateScroller,0);
+  }
+  renderCharacterId();
+  window.addEventListener('veilfarers:character-updated',event=>renderCharacterId(event.detail&&event.detail.record&&event.detail.record.characterId||currentCharacterId()));
+  window.addEventListener('storage',event=>{if(event.key==='veilfarers.character.currentId.v1')renderCharacterId(event.newValue||'');});
 
   const account=nav.querySelector('#vf-nav-account');
   const accountLabel=account.querySelector('.vf-account-label');
