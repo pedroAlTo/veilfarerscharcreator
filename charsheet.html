@@ -2469,6 +2469,8 @@ body.vf-full-sheet .path-switch-wrap{box-sizing:border-box}
 }
 </style>
 
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
 </head>
 
 
@@ -2518,8 +2520,13 @@ body.vf-full-sheet .path-switch-wrap{box-sizing:border-box}
     <div class="toolbar-section io-tools" data-label="Files">
       <div class="tool-subgroup" aria-label="JSON import and export">
         <span class="sub-label">JSON</span>
-        <button id="importBtn" title="Load/import a character JSON backup">Load</button>
+        <button id="importBtn" title="Load a Charsheet JSON or a compatible Character Creator JSON">Load</button>
         <button id="exportBtn" title="Save/export this character as a JSON backup">Save</button>
+      </div>
+      <div class="tool-subgroup" aria-label="Transfer this character to table tools">
+        <span class="sub-label">Send To</span>
+        <button id="sendPlayerToolBtn" title="Transfer the current filled Charsheet to Player Tool">Player Tool</button>
+        <button id="sendKeeperToolBtn" title="Transfer the current filled Charsheet to Keeper Tool">Keeper Tool</button>
       </div>
       <div class="tool-subgroup" aria-label="Visual PDF export">
         <span class="sub-label">Visual PDF</span>
@@ -6698,14 +6705,28 @@ document.getElementById("jsonInput")?.addEventListener("change", async e=>{
   if(!file) return;
   try {
     const data = JSON.parse(await file.text());
-    const fields = data.fields || data.store || data;
-    const importedTracks = data.tracks || {};
-    if (!fields || typeof fields !== "object") throw new Error("Invalid character JSON");
-    localStorage.setItem(LS_FIELDS, JSON.stringify(fields));
-    localStorage.setItem(LS_TRACKS, JSON.stringify(importedTracks));
+    let converted=null;
+    if(!window.VeilFarersSheetBridge && !(data && data.fields)) throw new Error("Creator compatibility bridge is unavailable.");
+    if(data && data.creatorState && typeof data.creatorState === "object"){
+      converted=await window.VeilFarersSheetBridge.convert(data.creatorState);
+    }else if(data && data.payload && data.payload.creatorState && typeof data.payload.creatorState === "object"){
+      converted=await window.VeilFarersSheetBridge.convert(data.payload.creatorState);
+    }else if(data && data.fields && typeof data.fields === "object"){
+      converted={fields:data.fields,tracks:data.tracks||{}};
+    }else if(data && data.payload && data.payload.fields){
+      converted={fields:data.payload.fields,tracks:data.payload.tracks||{}};
+    }else{
+      converted=await window.VeilFarersSheetBridge.convert(data);
+    }
+    if (!converted || !converted.fields || typeof converted.fields !== "object") throw new Error("Invalid or unsupported character JSON");
+    localStorage.setItem(LS_FIELDS, JSON.stringify(converted.fields));
+    localStorage.setItem(LS_TRACKS, JSON.stringify(converted.tracks||{}));
+    localStorage.setItem("veilfarers.sheet.latestPayload.v1",JSON.stringify({app:"Veilfarers Character Sheet",version:"2.80-RC3.2",exportedAt:new Date().toISOString(),fields:converted.fields,tracks:converted.tracks||{}}));
     location.reload();
   } catch(err) {
     alert("No se pudo importar el JSON: " + err.message);
+  } finally {
+    e.target.value="";
   }
 });
 
@@ -6727,6 +6748,22 @@ function captureLiveFields(){
   });
   saveFields();
 }
+
+function currentTransferPayload(){
+  captureLiveFields();
+  const payload={app:"Veilfarers Character Sheet",version:"2.80-RC3.2",exportedAt:new Date().toISOString(),fields:Object.assign({},store||{}),tracks:JSON.parse(JSON.stringify(tracks||{}))};
+  localStorage.setItem("veilfarers.sheet.latestPayload.v1",JSON.stringify(payload));
+  return payload;
+}
+function sendSheetToTool(target){
+  const payload=currentTransferPayload();
+  const envelope={schema:"veilfarers.character-transfer/1",source:"charsheet",target,createdAt:new Date().toISOString(),payload};
+  localStorage.setItem("veilfarers.character.transfer.v1",JSON.stringify(envelope));
+  const href=target==="keeper-tool"?"/keeper-tool.html?from=sheet&import=1":"/player-tool.html?from=sheet&import=1";
+  window.location.href=href;
+}
+document.getElementById("sendPlayerToolBtn")?.addEventListener("click",()=>sendSheetToTool("player-tool"));
+document.getElementById("sendKeeperToolBtn")?.addEventListener("click",()=>sendSheetToTool("keeper-tool"));
 
 function valueForPrint(el){
   const k = el.getAttribute('data-f');

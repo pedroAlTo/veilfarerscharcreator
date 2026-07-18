@@ -1,0 +1,10 @@
+VEILFARERS PORTAL v59.46
+
+1. Deploy ZIP contents directly to the Netlify publish root.
+2. Keep the existing Firebase public environment variables.
+3. Add FIREBASE_SERVICE_ACCOUNT_JSON as a protected Netlify environment variable.
+4. Verify /api/firebase-config and POST /api/allocate-character-id.
+5. Create/import a character and confirm a visible VF-###### ID.
+6. Apply a Level Up and confirm the same ID and new values in Charsheet, Player Tool, and Keeper Tool.
+
+Never expose or commit FIREBASE_SERVICE_ACCOUNT_JSON.

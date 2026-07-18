@@ -54,11 +54,14 @@
     var f = json.fields;
     var tracks = json.tracks || {};
     var maxT = (tracks.max || {});
+    var currentT = (tracks.current || {});
 
-    // path detection: creator uses s_* fields for Sleeping, a_* for Awakened
+    // Prefer the explicit Charsheet path. Both path faces can contain cached
+    // autofill fields, so detecting the path from s_*/a_* content alone is unsafe.
+    var explicitPath = S(f.chosen_path || f.path).trim().toLowerCase();
     var hasSleeper = !!(f.s_featname || f.s_move_0_n || f.s_exp_0);
-    var hasAwakened = !!(f.a_featname || f.a_domain_ref && f.a_domain_ref.indexOf('do not use') === -1);
-    var path = hasSleeper ? 'sleeping' : 'awakened';
+    var hasAwakened = !!(f.a_featname || (f.a_domain_ref && f.a_domain_ref.indexOf('do not use') === -1));
+    var path = explicitPath.indexOf('sleep') !== -1 ? 'sleeping' : (explicitPath.indexOf('awaken') !== -1 ? 'awakened' : (hasSleeper && !hasAwakened ? 'sleeping' : 'awakened'));
 
     // experiences: sleeper s_exp_*, awakened a_exp_*
     var exps = [];
@@ -138,13 +141,14 @@
         agility: num(f.tr_agility), strength: num(f.tr_strength), finesse: num(f.tr_finesse),
         instinct: num(f.tr_instinct), presence: num(f.tr_presence), knowledge: num(f.tr_knowledge)
       },
-      hp: { current: num(maxT.hp, num(f.base_hp_max, 6)), max: num(maxT.hp, num(f.base_hp_max, 6)) },
-      stress: { current: 0, max: num(maxT.stress, num(f.base_stress_max, 6)) },
-      hope: { current: 2, max: 6 },
-      resolve: { current: num(maxT.s_resolve, num(f.auto_resolve_floor, 2)), max: num(maxT.s_resolve, num(f.auto_resolve_floor, 2)) },
-      effort: { current: 2, max: 6 },
+      proficiency: num(f.prof, 1), affiliation: S(f.affiliation), standing: S(f.aff_standing), reputation: S(f.aff_reputation),
+      hp: { current: num(currentT.hp, num(maxT.hp, num(f.base_hp_max, 6))), max: num(maxT.hp, num(f.base_hp_max, 6)) },
+      stress: { current: num(currentT.stress, 0), max: num(maxT.stress, num(f.base_stress_max, 6)) },
+      hope: { current: num(currentT.a_hope, path === 'awakened' ? 2 : 0), max: num(maxT.a_hope, 6) },
+      resolve: { current: num(currentT.s_resolve, num(maxT.s_resolve, num(f.auto_resolve_floor, 2))), max: num(maxT.s_resolve, num(f.auto_resolve_floor, 2)) },
+      effort: { current: num(currentT.s_effort, path === 'sleeping' ? 2 : 0), max: num(maxT.s_effort, 6) },
       thresholds: { major: thrMajor, severe: thrSevere },
-      evasion: num(f.evasion, 10), shields: num(f.armor_score, 0),
+      evasion: num(f.evasion, 10), shields: num(currentT.armor_slots, num(maxT.armor_slots, num(f.armor_score, 0))), armorMax: num(maxT.armor_slots, num(f.armor_score, 0)),
       wealth: num(f.wealth, 1), credits: num(f.credits, 0),
       experiences: exps,
       moves: moves,
@@ -152,6 +156,8 @@
         ? (S(f.s_featname) + (f.s_feattext ? ': ' + f.s_feattext : ''))
         : (S(f.a_featname) + (f.a_feattext ? ': ' + f.a_feattext : ''))),
       classFeature: S(f.features),
+      playerNotes: [f.seed_motive, f.seed_afraid, f.seed_loss, f.seed_crew, f.a_quick_notes, f.s_anchor, f.aff_notes, f.equipment_notes].filter(Boolean).join('\n\n'),
+      domains: S(f.a_domain_ref),
       ancestryGift: S(f.ancestry_gift), communityGift: S(f.community_gift),
       armor: { name: S(f.armor_name), thresholds: S(f.armor_thr), feature: S(f.armor_feat), tier: S(f.armor_tier) },
       augments: augments,
@@ -253,6 +259,6 @@
     };
   }
 
-  if (typeof window !== 'undefined') { window.veilfarersImportCreator = importCreator; window.veilfarersImportCreatorState = importCreatorState; }
-  if (typeof module !== 'undefined' && module.exports) module.exports = { importCreator: importCreator, importCreatorState: importCreatorState };
+  if (typeof window !== 'undefined') { window.veilfarersImportCreator = importCreator; window.veilfarersImportSheet = importCreator; window.veilfarersImportCreatorState = importCreatorState; }
+  if (typeof module !== 'undefined' && module.exports) module.exports = { importCreator: importCreator, importSheet: importCreator, importCreatorState: importCreatorState };
 })();

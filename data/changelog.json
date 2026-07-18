@@ -1,7 +1,46 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.43",
+  "currentVersion": "v59.46",
   "entries": [
+    {
+      "version": "v59.46",
+      "date": "2026-07-18",
+      "title": "Canonical Level Up and system Character IDs",
+      "changes": [
+        "Added visible, read-only system Character IDs shared by Creator, Charsheet, Player Tool, and Keeper Tool.",
+        "Added central sequential VF-###### allocation through a Netlify Function and Firestore transactional counter.",
+        "Rebuilt Level Up from the Corebook two-slot advancement menu and Tier Achievements.",
+        "Level Up writes the updated character to the shared registry and propagates the Charsheet payload to Player/Keeper tools.",
+        "Legacy or offline characters receive a temporary Pending ID until central allocation succeeds."
+      ]
+    },
+    {
+      "version": "v59.45",
+      "date": "2026-07-18",
+      "title": "Canonical Creator → Charsheet → Player/Keeper transfer pipeline",
+      "changes": [
+        "Fixed the Character Creator transfer bridge to write the actual Charsheet v2_40 storage keys instead of the unused v2_41 keys.",
+        "Character Creator now exports a portable transfer envelope containing both the editable Creator state and a Charsheet-compatible fields/tracks payload.",
+        "Charsheet JSON import now accepts native Charsheet JSON, portable Creator JSON and legacy raw Creator state; all are normalized into the Charsheet schema.",
+        "Added explicit transfer controls: Creator → Charsheet, Charsheet → Player Tool, Charsheet → Keeper Tool, plus Charsheet import buttons inside both table tools.",
+        "Player Tool now preserves current Charsheet HP, Stress, Hope/Effort, Resolve and Armor Slot state together with maximum values, Proficiency and affiliation metadata.",
+        "Keeper Tool imports the Charsheet character model with resources, thresholds, Evasion, Experiences, equipment and the full embedded sheet character.",
+        "Validated the transfer chain for all 18 Class/Path combinations and kept compatibility with older Creator JSON files."
+      ]
+    },
+    {
+      "version": "v59.44",
+      "date": "2026-07-18",
+      "title": "Book-accurate Drone Grades, Shields and live upgrade modifiers",
+      "changes": [
+        "Corrected the Drone profile catalogue to the three printed Corebook Grades and five Rust & Steel specialized frames, with the exact Tier, HP, Evasion, Major/Severe thresholds, Armor Slots and module slots from the books.",
+        "Re-labelled drone Armor Slots as the active Shields track in Player Tool while retaining Armor Slots as the printed capacity value.",
+        "Expanded installation options to the complete 31-module Corebook collection plus the Rust & Steel upgrades that directly modify Drone statistics.",
+        "Installed upgrades now recalculate permanent HP, Evasion, thresholds and Shields automatically; added manual situational toggles for conditional Evasion and a consumable control for one-attack Evasion bonuses.",
+        "Enforced module access, slot limits and the Reinforced Plating / Low-Profile Frame incompatibility outside Experimental access.",
+        "Grouped the selector into Corebook Drone Grades and Rust & Steel Specialized Frames in printed book order."
+      ]
+    },
     {
       "version": "v59.43",
       "date": "2026-07-18",
@@ -180,7 +219,7 @@
       "date": "2026-07-17",
       "title": "Box renderer proportion refinement",
       "changes": [
-        "Refined 3D Box mode from a wide 16:9 frame to a 3:2 acquisition chamber matching the renderer\u2019s original physical arena more closely.",
+        "Refined 3D Box mode from a wide 16:9 frame to a 3:2 acquisition chamber matching the renderer’s original physical arena more closely.",
         "Capped Box width against both viewport width and viewport height so the canvas no longer stretches when opening on short desktop or landscape screens.",
         "Kept the 4:3 portrait-phone Box frame and left full-viewport Overlay sizing unchanged.",
         "Preserved the quantum targeting HUD, settled-die tracking, aperture lock, probability-branch shutdown, dice physics, online deployment and local testing behavior."
@@ -347,7 +386,7 @@
       "date": "2026-07-16",
       "changes": [
         "Added a dedicated Resolve Moves panel beside Sleeper Actions in Player Tool.",
-        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/\u2212 controls.",
+        "Made Sleeper Actions, Resolve Moves, ancestry gifts, class features, community features and path features collapsed by default with custom +/− controls.",
         "Added shared Resolve Move data for every Sleeping class, with approved Soldier and Vanguard review-draft moves included for Player Tool use.",
         "Added operational Resolve spending: fixed and variable costs, d4 Resolve Dice, local history and Firebase table callouts.",
         "Kept compact titles and short descriptions visible while full rules and executable controls remain behind expansion."
@@ -475,5 +514,5 @@
       ]
     }
   ],
-  "version": "v59.23"
+  "version": "v59.46"
 }

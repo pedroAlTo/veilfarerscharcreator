@@ -1,0 +1,17 @@
+VEILFARERS PORTAL v59.46 — VALIDATION
+Date: 2026-07-18
+
+PASS — JSON catalog parsing.
+PASS — Creator, Charsheet, Player Tool, and Keeper Tool contain no duplicate IDs.
+PASS — Inline JavaScript syntax validation.
+PASS — character-registry.js, character-sync-adapter.js, level-up.js, and sheet-bridge.js syntax validation.
+PASS — Character Registry allocation unit test with a simulated central VF-###### response.
+PASS — Character ID is displayed by a non-editable UI badge.
+PASS — Level Up contains all Corebook advancement categories and Tier Achievement handling.
+PASS — Charsheet bridge transfers ID, experience bonuses, HP/Stress/Evasion increases, Technology Access, Resolve data, vault powers, and advancement history.
+PASS — Exact assets/3d-dice tree remains unchanged from v59.45.
+PASS — Protected Player Tool functions remain unchanged.
+PASS — ZIP integrity and root layout validation.
+
+PRODUCTION CHECK REQUIRED
+Production Firebase/Netlify credentials are unavailable in this build environment. After deployment, verify one real ID allocation and one cross-device Level Up synchronization.

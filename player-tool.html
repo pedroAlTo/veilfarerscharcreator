@@ -389,6 +389,8 @@
         html.vf-disable-dice-lock .vf-dice3d-outcome { display:none !important; }
 
     </style>
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
 </head>
 <body>
     <div id="root">
@@ -1005,22 +1007,105 @@
           const thresholds = parseThresholdPair(stats.thresholds || stats.thr);
           return {
             grade,
+            profileType:(grade && grade.profileType) || ((grade && grade.pack) === 'core' ? 'grade' : 'frame'),
+            tierLabel:(grade && grade.tier && (grade.tier.raw || grade.tier.name)) || '',
             hp:Number(stats.hp)||1,
             evasion:Number(stats.evasion != null ? stats.evasion : stats.eva)||10,
             thresholds,
-            armor:Number(stats.armor)||0,
-            moduleSlots:Number(stats.modules != null ? stats.modules : stats.slots)||0,
-            availability:String(stats.availability || stats.access || '')
+            armor:Number(stats.armorSlots != null ? stats.armorSlots : stats.armor)||0,
+            moduleSlots:Number(stats.moduleSlots != null ? stats.moduleSlots : (stats.modules != null ? stats.modules : stats.slots))||0,
+            availability:String(stats.availability || stats.access || ''),
+            moduleAccessRank:Number((grade && grade.moduleAccessRank) || 1)
           };
         };
-        const droneModuleAccessRank = (gradeValue) => {
-          const name = normalizeRuleName((findDroneGrade(gradeValue) || {}).name);
-          if (name === 'experimental drone' || name === 'black site chimera') return 3;
-          if (name === 'military drone' || name === 'house sentinel' || name === 'war frame') return 2;
-          return 1;
+        const droneModuleAccessRank = (gradeValue) => droneGradeStats(gradeValue).moduleAccessRank;
+        const droneModuleMinimumRank = (module) => {
+          const item = findDroneModule(module) || module || {};
+          return Math.max(1, Number(item.minimumAccessRank || (item.tier && item.tier.rank) || 1));
+        };
+        const droneModuleAccessLabel = (module) => {
+          const item = findDroneModule(module) || module || {};
+          return item.accessLabel || (item.tier && item.tier.name) || (item.pack === 'rust-and-steel' ? 'Rust & Steel upgrade' : 'Common');
         };
         const droneModuleSlots = (module) => Math.max(0, Number((findDroneModule(module) || module || {}).slots) || 0);
-        const droneModuleAllowed = (module, gradeValue) => Number((((findDroneModule(module) || module || {}).tier || {}).rank) || 1) <= droneModuleAccessRank(gradeValue);
+        const droneModuleAllowed = (module, gradeValue) => droneModuleMinimumRank(module) <= droneModuleAccessRank(gradeValue);
+        const droneModuleConflicts = (module, installed, gradeValue) => {
+          const item = findDroneModule(module) || module || {};
+          const accessRank = droneModuleAccessRank(gradeValue);
+          const installedItems = (installed || []).map(value => findDroneModule(value) || value || {}).filter(Boolean);
+          const installedNames = new Set(installedItems.map(value => String(value.name || '')));
+          const req = item.requirements || {};
+          if (Array.isArray(req.incompatible) && req.incompatible.length && !(req.incompatibleUnlessAccessRank && accessRank >= Number(req.incompatibleUnlessAccessRank))) {
+            const conflict = req.incompatible.find(name => installedNames.has(name));
+            if (conflict) return `${item.name} cannot stack with ${conflict} on this drone profile.`;
+          }
+          for (const existing of installedItems) {
+            const existingReq = existing.requirements || {};
+            if (!Array.isArray(existingReq.incompatible) || !existingReq.incompatible.includes(item.name)) continue;
+            if (existingReq.incompatibleUnlessAccessRank && accessRank >= Number(existingReq.incompatibleUnlessAccessRank)) continue;
+            return `${item.name} cannot stack with ${existing.name} on this drone profile.`;
+          }
+          return null;
+        };
+        const droneModuleModifierLabels = (module) => {
+          const item = findDroneModule(module) || module || {};
+          const mods = item.statModifiers || {};
+          const out = [];
+          if (Number(mods.hp)) out.push(`${Number(mods.hp)>0?'+':''}${mods.hp} HP`);
+          if (Number(mods.evasion)) out.push(`${Number(mods.evasion)>0?'+':''}${mods.evasion} Evasion`);
+          if (Number(mods.thresholdMajor)) out.push(`+${mods.thresholdMajor} Major`);
+          if (Number(mods.thresholdSevere)) out.push(`+${mods.thresholdSevere} Severe`);
+          if (Number(mods.armorSlots)) out.push(`+${mods.armorSlots} Shield`);
+          if (Number(mods.temporaryEvasion)) out.push(`+${mods.temporaryEvasion} Evasion for one attack`);
+          if (mods.conditionalEvasion) out.push(`${Number(mods.conditionalEvasion.value)>0?'+':''}${mods.conditionalEvasion.value} Evasion · ${mods.conditionalEvasion.label}`);
+          if (Array.isArray(mods.conditionalEvasionOptions)) mods.conditionalEvasionOptions.forEach(entry => out.push(`${Number(entry.value)>0?'+':''}${entry.value} Evasion · ${entry.label}`));
+          return out;
+        };
+        const droneDerivedProfile = (gradeValue, moduleValues, contextValue) => {
+          const base = droneGradeStats(gradeValue);
+          const context = contextValue || {};
+          const modules = (moduleValues || []).map(value => findDroneModule(value) || value).filter(Boolean);
+          const installedModuleNames = new Set(modules.map(module => String(module.name || '')));
+          let hp = base.hp;
+          let evasion = base.evasion;
+          let major = base.thresholds.major;
+          let severe = base.thresholds.severe;
+          let armorSlots = base.armor;
+          const applied = [];
+          const conditional = [];
+          modules.forEach(module => {
+            const mods = module.statModifiers || {};
+            if (Number(mods.hp)) { hp += Number(mods.hp); applied.push(`${module.name}: ${Number(mods.hp) > 0 ? '+' : ''}${mods.hp} HP`); }
+            if (Number(mods.evasion)) { evasion += Number(mods.evasion); applied.push(`${module.name}: ${Number(mods.evasion) > 0 ? '+' : ''}${mods.evasion} Evasion`); }
+            if (Number(mods.thresholdMajor)) { major += Number(mods.thresholdMajor); applied.push(`${module.name}: +${mods.thresholdMajor} Major`); }
+            if (Number(mods.thresholdSevere)) { severe = severe > 0 ? severe + Number(mods.thresholdSevere) : severe; applied.push(`${module.name}: +${mods.thresholdSevere} Severe`); }
+            if (Number(mods.armorSlots)) { armorSlots += Number(mods.armorSlots); applied.push(`${module.name}: +${mods.armorSlots} Shield / Armor Slot`); }
+            if (mods.conditionalEvasion) {
+              const entry = mods.conditionalEvasion;
+              const blockedBy = Array.isArray(entry.blockedByModules) ? entry.blockedByModules.find(name => installedModuleNames.has(name)) : null;
+              const available = !blockedBy;
+              const active = available && !!context[entry.key];
+              if (active) evasion += Number(entry.value) || 0;
+              conditional.push({ ...entry, moduleName:module.name, active, available, unavailableReason:blockedBy ? `Blocked by ${blockedBy}` : '' });
+            }
+            if (Array.isArray(mods.conditionalEvasionOptions)) mods.conditionalEvasionOptions.forEach(entry => {
+              const blockedBy = Array.isArray(entry.blockedByModules) ? entry.blockedByModules.find(name => installedModuleNames.has(name)) : null;
+              const available = !blockedBy;
+              const active = available && !!context[entry.key];
+              if (active) evasion += Number(entry.value) || 0;
+              conditional.push({ ...entry, moduleName:module.name, active, available, unavailableReason:blockedBy ? `Blocked by ${blockedBy}` : '' });
+            });
+          });
+          const temporaryEvasion = Math.max(0, Number(context.temporaryEvasion) || 0);
+          if (temporaryEvasion) evasion += temporaryEvasion;
+          return {
+            ...base,
+            hp:Math.max(1,hp), evasion, baseEvasion:base.evasion,
+            thresholds:{ major:Math.max(0,major), severe:Math.max(0,severe) },
+            armorSlots:Math.max(0,armorSlots), moduleSlots:base.moduleSlots,
+            applied, conditional, temporaryEvasion, modules
+          };
+        };
         const SIGNAL_STATES = [
           { id:'stable', label:'Stable', summary:'Real-time command. The drone works normally.' },
           { id:'unstable', label:'Unstable', summary:'Simple commands work; complex tasks may take Disadvantage, a higher DC, Stress, or become impossible.' },
@@ -1189,13 +1274,31 @@
             entityType:'drone', name:'', playerName:'', operatorId:'', droneGradeId:defaults.grade ? defaults.grade.id : '',
             hp:{ current:defaults.hp, max:defaults.hp }, thresholds:defaults.thresholds, evasion:defaults.evasion,
             shields:defaults.armor, armorMax:defaults.armor, moduleSlots:defaults.moduleSlots,
-            installedModules:[], moduleInventory:[],
+            installedModules:[], moduleInventory:[], droneContext:{ temporaryEvasion:0 },
             signalState:'stable', signalRange:'Close', linkMode:'Direct RF Link', loadedProtocol:'Return to the operator or nearest safe point.',
             playerNotes:'', savedNotes:[], inventory:Array(6).fill(''), weapons:[], weaponInventory:[], weaponArsenal:[], activeWeaponId:''
           };
         })();
 
         const PLAYER_STORAGE_KEY = 'veilfarers-player-tool-characters';
+        const CHARACTER_TRANSFER_KEY = 'veilfarers.character.transfer.v1';
+        const LATEST_SHEET_KEY = 'veilfarers.sheet.latestPayload.v1';
+        const localSheetPayload = () => {
+          try {
+            const queued = JSON.parse(localStorage.getItem(CHARACTER_TRANSFER_KEY) || 'null');
+            if (queued && queued.payload && queued.payload.fields) return queued.payload;
+          } catch (e) {}
+          try {
+            const latest = JSON.parse(localStorage.getItem(LATEST_SHEET_KEY) || 'null');
+            if (latest && latest.fields) return latest;
+          } catch (e) {}
+          try {
+            const fields = JSON.parse(localStorage.getItem('veilfarers_sheet_fields_v2_40') || localStorage.getItem('veilfarers_sheet_fields_v2_41') || 'null');
+            if (!fields) return null;
+            const tracks = JSON.parse(localStorage.getItem('veilfarers_sheet_tracks_v2_40') || localStorage.getItem('veilfarers_sheet_tracks_v2_41') || '{}');
+            return { app:'Veilfarers Character Sheet', version:'2.80-RC3.2', fields, tracks };
+          } catch (e) { return null; }
+        };
         const loadInitialCharacters = () => {
           try {
             const saved = JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY) || 'null');
@@ -1541,24 +1644,29 @@
           const normChar = (c) => {
             c = c || {};
             if (c.entityType === 'drone') {
-              const gradeStats = droneGradeStats(c.droneGradeId || c.droneGrade || DRONE_GRADE_CATALOG[0]);
+              const gradeId = c.droneGradeId || c.droneGrade || DRONE_GRADE_CATALOG[0];
               const rawModules = (Array.isArray(c.installedModules) ? c.installedModules : []).map(item => findDroneModule(item) || item).filter(item => item && item.name);
               const uniqueModules = Array.from(new Map(rawModules.map(item => [droneModuleKey(item), item])).values());
-              const maxHp = Number(c.hp && c.hp.max) || gradeStats.hp;
+              const droneContext = c.droneContext && typeof c.droneContext === 'object' ? c.droneContext : { temporaryEvasion:0 };
+              const profile = droneDerivedProfile(gradeId, uniqueModules, droneContext);
+              const maxHp = profile.hp;
               const currentHp = c.hp && c.hp.current != null ? Number(c.hp.current) : maxHp;
-              const armorMax = c.armorMax != null ? Number(c.armorMax) : gradeStats.armor;
+              const armorMax = profile.armorSlots;
+              const currentShields = c.shields != null ? Number(c.shields) : armorMax;
               return {
                 ...c,
                 entityType:'drone',
-                droneGradeId:gradeStats.grade ? gradeStats.grade.id : (c.droneGradeId || ''),
+                droneGradeId:profile.grade ? profile.grade.id : (c.droneGradeId || ''),
                 hp:{ current:Math.max(0, Math.min(maxHp, Number.isFinite(currentHp) ? currentHp : maxHp)), max:maxHp },
-                thresholds:c.thresholds && (c.thresholds.major || c.thresholds.severe) ? c.thresholds : gradeStats.thresholds,
-                evasion:c.evasion != null ? Number(c.evasion) : gradeStats.evasion,
-                shields:c.shields != null ? Number(c.shields) : armorMax,
+                thresholds:profile.thresholds,
+                evasion:profile.evasion,
+                baseEvasion:profile.baseEvasion,
+                shields:Math.max(0, Math.min(armorMax, Number.isFinite(currentShields) ? currentShields : armorMax)),
                 armorMax,
-                moduleSlots:c.moduleSlots != null ? Number(c.moduleSlots) : gradeStats.moduleSlots,
+                moduleSlots:profile.moduleSlots,
                 installedModules:uniqueModules,
                 moduleInventory:uniqueModules.map(droneModuleKey),
+                droneContext,
                 signalState:SIGNAL_STATES.some(state => state.id === c.signalState) ? c.signalState : defaultSignalForRange(c.signalRange),
                 signalRange:DRONE_RANGES.includes(c.signalRange) ? c.signalRange : 'Close',
                 linkMode:LINK_MODES.includes(c.linkMode) ? c.linkMode : 'Direct RF Link',
@@ -2319,8 +2427,75 @@
               showAlert('The current Character Creator draft was added to Player Tool.', 'Character imported');
             } catch (err) { showAlert('The saved Character Creator draft could not be imported.'); }
           };
+          const addImportedSheetCharacter = (mapped, title='Charsheet imported') => {
+            if (!mapped) { showAlert('No compatible Charsheet character was found.'); return false; }
+            const withId = { ...mapped, id: mapped.id || mkCharId(), transferSource:'charsheet' };
+            const replaceBlank = characters.length === 1 && (!characters[0] || !characters[0].name);
+            if (replaceBlank) { setCharacters([withId]); setActiveTab(0); }
+            else { setCharacters([...characters, withId]); setActiveTab(characters.length); }
+            showAlert('The filled Charsheet was added to Player Tool.', title);
+            return true;
+          };
+          const importCharsheet = () => {
+            try {
+              const payload = localSheetPayload();
+              const mapped = payload && window.veilfarersImportSheet && window.veilfarersImportSheet(payload, VF_CANON);
+              addImportedSheetCharacter(mapped);
+            } catch (err) { showAlert('The Charsheet could not be imported: ' + err.message); }
+          };
           const saveToFile = () => { const dataStr = JSON.stringify(characters, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = `veilfarers_session_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(link); link.click(); document.body.removeChild(link); };
-          const loadFromFile = (event) => { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const loadedData = JSON.parse(e.target.result); if (loadedData && loadedData.fields && window.veilfarersImportCreator) { const mapped = window.veilfarersImportCreator(loadedData); if (mapped) { const withId = { ...mapped, id: mapped.id || mkCharId() }; const isDefaultOnly = characters.length === 1 && (!characters[0] || !characters[0].name); if (isDefaultOnly) { setCharacters([withId]); setActiveTab(0); } else { setCharacters([...characters, withId]); setActiveTab(characters.length); } event.target.value=''; return; } } if (loadedData && !Array.isArray(loadedData) && window.veilfarersImportCreatorState) { const mappedState = window.veilfarersImportCreatorState(loadedData, VF_CANON); if (mappedState) { const withId = { ...mappedState, id: mappedState.id || mkCharId() }; const isDefaultOnly = characters.length === 1 && (!characters[0] || !characters[0].name); if (isDefaultOnly) { setCharacters([withId]); setActiveTab(0); } else { setCharacters([...characters, withId]); setActiveTab(characters.length); } event.target.value=''; return; } } if (Array.isArray(loadedData)) { setCharacters(ensureIds(loadedData)); setActiveTab(0); } else { setCharacters(ensureIds([loadedData])); setActiveTab(0); } } catch (err) { showAlert("Error loading file: Invalid JSON format"); } }; reader.readAsText(file); event.target.value = ''; };
+          const loadFromFile = (event) => {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const loadedData = JSON.parse(e.target.result);
+                const sheetPayload = loadedData && loadedData.payload && loadedData.payload.fields ? loadedData.payload : loadedData;
+                if (sheetPayload && sheetPayload.fields && window.veilfarersImportSheet) {
+                  const mapped = window.veilfarersImportSheet(sheetPayload, VF_CANON);
+                  if (mapped) { addImportedSheetCharacter(mapped, 'JSON imported'); event.target.value=''; return; }
+                }
+                const creatorState = loadedData && loadedData.creatorState ? loadedData.creatorState : loadedData;
+                if (creatorState && !Array.isArray(creatorState) && window.veilfarersImportCreatorState) {
+                  const mappedState = window.veilfarersImportCreatorState(creatorState, VF_CANON);
+                  if (mappedState) {
+                    const withId = { ...mappedState, id: mappedState.id || mkCharId() };
+                    const isDefaultOnly = characters.length === 1 && (!characters[0] || !characters[0].name);
+                    if (isDefaultOnly) { setCharacters([withId]); setActiveTab(0); }
+                    else { setCharacters([...characters, withId]); setActiveTab(characters.length); }
+                    event.target.value=''; return;
+                  }
+                }
+                if (Array.isArray(loadedData)) { setCharacters(ensureIds(loadedData)); setActiveTab(0); }
+                else { throw new Error('Unsupported character JSON'); }
+              } catch (err) { showAlert('Error loading file: ' + err.message); }
+            };
+            reader.readAsText(file); event.target.value = '';
+          };
+          const sheetTransferConsumedRef = useRef(false);
+          useEffect(() => {
+            if (sheetTransferConsumedRef.current) return;
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('from') !== 'sheet' || params.get('import') !== '1') return;
+            sheetTransferConsumedRef.current = true;
+            try {
+              const queued = JSON.parse(localStorage.getItem(CHARACTER_TRANSFER_KEY) || 'null');
+              const payload = queued && queued.target === 'player-tool' ? queued.payload : localSheetPayload();
+              const mapped = payload && window.veilfarersImportSheet && window.veilfarersImportSheet(payload, VF_CANON);
+              if (mapped) {
+                const withId = { ...mapped, id: mapped.id || mkCharId(), transferSource:'charsheet' };
+                setCharacters(prev => {
+                  const replaceBlank = prev.length === 1 && (!prev[0] || !prev[0].name);
+                  if (replaceBlank) { setActiveTab(0); return [withId]; }
+                  setActiveTab(prev.length); return [...prev, withId];
+                });
+                showAlert('The Charsheet character was transferred to Player Tool.', 'Transfer complete');
+              } else showAlert('The queued Charsheet transfer was not compatible.');
+              localStorage.removeItem(CHARACTER_TRANSFER_KEY);
+            } catch (err) { showAlert('Charsheet transfer failed: ' + err.message); }
+            const cleanUrl = window.location.pathname + window.location.hash;
+            window.history.replaceState({}, '', cleanUrl);
+          }, []);
 
           // --- FIREBASE LOGIC UPDATED ---
           const fetchTables = async () => {
@@ -2725,30 +2900,64 @@
             return [summary.title, summary.tier, summary.cost, summary.detail].join(' ').toLowerCase().includes(normalizedGearSearch);
           });
           const isDrone = character.entityType === 'drone';
-          const currentDroneGrade = isDrone ? droneGradeStats(character.droneGradeId) : null;
           const installedDroneModules = isDrone ? (Array.isArray(character.installedModules) ? character.installedModules.map(item => findDroneModule(item) || item).filter(item => item && item.name) : []) : [];
+          const currentDroneProfile = isDrone ? droneDerivedProfile(character.droneGradeId, installedDroneModules, character.droneContext) : null;
+          const currentDroneGrade = currentDroneProfile;
+          const coreDroneGrades = DRONE_GRADE_CATALOG.filter(item => item.profileType !== 'frame').slice().sort((a,b) => droneModuleAccessRank(a) - droneModuleAccessRank(b));
+          const specializedFrameOrder = ['industrial-hauler','house-sentinel','war-frame','swarm-cell','black-site-chimera'];
+          const specializedDroneFrames = DRONE_GRADE_CATALOG.filter(item => item.profileType === 'frame').slice().sort((a,b) => specializedFrameOrder.indexOf(a.slug) - specializedFrameOrder.indexOf(b.slug));
           const installedDroneModuleKeys = new Set(installedDroneModules.map(droneModuleKey));
           const usedDroneModuleSlots = installedDroneModules.reduce((sum, module) => sum + droneModuleSlots(module), 0);
-          const availableDroneModuleSlots = Math.max(0, Number(character.moduleSlots || (currentDroneGrade && currentDroneGrade.moduleSlots) || 0) - usedDroneModuleSlots);
+          const availableDroneModuleSlots = Math.max(0, Number((currentDroneProfile && currentDroneProfile.moduleSlots) || character.moduleSlots || 0) - usedDroneModuleSlots);
           const filteredDroneModules = DRONE_MODULE_CATALOG.filter(module => {
             if (!isDrone || !droneModuleAllowed(module, character.droneGradeId)) return false;
             const q = String(droneModuleSearch || '').trim().toLowerCase();
-            return !q || [module.name, itemTierLabel(module), module.use, module.slots].join(' ').toLowerCase().includes(q);
+            return !q || [module.name, droneModuleAccessLabel(module), module.category, module.pack, module.use, module.slots].join(' ').toLowerCase().includes(q);
           });
+          const droneModuleInstallBlock = (module) => {
+            if (installedDroneModuleKeys.has(droneModuleKey(module))) return '';
+            if (!droneModuleAllowed(module, character.droneGradeId)) return `Requires ${droneModuleAccessLabel(module)} access.`;
+            const conflict = droneModuleConflicts(module, installedDroneModules, character.droneGradeId);
+            if (conflict) return conflict;
+            const slots = droneModuleSlots(module);
+            if (slots > availableDroneModuleSlots) return `Needs ${slots} slots; ${availableDroneModuleSlots} free.`;
+            return '';
+          };
           const spotlightHolder = characters.find(item => item && item.entityType !== 'drone' && item.id === spotlight) || null;
           const droneOperator = characters.find(item => item && item.entityType !== 'drone' && item.id === character.operatorId) || null;
           const changeDroneGrade = (gradeId) => {
-            const profile = droneGradeStats(gradeId);
-            const allowedModules = installedDroneModules.filter(module => droneModuleAllowed(module, gradeId));
-            let remaining = profile.moduleSlots;
+            const base = droneGradeStats(gradeId);
+            let remaining = base.moduleSlots;
             const fitted = [];
-            allowedModules.forEach(module => { const slots = droneModuleSlots(module); if (slots <= remaining) { fitted.push(module); remaining -= slots; } });
+            installedDroneModules.forEach(module => {
+              const slots = droneModuleSlots(module);
+              if (!droneModuleAllowed(module, gradeId) || slots > remaining || droneModuleConflicts(module, fitted, gradeId)) return;
+              fitted.push(module); remaining -= slots;
+            });
+            const context = { temporaryEvasion:0 };
+            const profile = droneDerivedProfile(gradeId, fitted, context);
             updateCharacter({
               ...character,
               droneGradeId:profile.grade ? profile.grade.id : gradeId,
               hp:{ current:profile.hp, max:profile.hp }, thresholds:profile.thresholds,
-              evasion:profile.evasion, shields:profile.armor, armorMax:profile.armor,
-              moduleSlots:profile.moduleSlots, installedModules:fitted, moduleInventory:fitted.map(droneModuleKey)
+              evasion:profile.evasion, baseEvasion:profile.baseEvasion,
+              shields:profile.armorSlots, armorMax:profile.armorSlots,
+              moduleSlots:profile.moduleSlots, installedModules:fitted, moduleInventory:fitted.map(droneModuleKey), droneContext:context
+            });
+          };
+          const updateDroneFromModules = (nextModules, nextContext, fillAddedShields) => {
+            const previous = currentDroneProfile || droneDerivedProfile(character.droneGradeId, installedDroneModules, character.droneContext);
+            const profile = droneDerivedProfile(character.droneGradeId, nextModules, nextContext || character.droneContext);
+            const oldCurrent = Math.max(0, Number(character.shields) || 0);
+            const shieldDelta = profile.armorSlots - previous.armorSlots;
+            const nextShields = fillAddedShields && shieldDelta > 0 ? Math.min(profile.armorSlots, oldCurrent + shieldDelta) : Math.min(profile.armorSlots, oldCurrent);
+            updateCharacter({
+              ...character,
+              installedModules:nextModules, moduleInventory:nextModules.map(droneModuleKey),
+              droneContext:nextContext || character.droneContext,
+              hp:{ current:Math.min(profile.hp, Number(character.hp && character.hp.current) || 0), max:profile.hp },
+              thresholds:profile.thresholds, evasion:profile.evasion, baseEvasion:profile.baseEvasion,
+              shields:nextShields, armorMax:profile.armorSlots, moduleSlots:profile.moduleSlots
             });
           };
           const toggleDroneModule = (module) => {
@@ -2758,15 +2967,25 @@
             const installed = installedDroneModuleKeys.has(key);
             if (installed) {
               const next = installedDroneModules.filter(item => droneModuleKey(item) !== key);
-              updateCharacter({ ...character, installedModules:next, moduleInventory:next.map(droneModuleKey) });
+              const nextContext = { ...(character.droneContext || {}), temporaryEvasion:0 };
+              updateDroneFromModules(next, nextContext, false);
               return;
             }
-            if (!droneModuleAllowed(canonical, character.droneGradeId)) { showAlert('This module grade is outside the selected drone frame access.', 'Installation blocked'); return; }
+            if (!droneModuleAllowed(canonical, character.droneGradeId)) { showAlert(`${canonical.name} requires ${droneModuleAccessLabel(canonical)} access.`, 'Installation blocked'); return; }
+            const conflict = droneModuleConflicts(canonical, installedDroneModules, character.droneGradeId);
+            if (conflict) { showAlert(conflict, 'Installation blocked'); return; }
             const slots = droneModuleSlots(canonical);
             if (slots > availableDroneModuleSlots) { showAlert(`${canonical.name} needs ${slots} module slot${slots === 1 ? '' : 's'}, but only ${availableDroneModuleSlots} remain.`, 'Not enough module slots'); return; }
             const next = installedDroneModules.concat([canonical]);
-            updateCharacter({ ...character, installedModules:next, moduleInventory:next.map(droneModuleKey) });
+            updateDroneFromModules(next, character.droneContext || { temporaryEvasion:0 }, true);
           };
+          const setDroneContext = (key, value) => {
+            const next = { ...(character.droneContext || {}), [key]:value };
+            if (key === 'vectorBleedEva' && value) next.vectorBleedCramped = false;
+            if (key === 'vectorBleedCramped' && value) next.vectorBleedEva = false;
+            updateDroneFromModules(installedDroneModules, next, false);
+          };
+          const clearTemporaryDroneEvasion = () => setDroneContext('temporaryEvasion', 0);
           const useDroneModule = (module) => {
             const canonical = findDroneModule(module) || module;
             const rawCost = parseFeatureCost(canonical.use || '');
@@ -2784,7 +3003,12 @@
                 return { ...item, [cost.resource]:{ ...currentTrack, current:mark ? Math.min(Number(currentTrack.max)||99, (Number(currentTrack.current)||0) + cost.amount) : Math.max(0, (Number(currentTrack.current)||0) - cost.amount) } };
               }));
             }
-            logRoll({ type:'note', label:`Drone module: ${canonical.name}${cost ? ` · operator ${cost.amount} ${cost.resource}` : ''}\n${canonical.use || ''}`, playerName:character.name || 'Drone', actorId:character.id, resourceCost:cost || null, timestamp:Date.now() });
+            const temporary = Number(canonical.statModifiers && canonical.statModifiers.temporaryEvasion) || 0;
+            if (temporary > 0) {
+              const nextContext = { ...(character.droneContext || {}), temporaryEvasion:Math.max(temporary, Number(character.droneContext && character.droneContext.temporaryEvasion) || 0) };
+              updateDroneFromModules(installedDroneModules, nextContext, false);
+            }
+            logRoll({ type:'note', label:`Drone module: ${canonical.name}${cost ? ` · operator ${cost.amount} ${cost.resource}` : ''}${temporary ? ` · +${temporary} Evasion for one attack` : ''}\n${canonical.use || ''}`, playerName:character.name || 'Drone', actorId:character.id, resourceCost:cost || null, timestamp:Date.now() });
           };
 
           const featureAccent = {
@@ -3606,7 +3830,7 @@
                   <div className="bg-slate-900 border border-emerald-700/50 rounded-xl w-[96vw] max-w-5xl h-[84vh] flex flex-col min-w-0 shadow-2xl overflow-hidden">
                     <header className="p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between bg-slate-950"><div><h2 className="text-lg font-black text-white flex items-center gap-2"><Settings className="text-emerald-400"/> Drone installation options</h2><p className="text-[10px] text-slate-500 mt-1">Only modules permitted by the current frame are listed. Higher-grade installations remain a separate downtime modification procedure.</p></div><button onClick={()=>setShowDroneModuleManager(false)} className="self-end sm:self-auto p-2 rounded border border-slate-700 text-slate-400 hover:text-white"><X className="w-5 h-5"/></button></header>
                     <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex flex-col md:flex-row gap-3 md:items-center"><div className="px-3 py-2 rounded-lg border border-emerald-700/40 bg-emerald-950/25 text-[10px] font-black uppercase text-emerald-300">{usedDroneModuleSlots}/{character.moduleSlots||0} slots · {availableDroneModuleSlots} free</div><input value={droneModuleSearch} onChange={e=>setDroneModuleSearch(e.target.value)} placeholder="Search module name, tier or use…" className="flex-1 bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"/></div>
-                    <div className="flex-grow min-h-0 overflow-y-auto p-4"><div className="grid grid-cols-1 lg:grid-cols-2 gap-3">{filteredDroneModules.map(module=>{const key=droneModuleKey(module);const installed=installedDroneModuleKeys.has(key);const slots=droneModuleSlots(module);const canFit=installed||slots<=availableDroneModuleSlots;const cost=parseFeatureCost(module.use||'');return <div key={key} className={`rounded-lg border p-3 ${installed?'border-emerald-600/60 bg-emerald-950/15':'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span>{installed&&<span className="px-1.5 py-0.5 rounded border border-emerald-600/40 text-[8px] font-black uppercase text-emerald-300">Installed</span>}</div><div className="mt-1.5 flex flex-wrap gap-1 text-[8px]"><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{itemTierLabel(module)}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{slots} slot{slots===1?'':'s'}</span>{cost&&<span className="px-1.5 py-0.5 rounded border border-amber-800/50 text-amber-300">Operator: {cost.mode==='mark'?'mark':'spend'} {cost.amount} {cost.resource}</span>}</div><div className="mt-2 text-[9px] leading-relaxed text-slate-400">{module.use}</div></div><div className="flex flex-col gap-2 shrink-0"><button disabled={!canFit} onClick={()=>toggleDroneModule(module)} className={`px-2.5 py-1.5 rounded border text-[9px] font-black uppercase disabled:opacity-30 ${installed?'border-red-800/60 bg-red-950/20 text-red-300':'border-emerald-700/60 bg-emerald-950/20 text-emerald-300'}`}>{installed?'Uninstall':'Install'}</button>{installed&&<button onClick={()=>useDroneModule(module)} className="px-2.5 py-1.5 rounded border border-cyan-700/60 bg-cyan-950/20 text-cyan-300 text-[9px] font-black uppercase">Use</button>}</div></div></div>;})}</div>{!filteredDroneModules.length&&<div className="h-full grid place-items-center text-sm text-slate-600 italic">No compatible modules match this search.</div>}</div>
+                    <div className="flex-grow min-h-0 overflow-y-auto p-4"><div className="grid grid-cols-1 lg:grid-cols-2 gap-3">{filteredDroneModules.map(module=>{const key=droneModuleKey(module);const installed=installedDroneModuleKeys.has(key);const slots=droneModuleSlots(module);const blockReason=droneModuleInstallBlock(module);const canFit=installed||!blockReason;const cost=parseFeatureCost(module.use||'');const modifiers=droneModuleModifierLabels(module);return <div key={key} data-drone-module={module.name} className={`rounded-lg border p-3 ${installed?'border-emerald-600/60 bg-emerald-950/15':blockReason?'border-slate-800 bg-slate-950/25 opacity-75':'border-slate-800 bg-slate-950/45'}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span>{installed&&<span className="px-1.5 py-0.5 rounded border border-emerald-600/40 text-[8px] font-black uppercase text-emerald-300">Installed</span>}</div><div className="mt-1.5 flex flex-wrap gap-1 text-[8px]"><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{droneModuleAccessLabel(module)}</span>{module.category&&<span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{module.category}</span>}<span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{module.pack==='rust-and-steel'?'Rust & Steel':'Core'}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{slots} slot{slots===1?'':'s'}</span>{cost&&<span className="px-1.5 py-0.5 rounded border border-amber-800/50 text-amber-300">Operator: {cost.mode==='mark'?'mark':'spend'} {cost.amount} {cost.resource}</span>}</div>{modifiers.length>0&&<div className="mt-2 flex flex-wrap gap-1">{modifiers.map((entry,i)=><span key={i} className="px-1.5 py-0.5 rounded border border-emerald-800/50 bg-emerald-950/15 text-[8px] text-emerald-300">{entry}</span>)}</div>}<div className="mt-2 text-[9px] leading-relaxed text-slate-400">{module.use}</div>{blockReason&&!installed&&<div className="mt-2 text-[8px] font-bold text-red-300">{blockReason}</div>}</div><div className="flex flex-col gap-2 shrink-0"><button disabled={!canFit} onClick={()=>toggleDroneModule(module)} className={`px-2.5 py-1.5 rounded border text-[9px] font-black uppercase disabled:opacity-30 ${installed?'border-red-800/60 bg-red-950/20 text-red-300':'border-emerald-700/60 bg-emerald-950/20 text-emerald-300'}`}>{installed?'Uninstall':'Install'}</button>{installed&&<button onClick={()=>useDroneModule(module)} className="px-2.5 py-1.5 rounded border border-cyan-700/60 bg-cyan-950/20 text-cyan-300 text-[9px] font-black uppercase">Use</button>}</div></div></div>;})}</div>{!filteredDroneModules.length&&<div className="h-full grid place-items-center text-sm text-slate-600 italic">No compatible modules match this search.</div>}</div>
                   </div>
                 </div>
               )}
@@ -3675,6 +3899,7 @@
                    <div className="vf-player-tools vf-no-browser-scrollbar flex flex-wrap gap-2 items-center w-full pb-1 justify-start">
                        <input type="file" ref={fileInputRef} onChange={loadFromFile} className="hidden" accept=".json" />
                        {!isDrone && <button onClick={importCreatorDraft} title="Import the current draft saved by Character Creator" className="flex items-center gap-1 px-3 py-1 bg-cyan-950/60 hover:bg-cyan-900/70 text-cyan-300 text-[10px] rounded border border-cyan-800 uppercase font-bold transition-colors whitespace-nowrap"><User className="w-3 h-3" /> Creator</button>}
+                       {!isDrone && <button onClick={importCharsheet} title="Import the latest filled Charsheet stored in this browser" className="flex items-center gap-1 px-3 py-1 bg-amber-950/50 hover:bg-amber-900/60 text-amber-300 text-[10px] rounded border border-amber-800 uppercase font-bold transition-colors whitespace-nowrap"><ScrollText className="w-3 h-3" /> Charsheet</button>}
                        <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><Upload className="w-3 h-3" /> Load</button>
                        <button onClick={saveToFile} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><Save className="w-3 h-3" /> Save</button>
 
@@ -3707,19 +3932,24 @@
                         <div className="w-14 h-14 rounded-xl border border-emerald-500/50 bg-emerald-950/30 grid place-items-center shrink-0"><Settings className="w-7 h-7 text-emerald-300" /></div>
                         <div className="min-w-0 flex-1"><label className="block text-[9px] uppercase tracking-widest text-emerald-500 font-black">Drone designation</label><input value={character.name || ''} onChange={e => updateCharacter({...character,name:e.target.value})} placeholder="DRONE NAME" className="w-full bg-transparent border-b border-slate-700 text-xl font-black text-white outline-none focus:border-emerald-500" /><div className="mt-1 text-[9px] text-slate-500">Equipment entity · uses its operator's Actions, Traits, Experiences and paid resources.</div></div>
                       </div>
-                      <div><label className="block text-[9px] uppercase tracking-widest text-slate-500 font-black mb-1">Frame / grade</label><select value={character.droneGradeId || ''} onChange={e => changeDroneGrade(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-emerald-500">{DRONE_GRADE_CATALOG.map(grade => <option key={grade.id} value={grade.id}>{grade.name} · {itemTierLabel(grade)}</option>)}</select></div>
+                      <div><label className="block text-[9px] uppercase tracking-widest text-slate-500 font-black mb-1">Drone profile</label><select data-drone-profile value={character.droneGradeId || ''} onChange={e => changeDroneGrade(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"><optgroup label="Corebook Drone Grades">{coreDroneGrades.map(grade => <option key={grade.id} value={grade.id}>{grade.name} · {droneGradeStats(grade).tierLabel}</option>)}</optgroup>{specializedDroneFrames.length > 0 && <optgroup label="Rust & Steel Specialized Frames">{specializedDroneFrames.map(grade => <option key={grade.id} value={grade.id}>{grade.name} · {droneGradeStats(grade).tierLabel}</option>)}</optgroup>}</select><div className="mt-1 text-[8px] text-slate-600">Grades define the base statistics. Specialized frames use their own printed profile.</div></div>
                       <div><label className="block text-[9px] uppercase tracking-widest text-slate-500 font-black mb-1">Operator</label><select value={character.operatorId || ''} onChange={e => updateCharacter({...character,operatorId:e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500"><option value="">Unassigned</option>{characters.filter(item => item && item.entityType !== 'drone').map(item => <option key={item.id} value={item.id}>{item.name || 'Unnamed character'}</option>)}</select></div>
                     </header>
 
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
                       <section className="xl:col-span-2 rounded-xl border border-slate-800 bg-slate-900/45 p-4">
-                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4"><div><h2 className="text-xs font-black uppercase tracking-widest text-white">Drone integrity</h2><p className="text-[9px] text-slate-500 mt-1">Frames start at full HP and full armor slots.</p></div><div className="text-[9px] text-slate-500">{currentDroneGrade && currentDroneGrade.availability}</div></div>
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4"><div><h2 className="text-xs font-black uppercase tracking-widest text-white">Drone integrity</h2><p className="text-[9px] text-slate-500 mt-1">A new profile starts at full HP and full Shields. Installed upgrades recalculate the displayed statistics.</p></div><div className="text-[9px] text-slate-500 max-w-sm text-right">{currentDroneGrade && currentDroneGrade.availability}</div></div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          <div className="rounded-lg border border-red-900/40 bg-red-950/15 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-red-400">HP</div><div className="mt-2 flex items-end gap-2"><NumField min="0" max={(character.hp&&character.hp.max)||1} value={(character.hp&&character.hp.current)||0} onChange={e => updateCharacter({...character,hp:{...(character.hp||{}),current:Math.max(0,Math.min(Number((character.hp&&character.hp.max)||1),Number(e.target.value)||0))}})} className="w-16 bg-transparent text-3xl font-black text-white outline-none"/><span className="pb-1 text-sm text-slate-500">/ {(character.hp&&character.hp.max)||1}</span></div></div>
-                          <div className="rounded-lg border border-cyan-900/40 bg-cyan-950/15 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-cyan-400">Armor</div><div className="mt-2 flex flex-wrap gap-1">{Array.from({length:Number(character.armorMax||0)}).map((_,i)=><button key={i} onClick={() => updateCharacter({...character,shields:i+1===(Number(character.shields)||0)?i:i+1})} className={`w-5 h-6 rounded-sm border ${i < (Number(character.shields)||0) ? 'bg-cyan-500 border-cyan-300' : 'bg-slate-950 border-slate-700'}`} title={`Armor slot ${i+1}`}></button>)}{!Number(character.armorMax||0)&&<span className="text-xs text-slate-600">0</span>}</div></div>
-                          <div className="rounded-lg border border-slate-800 bg-slate-950/30 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-slate-500">Evasion</div><div className="mt-2 text-3xl font-black text-white">{character.evasion || 0}</div></div>
-                          <div className="rounded-lg border border-slate-800 bg-slate-950/30 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-slate-500">Thresholds</div><div className="mt-2 text-lg font-black text-white">{(character.thresholds&&character.thresholds.major)||0} / {(character.thresholds&&character.thresholds.severe)||'—'}</div></div>
+                          <div data-drone-stat="hp" className="rounded-lg border border-red-900/40 bg-red-950/15 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-red-400">HP</div><div className="mt-2 flex items-end gap-2"><NumField min="0" max={(character.hp&&character.hp.max)||1} value={(character.hp&&character.hp.current)||0} onChange={e => updateCharacter({...character,hp:{...(character.hp||{}),current:Math.max(0,Math.min(Number((character.hp&&character.hp.max)||1),Number(e.target.value)||0))}})} className="w-16 bg-transparent text-3xl font-black text-white outline-none"/><span className="pb-1 text-sm text-slate-500">/ {(character.hp&&character.hp.max)||1}</span></div></div>
+                          <div data-drone-stat="shields" className="rounded-lg border border-cyan-900/40 bg-cyan-950/15 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-cyan-400">Shields</div><div className="mt-2 flex flex-wrap gap-1">{Array.from({length:Number(character.armorMax||0)}).map((_,i)=><button key={i} onClick={() => updateCharacter({...character,shields:i+1===(Number(character.shields)||0)?i:i+1})} className={`w-5 h-6 rounded-sm border ${i < (Number(character.shields)||0) ? 'bg-cyan-500 border-cyan-300 shadow-[0_0_7px_rgba(34,211,238,.45)]' : 'bg-slate-950 border-slate-700'}`} title={`Shield / Armor Slot ${i+1}`}></button>)}{!Number(character.armorMax||0)&&<span className="text-xs text-slate-600">No Shields</span>}</div><div className="mt-1 text-[8px] text-slate-600">Armor Slots: {Number(character.armorMax||0)}</div></div>
+                          <div data-drone-stat="evasion" className="rounded-lg border border-slate-800 bg-slate-950/30 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-slate-500">Evasion</div><div className="mt-2 text-3xl font-black text-white">{character.evasion || 0}</div>{currentDroneProfile && currentDroneProfile.evasion !== currentDroneProfile.baseEvasion && <div className="mt-1 text-[8px] text-emerald-400">Base {currentDroneProfile.baseEvasion} · {currentDroneProfile.evasion-currentDroneProfile.baseEvasion>0?'+':''}{currentDroneProfile.evasion-currentDroneProfile.baseEvasion} applied</div>}</div>
+                          <div data-drone-stat="thresholds" className="rounded-lg border border-slate-800 bg-slate-950/30 p-3"><div className="text-[8px] font-black uppercase tracking-widest text-slate-500">Thresholds</div><div className="mt-2 text-lg font-black text-white">{(character.thresholds&&character.thresholds.major)||0} / {(character.thresholds&&character.thresholds.severe)||'—'}</div><div className="mt-1 text-[8px] text-slate-600">Major / Severe</div></div>
                         </div>
+                        {(currentDroneProfile && (currentDroneProfile.applied.length || currentDroneProfile.conditional.length || currentDroneProfile.temporaryEvasion)) ? <div className="mt-4 rounded-lg border border-slate-800 bg-slate-950/35 p-3 space-y-3">
+                          {currentDroneProfile.applied.length > 0 && <div><div className="text-[8px] font-black uppercase tracking-widest text-emerald-400 mb-1.5">Applied permanent changes</div><div className="flex flex-wrap gap-1.5">{currentDroneProfile.applied.map((entry,i)=><span key={i} className="px-2 py-1 rounded border border-emerald-800/50 bg-emerald-950/20 text-[8px] text-emerald-200">{entry}</span>)}</div></div>}
+                          {currentDroneProfile.conditional.length > 0 && <div><div className="text-[8px] font-black uppercase tracking-widest text-amber-400 mb-1.5">Situational Evasion modifiers</div><div className="flex flex-wrap gap-1.5">{currentDroneProfile.conditional.map(entry=><button key={`${entry.moduleName}:${entry.key}`} disabled={entry.available===false} title={entry.unavailableReason||entry.label} onClick={()=>setDroneContext(entry.key,!entry.active)} className={`px-2 py-1 rounded border text-[8px] font-bold disabled:opacity-40 disabled:cursor-not-allowed ${entry.active?'border-amber-500 bg-amber-950/40 text-amber-200':'border-slate-700 bg-slate-950 text-slate-500'}`}>{entry.active?'✓ ':''}{entry.moduleName}: {Number(entry.value)>0?'+':''}{entry.value} · {entry.available===false?entry.unavailableReason:entry.label}</button>)}</div></div>}
+                          {currentDroneProfile.temporaryEvasion > 0 && <div className="flex items-center justify-between gap-3 rounded border border-cyan-800/40 bg-cyan-950/20 p-2"><div className="text-[9px] text-cyan-200">Temporary defense: +{currentDroneProfile.temporaryEvasion} Evasion against the next applicable attack.</div><button onClick={clearTemporaryDroneEvasion} className="px-2 py-1 rounded border border-cyan-700 text-[8px] font-black uppercase text-cyan-300">Consume / clear</button></div>}
+                        </div> : null}
                       </section>
 
                       <section className="rounded-xl border border-yellow-800/40 bg-yellow-950/10 p-4">
@@ -3739,7 +3969,7 @@
 
                       <section className="rounded-xl border border-emerald-800/40 bg-emerald-950/10 p-4">
                         <div className="flex items-center justify-between gap-3"><div><h2 className="text-xs font-black uppercase tracking-widest text-emerald-300">Installed modules</h2><p className="mt-1 text-[9px] text-slate-500">{usedDroneModuleSlots}/{character.moduleSlots||0} slots used · {availableDroneModuleSlots} free</p></div><button onClick={()=>setShowDroneModuleManager(true)} className="px-3 py-2 rounded-lg border border-emerald-600/50 bg-emerald-950/40 text-emerald-200 text-[9px] font-black uppercase">Installation options</button></div>
-                        <div className="mt-3 space-y-2">{installedDroneModules.length?installedDroneModules.map(module=><div key={droneModuleKey(module)} className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{itemTierLabel(module)} · {droneModuleSlots(module)} slot{droneModuleSlots(module)===1?'':'s'}</span></div><div className="mt-1.5 text-[9px] leading-relaxed text-slate-400">{module.use}</div></div><button onClick={()=>useDroneModule(module)} className="shrink-0 px-2.5 py-1.5 rounded border border-cyan-700/50 bg-cyan-950/30 text-cyan-200 text-[9px] font-black uppercase">Use</button></div></div>):<button onClick={()=>setShowDroneModuleManager(true)} className="w-full p-4 rounded-lg border border-dashed border-slate-700 text-[10px] text-slate-500">No modules installed.</button>}</div>
+                        <div className="mt-3 space-y-2">{installedDroneModules.length?installedDroneModules.map(module=>{const modifiers=droneModuleModifierLabels(module);return <div key={droneModuleKey(module)} className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{droneModuleAccessLabel(module)} · {droneModuleSlots(module)} slot{droneModuleSlots(module)===1?'':'s'}</span>{module.category&&<span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-500">{module.category}</span>}</div>{modifiers.length>0&&<div className="mt-1.5 flex flex-wrap gap-1">{modifiers.map((entry,i)=><span key={i} className="px-1.5 py-0.5 rounded border border-emerald-800/40 bg-emerald-950/15 text-[8px] text-emerald-300">{entry}</span>)}</div>}<div className="mt-1.5 text-[9px] leading-relaxed text-slate-400">{module.use}</div></div><button onClick={()=>useDroneModule(module)} className="shrink-0 px-2.5 py-1.5 rounded border border-cyan-700/50 bg-cyan-950/30 text-cyan-200 text-[9px] font-black uppercase">Use</button></div></div>}):<button onClick={()=>setShowDroneModuleManager(true)} className="w-full p-4 rounded-lg border border-dashed border-slate-700 text-[10px] text-slate-500">No modules installed.</button>}</div>
                       </section>
                     </div>
 

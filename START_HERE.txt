@@ -1,52 +1,10 @@
-VeilFarers Portal v59.43
+VEILFARERS PORTAL v59.46
 
-RELEASE PURPOSE
----------------
-Extend Player and Keeper live play with canonical armor automation, resource-aware augmentation use, playable drone sheets, synchronized drone signal controls, and an OPEN/CLOSED table directory with protected passwords.
+1. Deploy ZIP contents directly to the Netlify publish root.
+2. Keep the existing Firebase public environment variables.
+3. Add FIREBASE_SERVICE_ACCOUNT_JSON as a protected Netlify environment variable.
+4. Verify /api/firebase-config and POST /api/allocate-character-id.
+5. Create/import a character and confirm a visible VF-###### ID.
+6. Apply a Level Up and confirm the same ID and new values in Charsheet, Player Tool, and Keeper Tool.
 
-ENTRY POINTS
-------------
-/                     Welcome page
-/creator.html          Character Creator
-/creator.html#cards    Card Library
-/creator.html#level-up Level Up
-/charsheet.html        Digital Charsheet & PDF
-/player-tool.html      Character and Drone Player Tool
-/keeper-tool.html      Keeper Tool and table signal controls
-/downloads.html        Current downloads only
-
-PLAYER TOOL
------------
-- New characters start at full HP, 2 Hope/Effort and full Resolve.
-- Active armor applies its thresholds, armor slots and supported modifiers.
-- Augmentation activation automatically marks Stress or spends Hope/Effort.
-- Drone tabs use canonical frames/modules, have no Hope/Effort/Resolve/Stress tracks, and start at full HP and armor.
-- A drone never owns Spotlight; its sheet displays and changes the current character Spotlight with the same lantern component used in the tabs.
-- Drone Signal uses Stable, Unstable and Lost and can be changed by players or the Keeper.
-
-TABLES AND PASSWORDS
---------------------
-- Table discovery is enabled unless FIREBASE_PUBLIC_TABLE_DIRECTORY=false is set.
-- The directory clearly labels OPEN and CLOSED tables.
-- Creating an open table requires an explicit warning confirmation in Player Tool.
-- Passwords are stored as salted PBKDF2-SHA256 records, never as plaintext.
-- A password can only be added or changed after the user has successfully connected to that table.
-
-SECURITY BOUNDARY
------------------
-The password is a client-side entry gate and protects against casual access. It is not a substitute for Firestore Security Rules, authenticated table membership or App Check. Read SECURITY_TABLES_v59.43.md before treating cloud table data as private.
-
-LOCAL TESTING
--------------
-Read LOCAL_TESTING.md. Table discovery is enabled by default locally unless FIREBASE_PUBLIC_TABLE_DIRECTORY=false is explicitly set.
-
-DELIVERABLES
-------------
-- GITHUB_DEPLOY_SUMMARY_v59.43.md
-- PORTAL_HANDOVER_v59.43.md
-- VALIDATION_v59.43.txt
-- SECURITY_TABLES_v59.43.md
-
-DEPLOY
-------
-Upload the contents of this folder to Netlify with index.html at the deploy root.
+Never expose or commit FIREBASE_SERVICE_ACCOUNT_JSON.

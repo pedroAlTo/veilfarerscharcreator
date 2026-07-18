@@ -16,6 +16,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
 </head>
 
 <body>
@@ -382,7 +384,10 @@
         <div id="playersTab" class="tab-content">
           <div class="tab-header">
             <h2>Player Characters</h2>
-            <button id="addPlayerBtn" class="btn btn-blue keeper-only">+ Add Player</button>
+            <div class="tab-header-actions keeper-only">
+              <button id="importSheetPlayerBtn" class="btn btn-cyan" title="Import the latest filled Charsheet from this browser">⇢ Import Charsheet</button>
+              <button id="addPlayerBtn" class="btn btn-blue">+ Add Player</button>
+            </div>
           </div>
           <div id="playersGrid" class="character-cards-grid"></div>
         </div>
@@ -1021,7 +1026,7 @@
       subtitle: ((c.heritage || '') + ' ' + (c.class || '')).trim() || 'Adventurer',
       hp: (hp.current) || 0, maxHp: (hp.max) || 6, stress: (st.current) || 0, maxStress: (st.max) || 6,
       hope: isSleeper ? ((c.effort && c.effort.current) || 0) : ((c.hope && c.hope.current) || 0),
-      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.shields)||0, armorMarked: [],
+      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.armorMax != null ? c.armorMax : c.shields)||0, armorMarked: [],
       effort: (c.effort && c.effort.current) || 0, maxEffort: (c.effort && c.effort.max) || 6,
       resolve: (c.resolve && c.resolve.current) || 0, maxResolve: (c.resolve && c.resolve.max) || 6, path: c.path || 'awakened',
       armorMinor: (thr.major) || 0, armorSevere: (thr.severe) || 0, evasion: c.evasion || 0,
@@ -1349,6 +1354,72 @@
   else listTables();
 })();
 </script>
+
+  <script>
+(function(){
+  'use strict';
+  const TRANSFER_KEY='veilfarers.character.transfer.v1';
+  const LATEST_SHEET_KEY='veilfarers.sheet.latestPayload.v1';
+  function readSheetPayload(){
+    try{const queued=JSON.parse(localStorage.getItem(TRANSFER_KEY)||'null');if(queued&&queued.payload&&queued.payload.fields)return queued.payload;}catch(_){}
+    try{const latest=JSON.parse(localStorage.getItem(LATEST_SHEET_KEY)||'null');if(latest&&latest.fields)return latest;}catch(_){}
+    try{
+      const fields=JSON.parse(localStorage.getItem('veilfarers_sheet_fields_v2_40')||localStorage.getItem('veilfarers_sheet_fields_v2_41')||'null');
+      if(!fields)return null;
+      const tracks=JSON.parse(localStorage.getItem('veilfarers_sheet_tracks_v2_40')||localStorage.getItem('veilfarers_sheet_tracks_v2_41')||'{}');
+      return {app:'Veilfarers Character Sheet',version:'2.80-RC3.2',fields,tracks};
+    }catch(_){return null;}
+  }
+  function keeperPlayerFromSheet(payload){
+    const c=window.veilfarersImportSheet&&window.veilfarersImportSheet(payload);
+    if(!c)return null;
+    const path=String(c.path||'awakened').toLowerCase();
+    const resource=path==='sleeping'?(c.effort||{}):(c.hope||{});
+    const abilities=[];
+    (c.experiences||[]).forEach(exp=>{if(exp&&exp.description)abilities.push({name:exp.description,type:'Experience',cost:0,desc:'Experience bonus +'+(exp.bonus||2)});});
+    (c.moves||[]).forEach(move=>{if(move&&move.name)abilities.push({name:move.name,type:'Resolve Move',cost:0,desc:move.text||''});});
+    (c.domainCards||[]).forEach(power=>{if(power&&power.name)abilities.push({name:power.name,type:power.type||'Power',cost:power.cost||0,desc:power.text||power.costText||''});});
+    const equipment=[...(c.inventory||[]).filter(Boolean),...(c.weapons||[]).map(w=>w&&w.name).filter(Boolean),c.armor&&c.armor.name].filter(Boolean).join(', ');
+    return {
+      id:Date.now()+Math.floor(Math.random()*1000),name:c.name||'Unnamed Veilfarer',
+      subtitle:[c.heritage,c.class,c.subclass].filter(Boolean).join(' · '),
+      hp:Number(c.hp&&c.hp.current)||0,maxHp:Number(c.hp&&c.hp.max)||6,
+      stress:Number(c.stress&&c.stress.current)||0,maxStress:Number(c.stress&&c.stress.max)||6,
+      hope:Number(resource.current)||0,maxHope:Number(resource.max)||6,
+      effort:Number(c.effort&&c.effort.current)||0,maxEffort:Number(c.effort&&c.effort.max)||6,
+      resolve:Number(c.resolve&&c.resolve.current)||0,maxResolve:Number(c.resolve&&c.resolve.max)||2,
+      path,armor:Number(c.shields)||0,armorSlots:Number(c.armorMax != null ? c.armorMax : c.shields)||0,armorMarked:[],
+      armorMinor:Number(c.thresholds&&c.thresholds.major)||0,armorSevere:Number(c.thresholds&&c.thresholds.severe)||0,
+      evasion:Number(c.evasion)||0,description:[c.features,c.classFeature,c.ancestryGift,c.communityGift].filter(Boolean).join('\n\n'),
+      abilities,equipment,hidden:false,sheetCharacter:c,transferSource:'charsheet'
+    };
+  }
+  function importSheetToKeeper({automatic=false}={}){
+    try{
+      const payload=readSheetPayload();
+      const player=payload&&keeperPlayerFromSheet(payload);
+      if(!player)throw new Error('No compatible Charsheet character is available.');
+      if(typeof state==='undefined'||!Array.isArray(state.players))throw new Error('Keeper Tool player registry is not ready.');
+      state.players.push(player);
+      if(state.dashboardPins&&Array.isArray(state.dashboardPins.players))state.dashboardPins.players.push(player.id);
+      if(typeof renderAll==='function')renderAll();
+      document.querySelector('[data-tab="players"]')?.click();
+      if(automatic)localStorage.removeItem(TRANSFER_KEY);
+      alert('Charsheet transferred to Keeper Tool: '+player.name);
+      return true;
+    }catch(error){alert('Could not import the Charsheet into Keeper Tool: '+error.message);return false;}
+  }
+  function start(){
+    document.getElementById('importSheetPlayerBtn')?.addEventListener('click',()=>importSheetToKeeper());
+    const params=new URLSearchParams(location.search);
+    if(params.get('from')==='sheet'&&params.get('import')==='1'){
+      importSheetToKeeper({automatic:true});
+      history.replaceState({},'',location.pathname+location.hash);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+  </script>
 
   <script src="portal.js"></script>
 </body>
