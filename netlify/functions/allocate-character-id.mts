@@ -1,7 +1,23 @@
 import type { Config, Context } from '@netlify/functions'
-import { createSign } from 'node:crypto'
-const headers={'Cache-Control':'no-store, max-age=0','Content-Security-Policy':"default-src 'none'; frame-ancestors 'none'",'X-Content-Type-Options':'nosniff'}
-const b64=(v:string|Buffer)=>Buffer.from(v).toString('base64url')
-async function token(sa:any){const n=Math.floor(Date.now()/1000),u=`${b64(JSON.stringify({alg:'RS256',typ:'JWT'}))}.${b64(JSON.stringify({iss:sa.client_email,scope:'https://www.googleapis.com/auth/datastore',aud:'https://oauth2.googleapis.com/token',iat:n,exp:n+3600}))}`;const s=createSign('RSA-SHA256');s.update(u);s.end();const assertion=`${u}.${s.sign(sa.private_key).toString('base64url')}`;const r=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion})});if(!r.ok)throw Error('Token exchange failed');return (await r.json()).access_token}
-export default async(req:Request,_ctx:Context)=>{if(req.method!=='POST')return Response.json({error:'Method not allowed'},{status:405,headers});const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON;if(!raw)return Response.json({error:'ID service not configured'},{status:503,headers});try{const sa=JSON.parse(raw),project=process.env.FIREBASE_PROJECT_ID||sa.project_id,access=await token(sa),base=`https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/documents`,counter=`${base}/systemCounters/characters`;for(let a=0;a<6;a++){const g=await fetch(counter,{headers:{authorization:`Bearer ${access}`}}),exists=g.ok,doc=exists?await g.json():null;if(!exists&&g.status!==404)throw Error('Counter read failed');const next=Math.max(1,Number(doc?.fields?.next?.integerValue||1)),id=`VF-${String(next).padStart(6,'0')}`,stamp=new Date().toISOString(),writes=[{update:{name:`projects/${project}/databases/(default)/documents/systemCounters/characters`,fields:{next:{integerValue:String(next+1)},updatedAt:{timestampValue:stamp}}},currentDocument:exists?{updateTime:doc.updateTime}:{exists:false}},{update:{name:`projects/${project}/databases/(default)/documents/characters/${id}`,fields:{characterId:{stringValue:id},schema:{stringValue:'veilfarers.character/2'},createdAt:{timestampValue:stamp},updatedAt:{timestampValue:stamp},status:{stringValue:'allocated'}}},currentDocument:{exists:false}}];const c=await fetch(`https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/documents:commit`,{method:'POST',headers:{authorization:`Bearer ${access}`,'content-type':'application/json'},body:JSON.stringify({writes})});if(c.ok)return Response.json({characterId:id},{headers});if(![409,412].includes(c.status))throw Error('Commit failed')}throw Error('Allocation contention')}catch(e){console.error(e);return Response.json({error:'Could not allocate character ID'},{status:500,headers})}}
+import { getUser, verifyRequestOrigin } from '@netlify/identity'
+import { encode, googleAccessToken, projectId, responseHeaders, serviceAccount } from './_firebase-admin.mts'
+export default async(req:Request,_ctx:Context)=>{
+ if(req.method!=='POST')return Response.json({error:'Method not allowed'},{status:405,headers:responseHeaders})
+ try{
+  verifyRequestOrigin(req);const user=await getUser();if(!user)return Response.json({error:'Sign in before allocating a permanent character ID.'},{status:401,headers:responseHeaders})
+  const sa=serviceAccount(),project=projectId(sa),access=await googleAccessToken(sa),base=`https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/documents`,counter=`${base}/systemCounters/characters`
+  for(let a=0;a<6;a++){
+   const g=await fetch(counter,{headers:{authorization:`Bearer ${access}`}}),exists=g.ok,doc=exists?await g.json():null;if(!exists&&g.status!==404)throw Error('Counter read failed')
+   const next=Math.max(1,Number(doc?.fields?.next?.integerValue||1)),id=`VF-${String(next).padStart(6,'0')}`,stamp=new Date().toISOString()
+   const characterFields:any={characterId:id,schema:'veilfarers.character/2',ownerId:user.id,ownerEmail:user.email||'',createdAt:new Date(stamp),updatedAt:new Date(stamp),status:'allocated'}
+   const writes=[
+    {update:{name:`projects/${project}/databases/(default)/documents/systemCounters/characters`,fields:{next:{integerValue:String(next+1)},updatedAt:{timestampValue:stamp}}},currentDocument:exists?{updateTime:doc.updateTime}:{exists:false}},
+    {update:{name:`projects/${project}/databases/(default)/documents/characters/${id}`,fields:Object.fromEntries(Object.entries(characterFields).map(([k,v])=>[k,encode(v)]))},currentDocument:{exists:false}}
+   ]
+   const c=await fetch(`https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/documents:commit`,{method:'POST',headers:{authorization:`Bearer ${access}`,'content-type':'application/json'},body:JSON.stringify({writes})})
+   if(c.ok)return Response.json({characterId:id},{headers:responseHeaders});if(![409,412].includes(c.status))throw Error(`Commit failed (${c.status})`)
+  }
+  throw Error('Allocation contention')
+ }catch(e:any){console.error(e);const status=Number(e?.status||e?.statusCode)||500;return Response.json({error:status===500?'Could not allocate character ID':(e?.message||'Request rejected.')},{status,headers:responseHeaders})}
+}
 export const config:Config={path:'/api/allocate-character-id'}

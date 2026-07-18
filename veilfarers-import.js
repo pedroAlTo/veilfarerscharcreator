@@ -3,6 +3,16 @@
 (function () {
   function num(v, d) { var n = parseInt(v, 10); return isNaN(n) ? (d || 0) : n; }
   function S(v) { return (v == null) ? '' : String(v); }
+  function safeJSON(value, fallback) { try { var parsed = typeof value === 'string' ? JSON.parse(value) : value; return parsed == null ? fallback : parsed; } catch (_) { return fallback; } }
+  function rankValue(value) { var key=S(value).trim().toLowerCase(); return key==='mastery'?3:key==='specialization'?2:1; }
+  function pathSubclassRules(item, path) { if(!item)return {}; return path==='sleeping' && item.sleepingRules ? item.sleepingRules : (item.rules || item); }
+  function featureObject(feature, label) { if(!feature || !feature.name)return null; return { name:[label,feature.name,feature.type].filter(Boolean).join(' · '), text:S(feature.desc || feature.text) }; }
+  function acquiredSubclassMoves(rules, rank) { var steps=[['Foundation',rules.foundation],['Specialization',rules.specialization],['Mastery',rules.mastery]]; return steps.slice(0,rankValue(rank)).map(function(step){return featureObject(step[1],step[0]);}).filter(Boolean); }
+  function sameText(a,b){return S(a).trim().toLowerCase()===S(b).trim().toLowerCase();}
+  function addUniqueMove(list,move){if(!move||!move.name)return;if(!(list||[]).some(function(item){return sameText(item.name,move.name)||sameText(item.name,S(move.name).replace(/^[^·]+·\s*/,''));}))list.push(move);}
+  function classCompatFor(canonical, rawClass, className){ return findBy(canonical.classCompat,function(item){return item.id===rawClass||item.slug===rawClass||item.name===rawClass||item.name===className;})||{}; }
+  function classRulesForPath(compat, canonicalClass, path){ if(path==='sleeping')return compat.sleepingRules||compat; return compat&&Object.keys(compat).length?compat:((canonicalClass&&canonicalClass.rules)||canonicalClass||{}); }
+  function subclassFor(canonical, rawSubclass, className){return findBy(canonical.subclasses,function(item){var same=item.name===rawSubclass||item.slug===rawSubclass||item.id===rawSubclass;return same&&(!className||!item.className||item.className===className);});}
   function featureNames(value) {
     if (Array.isArray(value)) return value.filter(Boolean).map(S);
     return S(value).split(/[,;]+/).map(function(x){ return x.trim(); }).filter(Boolean);
@@ -31,6 +41,7 @@
       name: S(source.name || base.name),
       trait: S(source.trait || base.trait),
       range: range,
+      baseDamage: S(source.baseDamage || source.damage || base.damage),
       damage: S(source.damage || base.damage),
       features: featureList,
       feature: featureList.join(', '),
@@ -39,7 +50,8 @@
       pack: S((found && found.pack) || source.pack),
       burden: found && found.burden != null ? found.burden : (source.burden == null ? null : source.burden),
       weaponFamily: S((found && found.weaponFamily) || source.weaponFamily),
-      proficiencyDie: S((found && found.proficiencyDie) || source.proficiencyDie)
+      proficiencyDie: S((found && found.proficiencyDie) || source.proficiencyDie),
+      installedMods: Array.isArray(source.installedMods) ? source.installedMods.slice() : []
     };
   }
   function ensureThreeExperiences(list) {
@@ -78,11 +90,19 @@
       var mn = S(f['s_move_' + m + '_n']);
       if (mn) moves.push({ name: mn, text: S(f['s_move_' + m + '_t']) });
     }
+    var learnedMoveValues = safeJSON(f.s_learned_moves, []);
+    if (!Array.isArray(learnedMoveValues)) learnedMoveValues = [];
+    learnedMoveValues.forEach(function(value){
+      var wanted = typeof value === 'object' ? S(value.id || value.name) : S(value);
+      var found = findBy(canonical.resolveMoves,function(move){ return move.id===wanted || move.name===wanted; });
+      addUniqueMove(moves, found ? { name:found.name, text:[found.cost,found.text].filter(Boolean).join(' · '), canonicalId:found.id } : { name:wanted, text:'' });
+    });
 
     // weapons
+    var modApi = (typeof window !== 'undefined' && window.VFEquipmentMods) || null;
     var weapons = [
-      hydrateWeapon({ name: S(f.wpri_name), trait: S(f.wpri_trait), damage: S(f.wpri_dmg_final || f.wpri_dmg), feature: S(f.wpri_feat) }, canonical),
-      hydrateWeapon({ name: S(f.wsec_name), trait: S(f.wsec_trait), damage: S(f.wsec_dmg_final || f.wsec_dmg), feature: S(f.wsec_feat) }, canonical)
+      hydrateWeapon({ name: S(f.wpri_name), trait: S(f.wpri_trait), damage: S(f.wpri_dmg_final || f.wpri_dmg), baseDamage:S(f.wpri_dmg), feature: S(f.wpri_feat), tier:S(f.wpri_tier), installedMods:modApi?modApi.normalize(f.wpri_mods,'weapon'):[] }, canonical),
+      hydrateWeapon({ name: S(f.wsec_name), trait: S(f.wsec_trait), damage: S(f.wsec_dmg_final || f.wsec_dmg), baseDamage:S(f.wsec_dmg), feature: S(f.wsec_feat), tier:S(f.wsec_tier), installedMods:modApi?modApi.normalize(f.wsec_mods,'weapon'):[] }, canonical)
     ].filter(function(w){ return !!w.name; });
 
     // inventory: eq_0..7 names (+use)
@@ -106,10 +126,16 @@
       var dn = S(f['drone_' + dr + '_name']);
       if (dn) {
         var mods = [];
-        for (var mm = 0; mm < 4; mm++) { var md = S(f['drone_' + dr + '_mod_' + mm]); if (md) mods.push(md); }
-        drones.push({ name: dn, grade: S(f['drone_' + dr + '_grade']), hp: S(f['drone_' + dr + '_hp']),
-                      evasion: S(f['drone_' + dr + '_eva']), armor: S(f['drone_' + dr + '_armor']),
-                      slots: S(f['drone_' + dr + '_slots']), modules: mods });
+        for (var mm = 0; mm < 4; mm++) {
+          var md = S(f['drone_' + dr + '_mod_' + mm]);
+          if (md) mods.push({ name:md, info:S(f['drone_' + dr + '_mod_' + mm + '_info']), status:S(f['drone_' + dr + '_mod_' + mm + '_status']) });
+        }
+        drones.push({
+          slotIndex:dr, name:dn, grade:S(f['drone_' + dr + '_grade']), tier:S(f['drone_' + dr + '_tier']),
+          hp:S(f['drone_' + dr + '_hp']), evasion:S(f['drone_' + dr + '_eva']), thresholds:S(f['drone_' + dr + '_thr']),
+          armor:S(f['drone_' + dr + '_armor']), slots:S(f['drone_' + dr + '_slots']), access:S(f['drone_' + dr + '_access']),
+          modules:mods, notes:S(f['drone_' + dr + '_notes'])
+        });
       }
     }
 
@@ -131,7 +157,15 @@
       }
     }
 
+    var vaultValues = S(f.a_vault).split(/\n+/).map(function(value){return value.trim();}).filter(Boolean);
+    var powerVault = vaultValues.map(function(value){
+      var bits=value.split('::');var name=bits.pop();var domain=bits.join('::');
+      var found=findBy(canonical.powers,function(power){return power.name===name&&(!domain||power.domain===domain);});
+      return found ? {id:found.id,canonicalId:found.id,name:found.name,domain:found.domain,level:num(found.level,1),costText:found.cost||'—',text:found.text||''} : {id:'vault:'+value,name:name,domain:domain,level:1,costText:'—',text:''};
+    });
+    var importedCharacterId = S(json.characterId || f.character_id || f.characterId).trim().toUpperCase();
     return {
+      id: importedCharacterId || '', characterId: importedCharacterId || '',
       name: S(f.name), playerName: '', pronouns: S(f.pron),
       heritage: S(f.ancestry) + (f.ailuran_variant ? (' (' + f.ailuran_variant + ')') : ''),
       background: S(f.community), class: S(f.class), subclass: S(f.subclass),
@@ -159,7 +193,11 @@
       playerNotes: [f.seed_motive, f.seed_afraid, f.seed_loss, f.seed_crew, f.a_quick_notes, f.s_anchor, f.aff_notes, f.equipment_notes].filter(Boolean).join('\n\n'),
       domains: S(f.a_domain_ref),
       ancestryGift: S(f.ancestry_gift), communityGift: S(f.community_gift),
-      armor: { name: S(f.armor_name), thresholds: S(f.armor_thr), feature: S(f.armor_feat), tier: S(f.armor_tier) },
+      armor: { name: S(f.armor_name), thresholds: S(f.armor_thr), feature: S(f.armor_feat), tier: S(f.armor_tier), installedMods:modApi?modApi.normalize(f.armor_mods,'armor'):[] },
+      modInventory: {
+        weapon: modApi?modApi.normalize(f.mod_inventory_weapon,'weapon'):[],
+        armor: modApi?modApi.normalize(f.mod_inventory_armor,'armor'):[]
+      },
       augments: augments,
       drones: drones,
       inventory: inv,
@@ -167,7 +205,10 @@
       weaponInventory: weapons.map(function(w){ return w.canonicalId || w.id; }).filter(Boolean),
       weaponArsenal: weapons.slice(),
       activeWeaponId: weapons[0] ? (weapons[0].canonicalId || weapons[0].id || weapons[0].name) : '',
-      domainCards: oldDomainCards
+      domainCards: oldDomainCards, powerVault: powerVault,
+      subclassRank:S(f.subclass_rank||'Foundation'), resolveDie:S(f.s_resolve_die||'d4'),
+      multiclass:S(f.multiclass), multiclassDetails:safeJSON(f.multiclass_details,null),
+      advancementHistory:Array.isArray(json.advancementHistory)?json.advancementHistory:[]
     };
   }
 
@@ -184,9 +225,7 @@
     var ancestry = findBy(canonical.ancestries, function (x) { return x.slug === raw.ancestry || x.id === raw.ancestry || x.name === raw.ancestry; });
     var community = findBy(canonical.communities, function (x) { return x.slug === raw.community || x.id === raw.community || x.name === raw.community; });
     var cls = findBy(canonical.classes, function (x) { return x.slug === raw.cls || x.id === raw.cls || x.name === raw.cls; });
-    var subclass = findBy(canonical.subclasses, function (x) {
-      return x.name === raw.subclass || x.slug === raw.subclass || x.id === raw.subclass;
-    });
+    var subclass = subclassFor(canonical, raw.subclass, cls && cls.name);
     var selectedArmor = findBy(canonical.armor, function (x) { return (raw.armors || []).indexOf(x.name) !== -1; });
     var selectedWeapons = (raw.weapons || []).map(function (name) {
       return findBy(canonical.weapons, function (x) { return x.name === name; });
@@ -200,9 +239,11 @@
 
     var stats = { agility:0, strength:0, finesse:0, instinct:0, presence:0, knowledge:0 };
     Object.keys(stats).forEach(function (key) { stats[key] = num(raw.traits && raw.traits[key], 0); });
-    var classRules = cls && cls.rules || {};
-    var hp = cls && cls.statistics ? cls.statistics.hitPoints : classRules.hp;
-    var evasion = cls && cls.statistics ? cls.statistics.evasion : classRules.evasion;
+    var pathLower = String(raw.path || '').toLowerCase() === 'sleeping' ? 'sleeping' : 'awakened';
+    var compat = classCompatFor(canonical, raw.cls, cls && cls.name);
+    var classRules = classRulesForPath(compat, cls, pathLower);
+    var hp = num(classRules.hp, cls && cls.statistics ? cls.statistics.hitPoints : 6) + num(raw.hpMaxBonus,0);
+    var evasion = num(classRules.evasion, cls && cls.statistics ? cls.statistics.evasion : 10) + num(raw.evasionBonus,0);
     var thresholds = selectedArmor && selectedArmor.thresholds || { major: 4, severe: 8 };
     var domainCards = selectedPowers.map(function (power) {
       var costMatch = String(power.cost || '').match(/(\d+)\s*Hope/i);
@@ -220,32 +261,38 @@
 
     var ancestryRules = ancestry && (ancestry.rules || ancestry) || {};
     var communityRules = community && (community.rules || community) || {};
-    var classRulesFull = cls && (cls.rules || cls) || {};
-    var subclassRules = subclass && (subclass.rules || subclass) || {};
+    var classRulesFull = classRules;
+    var subclassRules = pathSubclassRules(subclass,pathLower);
     var gifts = (ancestryRules.gifts || []).map(function(g){ return [g.name,g.text].filter(Boolean).join(': '); });
     if(ancestryRules.extra) gifts.push([ancestryRules.extra.name,ancestryRules.extra.text].filter(Boolean).join(': '));
     var strain = (ancestryRules.subStrains || []).find(function(x){ return x.id === raw.subStrain || x.name === raw.subStrain; });
     if(strain) gifts.push([strain.name, strain.featName, strain.featText].filter(Boolean).join(' · '));
     var communityFeature = communityRules.feature ? [communityRules.feature.name, communityRules.feature.text].filter(Boolean).join(': ') : '';
     var classFeature = classRulesFull.classFeature ? [classRulesFull.classFeature.name, classRulesFull.classFeature.text].filter(Boolean).join(': ') : '';
-    var pathLower = String(raw.path || '').toLowerCase();
-    var hopeFeature = classRulesFull.hopeFeature ? [classRulesFull.hopeFeature.name, classRulesFull.hopeFeature.text].filter(Boolean).join(': ') : '';
-    var foundation = subclassRules.foundation ? { name:[subclassRules.foundation.name,subclassRules.foundation.type].filter(Boolean).join(' · '), text:subclassRules.foundation.desc || subclassRules.foundation.text || '' } : null;
+    var hopeFeature = (pathLower==='sleeping' ? classRulesFull.effortFeature : classRulesFull.hopeFeature) ? [(pathLower==='sleeping'?classRulesFull.effortFeature:classRulesFull.hopeFeature).name, (pathLower==='sleeping'?classRulesFull.effortFeature:classRulesFull.hopeFeature).text].filter(Boolean).join(': ') : '';
+    var subclassMoves=acquiredSubclassMoves(subclassRules,raw.subclassRank||'Foundation');
+    var learnedMoves=(raw.resolveMoves||[]).map(function(value){var wanted=typeof value==='object'?S(value.id||value.name):S(value);var found=findBy(canonical.resolveMoves,function(move){return move.id===wanted||move.name===wanted;});return found?{name:found.name,text:[found.cost,found.text].filter(Boolean).join(' · '),canonicalId:found.id}:{name:wanted,text:''};}).filter(function(move){return move.name;});
+    learnedMoves.forEach(function(move){addUniqueMove(subclassMoves,move);});
+    var subclassFeatureText=subclassMoves.map(function(move){return [move.name,move.text].filter(Boolean).join(': ');}).join('\n\n');
+    var multiclassText=raw.multiclass&&raw.multiclass.className?['Multiclass — '+raw.multiclass.className,raw.multiclass.domain&&('Domain — '+raw.multiclass.domain),raw.multiclass.classFeature&&[raw.multiclass.classFeature.name,raw.multiclass.classFeature.text].filter(Boolean).join(': ')].filter(Boolean).join(' · '):'';
+    var combinedClassFeature=[classFeature,subclassFeatureText,multiclassText].filter(Boolean).join('\n\n');
 
+    var creatorCharacterId = S(raw.characterId || raw.character_id).trim().toUpperCase();
     return {
+      id: creatorCharacterId || '', characterId: creatorCharacterId || '',
       name: S(raw.name), playerName: '', pronouns: S(raw.pronouns),
       heritage: ancestry ? ancestry.name : S(raw.ancestry),
       background: community ? community.name : S(raw.community),
       class: cls ? cls.name : S(raw.cls), subclass: subclass ? subclass.name : S(raw.subclass),
-      level: num(raw.level, 1), path: pathLower === 'sleeping' ? 'sleeping' : 'awakened',
+      level: num(raw.level, 1), path: pathLower,
       stats: stats,
       hp: { current: num(hp, 6), max: num(hp, 6) },
-      stress: { current: 0, max: 6 }, hope: { current: 2, max: 6 }, effort: { current: 2, max: 6 },
-      resolve: { current: 2, max: 2 },
+      stress: { current: 0, max: 6+num(raw.stressMaxBonus,0) }, hope: { current: pathLower==='awakened'?2:0, max: 6 }, effort: { current: pathLower==='sleeping'?2:0, max: 6 },
+      resolve: { current: pathLower==='sleeping'?Math.min(10,(num(raw.level,1)>=8?6:num(raw.level,1)>=5?4:2)+num(raw.resolveMaxBonus,0)):0, max: pathLower==='sleeping'?Math.min(10,(num(raw.level,1)>=8?6:num(raw.level,1)>=5?4:2)+num(raw.resolveMaxBonus,0)):0 },
       thresholds: { major: num(thresholds.major, 4), severe: num(thresholds.severe, 8) },
       evasion: num(evasion, 10), shields: selectedArmor ? num(selectedArmor.armorSlots, 0) : 0,
       wealth: 1, credits: 0,
-      experiences: ensureThreeExperiences((raw.experiences || []).map(function (text) { return { description: S(text), bonus: 2 }; })),
+      experiences: ensureThreeExperiences((raw.experiences || []).map(function (text,index) { return { description: S(text), bonus: num((raw.experienceBonuses||[])[index],2) }; })),
       playerNotes: [raw.appearance, raw.voice, raw.bgAnswer, raw.anchor, raw.wound].filter(Boolean).join('\n'),
       inventory: inventory,
       weapons: selectedWeapons.map(function (weapon) { return hydrateWeapon(weapon, canonical); }),
@@ -253,8 +300,11 @@
       weaponArsenal: selectedWeapons.map(function (weapon) { return hydrateWeapon(weapon, canonical); }),
       activeWeaponId: selectedWeapons[0] ? selectedWeapons[0].id : '',
       armor: selectedArmor ? { id:selectedArmor.id, canonicalId:selectedArmor.id, name:selectedArmor.name, thresholds:selectedArmor.thresholds && selectedArmor.thresholds.raw || '', feature:(selectedArmor.features || []).join(', '), tier:selectedArmor.tier && selectedArmor.tier.name || '' } : null,
-      ancestryGift: gifts.join('\n\n'), communityGift: communityFeature, classFeature: classFeature, features: pathLower === 'sleeping' ? '' : hopeFeature,
-      moves: foundation ? [foundation] : [], domainCards: domainCards,
+      ancestryGift: gifts.join('\n\n'), communityGift: communityFeature, classFeature: combinedClassFeature, features: hopeFeature,
+      moves: subclassMoves, domainCards: domainCards,
+      powerVault:(raw.vaultPowers||[]).map(function(value){var bits=S(value).split('::');var name=bits.pop();var domain=bits.join('::');var found=findBy(canonical.powers,function(power){return power.name===name&&(!domain||power.domain===domain);});return found?{id:found.id,canonicalId:found.id,name:found.name,domain:found.domain,level:num(found.level,1),costText:found.cost||'—',text:found.text||''}:{id:'vault:'+value,name:name,domain:domain,level:1,costText:'—',text:''};}),
+      subclassRank:S(raw.subclassRank||'Foundation'),resolveDie:S(raw.resolveDie||'d4'),multiclass:raw.multiclass&&raw.multiclass.className||'',multiclassDetails:raw.multiclass||null,
+      advancementHistory:Array.isArray(raw.advancementHistory)?raw.advancementHistory:[],
       creatorSource: { schema: 'veilfarers.creator-state/1', importedAt: new Date().toISOString() }
     };
   }

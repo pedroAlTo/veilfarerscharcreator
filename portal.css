@@ -35,3 +35,7 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-construction-banner strong{text-transform:uppercase;letter-spacing:.11em;color:#fff2c8}.vf-construction-banner span{color:rgba(248,231,168,.68)}
 [hidden]{display:none!important}
 @media(max-width:700px){.vf-construction-banner{align-items:flex-start;flex-direction:column;gap:2px;padding:8px 12px;text-align:left}}
+
+/* v59.48: portal navigation remains above embedded Keeper/Player application chrome. */
+.vf-portal-nav{z-index:60000}
+.vf-construction-banner{z-index:59999}

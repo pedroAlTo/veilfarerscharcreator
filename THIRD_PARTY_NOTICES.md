@@ -35,3 +35,11 @@ The Tech and Biolum Hope, Fear, Damage, neutral, and discarded material maps are
 ## VeilFarers Dice Box Compatibility Extension — v59.24
 
 The locally bundled Dice Box browser distribution contains a narrowly scoped compatibility extension named `setDiceVisuals`. It exposes settled onscreen Babylon mesh presentation controls for outline, overlay, visibility, and per-instance colour. It does not alter dice physics, randomisation, result resolution, or the upstream roll/add/remove lifecycle. The extension is distributed under the same MIT terms as the bundled Dice Box code.
+
+
+## Netlify Identity and Functions
+
+- `@netlify/identity` 1.2.0 — MIT — https://github.com/netlify/primitives
+- `@netlify/functions` 5.3.0 — MIT — https://github.com/netlify/primitives
+
+VeilFarers uses these packages for authenticated server access and typed Identity lifecycle event handlers. They do not ship browser-visible service credentials.

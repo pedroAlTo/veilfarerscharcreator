@@ -2324,8 +2324,14 @@ async function finishCreatorToSheet(){
     window.VeilFarersSheetBridge.saveOutput(out,state);
     if(window.VeilFarersCharacterRegistry&&state.characterId){
       const payload={app:"Veilfarers Character Sheet",version:"2.83-RC3.2",schema:"veilfarers.character/2",characterId:state.characterId,fields:{...out.fields,character_id:state.characterId},tracks:out.tracks,advancementHistory:state.advancementHistory||[]};
-      const record=window.VeilFarersCharacterRegistry.saveLocalData(state.characterId,{creatorState:state,sheetPayload:payload,advancementHistory:state.advancementHistory||[]},{source:"creator-to-charsheet"});
-      window.VeilFarersCharacterRegistry.sync(record,{source:"creator-to-charsheet"}).catch(()=>{});
+      const completedAt=new Date().toISOString();
+      const record=window.VeilFarersCharacterRegistry.saveLocalData(state.characterId,{creatorState:state,sheetPayload:payload,advancementHistory:state.advancementHistory||[]},{source:"creator-to-charsheet",status:"active",completedAt});
+      const synced=await window.VeilFarersCharacterRegistry.sync(record,{source:"creator-to-charsheet"});
+      if(synced&&synced.cloudState==='deferred'){
+        flashStatus("Saved locally · cloud sync pending");
+      }else{
+        flashStatus("Saved to Character Vault");
+      }
     }
     localStorage.setItem("veilfarers.sheet.syncCreatorOnOpen.v1","1");
     localStorage.setItem("veilfarers.sheet.creatorRelease.v1",CREATOR_CANONICAL_RELEASE);
@@ -2492,10 +2498,10 @@ function buildSheet(){
 
 function freshState(){
   return {ancestry:null,subStrain:null,community:null,path:null,cls:null,subclass:null,
-    traits:{},experiences:["","",""],affiliation:null,veilAlignment:null,sleepingMysticDomains:[],powers:[],
+    traits:{},experiences:["","",""],experienceBonuses:[2,2,2],affiliation:null,veilAlignment:null,sleepingMysticDomains:[],powers:[],vaultPowers:[],resolveMoves:[],
     weapons:[],armors:[],kit:"",
     name:"",pronouns:"",appearance:"",voice:"",bgAnswer:"",anchor:"",wound:"",
-    level:1,proficiency:1,levelNotes:"",selectedArrayVal:null};
+    characterId:"",level:1,proficiency:1,hpMaxBonus:0,stressMaxBonus:0,evasionBonus:0,technologyAccessLevel:1,resolveMaxBonus:0,resolveDie:"d4",subclassRank:"Foundation",traitAdvances:{},multiclass:null,temperedResolve:false,advancementHistory:[],levelNotes:"",selectedArrayVal:null};
 }
 function resetAll(){
   if(!confirm("Start a new character? Unsaved progress will be lost.")) return;

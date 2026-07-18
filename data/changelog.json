@@ -1,7 +1,37 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.46",
+  "currentVersion": "v59.48",
   "entries": [
+    {
+      "version": "v59.48",
+      "date": "2026-07-18",
+      "title": "Account Character Vault, guided Level Up, mobile shake rolls and authenticated Keeper access",
+      "changes": [
+        "Converted Character Vault into the Firebase-backed, account-owned source for completed VF-###### characters; Creator automatically saves completed characters and the Vault supports local fallback, Trash and restore.",
+        "Added one shared Vault selector to Level Up, Account and Player Tool; opening the same Character ID updates the existing Player Tool record instead of creating a duplicate.",
+        "Rebuilt Level Up as a Creator-style guided workflow with all eleven Corebook RC3.2 advancement options, availability reasons, Tier Achievement configuration, canonical Power/Resolve Move choices, Multiclass, Subclass progression and a before/after review.",
+        "Level Up now updates the same Vault record, regenerates Charsheet data, records advancement history and preserves current Player Tool HP, Stress, Hope/Effort, Resolve, Armor and Conditions.",
+        "Added optional Shake to Roll on supported mobile browsers without changing the protected v59.25 dice calculation or renderer behavior.",
+        "Added milestone-based 3D dice initialization progress and fallback controls so the first 3D roll never appears frozen.",
+        "Moved Player Tool connection errors into a global highest-priority alert layer above navigation, modals and 3D dice.",
+        "Restored the shared portal navigation in Keeper Tool and made Keeper Tool require a general logged-in member account; table ownership and invitations remain tied to authenticated user IDs.",
+        "Added Level Up to the shared portal navigation and to the current saved character controls in Player Tool.",
+        "Retained VeilFarers as the active project branding."
+      ]
+    },
+    {
+      "version": "v59.47",
+      "date": "2026-07-18",
+      "title": "Equipment mods, drone transfer and authenticated table ownership",
+      "changes": [
+        "Fixed Charsheet-to-Player Tool drone synchronization so module information, status and subsequent edits update the same standalone drone record.",
+        "Added the Corebook weapon and armor modification catalogues with Tier-based Hardpoints and install/uninstall controls in Charsheet and Player Tool.",
+        "Printable Charsheet inventory now lists installed equipment mods as [Equipment] Mod — Effect entries, with overflow sent to General Notes.",
+        "Condensed ancestry, community, class, subclass and Hope/Effort feature text into schematic mechanical summaries while preserving costs, ranges, rolls and resource effects.",
+        "Replaced the public table gate with authenticated ownership and membership: owners manage members, passwords and revocable invitation links/passkeys.",
+        "Table password verifiers are stored in server-only Firestore documents; the authenticated directory exposes only safe table metadata."
+      ]
+    },
     {
       "version": "v59.46",
       "date": "2026-07-18",
@@ -514,5 +544,5 @@
       ]
     }
   ],
-  "version": "v59.46"
+  "version": "v59.48"
 }

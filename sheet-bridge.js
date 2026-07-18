@@ -44,6 +44,7 @@
   function currentDraft(){try{return JSON.parse(localStorage.getItem(CREATOR_KEY)||'null');}catch(_){return null;}}
   function proficiencyFloor(level){level=Math.max(1,Math.min(10,Number(level)||1));return level>=8?4:level>=5?3:level>=2?2:1;}
   function featureText(feature){return feature?text(feature.name,feature.text||feature.desc):'';}
+  const compactRule=(value,label)=>window.VFCompactRules?window.VFCompactRules.compactBundle(value,label):clean(value);
   function selectedByName(list,names){return (names||[]).map(name=>byIdentity(list,name)).filter(Boolean);}
   function powerFromValue(list,value){
     const bits=clean(value).split('::');
@@ -55,6 +56,25 @@
   function pathSubclasses(compat,path){
     if(path==='sleeping')return compat.sleepingSubclasses||compat.sleepingRules?.subclasses||[];
     return compat.awakenedSubclasses||compat.subclasses||[];
+  }
+  function rankValue(value){
+    const key=clean(value).toLowerCase();
+    return key==='mastery'?3:key==='specialization'?2:1;
+  }
+  function pathSubclassRules(item,path){
+    if(!item)return {};
+    if(path==='sleeping'&&item.sleepingRules)return item.sleepingRules;
+    return item.rules||item;
+  }
+  function acquiredSubclassFeatures(subclassRules,rank){
+    const steps=[['Foundation',subclassRules.foundation],['Specialization',subclassRules.specialization],['Mastery',subclassRules.mastery]];
+    const limit=rankValue(rank);
+    return steps.slice(0,limit).filter(([,feature])=>feature&&feature.name).map(([label,feature])=>`${label} — ${featureText(feature)}`);
+  }
+  function multiclassSummary(value){
+    if(!value||typeof value!=='object')return '';
+    const parts=[value.className&&`Class — ${value.className}`,value.domain&&`Domain — ${value.domain}`,value.classFeature&&featureText(value.classFeature),value.backgroundQuestion&&value.backgroundAnswer&&`${value.backgroundQuestion} — ${value.backgroundAnswer}`].filter(Boolean);
+    return parts.length?`Multiclass — ${parts.join(' · ')}`:'';
   }
   function techSummary(compat,level){
     const tiers=compat?.technologyAccess?.tiers||[];
@@ -89,10 +109,15 @@
     const compat=byIdentity(c.classCompat,raw.cls)||byName(c.classCompat,cls&&cls.name)||{};
     const classRules=pathClassData(compat,path);
     const subclass=byIdentity(pathSubclasses(compat,path),raw.subclass);
+    const canonicalSubclass=(c.subclasses||[]).find(item=>{
+      const sameName=clean(item&&item.name).toLowerCase()===clean(raw.subclass).toLowerCase()||clean(item&&item.id).toLowerCase()===clean(raw.subclass).toLowerCase()||clean(item&&item.slug).toLowerCase()===clean(raw.subclass).toLowerCase();
+      const sameClass=!cls||!item.className||clean(item.className).toLowerCase()===clean(cls.name).toLowerCase();
+      return sameName&&sameClass;
+    })||null;
     const anc=byIdentity(c.ancestries,raw.ancestry);
     const com=byIdentity(c.communities,raw.community);
     const aff=byIdentity(c.affiliations,raw.affiliation);
-    const ar=rules(anc), cr=rules(com), sr=rules(subclass), afr=rules(aff);
+    const ar=rules(anc), cr=rules(com), sr=pathSubclassRules(canonicalSubclass||subclass,path), afr=rules(aff);
     const strain=(ar.subStrains||[]).find(x=>[x.id,x.name].some(v=>clean(v).toLowerCase()===clean(raw.subStrain).toLowerCase()));
     const ancestryParts=(ar.gifts||[]).map(featureText).filter(Boolean);
     if(ar.extra)ancestryParts.push(featureText(ar.extra));
@@ -101,6 +126,7 @@
     const classFeature=featureText(classRules.classFeature);
     const pathFeature=path==='sleeping'?(classRules.effortFeature||{}):(classRules.hopeFeature||{});
     const foundation=sr.foundation||{};
+    const subclassRank=clean(raw.subclassRank||'Foundation');
     const level=Math.max(1,Math.min(10,Number(raw.level)||1));
     const proficiency=Math.max(proficiencyFloor(level),Math.min(6,Number(raw.proficiency)||proficiencyFloor(level)));
     const selectedWeapons=selectedByName(c.weapons,raw.weapons).slice(0,2);
@@ -117,27 +143,27 @@
     const resolveBase=level>=8?6:(level>=5?4:2),resolveMax=Math.min(10,resolveBase+Number(raw.resolveMaxBonus||0));
     const affiliationNotes=[afr.tag,afr.benefit&&`Benefit: ${afr.benefit}`,afr.obligation&&`Obligation: ${afr.obligation}`].filter(Boolean).join('\n');
     const appearanceNotes=[raw.appearance&&`Appearance: ${raw.appearance}`,raw.voice&&`Voice: ${raw.voice}`].filter(Boolean).join('\n');
-    const foundationSummary=foundation.name?`Subclass Foundation — ${featureText(foundation)}`:'';
+    const subclassFeatureSummaries=acquiredSubclassFeatures(sr,subclassRank);
     const sleepingDomainSummary=path==='sleeping'&&Array.isArray(raw.sleepingMysticDomains)&&raw.sleepingMysticDomains.length
       ? `Studied Domains — ${raw.sleepingMysticDomains.join(' + ')}` : '';
-    const generalFeatures=[classFeature,foundationSummary,sleepingDomainSummary].filter(Boolean).join('\n\n');
+    const generalFeatures=[classFeature,...subclassFeatureSummaries,multiclassSummary(raw.multiclass),sleepingDomainSummary].filter(Boolean).join('\n\n');
     const selectedPowerSummary=selectedPowers.length?`Selected Level 1 Powers — ${selectedPowers.map(power=>`${power.domain}: ${power.name}`).join(' · ')}`:'';
     const awakenedDomainSummary=path==='awakened'?[raw.veilAlignment&&`Veil Alignment — ${raw.veilAlignment}`,selectedPowerSummary].filter(Boolean).join('\n'):'';
     const signatureTrait=sr.trait||classRules.spellcastTrait||classRules.trait||compat.spellcastTrait||compat.trait||'';
     const f={
       character_id:clean(raw.characterId),name:clean(raw.name),pron:clean(raw.pronouns),level:String(level),prof:String(proficiency),chosen_path:pathLabel,
-      ancestry:(anc&&anc.name)||clean(raw.ancestry),ancestry_gift:ancestryParts.join('\n\n'),ancestry_note:ancestryParts.join('\n\n'),ailuran_variant:strain?strain.name:'',
-      community:(com&&com.name)||clean(raw.community),community_note:communityFeature,community_gift:communityFeature,community_advantages:communityFeature,
+      ancestry:(anc&&anc.name)||clean(raw.ancestry),ancestry_gift:compactRule(ancestryParts.join('\n\n'),'Ancestry Gift'),ancestry_note:compactRule(ancestryParts.join('\n\n'),'Ancestry Gift'),ailuran_variant:strain?strain.name:'',
+      community:(com&&com.name)||clean(raw.community),community_note:compactRule(communityFeature,'Community'),community_gift:compactRule(communityFeature,'Community'),community_advantages:compactRule(communityFeature,'Community'),
       affiliation:(aff&&aff.name)||clean(raw.affiliation),aff_standing:'+1 Good Standing',aff_reputation:'Unknown (0)',aff_notes:[affiliationNotes,appearanceNotes].filter(Boolean).join('\n\n'),aff_faction_notes:affiliationNotes,
       class:(cls&&cls.name)||compat.name||clean(raw.cls),subclass:(subclass&&subclass.name)||clean(raw.subclass),signature_trait:signatureTrait,
-      features:generalFeatures,
-      a_featname:path==='awakened'?clean(pathFeature.name):'',a_feattext:path==='awakened'?clean(pathFeature.text||pathFeature.desc):'',
-      s_featname:path==='sleeping'?clean(pathFeature.name):'',s_feattext:path==='sleeping'?clean(pathFeature.text||pathFeature.desc):'',
+      features:compactRule(generalFeatures,'Class Feature'),
+      a_featname:path==='awakened'?clean(pathFeature.name):'',a_feattext:path==='awakened'?compactRule(clean(pathFeature.text||pathFeature.desc),clean(pathFeature.name)||'Feature'):'',
+      s_featname:path==='sleeping'?clean(pathFeature.name):'',s_feattext:path==='sleeping'?compactRule(clean(pathFeature.text||pathFeature.desc),clean(pathFeature.name)||'Feature'):'',
       s_honed:path==='sleeping'?'HONED EDGE':'',s_active_move:'',s_active_move_text:'',
       class_proficiencies:techSummary(compat,level),tech_access:techSummary(compat,level),tech_access_level:String(Math.max(1,Number(raw.technologyAccessLevel||1))),
       base_hp_max:String(finalHp),base_stress_max:String(finalStress),base_evasion:String(finalEvasion),evasion:String(finalEvasion),
       wealth:String(raw.wealth||1),kit_class:(classRules.items||compat.items||[]).join(' · '),kit_personal:clean(raw.kit),
-      a_domain_ref:awakenedDomainSummary,a_vault:(raw.vaultPowers||[]).join('\n'),s_resolve_die:clean(raw.resolveDie||'d4'),s_learned_moves:JSON.stringify(raw.resolveMoves||[]),subclass_rank:clean(raw.subclassRank||'Foundation'),multiclass:clean(raw.multiclass&&raw.multiclass.className),
+      a_domain_ref:awakenedDomainSummary,a_vault:(raw.vaultPowers||[]).join('\n'),s_resolve_die:clean(raw.resolveDie||'d4'),s_learned_moves:JSON.stringify(raw.resolveMoves||[]),subclass_rank:subclassRank,multiclass:clean(raw.multiclass&&raw.multiclass.className),multiclass_details:raw.multiclass?JSON.stringify(raw.multiclass):'',
       tr_agility:signed(raw.traits&&raw.traits.agility),tr_strength:signed(raw.traits&&raw.traits.strength),tr_finesse:signed(raw.traits&&raw.traits.finesse),tr_knowledge:signed(raw.traits&&raw.traits.knowledge),tr_instinct:signed(raw.traits&&raw.traits.instinct),tr_presence:signed(raw.traits&&raw.traits.presence),
       base_tr_agility:signed(raw.traits&&raw.traits.agility),base_tr_strength:signed(raw.traits&&raw.traits.strength),base_tr_finesse:signed(raw.traits&&raw.traits.finesse),base_tr_knowledge:signed(raw.traits&&raw.traits.knowledge),base_tr_instinct:signed(raw.traits&&raw.traits.instinct),base_tr_presence:signed(raw.traits&&raw.traits.presence),
       seed_motive:clean(raw.bgAnswer),s_anchor:clean(raw.anchor),equipment_notes:clean(raw.wound),a_quick_notes:clean(raw.levelNotes)

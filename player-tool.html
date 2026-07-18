@@ -113,19 +113,11 @@
                 // 2. Configurar Persistencia (SESSION es más seguro en iframes que LOCAL)
                 await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
-                // 3. Autenticación
-                let user = auth.currentUser;
-                if (!user) {
-                    console.log("Intentando Login Anónimo...");
-                    try {
-                        const userCred = await auth.signInAnonymously();
-                        user = userCred.user;
-                        console.log("Login exitoso. UID:", user.uid);
-                    } catch (authErr) {
-                        console.error("Error Auth:", authErr.code, authErr.message);
-                        throw new Error(`Authentication error (${authErr.code}): make sure 'Anonymous' sign-in is enabled in Firebase Console > Authentication.`);
-                    }
-                }
+                // 3. Bridge the authenticated Netlify Identity user into Firebase.
+                if (!window.VFTableAccess) throw new Error("Table access bridge not loaded.");
+                const identityUser = await window.VFTableAccess.ensureFirebaseAuth(auth);
+                const user = auth.currentUser;
+                console.log("Authenticated table user:", identityUser.email || user.uid);
 
                 console.log("Verificando acceso a Firestore...");
                 
@@ -389,6 +381,7 @@
         html.vf-disable-dice-lock .vf-dice3d-outcome { display:none !important; }
 
     </style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script src="/character-registry.js"></script>
 <script src="/character-sync-adapter.js"></script>
 </head>
@@ -471,8 +464,11 @@
     </script>
 
     <!-- Canonical RC3 data shared with the Creator, inventories and Keeper Tool -->
+    <script src="equipment-mods.js"></script>
+    <script src="compact-rules.js"></script>
     <script src="shared-data.js" onload="window.VFLoading && window.VFLoading.advance(38, 'Loading shared registries…', 'Source lists, traits and shared canonical helpers are now online.')"></script>
     <script src="canonical-runtime.js" onload="window.VFLoading && window.VFLoading.advance(64, 'Verifying canonical rules…', 'Merging rule packs and exposing the current release manifest.')"></script>
+    <script src="table-access.js"></script>
     <script src="veilfarers-import.js" onload="window.VFLoading && window.VFLoading.advance(79, 'Linking import bridges…', 'Character import compatibility and state migration bridges are ready.')"></script>
 
     <script type="text/babel">
@@ -757,7 +753,9 @@
             name: weapon.name || source.name || '',
             trait: trait || source.trait || '',
             range: range || source.range || '',
-            damage: (override && override.damage) || weapon.damage || source.damage || '',
+            baseDamage: weapon.baseDamage || (override && override.damage) || source.damage || weapon.damage || '',
+            damage: window.VFEquipmentMods ? window.VFEquipmentMods.addDamageBonus(weapon.baseDamage || (override && override.damage) || source.damage || weapon.damage || '', window.VFEquipmentMods.damageBonus(weapon.installedMods)) : ((override && override.damage) || weapon.damage || source.damage || ''),
+            installedMods: window.VFEquipmentMods ? window.VFEquipmentMods.normalize(weapon.installedMods,'weapon') : (Array.isArray(weapon.installedMods)?weapon.installedMods:[]),
             features: features.length ? features : featureList(source.features),
             feature: (features.length ? features : featureList(source.features)).join(', '),
             featureRefs: (canonical && canonical.featureRefs) || weapon.featureRefs || [],
@@ -898,6 +896,7 @@
             name: armor.name || source.name || '',
             features: Array.isArray(source.features) ? source.features : featureList(source.features),
             thresholds: source.thresholds || armor.thresholds || { major: armor.major || 0, severe: armor.severe || 0 },
+            installedMods: window.VFEquipmentMods ? window.VFEquipmentMods.normalize(armor.installedMods,'armor') : (Array.isArray(armor.installedMods)?armor.installedMods:[]),
             armorSlots: source.armorSlots != null ? source.armorSlots : (armor.armorSlots != null ? armor.armorSlots : ''),
             weightClass: source.weightClass || armor.weightClass || '',
             tier: source.tier || armor.tier || '',
@@ -905,9 +904,15 @@
             custom: !!armor.custom && !canonical
           };
         };
+        const armorThresholdsWithMods = (armor) => {
+          const item = hydrateArmor(armor);
+          const base = parseThresholdPair(item.thresholds || {});
+          const bonus = window.VFEquipmentMods ? window.VFEquipmentMods.thresholdBonus(item.installedMods) : 0;
+          return { major:Math.max(0,Number(base.major||0)+bonus), severe:Math.max(0,Number(base.severe||0)+bonus) };
+        };
         const armorSummary = (armor) => {
           const item = hydrateArmor(armor);
-          const thresholds = item.thresholds || {};
+          const thresholds = armorThresholdsWithMods(item);
           const featureText = featureList(item.features).join(', ');
           return {
             item,
@@ -1186,7 +1191,8 @@
           return actions;
         };
         const compactFeature = (text, fallbackTitle) => {
-          const source = String(text || '').replace(/\r/g, '').trim();
+          const rawSource = String(text || '').replace(/\r/g, '').trim();
+          const source = window.VFCompactRules ? window.VFCompactRules.compactBundle(rawSource, fallbackTitle) : rawSource;
           if (!source) return { title: fallbackTitle, bullets: [], full: '', actions: [] };
           const firstLine = source.split('\n').find(Boolean) || source;
           let title = fallbackTitle;
@@ -1205,7 +1211,7 @@
             } else if (bullets.length < 5) bullets.push(cleaned);
           });
           if (!bullets.length) bullets.push(source.length > 220 ? source.slice(0, 217).trim() + '…' : source);
-          return { title, bullets: bullets.slice(0, 5), full: source, actions: parseFeatureRolls(source, title) };
+          return { title, bullets: bullets.slice(0, 5), full: source, actions: parseFeatureRolls(rawSource, title) };
         };
         const compactLine = (value, limit) => {
           const text = String(value || '').replace(/\s+/g, ' ').trim();
@@ -1381,6 +1387,10 @@
           const [customWeaponDraft, setCustomWeaponDraft] = useState({ name:'', trait:'', range:'', damage:'', feature:'' });
           const [showHistory, setShowHistory] = useState(false);
           const [showAddMenu, setShowAddMenu] = useState(false);
+          const [showVault, setShowVault] = useState(false);
+          const [vaultRecords, setVaultRecords] = useState([]);
+          const [vaultLoading, setVaultLoading] = useState(false);
+          const [vaultError, setVaultError] = useState('');
           useEffect(() => { if (!showHistory) return; const closeHistory = (event) => { if (event.key === 'Escape') setShowHistory(false); }; window.addEventListener('keydown', closeHistory); return () => window.removeEventListener('keydown', closeHistory); }, [showHistory]); 
           useEffect(() => {
             if (!showAddMenu) return;
@@ -1468,7 +1478,10 @@
           const [availableTables, setAvailableTables] = useState([]);
           const [tablesLoading, setTablesLoading] = useState(false);
           const [tableDirectoryEnabled, setTableDirectoryEnabled] = useState(null);
+          const inviteDefaults = window.VFTableAccess ? window.VFTableAccess.inviteFromUrl() : {table:'',invite:''};
           const [tablePass, setTablePass] = useState('');
+          const [invitePasskey, setInvitePasskey] = useState(inviteDefaults.invite || '');
+          useEffect(()=>{ if(inviteDefaults.table) setSessionId(inviteDefaults.table); },[]);
           const [connectedTableLocked, setConnectedTableLocked] = useState(false);
           const [newTablePass, setNewTablePass] = useState('');
           const [confirmTablePass, setConfirmTablePass] = useState('');
@@ -1503,6 +1516,13 @@
           }, [diceTrackingEnabled]);
           const [diceTextureSet, setDiceTextureSet] = useState(() => { try { const saved=localStorage.getItem('veilfarers_dice_texture_set'); return saved === 'plain' ? 'plain' : (saved === 'crystal' || saved === 'biolum') ? 'crystal' : 'tech'; } catch (e) { return 'tech'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_texture_set', diceTextureSet); } catch (e) {} }, [diceTextureSet]);
+          const [dice3DLoad, setDice3DLoad] = useState({open:false,stage:'Idle',progress:0,error:''});
+          const dice3DInitRef = useRef(null);
+          const rollInFlightRef = useRef(false);
+          const [shakeToRollEnabled, setShakeToRollEnabled] = useState(() => { try { return localStorage.getItem('veilfarers_shake_to_roll') === '1'; } catch (e) { return false; } });
+          const [shakePermission, setShakePermission] = useState('unknown');
+          const shakeStateRef = useRef({lastPeak:0,firstPeak:0,cooldownUntil:0});
+          useEffect(() => { try { localStorage.setItem('veilfarers_shake_to_roll', shakeToRollEnabled ? '1' : '0'); } catch (e) {} }, [shakeToRollEnabled]);
           const [timeTravelRevision, setTimeTravelRevision] = useState(0);
           // ===== NOTES / HANDOUTS =====
           const [handouts, setHandouts] = useState([]);        // incoming GM handouts (from session)
@@ -1548,14 +1568,44 @@
             });
             return values;
           };
-          const waitForDice3D = async (timeoutMs = 3000) => {
+          const waitForDice3DModule = async (timeoutMs = 6000) => {
             const started = Date.now();
             while (Date.now() - started < timeoutMs) {
               if (window.VFDice3D && typeof window.VFDice3D.roll === 'function') return window.VFDice3D;
               await new Promise(resolve => setTimeout(resolve, 50));
             }
-            return null;
+            throw new Error('The bundled 3D dice module did not finish loading.');
           };
+          const ensureDice3DReady = async ({showProgress=true}={}) => {
+            if (dice3DInitRef.current) {
+              if (showProgress) setDice3DLoad(current => ({...current,open:true,error:'',stage:current.stage && current.stage !== 'Idle' ? current.stage : 'Finishing 3D initialization…',progress:Math.max(12,current.progress||0)}));
+              return dice3DInitRef.current;
+            }
+            dice3DInitRef.current = (async () => {
+              setDice3DLoad({open:showProgress,stage:'Loading renderer module…',progress:12,error:''});
+              const dice3D = await waitForDice3DModule();
+              setDice3DLoad(current => ({...current,open:showProgress||current.open,stage:'Preparing 3D scene…',progress:36,error:''}));
+              if (typeof dice3D.init === 'function') {
+                const progressTimer = setTimeout(() => setDice3DLoad(current => ({...current,open:showProgress||current.open,stage:'Loading physics and dice themes…',progress:68,error:''})), 180);
+                try { await dice3D.init(); } finally { clearTimeout(progressTimer); }
+              }
+              setDice3DLoad(current => ({...current,open:showProgress||current.open,stage:'Ready',progress:100,error:''}));
+              if (showProgress) setTimeout(() => setDice3DLoad(current => current.error ? current : {...current,open:false}), 280);
+              return dice3D;
+            })().catch(error => {
+              dice3DInitRef.current = null;
+              setDice3DLoad({open:showProgress,stage:'3D dice failed to load',progress:100,error:error.message || String(error)});
+              throw error;
+            });
+            return dice3DInitRef.current;
+          };
+          useEffect(() => {
+            if (diceMode !== '3d') return;
+            const idle = window.requestIdleCallback || (callback => setTimeout(callback, 500));
+            const cancel = window.cancelIdleCallback || clearTimeout;
+            const id = idle(() => ensureDice3DReady({showProgress:false}).catch(() => {}));
+            return () => cancel(id);
+          }, [diceMode]);
           const applyDiceTextureSet = (groups) => {
             const crystalThemes = { vfHope:'vfBioHope', vfFear:'vfBioFear', vfDamage:'vfBioDamage', vfNeutral:'vfPlainNeutral' };
             const plainThemes = { vfHope:'vfPlainHope', vfFear:'vfPlainFear', vfDamage:'vfPlainDamage', vfNeutral:'vfPlainNeutral' };
@@ -1566,23 +1616,28 @@
             });
           };
           const rollVisualDice = async (groups, label, options) => {
-            const themedGroups = applyDiceTextureSet(groups);
-            const count = themedGroups.reduce((n,g)=>n+(Number(g.qty)||1),0);
-            playDiceSound(count || 2);
-            if (diceMode === '3d') {
-              try {
-                const dice3D = await waitForDice3D();
-                if (!dice3D) throw new Error('The 3D dice module did not finish loading.');
-                const method = options && options.append && typeof dice3D.add === 'function' ? 'add' : 'roll';
-                const result = await dice3D[method](themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle });
-                if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
-                throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
-              } catch (error) {
-                console.warn('3D dice unavailable; using the standard roller.', error);
-                showAlert('The 3D renderer could not start. This roll used the standard roller instead.', '3D dice fallback');
+            if (rollInFlightRef.current) throw new Error('A dice roll is already resolving.');
+            rollInFlightRef.current = true;
+            try {
+              const themedGroups = applyDiceTextureSet(groups);
+              const count = themedGroups.reduce((n,g)=>n+(Number(g.qty)||1),0);
+              playDiceSound(count || 2);
+              if (diceMode === '3d') {
+                try {
+                  const dice3D = await ensureDice3DReady({showProgress:true});
+                  const method = options && options.append && typeof dice3D.add === 'function' ? 'add' : 'roll';
+                  const result = await dice3D[method](themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle });
+                  if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
+                  throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
+                } catch (error) {
+                  console.warn('3D dice unavailable; using the standard roller.', error);
+                  setDice3DLoad({open:true,stage:'3D dice unavailable',progress:100,error:error.message || String(error)});
+                }
               }
+              return randomDiceValues(themedGroups);
+            } finally {
+              rollInFlightRef.current = false;
             }
-            return randomDiceValues(themedGroups);
           };
           const showResolvedDice = (data) => {
             if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.showResults === 'function') {
@@ -1645,7 +1700,7 @@
             c = c || {};
             if (c.entityType === 'drone') {
               const gradeId = c.droneGradeId || c.droneGrade || DRONE_GRADE_CATALOG[0];
-              const rawModules = (Array.isArray(c.installedModules) ? c.installedModules : []).map(item => findDroneModule(item) || item).filter(item => item && item.name);
+              const rawModules = (Array.isArray(c.installedModules) ? c.installedModules : []).map(item => { const canonical=findDroneModule(item); return canonical ? {...canonical,...(typeof item==='object'?item:{})} : item; }).filter(item => item && item.name);
               const uniqueModules = Array.from(new Map(rawModules.map(item => [droneModuleKey(item), item])).values());
               const droneContext = c.droneContext && typeof c.droneContext === 'object' ? c.droneContext : { temporaryEvasion:0 };
               const profile = droneDerivedProfile(gradeId, uniqueModules, droneContext);
@@ -1719,7 +1774,7 @@
               hp: c.hp || {current:0,max:6}, stress: c.stress || {current:0,max:6}, hope: c.hope || {current:0,max:6}, effort: c.effort || {current:0,max:6}, resolve: c.resolve || {current:0,max:2}, thresholds: c.thresholds || {major:0,severe:0},
               experiences: ensureThreeExperiences(c.experiences), weapons, weaponInventory: inventoryIds, weaponArsenal, activeWeaponId: activeId,
               inventory: Array.isArray(c.inventory) && c.inventory.length ? c.inventory : Array(8).fill('').map((_,i) => (Array.isArray(c.inventory) ? c.inventory[i] || '' : '')),
-              domainCards: c.domainCards || [], moves: c.moves || [], augments: augmentArsenal, augmentInventory, augmentArsenal, activeAugmentIds, armorInventory, armorArsenal, activeArmorId, gearInventory, gearArsenal, drones: c.drones || []
+              domainCards: c.domainCards || [], powerVault: c.powerVault || [], moves: c.moves || [], subclassRank:c.subclassRank||'Foundation', resolveDie:c.resolveDie||'d4', multiclass:c.multiclass||'', multiclassDetails:c.multiclassDetails||null, advancementHistory:c.advancementHistory||[], augments: augmentArsenal, augmentInventory, augmentArsenal, activeAugmentIds, armorInventory, armorArsenal, activeArmorId, gearInventory, gearArsenal, drones: c.drones || []
             };
           };
           const character = normChar(characters[activeTab] || characters[0] || {});
@@ -2321,9 +2376,48 @@
           };
           
           const rollGenericPlayer = () => {
-              rollGenericLogic(genDieType, genCount, genModifier, setGenResult, true); 
+              rollGenericLogic(genDieType, genCount, genModifier, setGenResult, true).catch(error => setErrorMsg('Dice roll failed: ' + (error.message || error)));
               if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
           };
+          const setShakeToRoll = async (enabled) => {
+              if (!enabled) { setShakeToRollEnabled(false); setShakePermission('disabled'); return; }
+              if (typeof window.DeviceMotionEvent === 'undefined') {
+                  setShakePermission('unsupported');
+                  showAlert('This browser does not expose motion sensors. The normal Roll button remains available.', 'Shake to Roll unavailable');
+                  return;
+              }
+              try {
+                  if (typeof window.DeviceMotionEvent.requestPermission === 'function') {
+                      const result = await window.DeviceMotionEvent.requestPermission();
+                      if (result !== 'granted') throw new Error('Motion permission was not granted.');
+                  }
+                  setShakePermission('granted'); setShakeToRollEnabled(true);
+              } catch (error) {
+                  setShakePermission('denied'); setShakeToRollEnabled(false);
+                  showAlert(error.message || String(error), 'Shake to Roll permission');
+              }
+          };
+          useEffect(() => {
+              if (!shakeToRollEnabled) return;
+              const onMotion = (event) => {
+                  if (!showRoller || minimized.player || document.visibilityState !== 'visible' || rollInFlightRef.current) return;
+                  const vector = event.acceleration && [event.acceleration.x,event.acceleration.y,event.acceleration.z].some(value => Number.isFinite(Number(value))) ? event.acceleration : event.accelerationIncludingGravity;
+                  if (!vector) return;
+                  const x=Number(vector.x)||0,y=Number(vector.y)||0,z=Number(vector.z)||0;
+                  const magnitude=Math.sqrt(x*x+y*y+z*z);
+                  const threshold=event.acceleration===vector?13:24;
+                  if (magnitude < threshold) return;
+                  const now=Date.now();const tracker=shakeStateRef.current;
+                  if (now < tracker.cooldownUntil || now-tracker.lastPeak<110) return;
+                  tracker.lastPeak=now;
+                  if (!tracker.firstPeak || now-tracker.firstPeak>720) { tracker.firstPeak=now; return; }
+                  tracker.firstPeak=0;tracker.cooldownUntil=now+1800;
+                  try { navigator.vibrate && navigator.vibrate(35); } catch (_) {}
+                  Promise.resolve(playerRollerMode==='duality'?rollDuality():rollGenericPlayer()).catch(error => setErrorMsg('Shake roll failed: '+(error.message||error)));
+              };
+              window.addEventListener('devicemotion',onMotion,{passive:true});
+              return () => window.removeEventListener('devicemotion',onMotion);
+          }, [shakeToRollEnabled,showRoller,minimized.player,playerRollerMode,rollLabel,rollModifier,playerRollType,genDieType,genCount,genModifier]);
 
           // --- LOGGING / REAL-TIME CALLOUTS ---
           const makeBroadcastId = () => 'roll-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
@@ -2413,35 +2507,82 @@
           };
 
           // --- LOCAL SAVE / LOAD / CARD MANAGERS ---
-          const addCard = (card) => { const newCards = [...(character.domainCards || [])]; if (!newCards.find(c => c.id === card.id)) { newCards.push(card); updateCharacter({ ...character, domainCards: newCards }); } };
-          const removeCard = (cardIndex) => { const newCards = [...(character.domainCards || [])]; newCards.splice(cardIndex, 1); updateCharacter({ ...character, domainCards: newCards }); };
+          const addCard = (card) => { const newCards = [...(character.domainCards || [])]; if (!newCards.find(c => c.id === card.id)) { newCards.push(card); updateCharacter({ ...character, domainCards: newCards, powerVault:(character.powerVault||[]).filter(item => item.id !== card.id) }); } };
+          const recallVaultCard = (card) => {
+            if ((character.domainCards||[]).length >= 5) { showAlert('The active Loadout is full. Return a card to the Vault first.', 'Loadout full'); return; }
+            addCard(card);
+          };
+          const removeCard = (cardIndex) => { const newCards = [...(character.domainCards || [])]; const removed=newCards.splice(cardIndex, 1)[0]; const vault=[...(character.powerVault||[])]; if(removed && !vault.some(item=>item.id===removed.id))vault.push(removed); updateCharacter({ ...character, domainCards: newCards, powerVault:vault }); };
+          const mergePlayerRuntime = (existing, incoming) => {
+            if (!existing) return incoming;
+            const merged = { ...existing, ...incoming, id: existing.id, characterId: incoming.characterId || existing.characterId };
+            ['hp','stress','hope','effort','resolve'].forEach(key => {
+              if (existing[key] && incoming[key]) merged[key] = { ...incoming[key], current: existing[key].current };
+            });
+            ['shields','armorMarked','conditions','savedNotes','signalState'].forEach(key => {
+              if (existing[key] != null) merged[key] = existing[key];
+            });
+            return merged;
+          };
+          const addOrUpdateMappedCharacter = (mapped, title='Character imported') => {
+            if (!mapped) { showAlert('No compatible character record was found.'); return false; }
+            const persistentId = mapped.characterId || mapped.id || mkCharId();
+            const incoming = { ...mapped, characterId: mapped.characterId || persistentId, id: persistentId, transferSource: mapped.transferSource || 'vault' };
+            const existingIndex = characters.findIndex(item => item && item.entityType !== 'drone' && ((incoming.characterId && item.characterId === incoming.characterId) || item.id === persistentId));
+            const replaceBlank = existingIndex < 0 && characters.length === 1 && (!characters[0] || !characters[0].name);
+            if (existingIndex >= 0) {
+              const next = characters.slice();
+              next[existingIndex] = mergePlayerRuntime(next[existingIndex], incoming);
+              setCharacters(next); setActiveTab(existingIndex);
+              showAlert('The saved build was updated without resetting current play tracks.', title);
+            } else if (replaceBlank) {
+              setCharacters([incoming]); setActiveTab(0); showAlert('The saved character was opened in Player Tool.', title);
+            } else {
+              setCharacters([...characters, incoming]); setActiveTab(characters.length); showAlert('The saved character was added to Player Tool.', title);
+            }
+            return true;
+          };
           const importCreatorDraft = () => {
             try {
               const draft = JSON.parse(localStorage.getItem('veilfarers-character') || 'null');
               const mapped = window.veilfarersImportCreatorState && window.veilfarersImportCreatorState(draft, VF_CANON);
               if (!mapped) { showAlert('No saved Character Creator draft was found on this device.'); return; }
-              const withId = { ...mapped, id: mapped.id || mkCharId() };
-              const replaceBlank = characters.length === 1 && (!characters[0] || !characters[0].name);
-              if (replaceBlank) { setCharacters([withId]); setActiveTab(0); }
-              else { setCharacters([...characters, withId]); setActiveTab(characters.length); }
-              showAlert('The current Character Creator draft was added to Player Tool.', 'Character imported');
+              addOrUpdateMappedCharacter(mapped, 'Creator draft imported');
             } catch (err) { showAlert('The saved Character Creator draft could not be imported.'); }
           };
-          const addImportedSheetCharacter = (mapped, title='Charsheet imported') => {
-            if (!mapped) { showAlert('No compatible Charsheet character was found.'); return false; }
-            const withId = { ...mapped, id: mapped.id || mkCharId(), transferSource:'charsheet' };
-            const replaceBlank = characters.length === 1 && (!characters[0] || !characters[0].name);
-            if (replaceBlank) { setCharacters([withId]); setActiveTab(0); }
-            else { setCharacters([...characters, withId]); setActiveTab(characters.length); }
-            showAlert('The filled Charsheet was added to Player Tool.', title);
-            return true;
-          };
+          const addImportedSheetCharacter = (mapped, title='Charsheet imported') => addOrUpdateMappedCharacter(mapped && { ...mapped, transferSource:'charsheet' }, title);
           const importCharsheet = () => {
             try {
               const payload = localSheetPayload();
               const mapped = payload && window.veilfarersImportSheet && window.veilfarersImportSheet(payload, VF_CANON);
               addImportedSheetCharacter(mapped);
             } catch (err) { showAlert('The Charsheet could not be imported: ' + err.message); }
+          };
+          const openCurrentLevelUp = () => {
+            const id = character && character.characterId;
+            const registry = window.VeilFarersCharacterRegistry;
+            if (!id || !registry || !registry.get(id)) { showAlert('Open a completed Character Vault record before using Level Up.', 'Level Up unavailable'); return; }
+            registry.setCurrentId(id);
+            window.location.href='/creator.html#level-up';
+          };
+          const openCharacterVault = async () => {
+            setShowAddMenu(false); setShowVault(true); setVaultLoading(true); setVaultError('');
+            const registry = window.VeilFarersCharacterRegistry;
+            if (!registry) { setVaultError('Character Vault registry is not loaded.'); setVaultLoading(false); return; }
+            setVaultRecords(registry.listForCurrentUser ? registry.listForCurrentUser({includeUnowned:true,completedOnly:true}) : registry.list());
+            try { const records = await registry.refreshVault({force:true}); setVaultRecords(records); }
+            catch (error) { setVaultError(error.message || String(error)); setVaultRecords(registry.listForCurrentUser ? registry.listForCurrentUser({includeUnowned:true,completedOnly:true}) : registry.list()); }
+            finally { setVaultLoading(false); }
+          };
+          const openVaultCharacter = (record) => {
+            try {
+              const payload = record && record.characterData && record.characterData.sheetPayload;
+              let mapped = payload && window.veilfarersImportSheet && window.veilfarersImportSheet(payload, VF_CANON);
+              if (!mapped && record && record.characterData && record.characterData.creatorState && window.veilfarersImportCreatorState) mapped = window.veilfarersImportCreatorState(record.characterData.creatorState, VF_CANON);
+              if (!mapped) throw new Error('This Vault record has no compatible build payload.');
+              mapped = { ...mapped, characterId: record.characterId, id: record.characterId, transferSource:'character-vault' };
+              if (addOrUpdateMappedCharacter(mapped, 'Character Vault')) setShowVault(false);
+            } catch (error) { setVaultError(error.message || String(error)); }
           };
           const saveToFile = () => { const dataStr = JSON.stringify(characters, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = `veilfarers_session_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(link); link.click(); document.body.removeChild(link); };
           const loadFromFile = (event) => {
@@ -2459,10 +2600,7 @@
                 if (creatorState && !Array.isArray(creatorState) && window.veilfarersImportCreatorState) {
                   const mappedState = window.veilfarersImportCreatorState(creatorState, VF_CANON);
                   if (mappedState) {
-                    const withId = { ...mappedState, id: mappedState.id || mkCharId() };
-                    const isDefaultOnly = characters.length === 1 && (!characters[0] || !characters[0].name);
-                    if (isDefaultOnly) { setCharacters([withId]); setActiveTab(0); }
-                    else { setCharacters([...characters, withId]); setActiveTab(characters.length); }
+                    addOrUpdateMappedCharacter(mappedState, 'JSON imported');
                     event.target.value=''; return;
                   }
                 }
@@ -2501,22 +2639,11 @@
           const fetchTables = async () => {
               setTablesLoading(true);
               try {
-                  let svc = fbServices;
-                  if (!svc) { svc = await window.initFirebase(); setFbServices(svc); }
-                  const directoryEnabled = !!(svc.config && svc.config.publicTableDirectory === true);
-                  setTableDirectoryEnabled(directoryEnabled);
-                  if (!directoryEnabled) {
-                      setAvailableTables([]);
-                      setStatusMsg('Public table discovery is disabled. Enter the exact table name to join or create it.');
-                      setTablesLoading(false);
-                      return;
-                  }
-                  const snap = await svc.db.collection('artifacts/' + appId + '/public/data/sessions').get();
-                  const tables = [];
-                  snap.forEach(function (d) { const dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!(dd.passAuth || dd.passHash) }); });
-                  tables.sort(function (a, b) { return a.name.localeCompare(b.name); });
-                  setAvailableTables(tables);
-              } catch (e) { console.error('fetchTables', e); setStatusMsg('Could not list tables: ' + e.message); }
+                  let svc=fbServices;if(!svc){svc=await window.initFirebase();setFbServices(svc);}
+                  setTableDirectoryEnabled(true);
+                  const tables=await window.VFTableAccess.list();
+                  setAvailableTables(tables.map(tb=>({...tb,players:tb.members||0})));
+              } catch(e){console.error('fetchTables',e);setStatusMsg('Could not list tables: '+e.message);setAvailableTables([]);}
               setTablesLoading(false);
           };
           // Tables list is always shown: refresh it every time the config modal opens.
@@ -2561,81 +2688,28 @@
               }
               return true;
           };
-          const connectToCloud = async (allowOpenTable = false) => {
-              if (allowOpenTable && typeof allowOpenTable === 'object') allowOpenTable = false;
+          const connectToCloud = async () => {
               setErrorMsg('');
-              if (!window.initFirebase) { setStatusMsg("Error: Firebase SDK not loaded."); return; }
-              try {
-                  setStatusMsg("Connecting...");
-                  const services = await window.initFirebase();
-                  if (services) {
-                      const cleanSessionId = normalizeSessionKey(sessionId);
-                      const ref = services.doc(services.db, 'artifacts', appId, 'public', 'data', 'sessions', cleanSessionId);
-                      const snap = await ref.get();
-                      const existing = (snap && snap.exists) ? (snap.data() || {}) : null;
-                      const protectedTable = !!(existing && (existing.passAuth || existing.passHash));
-                      if (protectedTable) {
-                          const valid = await verifyTablePassword(existing, cleanSessionId, tablePass);
-                          if (!valid) {
-                              setStatusMsg('');
-                              setErrorMsg('This table is closed. Enter the correct password to join it.');
-                              return;
-                          }
-                      }
-                      if (!existing && !String(tablePass || '').trim() && !allowOpenTable) {
-                          setStatusMsg('');
-                          showConfirm('This will create an OPEN table visible in the table directory. A password is strongly recommended. Create it without a password anyway?', () => connectToCloud(true), 'Create open table?');
-                          return;
-                      }
-                      const extra = { name:cleanSessionId, lastActive:Date.now() };
-                      let createdLocked = protectedTable;
-                      if (!existing && String(tablePass || '').trim()) {
-                          extra.passAuth = await makePasswordRecord(tablePass.trim());
-                          extra.passHash = null;
-                          extra.isOpen = false;
-                          localStorage.setItem('veilfarers_tableauth_' + cleanSessionId, passwordRecordToken(extra.passAuth));
-                          createdLocked = true;
-                      } else if (!existing) {
-                          extra.isOpen = true;
-                      }
-                      setFbServices(services);
-                      setIsConnected(true);
-                      setConnectedTableLocked(createdLocked);
-                      setShowConfig(false);
-                      setStatusMsg("Connected.");
-                      startListening(services, cleanSessionId);
-                      await services.setDoc(ref, extra, { merge:true });
-                      localStorage.setItem('veilfarers_session_id', cleanSessionId);
-                      setSessionId(cleanSessionId);
-                      setTablePass('');
-                  }
-              } catch (err) {
-                  setStatusMsg("Connection failed.");
-                  setErrorMsg(err.message);
-                  console.error(err);
-              }
+              if(!window.initFirebase||!window.VFTableAccess){setStatusMsg('Cloud table services are not loaded.');return;}
+              try{
+                  setStatusMsg('Authorizing table…');
+                  const services=await window.initFirebase();
+                  const cleanSessionId=normalizeSessionKey(sessionId);
+                  const access=await window.VFTableAccess.authorize({tableId:cleanSessionId,password:String(tablePass||''),invite:String(invitePasskey||''),createIfMissing:true});
+                  setFbServices(services);setIsConnected(true);setConnectedTableLocked(!!access.locked);setShowConfig(false);setStatusMsg('Connected.');
+                  startListening(services,cleanSessionId);localStorage.setItem('veilfarers_session_id',cleanSessionId);setSessionId(cleanSessionId);setTablePass('');setInvitePasskey('');
+                  window.VFTableAccess.mountAdmin(cleanSessionId,access.role);
+                  const cleanUrl=window.location.pathname+window.location.hash;window.history.replaceState({},'',cleanUrl);
+              }catch(err){setStatusMsg('Connection failed.');setErrorMsg(err.message);console.error(err);}
           };
           const changeConnectedTablePassword = async () => {
-              if (!isConnected || !fbServices) { setErrorMsg('Connect to the table before adding or changing its password.'); return; }
-              const password = String(newTablePass || '');
-              if (password.length < 4) { setErrorMsg('Use at least 4 characters for the table password.'); return; }
-              if (password !== String(confirmTablePass || '')) { setErrorMsg('The new password fields do not match.'); return; }
-              setPasswordChanging(true); setErrorMsg('');
-              try {
-                  const cleanSessionId = normalizeSessionKey(sessionId);
-                  const ref = fbServices.doc(fbServices.db, 'artifacts', appId, 'public', 'data', 'sessions', cleanSessionId);
-                  const passAuth = await makePasswordRecord(password);
-                  await fbServices.setDoc(ref, { passAuth, passHash:null, isOpen:false, passwordUpdatedAt:Date.now() }, { merge:true });
-                  localStorage.setItem('veilfarers_tableauth_' + cleanSessionId, passwordRecordToken(passAuth));
-                  localStorage.removeItem('veilfarers_tablepass_' + cleanSessionId);
-                  setConnectedTableLocked(true);
-                  setNewTablePass(''); setConfirmTablePass('');
-                  setStatusMsg('Table password updated.');
-                  fetchTables();
-              } catch (error) { setErrorMsg('Password update failed: ' + error.message); }
-              setPasswordChanging(false);
+              if(!isConnected){setErrorMsg('Connect to the table first.');return;}
+              const password=String(newTablePass||'');if(password&&password.length<4){setErrorMsg('Use at least 4 characters, or use Table Admin to remove the password.');return;}
+              if(password!==String(confirmTablePass||'')){setErrorMsg('The new password fields do not match.');return;}
+              setPasswordChanging(true);setErrorMsg('');
+              try{const out=await window.VFTableAccess.api('setPassword',{tableId:normalizeSessionKey(sessionId),password});setConnectedTableLocked(!!out.locked);setNewTablePass('');setConfirmTablePass('');setStatusMsg('Table password updated.');fetchTables();}
+              catch(error){setErrorMsg('Password update failed: '+error.message);}setPasswordChanging(false);
           };
-
           const disconnectFromCloud = () => {
               if (unsubscribeRef.current) {
                   unsubscribeRef.current(); // Stop listening
@@ -2816,7 +2890,7 @@
           const setActiveArmor = (armor) => {
             const hydrated = hydrateArmor(armor);
             const slots = Math.max(0, Number(hydrated.armorSlots) || 0);
-            const thresholds = hydrated.thresholds || character.thresholds;
+            const thresholds = armorThresholdsWithMods(hydrated);
             updateCharacter({ ...character, activeArmorId: armorKey(hydrated), armor: hydrated, thresholds, armorMax:slots, shields:slots });
           };
           const clearActiveArmor = () => updateCharacter({ ...character, activeArmorId: '', armor: null, armorMax:0, shields:0 });
@@ -2828,7 +2902,7 @@
             const nextActive = exists && character.activeArmorId === key ? '' : (character.activeArmorId || '');
             const nextArmor = nextActive ? (nextArsenal.find(item => armorKey(item) === nextActive) || null) : null;
             const nextSlots = nextArmor ? Math.max(0, Number(nextArmor.armorSlots) || 0) : 0;
-            updateCharacter({ ...character, armorInventory: nextArsenal.map(armorKey), armorArsenal: nextArsenal, activeArmorId: nextActive, armor: nextArmor, armorMax:nextSlots, shields:nextArmor ? Math.min(Number(character.shields)||nextSlots, nextSlots) : 0, thresholds:nextArmor ? (nextArmor.thresholds || character.thresholds) : character.thresholds });
+            updateCharacter({ ...character, armorInventory: nextArsenal.map(armorKey), armorArsenal: nextArsenal, activeArmorId: nextActive, armor: nextArmor, armorMax:nextSlots, shields:nextArmor ? Math.min(Number(character.shields)||nextSlots, nextSlots) : 0, thresholds:nextArmor ? armorThresholdsWithMods(nextArmor) : character.thresholds });
           };
           const normalizedArmorSearch = String(armorSearch || '').trim().toLowerCase();
           const armorManagerPool = armorManagerView === 'catalog' ? ARMOR_CATALOG.map(hydrateArmor) : armorArsenal;
@@ -2900,7 +2974,7 @@
             return [summary.title, summary.tier, summary.cost, summary.detail].join(' ').toLowerCase().includes(normalizedGearSearch);
           });
           const isDrone = character.entityType === 'drone';
-          const installedDroneModules = isDrone ? (Array.isArray(character.installedModules) ? character.installedModules.map(item => findDroneModule(item) || item).filter(item => item && item.name) : []) : [];
+          const installedDroneModules = isDrone ? (Array.isArray(character.installedModules) ? character.installedModules.map(item => { const canonical=findDroneModule(item); return canonical ? {...canonical,...(typeof item==='object'?item:{})} : item; }).filter(item => item && item.name) : []) : [];
           const currentDroneProfile = isDrone ? droneDerivedProfile(character.droneGradeId, installedDroneModules, character.droneContext) : null;
           const currentDroneGrade = currentDroneProfile;
           const coreDroneGrades = DRONE_GRADE_CATALOG.filter(item => item.profileType !== 'frame').slice().sort((a,b) => droneModuleAccessRank(a) - droneModuleAccessRank(b));
@@ -2962,7 +3036,7 @@
           };
           const toggleDroneModule = (module) => {
             if (!isDrone) return;
-            const canonical = findDroneModule(module) || module;
+            const found = findDroneModule(module); const canonical = found ? {...found,...(typeof module==='object'?module:{})} : module;
             const key = droneModuleKey(canonical);
             const installed = installedDroneModuleKeys.has(key);
             if (installed) {
@@ -2987,7 +3061,7 @@
           };
           const clearTemporaryDroneEvasion = () => setDroneContext('temporaryEvasion', 0);
           const useDroneModule = (module) => {
-            const canonical = findDroneModule(module) || module;
+            const found = findDroneModule(module); const canonical = found ? {...found,...(typeof module==='object'?module:{})} : module;
             const rawCost = parseFeatureCost(canonical.use || '');
             let cost = rawCost;
             if (cost && cost.resource === 'hope' && droneOperator && droneOperator.path === 'sleeping') cost = { ...cost, resource:'effort', alternativeFor:'hope' };
@@ -3054,7 +3128,7 @@
                   </button>
                   {expanded && (
                     <div className="p-2.5 pt-2 border-t border-slate-800/70">
-                      <div className="text-[10px] text-slate-300 leading-relaxed whitespace-pre-line">{summary.full}</div>
+                      <div className="space-y-1">{summary.bullets.map((bullet,index)=><div key={index} className="text-[10px] text-slate-300 leading-snug"><span className="text-slate-600 mr-1">◆</span>{window.VFCompactRules ? window.VFCompactRules.compactSentence(bullet) : bullet}</div>)}</div>
                       {summary.actions.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-slate-800/70">
                           {summary.actions.flatMap((action, actionIndex) => {
@@ -3073,6 +3147,28 @@
                 </div>
               );
           };
+          const MOD_API = window.VFEquipmentMods;
+          const equipmentHardpoints = (item) => MOD_API ? MOD_API.tierHardpoints(item && item.tier) : 1;
+          const replaceWeaponMods = (weapon, nextMods) => {
+            const key=weaponKey(weapon); const normalized=MOD_API?MOD_API.normalize(nextMods,'weapon'):nextMods;
+            const patch=item=>weaponKey(item)===key?{...item,installedMods:normalized}:item;
+            updateCharacter({...character,weapons:(character.weapons||[]).map(patch),weaponArsenal:(character.weaponArsenal||[]).map(patch)});
+          };
+          const replaceArmorMods = (armor, nextMods) => {
+            const key=armorKey(armor); const normalized=MOD_API?MOD_API.normalize(nextMods,'armor'):nextMods;
+            const patch=item=>armorKey(item)===key?{...item,installedMods:normalized}:item;
+            const nextArsenal=(character.armorArsenal||[]).map(patch); const active=armorKey(character.armor||{})===key?patch(character.armor):character.armor;
+            const delta=(MOD_API?MOD_API.thresholdBonus(normalized):0)-(MOD_API?MOD_API.thresholdBonus(armor.installedMods):0);
+            updateCharacter({...character,armorArsenal:nextArsenal,armor:active,thresholds:delta?{major:Number(character.thresholds.major||0)+delta,severe:Number(character.thresholds.severe||0)+delta}:character.thresholds});
+          };
+          const EquipmentModEditor = ({ type, item, onChange }) => {
+            if(!MOD_API||!item)return null;
+            const catalog=type==='armor'?MOD_API.armorMods:MOD_API.weaponMods,installed=MOD_API.normalize(item.installedMods,type),used=MOD_API.used(installed,type),cap=equipmentHardpoints(item),panelId=`mods-${type}-${baseItemKey(item,type)}`,expanded=panelExpanded(panelId);
+            const install=mod=>{if(used+mod.hardpoints<=cap)onChange(installed.concat(mod));};
+            const uninstall=mod=>onChange(installed.filter(x=>x.id!==mod.id));
+            return <div className="mt-2 pt-2 border-t border-slate-800" onClick={e=>e.stopPropagation()}><button type="button" onClick={()=>togglePanel(panelId)} className="w-full flex items-center justify-between gap-2 text-[9px] font-black uppercase text-cyan-300"><span>Mods · {used}/{cap} Hardpoints</span><span>{expanded?'Close':'Manage'}</span></button>{installed.length>0&&<div className="flex flex-wrap gap-1 mt-1">{installed.map(mod=><span key={mod.id} title={mod.effect} className="px-1.5 py-0.5 rounded border border-cyan-900/60 bg-cyan-950/20 text-[8px] text-cyan-200">{mod.name}</span>)}</div>}{expanded&&<div className="mt-2 space-y-1 max-h-52 overflow-y-auto">{catalog.map(mod=>{const active=installed.some(x=>x.id===mod.id),fits=used+mod.hardpoints<=cap;return <div key={mod.id} className="flex items-start justify-between gap-2 rounded border border-slate-800 bg-black/40 p-2"><div className="min-w-0"><div className="text-[9px] font-bold text-slate-100">{mod.name} · {mod.hardpoints} HP</div><div className="text-[8px] text-slate-400 leading-snug">{mod.effect} · {mod.cost}</div></div><button type="button" disabled={!active&&!fits} onClick={()=>active?uninstall(mod):install(mod)} className={`shrink-0 px-2 py-1 rounded border text-[8px] font-black uppercase ${active?'border-red-800/60 text-red-300':'border-cyan-800/60 text-cyan-300'} disabled:opacity-30`}>{active?'Uninstall':fits?'Install':'No HP'}</button></div>})}</div>}</div>;
+          };
+
           const WeaponCard = ({ weapon }) => {
               const profile = weaponAttackProfile(weapon, character, equippedWeapons);
               const key = weaponKey(profile.weapon);
@@ -3095,6 +3191,7 @@
                   {profile.entries.length > 0 && <div className="flex flex-wrap gap-1 mt-2">{profile.entries.map((entry, index) => <span key={index} title={conciseEffect(entry)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900 text-[8px] font-bold text-slate-300 cursor-help">{entry.display}</span>)}</div>}
                   {active && profile.effects.length > 0 && <div className="mt-2 pt-2 border-t border-slate-800 space-y-1">{profile.effects.map((effect, index) => <div key={index} className="text-[9px] leading-snug text-slate-400"><span className="font-bold text-slate-200">{effect.name}:</span> {effect.effect}</div>)}</div>}
                   {active && profile.heavyDisadvantage && <div className="mt-2 text-[9px] font-bold text-red-300">Heavy: attacks use Disadvantage while Strength is 0 or lower.</div>}
+                  <EquipmentModEditor type="weapon" item={profile.weapon} onChange={mods=>replaceWeaponMods(profile.weapon,mods)} />
                 </div>
               );
           };
@@ -3206,8 +3303,10 @@
                           <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Join or create a table</label>
                           <input type="text" value={sessionId} onChange={e => setSessionId(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-3 text-white font-mono text-xs" placeholder="Table name (e.g. Friday Night)" />
                           <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Table password <span className="text-slate-600 normal-case font-normal">(creates a closed table or unlocks one)</span></label>
-                          <input type="password" value={tablePass} onChange={e => setTablePass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="Password strongly recommended" />
-                          <div className="rounded border border-amber-800/50 bg-amber-950/20 p-2 mb-4 text-[10px] text-amber-200"><strong>Recommended:</strong> protect every table with a password. Open tables appear in the directory and anyone with access to the portal can join them.</div>
+                          <input type="password" value={tablePass} onChange={e => setTablePass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="Password (also required with an invitation when protected)" />
+                          <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Invitation passkey <span className="text-slate-600 normal-case font-normal">(required for new members)</span></label>
+                          <input type="text" value={invitePasskey} onChange={e => setInvitePasskey(e.target.value.trim())} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="Paste invitation passkey, or open an invitation link" />
+                          <div className="rounded border border-cyan-800/50 bg-cyan-950/20 p-2 mb-4 text-[10px] text-cyan-200"><strong>Membership:</strong> the table owner creates invitation links or passkeys. A password does not replace the invitation.</div>
 
                           {isConnected && (
                             <div className="rounded border border-slate-700 bg-slate-950/60 p-3 mb-4">
@@ -3227,7 +3326,7 @@
                           <div className="flex justify-end gap-2">
                               {isConnected && <button onClick={disconnectFromCloud} className="px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded">Disconnect</button>}
                               <button onClick={() => setShowConfig(false)} className="px-4 py-2 text-slate-400">Cancel</button>
-                              <button onClick={() => connectToCloud(false)} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold">Connect</button>
+                              <button onClick={() => connectToCloud()} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold">Connect</button>
                           </div>
                       </div>
                   </div>
@@ -3345,6 +3444,10 @@
                               </div>
                             </div>
                             <div className="flex items-center justify-between gap-3">
+                              <div><label className="text-xs font-bold text-slate-500 uppercase block">Shake to Roll</label><span className="text-[10px] text-slate-500">Optional mobile control. Works only while the Player Roller is open and never replaces the Roll button.{shakePermission === 'denied' ? ' Motion permission was denied.' : shakePermission === 'unsupported' ? ' Motion sensors are unavailable.' : ''}</span></div>
+                              <button role="switch" aria-checked={shakeToRollEnabled} onClick={() => setShakeToRoll(!shakeToRollEnabled)} className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${shakeToRollEnabled ? 'bg-cyan-600' : 'bg-slate-700'}`}><span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${shakeToRollEnabled ? 'left-[22px]' : 'left-0.5'}`}></span></button>
+                            </div>
+                            <div className="flex items-center justify-between gap-3">
                               <div><label className="text-xs font-bold text-slate-500 uppercase block">3D stage</label><span className="text-[10px] text-slate-500">Box uses a contained arena. Overlay rolls over the interface on a transparent top layer.</span></div>
                               <div className={`flex rounded-lg border border-slate-700 bg-slate-950 p-1 ${diceMode === '3d' ? '' : 'opacity-40 pointer-events-none'}`}>
                                 <button onClick={() => setDice3DStyle('box')} className={`px-3 py-1.5 rounded text-[10px] font-black ${dice3DStyle === 'box' ? 'bg-cyan-700 text-white' : 'text-slate-500'}`}>BOX</button>
@@ -3430,13 +3533,48 @@
                   </div>
               )}
 
-              {/* ERROR ALERT BOX */}
-              {errorMsg && (
-                  <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[200] bg-red-900/90 border border-red-500 text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 animate-pulse">
-                      <AlertCircle className="w-5 h-5 text-red-300" />
-                      <div className="text-xs font-mono">{errorMsg}</div>
-                      <button onClick={() => setErrorMsg('')}><X className="w-4 h-4 text-red-300 hover:text-white" /></button>
+              {/* CHARACTER VAULT — GLOBAL PORTAL */}
+              {showVault && ReactDOM.createPortal(
+                <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4" style={{zIndex:2147483600}} role="dialog" aria-modal="true" aria-label="Character Vault">
+                  <div className="w-full max-w-3xl max-h-[88vh] overflow-hidden rounded-2xl border border-cyan-700/50 bg-slate-950 shadow-2xl flex flex-col">
+                    <div className="p-4 border-b border-slate-800 flex items-start justify-between gap-3">
+                      <div><div className="text-[9px] font-black uppercase tracking-[.18em] text-cyan-400">Character Vault</div><h2 className="mt-1 text-lg font-black text-white">Choose a saved character</h2><p className="mt-1 text-[10px] text-slate-500">The permanent VF ID updates an existing Player Tool character instead of creating a duplicate.</p></div>
+                      <button onClick={() => setShowVault(false)} className="p-2 rounded border border-slate-700 text-slate-400 hover:text-white"><X className="w-4 h-4" /></button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                      {vaultError && <div className="rounded-lg border border-red-700/60 bg-red-950/30 p-3 text-xs text-red-200">{vaultError}</div>}
+                      {vaultLoading && <div className="rounded-lg border border-cyan-800/50 bg-cyan-950/20 p-4 text-xs text-cyan-200 animate-pulse">Refreshing cloud Vault…</div>}
+                      {!vaultLoading && vaultRecords.length === 0 && <div className="rounded-lg border border-dashed border-slate-700 p-8 text-center text-xs text-slate-500">No completed characters are available. Finish a character in Character Creator first.</div>}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {vaultRecords.map(record => { const item=window.VeilFarersCharacterRegistry && window.VeilFarersCharacterRegistry.summary ? window.VeilFarersCharacterRegistry.summary(record) : {name:'Unnamed Veilfarer',characterId:record.characterId,level:1,path:'',className:''}; return <button key={record.characterId} onClick={() => openVaultCharacter(record)} className="text-left rounded-xl border border-slate-800 bg-slate-900/55 p-4 hover:border-cyan-600 hover:bg-cyan-950/20 transition-colors"><div className="text-sm font-black text-white">{item.name}</div><div className="mt-1 text-[9px] font-mono uppercase tracking-wide text-cyan-400">{item.characterId}</div><div className="mt-2 text-[10px] text-slate-400">Level {item.level} · {[item.path,item.className,item.subclass].filter(Boolean).join(' · ')}</div><div className="mt-2 text-[8px] uppercase font-black text-slate-600">{item.cloudState || 'local'}</div></button>; })}
+                      </div>
+                    </div>
+                    <div className="p-3 border-t border-slate-800 flex justify-between gap-2"><button onClick={openCharacterVault} disabled={vaultLoading} className="px-3 py-2 rounded border border-cyan-800 text-[10px] font-black uppercase text-cyan-300 disabled:opacity-40">Refresh</button><button onClick={() => setShowVault(false)} className="px-3 py-2 rounded border border-slate-700 text-[10px] font-black uppercase text-slate-300">Close</button></div>
                   </div>
+                </div>, document.body
+              )}
+
+              {/* 3D DICE INITIALIZATION — GLOBAL PORTAL */}
+              {dice3DLoad.open && ReactDOM.createPortal(
+                <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4" style={{zIndex:2147483640}} role="dialog" aria-modal="true" aria-label="Loading 3D dice">
+                  <div className="w-full max-w-md rounded-2xl border border-cyan-700/60 bg-slate-950 p-5 shadow-2xl">
+                    <div className="text-[9px] font-black uppercase tracking-[.18em] text-cyan-400">3D Dice Engine</div>
+                    <h2 className="mt-2 text-lg font-black text-white">{dice3DLoad.error ? 'Renderer unavailable' : 'Preparing the dice'}</h2>
+                    <p className={`mt-2 text-xs ${dice3DLoad.error ? 'text-red-200' : 'text-slate-400'}`}>{dice3DLoad.error || dice3DLoad.stage}</p>
+                    <div className="mt-4 h-2 rounded-full bg-slate-800 overflow-hidden"><div className={`h-full transition-all duration-300 ${dice3DLoad.error ? 'bg-red-500' : 'bg-cyan-500'}`} style={{width:`${Math.max(4,Math.min(100,dice3DLoad.progress||0))}%`}}></div></div>
+                    {!dice3DLoad.error && <p className="mt-2 text-[9px] text-slate-600">The pending roll will begin automatically when the renderer is ready.</p>}
+                    {dice3DLoad.error && <div className="mt-4 flex flex-wrap gap-2"><button onClick={() => { dice3DInitRef.current=null; setDice3DLoad({open:true,stage:'Retrying…',progress:8,error:''}); ensureDice3DReady({showProgress:true}).catch(()=>{}); }} className="px-3 py-2 rounded border border-cyan-700 bg-cyan-950/30 text-[10px] font-black uppercase text-cyan-200">Retry</button><button onClick={() => { setDiceMode('2d'); setDice3DLoad({open:false,stage:'Idle',progress:0,error:''}); }} className="px-3 py-2 rounded border border-slate-700 text-[10px] font-black uppercase text-slate-300">Use 2D dice</button><button onClick={() => setDice3DLoad(current => ({...current,open:false}))} className="ml-auto px-3 py-2 rounded border border-slate-800 text-[10px] font-black uppercase text-slate-500">Close</button></div>}
+                  </div>
+                </div>, document.body
+              )}
+
+              {/* CONNECTION ERRORS — ALWAYS ABOVE NAVIGATION, MODALS AND 3D DICE */}
+              {errorMsg && ReactDOM.createPortal(
+                  <div role="alert" aria-live="assertive" className="fixed left-1/2 -translate-x-1/2 w-[min(94vw,760px)] bg-red-950/98 border-2 border-red-400 text-white px-4 py-3 rounded-xl shadow-2xl flex items-start gap-3" style={{zIndex:2147483647,top:'max(8px, env(safe-area-inset-top))'}}>
+                      <AlertCircle className="w-5 h-5 text-red-300 shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1"><div className="text-[9px] font-black uppercase tracking-[.16em] text-red-300">Connection error</div><div className="mt-1 text-xs font-mono break-words">{errorMsg}</div></div>
+                      <button aria-label="Dismiss connection error" onClick={() => setErrorMsg('')} className="shrink-0 p-1 rounded hover:bg-red-900"><X className="w-4 h-4 text-red-200" /></button>
+                  </div>, document.body
               )}
 
               {/* HISTORY PANEL */}
@@ -3888,7 +4026,8 @@
                        <button onClick={() => setShowAddMenu(v => !v)} className="px-3 py-2 bg-slate-950 hover:bg-slate-900 text-slate-500 hover:text-green-400 rounded-t-lg transition-colors border-t-2 border-transparent"><Plus className="w-4 h-4" /></button>
                        {showAddMenu && (
                          <div className="absolute right-0 top-full mt-2 w-44 rounded-lg border border-slate-700 bg-slate-950/95 shadow-2xl overflow-hidden z-30">
-                           <button onClick={() => addNewCharacter('character')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-300 hover:bg-slate-900 flex items-center justify-between"><span>Character</span><span className="text-slate-500">Ready</span></button>
+                           <button onClick={openCharacterVault} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-cyan-300 hover:bg-slate-900 flex items-center justify-between"><span>From Character Vault</span><span className="text-slate-500">VF ID</span></button>
+                           <button onClick={() => addNewCharacter('character')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-300 border-t border-slate-800 hover:bg-slate-900 flex items-center justify-between"><span>Create manually</span><span className="text-slate-500">Blank</span></button>
                            <button onClick={() => addNewCharacter('drone')} className="w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-300 border-t border-slate-800 hover:bg-slate-900 flex items-center justify-between"><span>Drone</span><span className="text-slate-500">Ready</span></button>
                          </div>
                        )}
@@ -3900,6 +4039,7 @@
                        <input type="file" ref={fileInputRef} onChange={loadFromFile} className="hidden" accept=".json" />
                        {!isDrone && <button onClick={importCreatorDraft} title="Import the current draft saved by Character Creator" className="flex items-center gap-1 px-3 py-1 bg-cyan-950/60 hover:bg-cyan-900/70 text-cyan-300 text-[10px] rounded border border-cyan-800 uppercase font-bold transition-colors whitespace-nowrap"><User className="w-3 h-3" /> Creator</button>}
                        {!isDrone && <button onClick={importCharsheet} title="Import the latest filled Charsheet stored in this browser" className="flex items-center gap-1 px-3 py-1 bg-amber-950/50 hover:bg-amber-900/60 text-amber-300 text-[10px] rounded border border-amber-800 uppercase font-bold transition-colors whitespace-nowrap"><ScrollText className="w-3 h-3" /> Charsheet</button>}
+                       {!isDrone && character.characterId && <button onClick={openCurrentLevelUp} title="Open this permanent VF character in the Level Up workspace" className="flex items-center gap-1 px-3 py-1 bg-purple-950/50 hover:bg-purple-900/60 text-purple-300 text-[10px] rounded border border-purple-800 uppercase font-bold transition-colors whitespace-nowrap"><span aria-hidden="true">↗</span> Level Up</button>}
                        <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><Upload className="w-3 h-3" /> Load</button>
                        <button onClick={saveToFile} className="flex items-center gap-1 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-800 uppercase font-bold transition-colors whitespace-nowrap"><Save className="w-3 h-3" /> Save</button>
 
@@ -3969,7 +4109,7 @@
 
                       <section className="rounded-xl border border-emerald-800/40 bg-emerald-950/10 p-4">
                         <div className="flex items-center justify-between gap-3"><div><h2 className="text-xs font-black uppercase tracking-widest text-emerald-300">Installed modules</h2><p className="mt-1 text-[9px] text-slate-500">{usedDroneModuleSlots}/{character.moduleSlots||0} slots used · {availableDroneModuleSlots} free</p></div><button onClick={()=>setShowDroneModuleManager(true)} className="px-3 py-2 rounded-lg border border-emerald-600/50 bg-emerald-950/40 text-emerald-200 text-[9px] font-black uppercase">Installation options</button></div>
-                        <div className="mt-3 space-y-2">{installedDroneModules.length?installedDroneModules.map(module=>{const modifiers=droneModuleModifierLabels(module);return <div key={droneModuleKey(module)} className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{droneModuleAccessLabel(module)} · {droneModuleSlots(module)} slot{droneModuleSlots(module)===1?'':'s'}</span>{module.category&&<span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-500">{module.category}</span>}</div>{modifiers.length>0&&<div className="mt-1.5 flex flex-wrap gap-1">{modifiers.map((entry,i)=><span key={i} className="px-1.5 py-0.5 rounded border border-emerald-800/40 bg-emerald-950/15 text-[8px] text-emerald-300">{entry}</span>)}</div>}<div className="mt-1.5 text-[9px] leading-relaxed text-slate-400">{module.use}</div></div><button onClick={()=>useDroneModule(module)} className="shrink-0 px-2.5 py-1.5 rounded border border-cyan-700/50 bg-cyan-950/30 text-cyan-200 text-[9px] font-black uppercase">Use</button></div></div>}):<button onClick={()=>setShowDroneModuleManager(true)} className="w-full p-4 rounded-lg border border-dashed border-slate-700 text-[10px] text-slate-500">No modules installed.</button>}</div>
+                        <div className="mt-3 space-y-2">{installedDroneModules.length?installedDroneModules.map(module=>{const modifiers=droneModuleModifierLabels(module);return <div key={droneModuleKey(module)} className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{module.name}</span><span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{droneModuleAccessLabel(module)} · {droneModuleSlots(module)} slot{droneModuleSlots(module)===1?'':'s'}</span>{module.category&&<span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-500">{module.category}</span>}{module.status&&<span className="px-1.5 py-0.5 rounded border border-amber-800/50 text-[8px] text-amber-300">{module.status}</span>}</div>{modifiers.length>0&&<div className="mt-1.5 flex flex-wrap gap-1">{modifiers.map((entry,i)=><span key={i} className="px-1.5 py-0.5 rounded border border-emerald-800/40 bg-emerald-950/15 text-[8px] text-emerald-300">{entry}</span>)}</div>}<div className="mt-1.5 text-[9px] leading-relaxed text-slate-400">{module.use}</div>{module.info&&<div className="mt-1 text-[9px] leading-relaxed text-cyan-300/80">Charsheet modifiers: {module.info}</div>}</div><button onClick={()=>useDroneModule(module)} className="shrink-0 px-2.5 py-1.5 rounded border border-cyan-700/50 bg-cyan-950/30 text-cyan-200 text-[9px] font-black uppercase">Use</button></div></div>}):<button onClick={()=>setShowDroneModuleManager(true)} className="w-full p-4 rounded-lg border border-dashed border-slate-700 text-[10px] text-slate-500">No modules installed.</button>}</div>
                       </section>
                     </div>
 
@@ -4129,6 +4269,7 @@
                                {character.domainCards && character.domainCards.map((card, idx) => (<DomainCard key={idx} card={card} onDelete={() => removeCard(idx)} />))}
                                {(!character.domainCards || character.domainCards.length === 0) && (<div className="col-span-full text-center py-4 text-xs text-slate-600 italic">No domain cards equipped</div>)}
                            </div>
+                           {(character.powerVault||[]).length > 0 && <div className="mt-3 border-t border-slate-800 pt-2"><div className="mb-2 flex items-center justify-between"><span className="text-[9px] font-black uppercase tracking-widest text-cyan-500">Power Vault</span><span className="text-[8px] text-slate-600">Owned · not in Loadout</span></div><div className="space-y-1">{character.powerVault.map(card=><div key={card.id||card.name} className="flex items-center justify-between gap-2 rounded border border-slate-800 bg-slate-950/55 p-2"><div className="min-w-0"><div className="truncate text-[10px] font-black text-slate-200">{card.name}</div><div className="text-[8px] uppercase text-slate-600">{card.domain} · L{card.level||1} · {card.costText||'—'}</div></div><button onClick={()=>recallVaultCard(card)} className="shrink-0 rounded border border-cyan-700/60 px-2 py-1 text-[8px] font-black uppercase text-cyan-300 hover:border-cyan-400">Recall</button></div>)}</div></div>}
                        </div>
                        )}
                     </div>
@@ -4195,7 +4336,7 @@
                                </div>
                                <button onClick={() => setShowArmorManager(true)} className="px-2 py-1 rounded border border-amber-700/40 bg-amber-950/20 text-amber-300 text-[9px] font-black uppercase hover:border-amber-500">Loadout</button>
                              </div>
-                             {activeArmor ? (() => { const summary = armorSummary(activeArmor); return <div className="rounded-lg border border-amber-800/40 bg-amber-950/10 p-2.5"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-xs font-black text-slate-100">{summary.title}</span><span className="px-1.5 py-0.5 rounded border border-amber-700/40 bg-amber-500/10 text-[8px] font-black uppercase text-amber-300">Active</span>{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] text-slate-400">{summary.detail}</div>{summary.features && <div className="mt-1 text-[9px] text-slate-500">{summary.features}</div>}<div className="mt-2 flex flex-wrap gap-1">{activeArmorProfile.evasionModifier !== 0 && <span className="px-1.5 py-0.5 rounded border border-amber-800/40 text-[8px] text-amber-300">Evasion {activeArmorProfile.evasionModifier > 0 ? '+' : ''}{activeArmorProfile.evasionModifier}</span>}{activeArmorProfile.attackBonus !== 0 && <span className="px-1.5 py-0.5 rounded border border-emerald-800/40 text-[8px] text-emerald-300">Automatic attacks +{activeArmorProfile.attackBonus}</span>}{activeArmorProfile.traitModifiers.map((mod,i)=><span key={i} title={mod.context} className="px-1.5 py-0.5 rounded border border-cyan-900/50 text-[8px] text-cyan-300">{mod.trait} +{mod.amount} · {mod.context}</span>)}</div></div><button onClick={clearActiveArmor} className="shrink-0 px-2 py-1 rounded border border-slate-700 text-[8px] font-black uppercase text-slate-400 hover:text-white">Clear</button></div></div>; })() : <button onClick={() => setShowArmorManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-amber-600/60 hover:text-amber-300">No active armor. Open Loadout to assign one from your inventory.</button>}
+                             {activeArmor ? (() => { const summary = armorSummary(activeArmor); return <div className="rounded-lg border border-amber-800/40 bg-amber-950/10 p-2.5"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex flex-wrap items-center gap-1.5"><span className="text-xs font-black text-slate-100">{summary.title}</span><span className="px-1.5 py-0.5 rounded border border-amber-700/40 bg-amber-500/10 text-[8px] font-black uppercase text-amber-300">Active</span>{summary.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-[8px] text-slate-400">{summary.tier}</span>}</div><div className="mt-1 text-[9px] text-slate-400">{summary.detail}</div>{summary.features && <div className="mt-1 text-[9px] text-slate-500">{summary.features}</div>}<EquipmentModEditor type="armor" item={activeArmor} onChange={mods=>replaceArmorMods(activeArmor,mods)} /><div className="mt-2 flex flex-wrap gap-1">{activeArmorProfile.evasionModifier !== 0 && <span className="px-1.5 py-0.5 rounded border border-amber-800/40 text-[8px] text-amber-300">Evasion {activeArmorProfile.evasionModifier > 0 ? '+' : ''}{activeArmorProfile.evasionModifier}</span>}{activeArmorProfile.attackBonus !== 0 && <span className="px-1.5 py-0.5 rounded border border-emerald-800/40 text-[8px] text-emerald-300">Automatic attacks +{activeArmorProfile.attackBonus}</span>}{activeArmorProfile.traitModifiers.map((mod,i)=><span key={i} title={mod.context} className="px-1.5 py-0.5 rounded border border-cyan-900/50 text-[8px] text-cyan-300">{mod.trait} +{mod.amount} · {mod.context}</span>)}</div></div><button onClick={clearActiveArmor} className="shrink-0 px-2 py-1 rounded border border-slate-700 text-[8px] font-black uppercase text-slate-400 hover:text-white">Clear</button></div></div>; })() : <button onClick={() => setShowArmorManager(true)} className="w-full rounded-lg border border-dashed border-slate-700 bg-slate-950/30 p-3 text-[10px] text-slate-500 hover:border-amber-600/60 hover:text-amber-300">No active armor. Open Loadout to assign one from your inventory.</button>}
                              {armorArsenal.length > 0 && <div className="mt-2 flex flex-wrap gap-1">{armorArsenal.filter(item => !activeArmor || armorKey(item) !== armorKey(activeArmor)).slice(0,4).map(item => <span key={armorKey(item)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-[8px] text-slate-400">{item.name}</span>)}{armorArsenal.length > 5 && <span className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-950 text-[8px] text-slate-500">+{armorArsenal.length - 4} more</span>}</div>}
                            </div>
 
