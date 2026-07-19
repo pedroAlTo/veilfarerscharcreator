@@ -845,6 +845,7 @@
             })(),
             attackBonus,
             attackBonuses,
+            proficiency: Math.max(1, Math.min(6, Number(character && character.proficiency) || 1)),
             heavyDisadvantage: heavy && (Number(character && character.stats && character.stats.strength) || 0) <= 0,
             massive,
             brutal,
@@ -1249,7 +1250,7 @@
 
         const EMPTY_CHARACTER = {
           entityType: 'character',
-          name: '', playerName: '', heritage: '', background: '', class: '', subclass: '', level: 1, pronouns: '',
+          name: '', playerName: '', heritage: '', background: '', class: '', subclass: '', level: 1, proficiency: 1, pronouns: '',
           stats: { agility: 0, strength: 0, finesse: 0, instinct: 0, presence: 0, knowledge: 0 },
           hp: { current: 6, max: 6 }, thresholds: { severe: 8, major: 4 },
           stress: { current: 0, max: 6 }, hope: { current: 2, max: 5 }, effort: { current: 2, max: 6 }, resolve: { current: 2, max: 2 }, path: 'awakened',
@@ -1295,7 +1296,7 @@
           const a = normalizeCharacterId(left.characterId || left.id), b = normalizeCharacterId(right.characterId || right.id);
           if (a && b && a === b) return true;
           const fpA = playerCharacterFingerprint(left), fpB = playerCharacterFingerprint(right);
-          return !!fpA.replace(/\|/g,'') && fpA === fpB && (isPendingCharacterId(a) || isPendingCharacterId(b));
+          return !!fpA.replace(/\|/g,'') && fpA === fpB && (!a || !b || isPendingCharacterId(a) || isPendingCharacterId(b));
         };
         const mergePlayerCharacterRuntime = (existing,incoming) => {
           const merged = { ...(existing || {}), ...(incoming || {}) };
@@ -1315,11 +1316,7 @@
             const index = out.findIndex(candidate => samePlayerCharacter(candidate,item));
             if (index >= 0) {
               const current = out[index];
-              const currentId = normalizeCharacterId(current && (current.characterId || current.id));
-              const itemId = normalizeCharacterId(item.characterId || item.id);
-              out[index] = currentId && itemId && currentId === itemId
-                ? mergePlayerCharacterRuntime(item,{ ...current, ...item })
-                : mergePlayerCharacterRuntime(current,item);
+              out[index] = mergePlayerCharacterRuntime(current,item);
             } else out.push(item);
           });
           return out;
@@ -1834,6 +1831,7 @@
             return {
               ...c,
               stats: c.stats || {agility:0,strength:0,finesse:0,instinct:0,presence:0,knowledge:0},
+              proficiency: Math.max(1, Math.min(6, Number(c.proficiency) || 1)),
               hp: c.hp || {current:0,max:6}, stress: c.stress || {current:0,max:6}, hope: c.hope || {current:0,max:6}, effort: c.effort || {current:0,max:6}, resolve: c.resolve || {current:0,max:2}, thresholds: c.thresholds || {major:0,severe:0},
               experiences: ensureThreeExperiences(c.experiences), weapons, weaponInventory: inventoryIds, weaponArsenal, activeWeaponId: activeId,
               inventory: Array.isArray(c.inventory) && c.inventory.length ? c.inventory : Array(8).fill('').map((_,i) => (Array.isArray(c.inventory) ? c.inventory[i] || '' : '')),
@@ -2118,14 +2116,18 @@
               const baseCount = parseInt(match[1] || '1', 10) || 1;
               const sides = parseInt(match[2], 10);
               const multiplier = Math.max(1, Number(mult) || 1);
-              const keptCount = baseCount * multiplier;
+              const proficiency = Math.max(1, Math.min(6, Number(profile && profile.proficiency) || 1));
+              const normalCount = baseCount * proficiency;
+              const keptCount = normalCount * multiplier;
               const massiveExtra = profile && profile.massive ? 1 : 0;
               return {
                 baseCount,
+                proficiency,
+                normalCount,
                 sides,
                 keptCount,
                 rolledCount: keptCount + massiveExtra,
-                initialRolledCount: baseCount + massiveExtra,
+                initialRolledCount: normalCount + massiveExtra,
                 staticMod: match[3] ? parseInt(match[3].replace(/\s/g, ''), 10) : 0
               };
           };
@@ -2134,7 +2136,7 @@
               mult = mult || 1; bonus = bonus || 0; profile = profile || {};
               const plan = weaponDamagePlan(dmgStr, mult, profile);
               if (!plan) return null;
-              const { baseCount, sides, keptCount, rolledCount, staticMod } = plan;
+              const { baseCount, proficiency, sides, keptCount, rolledCount, staticMod } = plan;
               let rolls = Array.isArray(preRolled) ? preRolled.slice(0, rolledCount).map(Number) : [];
               if (rolls.length < rolledCount) {
                 const missing = rolledCount - rolls.length;
@@ -2192,6 +2194,7 @@
               const extra=staticMod+bonus+paired;
               const sum=keptRolls.reduce((total,value)=>total+value,0);
               const ruleParts=[];
+              if(proficiency>1) ruleParts.push(`Proficiency ${proficiency}: ${baseCount}d${sides} becomes ${baseCount*proficiency}d${sides}`);
               if(profile.massive) ruleParts.push(`Massive: rolled ${rolledCount}d${sides}, discarded lowest`);
               if(profile.brutal&&rerolls.length) ruleParts.push(`Brutal: rerolled ${rerolls.length} result${rerolls.length===1?'':'s'} of 1`);
               if(paired) ruleParts.push(`Paired +${paired}`);
@@ -2204,7 +2207,7 @@
                 rolls,keptRolls,discardedIndices,damageDiceResults,cueDiceResults,rerolls,
                 modifier:extra,base:String(dmgStr),rules:ruleParts,
                 modifierBreakdown:{weapon:staticMod,honed:bonus,paired},
-                sides,baseCount
+                proficiency,sides,baseCount
               };
           };
           const traitModForWeapon = (traitStr) => { if (!traitStr) return 0; var tt=String(traitStr).toLowerCase(); var ks=['agility','strength','finesse','instinct','presence','knowledge']; for (var n=0;n<ks.length;n++){ if (tt.indexOf(ks[n])!==-1) return (parseInt(character.stats && character.stats[ks[n]], 10) || 0); } return 0; };
@@ -2542,21 +2545,14 @@
               saveTimeTravelSnapshot(enrichedRoll.broadcastId, character, enrichedRoll.label);
               setRollHistory(prev => [enrichedRoll, ...prev]);
               registerCallout(enrichedRoll);
-              if (isConnected && fbServices) {
-                  const { db, setDoc, doc, arrayUnion } = fbServices;
-                  const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId));
-                  const remoteRoll = { ...enrichedRoll };
-                  setDoc(docRef, {
-                      lastRoll: remoteRoll,
-                      rollHistory: arrayUnion(remoteRoll),
-                      lastRollUpdatedAt: remoteRoll.timestamp
-                  }, {merge: true}).catch(e => {
+              if (isConnected && window.VFTableAccess) {
+                  window.VFTableAccess.api('broadcastRoll',{tableId:normalizeSessionKey(sessionId),roll:{...enrichedRoll}}).catch(e => {
                       console.error("Error broadcasting roll:", e);
-                      setErrorMsg('Roll broadcast failed: ' + (e.code || e.message));
+                      setErrorMsg('Roll broadcast failed: ' + (e.message || e));
                   });
               }
           };
-          const writeSessionField = (obj) => { if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const ref = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(ref, obj, { merge: true }).catch(function(e){console.error(e);}); } catch (e) { console.error(e); } } };
+          const writeSessionField = (obj) => { if (isConnected && window.VFTableAccess) window.VFTableAccess.api('patchSession',{tableId:normalizeSessionKey(sessionId),changes:obj}).catch(function(e){console.error(e);setErrorMsg('Table update failed: '+(e.message||e));}); };
           const pushFear = (val) => { val = Math.max(0, Math.min(12, val)); lastFearEditRef.current = Date.now(); setFear(val); writeSessionField({ fearTokens: val }); };
           const takeSpotlight = (id) => { const nn = (id && id === spotlight) ? '' : (id || ''); setSpotlight(nn); writeSessionField({ spotlight: nn }); };
           const clearRollHistory = () => {
@@ -2566,7 +2562,7 @@
               calloutTimersRef.current.clear();
               try { localStorage.removeItem(TIME_TRAVEL_KEY); } catch (e) {}
               setTimeTravelRevision(value => value + 1);
-              if (isConnected && fbServices) { try { const { db, setDoc, doc } = fbServices; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId)); setDoc(docRef, { rollHistory: [], lastRoll: null, lastRollUpdatedAt: null }, { merge: true }).catch(e => console.error(e)); } catch(e){ console.error(e); } }
+              if (isConnected && window.VFTableAccess) window.VFTableAccess.api('clearRollHistory',{tableId:normalizeSessionKey(sessionId)}).catch(e => {console.error(e);setErrorMsg('Roll log reset failed: '+(e.message||e));});
           };
 
           // --- LOCAL SAVE / LOAD / CARD MANAGERS ---
@@ -2600,6 +2596,24 @@
               setCharacters(dedupePlayerCharacters([...characters, incoming])); setActiveTab(characters.length); showAlert('The saved character was added to Player Tool.', title);
             }
             return true;
+          };
+          const registerImportedCharacter = async (mapped, sourceData, source='json-import') => {
+            if(!mapped || !window.VeilFarersCharacterRegistry) return mapped;
+            const existingMatch = !/^VF-\d{6,}$/i.test(String(mapped.characterId || mapped.id || ''))
+              ? characters.find(item => item && item.entityType !== 'drone' && playerCharacterFingerprint(item) === playerCharacterFingerprint(mapped) && /^VF-\d{6,}$/i.test(String(item.characterId || item.id || '')))
+              : null;
+            if(existingMatch){
+              const existingId=existingMatch.characterId || existingMatch.id;
+              mapped={...mapped,characterId:existingId,id:existingId};
+            }
+            const registry=window.VeilFarersCharacterRegistry;
+            const creatorState=sourceData && !Array.isArray(sourceData) ? (sourceData.creatorState || (sourceData.payload&&sourceData.payload.creatorState) || null) : null;
+            const sheetPayload=sourceData && !Array.isArray(sourceData) ? ((sourceData.payload&&sourceData.payload.fields)?sourceData.payload:(sourceData.fields?sourceData:null)) : null;
+            const ensured=await registry.ensureId({creatorState:creatorState||undefined,sheetPayload:sheetPayload||undefined,playerCharacter:mapped},{source,completedAt:new Date().toISOString()});
+            const finalMapped={...mapped,characterId:ensured.characterId,id:ensured.characterId,transferSource:source};
+            const record=registry.saveLocalData(ensured.characterId,{creatorState:creatorState||undefined,sheetPayload:sheetPayload||undefined,playerCharacter:finalMapped},{source,status:'active',completedAt:ensured.completedAt||new Date().toISOString()});
+            registry.sync(record,{source}).catch(()=>{});
+            return finalMapped;
           };
           const importCreatorDraft = () => {
             try {
@@ -2638,6 +2652,7 @@
               const payload = record && record.characterData && record.characterData.sheetPayload;
               let mapped = payload && window.veilfarersImportSheet && window.veilfarersImportSheet(payload, VF_CANON);
               if (!mapped && record && record.characterData && record.characterData.creatorState && window.veilfarersImportCreatorState) mapped = window.veilfarersImportCreatorState(record.characterData.creatorState, VF_CANON);
+              if (!mapped && record && record.characterData && record.characterData.playerCharacter) mapped = normChar(record.characterData.playerCharacter);
               if (!mapped) throw new Error('This Vault record has no compatible build payload.');
               mapped = { ...mapped, characterId: record.characterId, id: record.characterId, transferSource:'character-vault' };
               if (addOrUpdateMappedCharacter(mapped, 'Character Vault')) setShowVault(false);
@@ -2647,23 +2662,24 @@
           const loadFromFile = (event) => {
             const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
               try {
                 const loadedData = JSON.parse(e.target.result);
                 const sheetPayload = loadedData && loadedData.payload && loadedData.payload.fields ? loadedData.payload : loadedData;
                 if (sheetPayload && sheetPayload.fields && window.veilfarersImportSheet) {
                   const mapped = window.veilfarersImportSheet(sheetPayload, VF_CANON);
-                  if (mapped) { addImportedSheetCharacter(mapped, 'JSON imported'); event.target.value=''; return; }
+                  if (mapped) { const registered=await registerImportedCharacter(mapped,sheetPayload,'json-sheet-import'); addImportedSheetCharacter(registered, 'JSON imported and added to Vault'); event.target.value=''; return; }
                 }
                 const creatorState = loadedData && loadedData.creatorState ? loadedData.creatorState : loadedData;
                 if (creatorState && !Array.isArray(creatorState) && window.veilfarersImportCreatorState) {
                   const mappedState = window.veilfarersImportCreatorState(creatorState, VF_CANON);
                   if (mappedState) {
-                    addOrUpdateMappedCharacter(mappedState, 'JSON imported');
+                    const registered=await registerImportedCharacter(mappedState,loadedData,'json-creator-import');
+                    addOrUpdateMappedCharacter(registered, 'JSON imported and added to Vault');
                     event.target.value=''; return;
                   }
                 }
-                if (Array.isArray(loadedData)) { setCharacters(ensureIds(loadedData)); setActiveTab(0); }
+                if (Array.isArray(loadedData)) { const imported=[]; for(const item of loadedData){const registered=await registerImportedCharacter(normChar(item),{playerCharacter:item},'json-player-import');imported.push(registered);} const next=dedupePlayerCharacters([...characters,...imported]); setCharacters(next); const firstId=imported[0]&&(imported[0].characterId||imported[0].id); const selected=Math.max(0,next.findIndex(item=>normalizeCharacterId(item.characterId||item.id)===normalizeCharacterId(firstId))); setActiveTab(selected); }
                 else { throw new Error('Unsupported character JSON'); }
               } catch (err) { showAlert('Error loading file: ' + err.message); }
             };
@@ -2680,13 +2696,7 @@
               const payload = queued && queued.target === 'player-tool' ? queued.payload : localSheetPayload();
               const mapped = payload && window.veilfarersImportSheet && window.veilfarersImportSheet(payload, VF_CANON);
               if (mapped) {
-                const withId = { ...mapped, id: mapped.id || mkCharId(), transferSource:'charsheet' };
-                setCharacters(prev => {
-                  const replaceBlank = prev.length === 1 && (!prev[0] || !prev[0].name);
-                  if (replaceBlank) { setActiveTab(0); return [withId]; }
-                  setActiveTab(prev.length); return [...prev, withId];
-                });
-                showAlert('The Charsheet character was transferred to Player Tool.', 'Transfer complete');
+                registerImportedCharacter(mapped,payload,'charsheet-transfer').then(function(registered){addOrUpdateMappedCharacter(registered,'Transfer complete');});
               } else showAlert('The queued Charsheet transfer was not compatible.');
               localStorage.removeItem(CHARACTER_TRANSFER_KEY);
             } catch (err) { showAlert('Charsheet transfer failed: ' + err.message); }
@@ -3233,6 +3243,8 @@
               const key = weaponKey(profile.weapon);
               const active = key === weaponKey(activeWeapon);
               const traitName = profile.weapon.trait || 'No trait';
+              const damagePlan = weaponDamagePlan(profile.weapon.damage, 1, profile);
+              const proficiencyDamage = damagePlan ? `${damagePlan.keptCount}d${damagePlan.sides}${damagePlan.staticMod ? (damagePlan.staticMod > 0 ? '+' : '') + damagePlan.staticMod : ''}` : '';
               return (
                 <div onClick={() => setActiveWeapon(profile.weapon)} className={`rounded-lg border p-2.5 cursor-pointer transition-all ${active ? 'border-yellow-500/70 bg-yellow-950/20 shadow-[0_0_18px_rgba(234,179,8,0.08)]' : 'border-slate-800 bg-slate-950/45 hover:border-slate-600'}`}>
                   <div className="flex items-start justify-between gap-2">
@@ -3242,6 +3254,7 @@
                         <span className="px-1.5 py-0.5 rounded border border-cyan-900/60 bg-cyan-950/30 text-cyan-300">{traitName} {profile.traitMod >= 0 ? '+' : ''}{profile.traitMod}</span>
                         {profile.weapon.range && <span className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900 text-slate-400">{profile.weapon.range}</span>}
                         <span className="px-1.5 py-0.5 rounded border border-red-900/50 bg-red-950/25 text-red-300">{profile.weapon.damage || 'No damage'}</span>
+                        {proficiencyDamage && <span title="Proficiency multiplies weapon damage dice." className="px-1.5 py-0.5 rounded border border-fuchsia-900/60 bg-fuchsia-950/20 text-fuchsia-300">P{profile.proficiency} → {proficiencyDamage}</span>}
                         {profile.attackBonus !== 0 && <span className="px-1.5 py-0.5 rounded border border-emerald-800/50 bg-emerald-950/20 text-emerald-300">Attack +{profile.attackBonus}</span>}
                       </div>
                     </div>
@@ -3641,8 +3654,9 @@
               )}
 
               {/* HISTORY PANEL */}
-              {showHistory && (
-                 <div className="fixed inset-y-0 right-0 w-full sm:w-80 bg-slate-950 border-l border-slate-800 z-[20050] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+              {showHistory && ReactDOM.createPortal(
+                 <div className="fixed inset-0 bg-black/60 z-[60010]" onMouseDown={e => { if(e.target===e.currentTarget)setShowHistory(false); }}>
+                 <div className="absolute inset-y-0 right-0 w-full sm:w-80 bg-slate-950 border-l border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
                     <div className="sticky top-0 z-30 p-4 border-b border-slate-800 flex justify-between items-center gap-3 bg-slate-900/98 backdrop-blur">
                        <h2 className="text-sm font-bold text-white flex items-center gap-2 min-w-0"><ScrollText className="w-4 h-4 text-cyan-500 shrink-0" /> <span className="truncate">Roll History</span></h2>
                        <div className="flex items-center gap-2 shrink-0">
@@ -3733,6 +3747,7 @@
                         ))}
                     </div>
                  </div>
+                 </div>, document.body
               )}
 
               {/* ROLLER 1: PLAYER ROLLER (FLOATING WINDOW) */}
@@ -3924,12 +3939,14 @@
                             const owned = arsenalKeys.has(key);
                             const active = key === weaponKey(activeWeapon);
                             const profile = weaponAttackProfile(weapon, character, equippedWeapons);
+                            const damagePlan = weaponDamagePlan(weapon.damage, 1, profile);
+                            const proficiencyDamage = damagePlan ? `${damagePlan.keptCount}d${damagePlan.sides}${damagePlan.staticMod ? (damagePlan.staticMod > 0 ? '+' : '') + damagePlan.staticMod : ''}` : '';
                             return (
                               <div key={key || index} className={`rounded-lg border p-3 ${active ? 'border-yellow-500/70 bg-yellow-950/15' : equipped ? 'border-cyan-700/50 bg-cyan-950/10' : 'border-slate-800 bg-slate-950/45'}`}>
                                 <div className="flex items-start justify-between gap-3">
                                   <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-black text-white">{weapon.name}</span>{active && <span className="px-1.5 py-0.5 rounded border border-yellow-500/40 bg-yellow-500/10 text-[8px] text-yellow-300 font-black uppercase">Active</span>}{equipped && !active && <span className="px-1.5 py-0.5 rounded border border-cyan-600/40 bg-cyan-500/10 text-[8px] text-cyan-300 font-black uppercase">Equipped</span>}</div>
-                                    <div className="flex flex-wrap gap-1 mt-1.5 text-[9px]"><span className="px-1.5 py-0.5 rounded border border-cyan-900/60 text-cyan-300">{weapon.trait || 'No trait'} {profile.traitMod >= 0 ? '+' : ''}{profile.traitMod}</span>{weapon.range && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{weapon.range}</span>}<span className="px-1.5 py-0.5 rounded border border-red-900/60 text-red-300">{weapon.damage || 'No damage'}</span>{weapon.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{itemTierLabel(weapon)}</span>}</div>
+                                    <div className="flex flex-wrap gap-1 mt-1.5 text-[9px]"><span className="px-1.5 py-0.5 rounded border border-cyan-900/60 text-cyan-300">{weapon.trait || 'No trait'} {profile.traitMod >= 0 ? '+' : ''}{profile.traitMod}</span>{weapon.range && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">{weapon.range}</span>}<span className="px-1.5 py-0.5 rounded border border-red-900/60 text-red-300">{weapon.damage || 'No damage'}</span>{proficiencyDamage && <span title="Proficiency multiplies weapon damage dice." className="px-1.5 py-0.5 rounded border border-fuchsia-900/60 text-fuchsia-300">P{profile.proficiency} → {proficiencyDamage}</span>}{weapon.tier && <span className="px-1.5 py-0.5 rounded border border-slate-700 text-slate-500">{itemTierLabel(weapon)}</span>}</div>
                                     {profile.entries.length > 0 && <div className="flex flex-wrap gap-1 mt-2">{profile.entries.map((entry, i) => <span key={i} title={conciseEffect(entry)} className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900 text-[8px] font-bold text-slate-300 cursor-help">{entry.display}</span>)}</div>}
                                   </div>
                                   <div className="flex flex-col gap-1.5 shrink-0">
@@ -4196,10 +4213,11 @@
                           </div>
                         </div>
                      </div>
-                     <div className="grid grid-cols-4 gap-x-4 gap-y-1 w-full text-[10px]">
+                     <div className="grid grid-cols-2 md:grid-cols-5 gap-x-4 gap-y-1 w-full text-[10px]">
                         <div className="flex flex-col"><label className="text-slate-600 font-bold uppercase">Player Name</label><input type="text" className="bg-transparent border-b border-slate-800 text-amber-400 focus:border-amber-500 outline-none font-bold" value={character.playerName} onChange={e => updateCharacter({...character, playerName: e.target.value})} placeholder="YOUR NAME" /></div>
                         <div className="flex flex-col"><label className="text-slate-600 font-bold uppercase">Class</label><input type="text" className="bg-transparent border-b border-slate-800 text-slate-200 focus:border-cyan-500 outline-none" value={character.class} onChange={e => updateCharacter({...character, class: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-slate-600 font-bold uppercase">Level</label><NumField className="bg-transparent border-b border-slate-800 text-cyan-400 font-bold focus:border-cyan-500 outline-none" value={character.level} onChange={e => updateCharacter({...character, level: parseInt(e.target.value)})} /></div>
+                        <div className="flex flex-col"><label className="text-slate-600 font-bold uppercase">Level</label><NumField className="bg-transparent border-b border-slate-800 text-cyan-400 font-bold focus:border-cyan-500 outline-none" value={character.level} onChange={e => updateCharacter({...character, level: Math.max(1,parseInt(e.target.value)||1)})} /></div>
+                        <div className="flex flex-col"><label className="text-slate-600 font-bold uppercase">Proficiency</label><NumField min="1" max="6" className="bg-transparent border-b border-slate-800 text-red-300 font-bold focus:border-red-500 outline-none" value={character.proficiency||1} onChange={e => updateCharacter({...character, proficiency: Math.max(1,Math.min(6,parseInt(e.target.value)||1))})} /></div>
                         <div className="flex flex-col"><label className="text-slate-600 font-bold uppercase">Background</label><input type="text" className="bg-transparent border-b border-slate-800 text-slate-200 focus:border-cyan-500 outline-none" value={character.background} onChange={e => updateCharacter({...character, background: e.target.value})} /></div>
                      </div>
                   </header>
@@ -4281,7 +4299,7 @@
                            {character.features && <FeatureSummaryCard kind="effort" text={character.features} />}
                          </div>
                        )}
-                       {((character.augments && character.augments.length) || (character.drones && character.drones.length)) && (
+                       {(((character.augments && character.augments.length > 0) || (character.drones && character.drones.length > 0))) && (
                          <div className="bg-slate-900/40 rounded border border-slate-800 p-2 text-[9px] text-slate-300 grid grid-cols-1 xl:grid-cols-2 gap-2">
                            {character.augments && character.augments.length > 0 && (<div><span className="text-cyan-400 font-bold uppercase tracking-wider">Augmentations</span>{character.augments.map((a,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{a.name}</span> <span className="text-slate-500">{itemTierLabel(a)}</span><div className="text-slate-400 leading-snug">{a.benefit}</div></div>))}</div>)}
                            {character.drones && character.drones.length > 0 && (<div><span className="text-purple-400 font-bold uppercase tracking-wider">Drones</span>{character.drones.map((d,i)=>(<div key={i} className="text-slate-300 mt-1"><span className="font-bold text-slate-100">{d.name}</span> <span className="text-slate-500">{displayScalar(d.grade)}</span> · HP {d.hp} · Ev {d.evasion}</div>))}</div>)}

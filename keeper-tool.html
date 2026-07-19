@@ -1089,11 +1089,13 @@
       return '<button data-spot="' + esc(key) + '" style="padding:3px 6px;border-radius:5px;border:1px solid ' + (on ? '#facc15' : '#334155') + ';background:' + (on ? '#3b2f0b' : '#111827') + ';color:' + (on ? '#facc15' : '#cbd5e1') + ';font-size:10px;cursor:pointer;">' + esc(label) + '</button>';
     }).join('') + '<button data-spot="" style="padding:3px 6px;border-radius:5px;border:1px solid #334155;background:#111827;color:#94a3b8;font-size:10px;cursor:pointer;">Clear</button>';
   }
-  function setSpotlight(name) { if (typeof state !== 'undefined') state.spotlight = name || ''; if (SESSION) { SESSION.set({ spotlight: name || '' }, { merge: true }).catch(function (e) { console.error(e); }); } if (typeof renderAll === 'function') { try { renderAll(); } catch(e){} } renderSpotlight(name || ''); }
+  async function tableWrite(action, payload) { if(!currentSessionId) throw new Error('Connect to the table first.'); return window.VFTableAccess.api(action, Object.assign({tableId:currentSessionId}, payload||{})); }
+  function patchLive(changes) { if(!currentSessionId)return Promise.resolve(null); return tableWrite('patchSession',{changes:changes}).catch(function(e){console.error('keeper live update',e);setStatus('Table update failed: '+e.message);throw e;}); }
+  function setSpotlight(name) { if (typeof state !== 'undefined') state.spotlight = name || ''; patchLive({spotlight:name||''}).catch(function(){}); if (typeof renderAll === 'function') { try { renderAll(); } catch(e){} } renderSpotlight(name || ''); }
   function toggleSpotlight(name) { var cur = (typeof state !== 'undefined' ? state.spotlight : ''); setSpotlight(cur === name ? '' : name); }
   function rollDmg(str) { if (!str) return null; var m = String(str).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i); if (!m) return null; var count = parseInt(m[1] || '1', 10) || 1; var sides = parseInt(m[2], 10); var mod = m[3] ? parseInt(m[3].replace(/\s/g, ''), 10) : 0; var sum = 0, rolls = []; for (var k = 0; k < count; k++) { var r = Math.floor(Math.random() * sides) + 1; rolls.push(r); sum += r; } return { total: sum + mod, detail: rolls.join('+') + (mod ? (mod > 0 ? '+' + mod : mod) : ''), dice: count + 'd' + sides, rolls: rolls, modifier: mod, base: String(str) }; }
   function rollBroadcastId() { return 'roll-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9); }
-  function sendRoll(withDice) {
+  async function sendRoll(withDice) {
     if (!SESSION) { setStatus('Connect first.'); return; }
     var label = (($id('vf-send-label') || {}).value || 'Keeper').trim();
     var dmgStr = (($id('vf-send-dmg') || {}).value || '').trim();
@@ -1106,7 +1108,7 @@
       var d = rollDmg(dmgStr); if (d) { roll.damage = d.total; roll.damageDetail = d.detail; roll.damageDice = d.dice; roll.damageRolls = d.rolls; roll.damageModifier = d.modifier; roll.damageBase = d.base; }
     } else { roll.type = 'note'; }
     try {
-      publishKeeperRoll(roll);
+      await publishKeeperRoll(roll);
       setStatus('Sent to players: ' + label);
     } catch (e) { setStatus('Send error: ' + e.message); }
   }
@@ -1133,8 +1135,6 @@
       if (!firebase.apps.length) firebase.initializeApp(cfg);
       await window.VFTableAccess.ensureFirebaseAuth(firebase.auth());
       var instance = firebase.firestore();
-      try { instance.settings({ ignoreUndefinedProperties: true, merge: true }); }
-      catch (settingsErr) { console.warn('Firestore settings already active.', settingsErr); }
       db = instance;
       return db;
     })().catch(function(error){ firebaseInitPromise = null; throw error; });
@@ -1171,13 +1171,16 @@
       if($id('vf-session-pass'))$id('vf-session-pass').value='';if($id('vf-session-invite'))$id('vf-session-invite').value='';window.VFTableAccess.mountAdmin(sid,access.role);
       if(unsub)unsub();unsub=SESSION.onSnapshot(function(snap){
         if(!snap.exists){setStatus('Session "'+sid+'" is empty (waiting for players).');return;}var data=snap.data();
-        try{if(data.characters&&typeof state!=='undefined'){window.__sessionCharsRaw=JSON.parse(JSON.stringify(data.characters));if(!(window.__keeperLastEdit&&(Date.now()-window.__keeperLastEdit<2500))){state.players=data.characters.reduce(function(list,entity,originalIndex){if(entity&&entity.entityType!=='drone')list.push(toPlayer(entity,originalIndex));return list;},[]);}}if(typeof data.fearTokens==='number'&&typeof state!=='undefined')state.fearTokens=data.fearTokens;if(typeof state!=='undefined')state.spotlight=data.spotlight||'';if(typeof renderAll==='function')renderAll();renderSpotlight(data.spotlight||'');renderDroneSignals(data.characters||[]);}catch(e){console.error('keeper sync render error',e);}
+        try{if(data.characters&&typeof state!=='undefined'){window.__sessionCharsRaw=JSON.parse(JSON.stringify(data.characters));if(!(window.__keeperLastEdit&&(Date.now()-window.__keeperLastEdit<2500))){state.players=data.characters.reduce(function(list,entity,originalIndex){if(entity&&entity.entityType!=='drone')list.push(toPlayer(entity,originalIndex));return list;},[]);}}if(typeof data.fearTokens==='number'&&typeof state!=='undefined')state.fearTokens=data.fearTokens;if(typeof state!=='undefined'){state.spotlight=data.spotlight||'';state.notes=data.keeperNotes||data.notes||'';if(data.sessionName)state.sessionName=data.sessionName;}if(typeof renderAll==='function')renderAll();var noteEl=$id('notesTextarea');if(noteEl&&document.activeElement!==noteEl)noteEl.value=(data.keeperNotes||data.notes||'');var sessionEl=$id('sessionNameInput');if(sessionEl&&document.activeElement!==sessionEl&&data.sessionName)sessionEl.value=data.sessionName;renderSpotlight(data.spotlight||'');renderDroneSignals(data.characters||[]);}catch(e){console.error('keeper sync render error',e);}
         var rolls=(data.rollHistory||[]).slice().sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0);});window.__handouts=Array.isArray(data.handouts)?data.handouts:[];renderSentNotes();renderRolls(rolls);setStatus('Connected to "'+sid+'" · '+((data.characters||[]).length)+' entities');
       },function(err){setStatus('Error: '+(err.code||err.message));});
       var cleanUrl=window.location.pathname+window.location.hash;window.history.replaceState({},'',cleanUrl);
     }catch(e){setStatus('Error: '+e.message);}
   }
-  window.keeperPushFear = function () { if (SESSION && typeof state !== 'undefined') { SESSION.set({ fearTokens: state.fearTokens }, { merge: true }).catch(function (e) { console.error(e); }); } };
+  window.keeperPushFear = function () { if (currentSessionId && typeof state !== 'undefined') patchLive({fearTokens:state.fearTokens}).catch(function(){}); };
+  var keeperNotesTimer=null;
+  window.keeperPushNotes=function(value){if(typeof state!=='undefined')state.notes=String(value||'');if(!currentSessionId)return;clearTimeout(keeperNotesTimer);keeperNotesTimer=setTimeout(function(){patchLive({keeperNotes:String(value||'')}).catch(function(){});},350);};
+  window.keeperPushSessionName=function(value){if(typeof state!=='undefined')state.sessionName=String(value||'');if(currentSessionId)patchLive({sessionName:String(value||'')}).catch(function(){});};
   window.keeperWriteCharStat = function (syncIndex, stat, value) {
     if (!SESSION || !window.__sessionCharsRaw) return;
     var chars = window.__sessionCharsRaw; var c = chars[syncIndex]; if (!c) return;
@@ -1187,26 +1190,26 @@
     else if (stat === 'effort') { c.effort = c.effort || {}; c.effort.current = value; }
     else if (stat === 'resolve') { c.resolve = c.resolve || {}; c.resolve.current = value; }
     else if (stat === 'shields') { c.shields = value; }
-    SESSION.set({ characters: chars }, { merge: true }).catch(function (e) { console.error(e); });
+    patchLive({characters:chars}).catch(function(){});
   };
   function renderDroneSignals(chars) {
     var box=$id('vf-drone-signals'); if(!box)return; var drones=(chars||[]).map(function(c,i){return {c:c,i:i};}).filter(function(entry){return entry.c&&entry.c.entityType==='drone';});
     if(!drones.length){box.innerHTML='<span style="font-size:10px;color:#64748b;font-style:italic;">No drones connected.</span>';return;}
     box.innerHTML=drones.map(function(entry){var c=entry.c,stateId=c.signalState||'stable';return '<div style="padding:6px;border:1px solid #1e3a5f;border-radius:6px;background:#07111f;"><div style="display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:4px;"><b style="font-size:10px;color:#e2e8f0;">'+esc(c.name||('Drone '+(entry.i+1)))+'</b><span style="font-size:9px;color:#64748b;">'+esc(c.signalRange||'Close')+' · '+esc(c.linkMode||'Direct RF Link')+'</span></div><div style="display:flex;gap:3px;">'+['stable','unstable','lost'].map(function(sig){var active=sig===stateId;var color=sig==='stable'?'#22c55e':sig==='unstable'?'#f59e0b':'#ef4444';return '<button data-drone-signal="'+entry.i+'" data-signal="'+sig+'" style="flex:1;padding:3px;border-radius:4px;border:1px solid '+(active?color:'#334155')+';background:'+(active?'#111827':'#0b1220')+';color:'+(active?color:'#64748b')+';font-size:8px;font-weight:800;text-transform:uppercase;cursor:pointer;">'+sig+'</button>';}).join('')+'</div></div>';}).join('');
   }
-  function setDroneSignal(index, signal) { if(!SESSION||!window.__sessionCharsRaw)return; var chars=window.__sessionCharsRaw; if(!chars[index]||chars[index].entityType!=='drone')return; chars[index].signalState=signal; SESSION.set({characters:chars},{merge:true}).catch(function(e){console.error(e);}); renderDroneSignals(chars); }
+  function setDroneSignal(index, signal) { if(!currentSessionId||!window.__sessionCharsRaw)return; var chars=window.__sessionCharsRaw; if(!chars[index]||chars[index].entityType!=='drone')return; chars[index].signalState=signal; patchLive({characters:chars}).catch(function(){}); renderDroneSignals(chars); }
   async function changeTablePassword() {
     if(!SESSION||!currentSessionId){setStatus('Connect to the table first.');return;}
     var password=(($id('vf-new-pass')||{}).value||'').trim(),confirmPass=(($id('vf-confirm-pass')||{}).value||'').trim();
     if(password.length<4){setStatus('Use at least 4 characters. To remove the password, use Table Admin.');return;}if(password!==confirmPass){setStatus('Password confirmation does not match.');return;}
     try{var out=await window.VFTableAccess.api('setPassword',{tableId:currentSessionId,password:password});if($id('vf-new-pass'))$id('vf-new-pass').value='';if($id('vf-confirm-pass'))$id('vf-confirm-pass').value='';setPasswordUi(!!out.locked);setStatus('Table password updated.');listTables();}catch(e){setStatus('Password update failed: '+e.message);}
   }
-  function publishKeeperRoll(roll) {
-    if (!SESSION || !roll) return;
+  async function publishKeeperRoll(roll) {
+    if (!currentSessionId || !roll) throw new Error('Connect to the table first.');
     roll.timestamp = Date.now();
     roll.broadcastId = roll.broadcastId || rollBroadcastId();
-    SESSION.set({ lastRoll: roll, rollHistory: firebase.firestore.FieldValue.arrayUnion(roll), lastRollUpdatedAt: roll.timestamp }, { merge: true })
-      .catch(function (e) { console.error('keeper roll broadcast', e); setStatus('Roll broadcast failed: ' + (e.code || e.message)); });
+    try{return await tableWrite('broadcastRoll',{roll:roll});}
+    catch(e){console.error('keeper roll broadcast',e);setStatus('Roll broadcast failed: '+(e.message||e));throw e;}
   }
   window.keeperBroadcastAbility = function (monsterName, abilityName, desc, fearCost) {
     publishKeeperRoll({ type: 'note', playerName: monsterName || 'Keeper', label: (abilityName || 'Ability') + (fearCost ? ' (' + fearCost + ' Fear)' : '') + (desc ? ': ' + desc : '') });
@@ -1268,14 +1271,13 @@
         + '<button data-remove-note="' + esc(n.id) + '" title="Remove handout" style="background:none;border:0;color:#64748b;cursor:pointer;font-size:14px;line-height:1;padding:2px;">\u00d7</button></div>';
     }).join('');
   }
-  function removeHandout(id) {
-    if (!SESSION) return;
+  async function removeHandout(id) {
+    if (!currentSessionId) return;
     var arr = (window.__handouts || []).filter(function (n) { return n && n.id !== id; });
-    window.__handouts = arr;
-    SESSION.set({ handouts: arr }, { merge: true }).catch(function (e) { console.error(e); });
-    renderSentNotes();
+    window.__handouts = arr; renderSentNotes();
+    try{await tableWrite('setHandouts',{handouts:arr});}catch(e){setStatus('Handout removal failed: '+e.message);}
   }
-  function sendHandout() {
+  async function sendHandout() {
     if (!SESSION) { setStatus('Connect first.'); return; }
     var warn = $id('vf-note-warn'); if (warn) warn.textContent = '';
     var v = function (id) { var el = $id(id); return el ? el.value.trim() : ''; };
@@ -1291,7 +1293,7 @@
     if (targets !== 'all' && (!targets || !targets.length)) { if (warn) warn.textContent = 'Pick at least one player, or All.'; return; }
     var note = { id: 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: title, subtitle: subtitle, body: body, table: table, targets: targets, volatile: volatile, expires: timer > 0 ? timer * 1000 : 0, sentAt: Date.now(), from: 'Keeper' };
     var arr = (window.__handouts || []).slice(); arr.push(note); arr = arr.slice(-25);
-    SESSION.set({ handouts: arr }, { merge: true }).catch(function (e) { console.error(e); });
+    try{await tableWrite('setHandouts',{handouts:arr});}catch(e){if(warn)warn.textContent='Send failed: '+e.message;return;}
     window.__handouts = arr;
     renderSentNotes();
     ['vf-note-title', 'vf-note-subtitle', 'vf-note-body', 'vf-note-table'].forEach(function (id) { var el = $id(id); if (el) el.value = ''; });

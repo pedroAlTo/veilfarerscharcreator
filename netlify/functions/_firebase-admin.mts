@@ -57,7 +57,29 @@ export async function deleteDoc(path:string,access?:string){const token=access||
 export async function listDocs(path:string,access?:string){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}/${path}?pageSize=200`,{headers:{authorization:`Bearer ${token}`}});if(!r.ok)throw new Error(`Firestore list failed (${r.status})`);const raw:any=await r.json();return (raw.documents||[]).map((doc:any)=>({id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}))}
 export async function queryDocs(collectionId:string,fieldPath:string,value:any,access?:string,limit=200){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}:runQuery`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath},op:'EQUAL',value:encode(value)}},limit}})});if(!r.ok)throw new Error(`Firestore query failed (${r.status})`);const raw:any[]=await r.json();return raw.filter(item=>item.document).map(item=>{const doc=item.document;return {id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}})}
 export function safeTableId(v:any){return String(v||'').trim().replace(/[\\/\?#%]/g,'-').replace(/\s+/g,' ').slice(0,80)}
-export function makePassword(password:string){const salt=randomBytes(16).toString('base64'),iterations=150000,hash=pbkdf2Sync(password,salt,iterations,32,'sha256').toString('base64');return {algorithm:'PBKDF2-SHA256',iterations,salt,hash}}
-export function verifyPassword(password:string,record:any){if(!record?.hash)return true;try{const candidate=pbkdf2Sync(password||'',record.salt,Number(record.iterations)||150000,32,'sha256'),expected=Buffer.from(record.hash,'base64');return candidate.length===expected.length&&timingSafeEqual(candidate,expected)}catch{return false}}
+export function makePassword(password:string){
+ const saltBytes=randomBytes(16),salt=saltBytes.toString('base64'),iterations=150000
+ const hash=pbkdf2Sync(password,saltBytes,iterations,32,'sha256').toString('base64')
+ return {algorithm:'PBKDF2-SHA256',version:2,iterations,salt,hash}
+}
+export function verifyPassword(password:string,record:any){
+ if(!record?.hash)return true
+ try{
+  const expected=Buffer.from(String(record.hash),'base64'),iterations=Number(record.iterations)||150000,saltText=String(record.salt||'')
+  const candidates:Buffer[]=[]
+  try{candidates.push(Buffer.from(saltText,'base64'))}catch{}
+  try{candidates.push(Buffer.from(saltText,'base64url'))}catch{}
+  // v59.47-v59.50 server records accidentally used the Base64 text itself as
+  // the PBKDF2 salt. Keep that compatibility path while new records use bytes.
+  candidates.push(Buffer.from(saltText,'utf8'))
+  const seen=new Set<string>()
+  for(const salt of candidates){
+   const key=salt.toString('hex');if(seen.has(key))continue;seen.add(key)
+   const candidate=pbkdf2Sync(password||'',salt,iterations,32,'sha256')
+   if(candidate.length===expected.length&&timingSafeEqual(candidate,expected))return true
+  }
+ }catch{}
+ return false
+}
 export const tokenHash=(token:string)=>createHash('sha256').update(token).digest('hex')
 export const inviteToken=()=>randomBytes(18).toString('base64url')

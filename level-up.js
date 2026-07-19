@@ -284,7 +284,8 @@ async function refreshVault(){
 }
 function selectCharacter(id){
   const record=window.VeilFarersCharacterRegistry?.get(id);
-  const creator=record?.characterData?.creatorState;
+  let creator=record?.characterData?.creatorState;
+  if(!creator&&window.VFNormalizeCreatorImport){try{creator=window.VFNormalizeCreatorImport(record?.characterData?.sheetPayload||record?.characterData?.playerCharacter||record);}catch(_){}}
   if(!creator){plan.message='This Vault record has no editable Creator build.';render();return;}
   state=copy(creator);ensureState();state.characterId=record.characterId;selectedVaultId=record.characterId;plan=freshPlan();
   try{window.VeilFarersCharacterRegistry.setCurrentId(record.characterId);autosave();syncFieldsFromState();canonicalizeLevelState();}catch(_){ }
@@ -300,9 +301,24 @@ async function trashCharacter(id,event){
 }
 function cancelTrash(event){event&&event.stopPropagation();pendingTrashId='';render();}
 
+
+async function importLevelUpFile(event){
+  const file=event?.target?.files?.[0];if(!file)return;
+  try{
+    const raw=JSON.parse(await file.text());
+    if(!window.VFNormalizeCreatorImport)throw Error('The shared character importer is unavailable.');
+    const imported=window.VFNormalizeCreatorImport(raw);
+    const registered=window.VFRegisterImportedCreatorState?await window.VFRegisterImportedCreatorState(imported,'level-up-json-import'):imported;
+    state=copy(registered);ensureState();selectedVaultId=state.characterId;plan=freshPlan();vaultError='';autosave();syncFieldsFromState();canonicalizeLevelState();
+    plan.message=`Imported ${state.characterId||'character'} and added it to Character Vault.`;plan.applied=true;
+  }catch(error){plan.message='Import failed: '+(error.message||String(error));plan.applied=false;}
+  event.target.value='';render();
+}
+function chooseImportFile(){const input=document.getElementById('vf-levelup-import');if(input){input.value='';input.click();}}
+
 function renderVault(){
   const records=vaultRecords();
-  return `<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Character Vault</div><h3>Select a saved character</h3></div><button class="btn btn-secondary levelup-mini" onclick="VFLevelUp.refreshVault()" ${vaultLoading?'disabled':''}>${vaultLoading?'Refreshing…':'Refresh cloud Vault'}</button></div><p>Level Up edits the same permanent <code>VF-######</code> record used by Charsheet and Player Tool.</p>${vaultError?`<div class="levelup-error">Cloud Vault unavailable: ${safe(vaultError)}. Local saved records remain available.</div>`:''}<div class="levelup-vault-list">${records.map(record=>{const item=recordSummary(record);const confirming=pendingTrashId===item.characterId;return `<article class="levelup-vault-character ${item.characterId===state.characterId?'active':''}" role="button" tabindex="0" onclick="VFLevelUp.select('${attr(item.characterId)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();VFLevelUp.select('${attr(item.characterId)}')}"><strong>${safe(item.name)}</strong><small>${safe(item.characterId)} · Level ${item.level} · ${safe([item.path,item.className,item.subclass].filter(Boolean).join(' · '))}</small><span class="levelup-inline-actions"><span class="levelup-badge">${safe(item.cloudState)}</span>${confirming?`<span class="levelup-error" style="padding:7px 9px">Move to Trash?</span><span class="btn btn-primary levelup-mini" role="button" onclick="VFLevelUp.trash('${attr(item.characterId)}',event)">Confirm</span><span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.cancelTrash(event)">Cancel</span>`:`<span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.trash('${attr(item.characterId)}',event)">Trash</span>`}</span></article>`;}).join('')||'<p>No completed characters are saved in this browser yet.</p>'}</div></section>`;
+  return `<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Character Vault</div><h3>Select a saved character</h3></div><div class="levelup-inline-actions"><button class="btn btn-secondary levelup-mini" onclick="VFLevelUp.chooseImport()">Import JSON</button><button class="btn btn-secondary levelup-mini" onclick="VFLevelUp.refreshVault()" ${vaultLoading?'disabled':''}>${vaultLoading?'Refreshing…':'Refresh cloud Vault'}</button></div></div><input id="vf-levelup-import" type="file" accept="application/json,.json" hidden onchange="VFLevelUp.importFile(event)"><p>Level Up edits the same permanent <code>VF-######</code> record used by Charsheet and Player Tool. Older Creator, Charsheet and Player Tool JSON files are upgraded into the Vault on import.</p>${vaultError?`<div class="levelup-error">Vault refresh warning: ${safe(vaultError)}. Loaded local records remain available.</div>`:''}<div class="levelup-vault-list">${records.map(record=>{const item=recordSummary(record);const confirming=pendingTrashId===item.characterId;return `<article class="levelup-vault-character ${item.characterId===state.characterId?'active':''}" role="button" tabindex="0" onclick="VFLevelUp.select('${attr(item.characterId)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();VFLevelUp.select('${attr(item.characterId)}')}"><strong>${safe(item.name)}</strong><small>${safe(item.characterId)} · Level ${item.level} · ${safe([item.path,item.className,item.subclass].filter(Boolean).join(' · '))}</small><span class="levelup-inline-actions"><span class="levelup-badge">${safe(item.cloudState)}</span>${confirming?`<span class="levelup-error" style="padding:7px 9px">Move to Trash?</span><span class="btn btn-primary levelup-mini" role="button" onclick="VFLevelUp.trash('${attr(item.characterId)}',event)">Confirm</span><span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.cancelTrash(event)">Cancel</span>`:`<span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.trash('${attr(item.characterId)}',event)">Trash</span>`}</span></article>`;}).join('')||'<p>No completed characters are saved in this browser yet.</p>'}</div></section>`;
 }
 
 function validateExperienceChoice(data,label){
@@ -428,8 +444,8 @@ async function apply(){
     if(window.VeilFarersSheetBridge){out=await window.VeilFarersSheetBridge.convert(state);window.VeilFarersSheetBridge.saveOutput(out,state);}
     const payload=out?{app:'Veilfarers Character Sheet',version:'2.84-RC3.2',schema:'veilfarers.character/2',characterId:id,fields:{...out.fields,character_id:id},tracks:out.tracks,advancementHistory:state.advancementHistory}:null;
     const registry=window.VeilFarersCharacterRegistry;
-    const record=registry.saveLocalData(id,{creatorState:copy(state),sheetPayload:payload,advancementHistory:copy(state.advancementHistory)},{source:'level-up-v59.50',status:'active',completedAt:registry.get(id)?.completedAt||new Date().toISOString()});
-    const synced=await registry.sync(record,{source:'level-up-v59.50'});
+    const record=registry.saveLocalData(id,{creatorState:copy(state),sheetPayload:payload,advancementHistory:copy(state.advancementHistory)},{source:'level-up-v59.51',status:'active',completedAt:registry.get(id)?.completedAt||new Date().toISOString()});
+    const synced=await registry.sync(record,{source:'level-up-v59.51'});
     plan=freshPlan();plan.applied=true;plan.message=`Level ${target} applied to ${id}${synced?.cloudState==='deferred'?' locally; cloud sync is pending.':'. Vault, Charsheet and Player Tool payloads were updated.'}`;
     selectedVaultId=id;render();
   }catch(error){plan.message=error.message||String(error);plan.applied=false;render();}
@@ -464,7 +480,7 @@ async function loadCanonicalLevelUpData(){
 
 window.VFLevelUp={
   render,refreshVault,select:selectCharacter,trash:trashCharacter,toggle:toggleOption,
-  detail:(id,key,value)=>setDetail(id,key,value),tier:setTier,cancelTrash,apply
+  detail:(id,key,value)=>setDetail(id,key,value),tier:setTier,cancelTrash,apply,chooseImport:chooseImportFile,importFile:importLevelUpFile
 };
 
 loadCanonicalLevelUpData().finally(render);

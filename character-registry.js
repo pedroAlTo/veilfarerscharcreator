@@ -219,6 +219,8 @@
       characterData.creatorState?.characterId||
       characterData.sheetPayload?.characterId||
       characterData.sheetPayload?.fields?.character_id||
+      characterData.playerCharacter?.characterId||
+      characterData.playerCharacter?.id||
       currentId()
     );
     if(!id)id=pendingId();
@@ -234,6 +236,7 @@
         const data={...(record.characterData||{})};
         if(data.creatorState)data.creatorState={...data.creatorState,characterId:id};
         if(data.sheetPayload)data.sheetPayload={...data.sheetPayload,characterId:id,fields:{...(data.sheetPayload.fields||{}),character_id:id}};
+        if(data.playerCharacter)data.playerCharacter={...data.playerCharacter,characterId:id,id:id};
         record=saveLocalData(id,data,{...opts,source:opts.source||'id-allocation',emit:false});
         emit(record,opts.source||'id-allocation',{previousCharacterId});
       }catch(error){
@@ -279,18 +282,24 @@
   }
 
   async function refreshVault(options={}){
-    if(vaultPromise&&!options.force)return vaultPromise;
+    if(vaultPromise)return vaultPromise;
     vaultPromise=(async()=>{
-      const result=await vaultApi('list');
-      const remote=(result.records||[]).map(item=>normalizeRemoteRecord(item.characterId,item));
-      mergeRemoteRecords(remote);
-      const records=listForCurrentUser({includeUnowned:true,completedOnly:true});
-      emitVault(records,'cloud');
-      return records;
-    })().catch(error=>{
-      window.dispatchEvent(new CustomEvent('veilfarers:vault-error',{detail:{error}}));
-      throw error;
-    }).finally(()=>{vaultPromise=null;});
+      let lastError=null;
+      for(let attempt=0;attempt<2;attempt++){
+        try{
+          const result=await vaultApi('list');
+          const remote=(result.records||[]).map(item=>normalizeRemoteRecord(item.characterId,item));
+          mergeRemoteRecords(remote);
+          const records=listForCurrentUser({includeUnowned:true,completedOnly:true});
+          emitVault(records,'cloud');
+          return records;
+        }catch(error){lastError=error;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,450));}
+      }
+      const localRecords=listForCurrentUser({includeUnowned:true,completedOnly:true});
+      window.dispatchEvent(new CustomEvent('veilfarers:vault-error',{detail:{error:lastError,recovered:localRecords.length>0,records:localRecords}}));
+      if(localRecords.length){emitVault(localRecords,'local-fallback');return localRecords;}
+      throw lastError;
+    })().finally(()=>{vaultPromise=null;});
     return vaultPromise;
   }
 
@@ -334,13 +343,14 @@
   function summary(record){
     const creator=record?.characterData?.creatorState||{};
     const fields=record?.characterData?.sheetPayload?.fields||{};
+    const player=record?.characterData?.playerCharacter||{};
     return {
       characterId:record?.characterId||'',
-      name:creator.name||fields.name||'Unnamed Veilfarer',
-      level:Number(creator.level||fields.level||1)||1,
-      path:creator.path||fields.chosen_path||fields.path||'',
-      className:creator.className||creator.cls||fields.class||'',
-      subclass:creator.subclass||fields.subclass||'',
+      name:creator.name||fields.name||player.name||'Unnamed Veilfarer',
+      level:Number(creator.level||fields.level||player.level||1)||1,
+      path:creator.path||fields.chosen_path||fields.path||player.path||'',
+      className:creator.className||creator.cls||fields.class||player.class||'',
+      subclass:creator.subclass||fields.subclass||player.subclass||'',
       updatedAt:record?.updatedAt||'',
       status:record?.status||'active',
       cloudState:record?.cloudState||'local'

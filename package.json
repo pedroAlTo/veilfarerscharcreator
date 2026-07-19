@@ -1,7 +1,7 @@
 {
   "name": "veilfarers-portal",
   "private": true,
-  "version": "59.50.0",
+  "version": "59.51.0",
   "dependencies": {
     "@netlify/identity": "^1.1.0"
   },

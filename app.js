@@ -3212,18 +3212,21 @@ function toggleKeeperMode() {
 // ==================== SESSION NAME ====================
 function updateSessionName(value) {
   state.sessionName = value;
-  $('#saveSessionName').value = value;
+  const saveField=$('#saveSessionName');if(saveField)saveField.value = value;
+  if(typeof window.keeperPushSessionName==='function')window.keeperPushSessionName(value);
 }
 
 // ==================== NOTES ====================
 function updateNotes(value) {
   state.notes = value;
+  if(typeof window.keeperPushNotes==='function')window.keeperPushNotes(value);
 }
 
 function clearNotes() {
   if (confirm('Are you sure you want to clear all notes?')) {
     state.notes = '';
     $('#notesTextarea').value = '';
+    if(typeof window.keeperPushNotes==='function')window.keeperPushNotes('');
   }
 }
 
@@ -3433,7 +3436,7 @@ function init() {
   // Set up notes
   const notesTextarea = $('#notesTextarea');
   const clearNotesBtn = $('#clearNotesBtn');
-  if (notesTextarea) notesTextarea.addEventListener('change', (e) => updateNotes(e.target.value));
+  if (notesTextarea) notesTextarea.addEventListener('input', (e) => updateNotes(e.target.value));
   if (clearNotesBtn) clearNotesBtn.addEventListener('click', clearNotes);
   
   // Set up add clock

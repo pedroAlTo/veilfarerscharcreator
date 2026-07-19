@@ -2556,38 +2556,76 @@ async function saveCharacter(){
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   flashStatus("Character saved");
 }
-function loadCharacterData(obj){
-  if(obj&&obj.creatorState)obj=obj.creatorState;
-  if(obj&&obj.payload&&obj.payload.creatorState)obj=obj.payload.creatorState;
+function importIdentity(list,value){
+  const wanted=String(value||'').trim().toLowerCase();if(!wanted)return null;
+  return (list||[]).find(item=>[item&&item.id,item&&item.slug,item&&item.name,item&&item.canonicalId].some(v=>String(v||'').trim().toLowerCase()===wanted))||null;
+}
+function signedNumber(value){const n=parseInt(String(value==null?'':value).replace(/[^\d+-]/g,''),10);return Number.isFinite(n)?n:0;}
+function normalizeImportedCreatorData(input){
+  let obj=input;
+  if(Array.isArray(obj))obj=obj.find(item=>item&&typeof item==='object')||{};
+  for(let i=0;i<8&&obj&&typeof obj==='object';i++){
+    if(obj.creatorState&&typeof obj.creatorState==='object'){obj=obj.creatorState;continue;}
+    if(obj.payload&&obj.payload.creatorState&&typeof obj.payload.creatorState==='object'){obj=obj.payload.creatorState;continue;}
+    if(obj.characterData&&obj.characterData.creatorState){obj=obj.characterData.creatorState;continue;}
+    break;
+  }
+  if(!obj||typeof obj!=='object')throw new Error('No compatible character record was found.');
+  const sheet=(obj.payload&&obj.payload.fields)?obj.payload:(obj.fields?obj:null);
+  if(sheet){
+    const f=sheet.fields||{},fresh=freshState();
+    const path=String(f.chosen_path||f.path||'').toLowerCase()==='sleeping'?'Sleeping':'Awakened';
+    const anc=importIdentity(ANCESTRIES,f.ancestry),com=importIdentity(COMMUNITIES,f.community),aff=importIdentity(AFFILIATIONS,f.affiliation),cls=importIdentity(CLASSES,f.class);
+    Object.assign(fresh,{characterId:String(sheet.characterId||f.character_id||'').trim().toUpperCase(),name:f.name||'',pronouns:f.pron||f.pronouns||'',path,ancestry:anc&&anc.id||null,community:com&&com.id||null,affiliation:aff&&aff.id||null,cls:cls&&cls.id||null,subclass:f.subclass||null,level:Math.max(1,Math.min(10,Number(f.level)||1)),proficiency:Math.max(1,Math.min(6,Number(f.prof)||1)),bgAnswer:f.seed_motive||f.bg_answer||'',anchor:f.s_anchor||'',wound:f.equipment_notes||'',traits:{agility:signedNumber(f.tr_agility||f.base_tr_agility),strength:signedNumber(f.tr_strength||f.base_tr_strength),finesse:signedNumber(f.tr_finesse||f.base_tr_finesse),knowledge:signedNumber(f.tr_knowledge||f.base_tr_knowledge),instinct:signedNumber(f.tr_instinct||f.base_tr_instinct),presence:signedNumber(f.tr_presence||f.base_tr_presence)}});
+    fresh.experiences=[0,1,2].map(i=>f[`${path==='Sleeping'?'s':'a'}_exp_${i}`]||f[`s_exp_${i}`]||f[`a_exp_${i}`]||'');
+    fresh.experienceBonuses=[0,1,2].map(i=>Math.max(2,Math.min(5,signedNumber(f[`${path==='Sleeping'?'s':'a'}_exp_${i}_bonus`]||2))));
+    fresh.weapons=[f.wpri_name,f.wsec_name].filter(Boolean);fresh.armors=[f.armor_name].filter(Boolean);
+    fresh.powers=[];for(let i=0;i<8;i++){const name=f[`a_pwr_${i}_n`];if(!name)continue;const detail=String(f[`a_pwr_${i}_d`]||'');const domain=(detail.match(/^([^·]+)/)||[])[1]?.trim();const found=(POWERS||[]).find(power=>String(power.n||power.name||'').toLowerCase()===String(name).toLowerCase()&&(!domain||String(power.d||power.domain||'').toLowerCase()===domain.toLowerCase()));fresh.powers.push(found?(found.id||`${found.d||found.domain}::${found.n||found.name}`):(domain?`${domain}::${name}`:name));}
+    try{fresh.resolveMoves=JSON.parse(f.s_learned_moves||'[]')}catch(_){fresh.resolveMoves=[]}
+    fresh.subclassRank=f.subclass_rank||'Foundation';fresh.resolveDie=f.s_resolve_die||'d4';fresh.advancementHistory=sheet.advancementHistory||[];
+    return fresh;
+  }
+  const looksPlayer=obj.stats||obj.hp||obj.entityType==='character'||obj.playerName;
+  if(looksPlayer){
+    const fresh=freshState(),anc=importIdentity(ANCESTRIES,obj.ancestry||obj.heritage),com=importIdentity(COMMUNITIES,obj.community),aff=importIdentity(AFFILIATIONS,obj.affiliation),cls=importIdentity(CLASSES,obj.class||obj.cls);
+    Object.assign(fresh,{characterId:String(obj.characterId||obj.id||'').trim().toUpperCase(),name:obj.name||'',pronouns:obj.pronouns||'',path:String(obj.path||'').toLowerCase()==='sleeping'?'Sleeping':'Awakened',ancestry:anc&&anc.id||null,community:com&&com.id||null,affiliation:aff&&aff.id||null,cls:cls&&cls.id||null,subclass:obj.subclass||null,level:Math.max(1,Math.min(10,Number(obj.level)||1)),proficiency:Math.max(1,Math.min(6,Number(obj.proficiency)||1)),traits:{agility:Number(obj.stats?.agility)||0,strength:Number(obj.stats?.strength)||0,finesse:Number(obj.stats?.finesse)||0,knowledge:Number(obj.stats?.knowledge)||0,instinct:Number(obj.stats?.instinct)||0,presence:Number(obj.stats?.presence)||0},experiences:(obj.experiences||[]).slice(0,3).map(x=>typeof x==='string'?x:(x.description||x.name||'')),experienceBonuses:(obj.experiences||[]).slice(0,3).map(x=>Math.max(2,Math.min(5,Number(x&&x.bonus)||2))),weapons:(obj.weapons||obj.weaponArsenal||[]).slice(0,2).map(x=>typeof x==='string'?x:x.name).filter(Boolean),armors:[obj.armor||((obj.armorArsenal||[]).find(x=>(x.id||x.canonicalId)===obj.activeArmorId))||((obj.armorArsenal||[])[0])].filter(Boolean).map(x=>typeof x==='string'?x:x.name),subclassRank:obj.subclassRank||'Foundation',resolveDie:obj.resolveDie||'d4',advancementHistory:obj.advancementHistory||[]});
+    while(fresh.experiences.length<3)fresh.experiences.push('');while(fresh.experienceBonuses.length<3)fresh.experienceBonuses.push(2);
+    return fresh;
+  }
+  const fresh=freshState();for(const key in fresh){if(Object.prototype.hasOwnProperty.call(obj,key))fresh[key]=obj[key];}return fresh;
+}
+async function registerImportedCreatorState(fresh,source='creator-json-import'){
+  const registry=window.VeilFarersCharacterRegistry;if(!registry)return fresh;
+  const ensured=await registry.ensureId({characterId:fresh.characterId,creatorState:fresh},{source,completedAt:new Date().toISOString()});
+  fresh.characterId=ensured.characterId;
+  let payload=null;
+  try{if(window.VeilFarersSheetBridge){const out=await window.VeilFarersSheetBridge.convert(fresh);payload={app:'Veilfarers Character Sheet',version:'2.84-RC3.2',schema:'veilfarers.character/2',characterId:fresh.characterId,fields:{...(out.fields||{}),character_id:fresh.characterId},tracks:out.tracks||{},advancementHistory:fresh.advancementHistory||[]};window.VeilFarersSheetBridge.saveOutput(out,fresh);}}catch(error){console.warn('Imported sheet payload conversion deferred',error);}
+  const record=registry.saveLocalData(fresh.characterId,{creatorState:JSON.parse(JSON.stringify(fresh)),sheetPayload:payload,advancementHistory:fresh.advancementHistory||[]},{source,status:'active',completedAt:ensured.completedAt||new Date().toISOString()});
+  registry.sync(record,{source}).catch(()=>{});return fresh;
+}
+async function loadCharacterData(obj,options={}){
+  obj=normalizeImportedCreatorData(obj);
   const fresh=freshState();
   for(const k in fresh){ if(k in obj) fresh[k]=obj[k]; }
-  // Migrate older single-item saves to the budget-pool format
   if(typeof obj.weapon==="string"&&obj.weapon) fresh.weapons=[obj.weapon];
   if(typeof obj.armor==="string"&&obj.armor) fresh.armors=[obj.armor];
   if(!Array.isArray(fresh.weapons)) fresh.weapons=[];
   if(!Array.isArray(fresh.armors)) fresh.armors=[];
   if(!Array.isArray(fresh.experiences)) fresh.experiences=[];
-  fresh.experiences=fresh.experiences.slice(0,3);
-  while(fresh.experiences.length<3)fresh.experiences.push("");
+  fresh.experiences=fresh.experiences.slice(0,3);while(fresh.experiences.length<3)fresh.experiences.push("");
+  if(!Array.isArray(fresh.experienceBonuses))fresh.experienceBonuses=[];while(fresh.experienceBonuses.length<fresh.experiences.length)fresh.experienceBonuses.push(2);
   fresh.weapons=fresh.weapons.filter(n=>WEAPONS.some(w=>w.name===n));
   fresh.armors=fresh.armors.filter(n=>ARMOR.some(a=>a.name===n));
-  fresh.selectedArrayVal=null;
-  if(!fresh.level) fresh.level=1;
-  if(!fresh.proficiency) fresh.proficiency=proficiencyFloorForLevel(fresh.level);
+  fresh.selectedArrayVal=null;if(!fresh.level)fresh.level=1;if(!fresh.proficiency)fresh.proficiency=proficiencyFloorForLevel(fresh.level);
   const validTraitIds=new Set(["agility","strength","finesse","instinct","presence","knowledge"]);
   fresh.traits=Object.fromEntries(Object.entries(fresh.traits||{}).filter(([id,value])=>validTraitIds.has(id)&&Number.isFinite(Number(value))).map(([id,value])=>[id,Number(value)]));
-  state=fresh;
-  canonicalizeLevelState();
-  document.getElementById("substrain-section").innerHTML="";
-  document.getElementById("subclass-section").style.display="none";
-  renderAncestries(); renderSubStrain();
-  renderCommunities(); renderClasses();
-  renderSubclasses();
-  renderTraits(); renderAffiliations(); renderLevelUpView(); updateBgQuestion();
-  syncFieldsFromState();
-  goStep(1);
-  flashStatus("Character loaded");
+  if(options.register)await registerImportedCreatorState(fresh,options.source||'creator-json-import');
+  state=fresh;canonicalizeLevelState();autosave();
+  document.getElementById("substrain-section").innerHTML="";document.getElementById("subclass-section").style.display="none";
+  renderAncestries();renderSubStrain();renderCommunities();renderClasses();renderSubclasses();renderTraits();renderAffiliations();renderLevelUpView();updateBgQuestion();syncFieldsFromState();goStep(1);flashStatus(options.register?`Character imported · ${fresh.characterId}`:"Character loaded");return fresh;
 }
+window.VFNormalizeCreatorImport=normalizeImportedCreatorData;
+window.VFRegisterImportedCreatorState=registerImportedCreatorState;
 function loadCharacter(){
   const inp=document.getElementById("load-file-input");
   inp.value="";
@@ -2597,9 +2635,9 @@ function handleLoadFile(e){
   const file=e.target.files[0];
   if(!file)return;
   const reader=new FileReader();
-  reader.onload=ev=>{
-    try{ loadCharacterData(JSON.parse(ev.target.result)); }
-    catch(err){ alert("Could not read that file — it is not a valid VeilFarers character."); }
+  reader.onload=async ev=>{
+    try{await loadCharacterData(JSON.parse(ev.target.result),{register:true,source:"creator-json-import"});}
+    catch(err){console.error(err);alert("Could not read that file — it is not a valid VeilFarers character: "+err.message);}
   };
   reader.readAsText(file);
 }

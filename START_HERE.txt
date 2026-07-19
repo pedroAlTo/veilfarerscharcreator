@@ -1,48 +1,52 @@
-VEILFARERS PORTAL v59.50 — START HERE
-Date: 2026-07-19
+VEILFARERS PORTAL v59.51 — START HERE
 
-PURPOSE
+PACKAGE
 -------
-Code-only hotfix for authenticated Player/Keeper reload loops, duplicate Player characters, pending-to-final Character ID migration, Character ID placement and repeated Keeper Firebase initialization.
+VeilFarers_Portal_v59.51.zip
 
 DEPLOY
 ------
-1. Create or use a clean test branch based on the intended current base.
-2. Replace the branch contents with the contents of VeilFarers_Portal_v59.50.zip. index.html must remain at repository root.
-3. Commit and push the complete release.
-4. Confirm Netlify dependency installation uses registry.npmjs.org.
-5. Hard-refresh the Deploy Preview after publication.
-6. Sign out and sign in once before authenticated QA.
+1. Preserve the current v59.50 branch/deploy and Firestore Rules.
+2. Create or update a test branch from the intended base.
+3. Replace the branch contents with the CONTENTS of the v59.51 ZIP.
+4. Confirm index.html remains at repository root.
+5. Do not commit node_modules, .env files or service-account JSON.
+6. Commit/push and wait for all Netlify checks.
+7. Hard-refresh the Deploy Preview, sign out and sign in.
 
-DO NOT
-------
-- Do not deploy project-wide Firestore Rules merely to test this code hotfix.
-- Do not copy only player-tool.html or keeper-tool.html; the fix also changes character-registry.js, character-sync-adapter.js, portal.js and portal.css.
-- Do not relax the portal CSP for Segment/Bugsnag Deploy Preview analytics.
-- Do not modify assets/3d-dice.
+NO NEW ENVIRONMENT VARIABLE NAMES
+---------------------------------
+FIREBASE_API_KEY
+FIREBASE_AUTH_DOMAIN
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+FIREBASE_MESSAGING_SENDER_ID
+FIREBASE_APP_ID
+FIREBASE_MEASUREMENT_ID
+FIREBASE_PUBLIC_TABLE_DIRECTORY=false
+FIREBASE_SERVICE_ACCOUNT_JSON
 
-MANDATORY QA
-------------
-PLAYER TOOL
-1. Sign in and open Player Tool.
-2. Confirm the main loading shell completes once and does not restart.
-3. Open the same Vault character repeatedly; one Player tab must remain.
-4. Refresh Vault; the open character should update in place.
-5. Complete/sync a pending character; PENDING-* must become one VF-###### record.
-6. Change current HP/Stress before a build refresh and confirm current values remain.
+FIREBASE_SERVICE_ACCOUNT_JSON must have Functions scope and values for Deploy Previews / Branch deploys as required. Never expose or commit it.
 
-CHARACTER ID
-7. Confirm the current VF-###### appears in shared navigation.
-8. Confirm there is no fixed bottom-corner Character ID callout.
-
-KEEPER TOOL
-9. Sign in and open Keeper Tool.
-10. Confirm tables load once, no page reload loop occurs and no Firestore host-override warning appears.
-11. Connect to a disposable table, disconnect/reconnect and verify only one live listener is reflected in behavior.
-
-CONSOLE
-12. Segment/Bugsnag ERR_BLOCKED_BY_CLIENT under cdp/?deployID are Netlify preview UI noise. Investigate only errors that reference VeilFarers files, Firestore or /api endpoints.
-
-ACCEPTANCE
+TEST FIRST
 ----------
-Merge only after Player and Keeper remain stable for several minutes while authenticated and repeated Vault/table operations produce no reload.
+- Invitation persistence/details/edit/revoke/reactivate/delete.
+- Second-account invitation + protected-table password join.
+- One historical table password migration.
+- Keeper changes, notes, handouts and rolls reaching Player Tool.
+- Legacy JSON imports in Creator, Level Up and Player Tool.
+- One Player record per Character ID after repeated opens/imports.
+- Proficiency-scaled weapon damage.
+- Player Log Close/Reset and absence of stray 0.
+- All catalogue filters on desktop/mobile.
+
+RULES WARNING
+-------------
+firestore_v59.51.rules is included for the coordinated authenticated table-security cutover. Firestore Rules are project-wide. Do not deploy a different Rules set merely to test this branch against the production Firebase project.
+
+READ
+----
+GITHUB_DEPLOY_SUMMARY_v59.51.md
+VALIDATION_v59.51.txt
+SECURITY_TABLES_v59.51.md
+PORTAL_HANDOVER_v59.51.md

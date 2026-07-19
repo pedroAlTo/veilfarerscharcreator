@@ -13,6 +13,8 @@ const invites = `${base}/tableInvites`
 const secrets = `${base}/tableSecrets`
 const SERVER_LOCK_MARKER = 'SERVER_MANAGED'
 const now = () => Date.now()
+const cleanString=(value:any,max=500)=>String(value||'').slice(0,max)
+const sessionPatchKeys=new Set(['characters','fearTokens','spotlight','keeperNotes','sessionName'])
 const profile = (user: any, role = 'member') => ({
   email: user.email || '',
   name: user.userMetadata?.full_name || user.email || 'VeilFarer',
@@ -120,10 +122,14 @@ export default async (req: Request, _ctx: Context) => {
     const secretDoc = await getDoc(secretPath, access)
     const secretAuth = secretDoc?.data?.passAuth || null
     const legacyAuth = !secretAuth && data.passAuth?.hash ? data.passAuth : null
-    const legacyHash = !secretAuth && !legacyAuth && data.passHash && data.passHash !== SERVER_LOCK_MARKER
-      ? String(data.passHash)
+    const legacyHashValue = data.passHash && data.passHash !== SERVER_LOCK_MARKER
+      ? data.passHash
+      : (data.passwordHash || data.tablePasswordHash || '')
+    const legacyHash = !secretAuth && !legacyAuth && legacyHashValue ? String(legacyHashValue) : ''
+    const legacyPlain = !secretAuth && !legacyAuth && !legacyHash && (data.password || data.tablePassword)
+      ? String(data.password || data.tablePassword)
       : ''
-    const locked = !!(secretAuth?.hash || legacyAuth?.hash || legacyHash || data.passHash === SERVER_LOCK_MARKER || data.isOpen === false)
+    const locked = !!(secretAuth?.hash || legacyAuth?.hash || legacyHash || legacyPlain || data.passHash === SERVER_LOCK_MARKER || data.isOpen === false)
 
     if (action === 'join') {
       let role = isOwner ? 'owner' : 'member'
@@ -160,10 +166,13 @@ export default async (req: Request, _ctx: Context) => {
         }
         if (legacyAuth?.hash) {
           if (!verifyPassword(suppliedPassword, legacyAuth)) return json({ error: 'The table password is required and did not match.' }, 403)
-          migratedPassword = legacyAuth
+          migratedPassword = makePassword(suppliedPassword)
         } else if (legacyHash) {
-          const candidate = tokenHash(`veilfarers:${suppliedPassword}`)
-          if (!suppliedPassword || candidate !== legacyHash) return json({ error: 'The table password is required and did not match.' }, 403)
+          const candidates = [tokenHash(`veilfarers:${suppliedPassword}`), tokenHash(suppliedPassword), suppliedPassword]
+          if (!suppliedPassword || !candidates.includes(legacyHash)) return json({ error: 'The table password is required and did not match.' }, 403)
+          migratedPassword = makePassword(suppliedPassword)
+        } else if (legacyPlain) {
+          if (!suppliedPassword || suppliedPassword !== legacyPlain) return json({ error: 'The table password is required and did not match.' }, 403)
           migratedPassword = makePassword(suppliedPassword)
         } else if (data.passHash === SERVER_LOCK_MARKER && !secretAuth?.hash) {
           return json({ error: 'This protected table is missing its server password record. The owner must set a new password.' }, 409)
@@ -187,6 +196,10 @@ export default async (req: Request, _ctx: Context) => {
         memberProfiles: profiles,
         passAuth: migratedPassword ? null : undefined,
         passHash: migratedPassword ? SERVER_LOCK_MARKER : undefined,
+        passwordHash: migratedPassword ? null : undefined,
+        tablePasswordHash: migratedPassword ? null : undefined,
+        password: migratedPassword ? null : undefined,
+        tablePassword: migratedPassword ? null : undefined,
         isOpen: migratedPassword ? false : undefined,
         updatedAt: data.updatedAt,
         lastActive: data.lastActive,
@@ -215,10 +228,57 @@ export default async (req: Request, _ctx: Context) => {
       })
     }
 
+    if (action === 'patchSession') {
+      if (!isOwner && !isMember) return json({ error: 'Join the table before changing its live state.' }, 403)
+      const rawChanges = body.changes && typeof body.changes === 'object' ? body.changes : {}
+      const changes: Record<string, any> = {}
+      for (const [key, value] of Object.entries(rawChanges)) {
+        if (!sessionPatchKeys.has(key)) continue
+        if (key === 'characters') {
+          if (!Array.isArray(value) || value.length > 250) return json({ error: 'The character update is not valid.' }, 400)
+          changes.characters = value
+        } else if (key === 'fearTokens') changes.fearTokens = Math.max(0, Math.min(99, Number(value) || 0))
+        else if (key === 'spotlight') changes.spotlight = cleanString(value, 160)
+        else if (key === 'keeperNotes') changes.keeperNotes = cleanString(value, 100000)
+        else if (key === 'sessionName') changes.sessionName = cleanString(value, 120)
+      }
+      if (!Object.keys(changes).length) return json({ error: 'No supported live-table changes were supplied.' }, 400)
+      changes.updatedAt = now(); changes.lastActive = now()
+      await patchDoc(path, changes, access)
+      return json({ ok: true, updatedAt: changes.updatedAt })
+    }
+
+    if (action === 'broadcastRoll') {
+      if (!isOwner && !isMember) return json({ error: 'Join the table before broadcasting rolls.' }, 403)
+      const roll = body.roll && typeof body.roll === 'object' ? body.roll : null
+      if (!roll) return json({ error: 'A roll payload is required.' }, 400)
+      const normalized = { ...roll, timestamp: Number(roll.timestamp) || now(), broadcastId: cleanString(roll.broadcastId || `roll-${now()}`, 120) }
+      const history = Array.isArray(data.rollHistory) ? data.rollHistory.slice() : []
+      const exists = history.some((item:any) => item && item.broadcastId === normalized.broadcastId)
+      if (!exists) history.push(normalized)
+      const trimmed = history.sort((a:any,b:any)=>Number(a?.timestamp||0)-Number(b?.timestamp||0)).slice(-200)
+      await patchDoc(path, { lastRoll: normalized, rollHistory: trimmed, lastRollUpdatedAt: normalized.timestamp, updatedAt: now(), lastActive: now() }, access)
+      return json({ ok: true, roll: normalized })
+    }
+
+    if (action === 'clearRollHistory') {
+      if (!isOwner && !isMember) return json({ error: 'Join the table before clearing its roll history.' }, 403)
+      await patchDoc(path, { rollHistory: [], lastRoll: null, lastRollUpdatedAt: null, updatedAt: now() }, access)
+      return json({ ok: true })
+    }
+
+    if (action === 'setHandouts') {
+      if (!isOwner && !isMember) return json({ error: 'Join the table before changing handouts.' }, 403)
+      const handouts = Array.isArray(body.handouts) ? body.handouts.slice(-50) : null
+      if (!handouts) return json({ error: 'A handout list is required.' }, 400)
+      await patchDoc(path, { handouts, updatedAt: now(), lastActive: now() }, access)
+      return json({ ok: true, count: handouts.length })
+    }
+
     if (!isOwner) return json({ error: 'Only the table owner can perform this action.' }, 403)
 
     if (action === 'admin') {
-      const inviteDocs = (await listDocs(invites, access)).filter(item => item.data.tableId === tableId && !item.data.revoked)
+      const inviteDocs = (await listDocs(invites, access)).filter(item => item.data.tableId === tableId)
       return json({
         tableId,
         locked,
@@ -231,6 +291,9 @@ export default async (req: Request, _ctx: Context) => {
           expiresAt: item.data.expiresAt,
           uses: item.data.uses || 0,
           maxUses: item.data.maxUses || 0,
+          revoked: !!item.data.revoked,
+          revokedAt: item.data.revokedAt || null,
+          lastUsedAt: item.data.lastUsedAt || null,
         })),
       })
     }
@@ -244,13 +307,14 @@ export default async (req: Request, _ctx: Context) => {
       if (invitedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(invitedEmail)) {
         return json({ error: 'Enter a valid invited player email or leave it empty.' }, 400)
       }
+      const expiresAt = now() + days * 86400000
       await putDoc(`${invites}/${hash}`, {
         tableId,
         label: String(body.label || 'Player invitation').slice(0, 60),
         invitedEmail,
         createdBy: user.id,
         createdAt: now(),
-        expiresAt: now() + days * 86400000,
+        expiresAt,
         maxUses: invitedEmail ? 1 : maxUses,
         uses: 0,
         revoked: false,
@@ -259,12 +323,43 @@ export default async (req: Request, _ctx: Context) => {
       const link = `${origin}/player-tool.html?table=${encodeURIComponent(tableId)}&invite=${encodeURIComponent(token)}`
       return json({
         ok: true,
+        inviteId: hash,
+        label: String(body.label || 'Player invitation').slice(0, 60),
         passkey: token,
         link,
-        expiresAt: now() + days * 86400000,
+        expiresAt,
         maxUses: invitedEmail ? 1 : maxUses,
         invitedEmail,
       })
+    }
+
+    if (action === 'updateInvite') {
+      const id = String(body.inviteId || '')
+      const invite = await getDoc(`${invites}/${id}`, access)
+      if (!invite?.data || invite.data.tableId !== tableId) return json({ error: 'Invitation not found.' }, 404)
+      const invitedEmail = String(body.invitedEmail ?? invite.data.invitedEmail ?? '').trim().toLowerCase()
+      if (invitedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(invitedEmail)) return json({ error: 'Enter a valid invited player email or leave it empty.' }, 400)
+      const days = Math.max(1, Math.min(90, Number(body.days) || Math.ceil((Number(invite.data.expiresAt || now()) - now()) / 86400000) || 7))
+      const maxUses = invitedEmail ? 1 : Math.max(1, Math.min(100, Number(body.maxUses) || Number(invite.data.maxUses) || 20))
+      const patch = {
+        label: cleanString(body.label ?? invite.data.label ?? 'Player invitation', 60),
+        invitedEmail,
+        expiresAt: now() + days * 86400000,
+        maxUses,
+        revoked: body.revoked === undefined ? !!invite.data.revoked : !!body.revoked,
+        updatedAt: now(),
+      }
+      if (patch.revoked && !invite.data.revoked) (patch as any).revokedAt = now()
+      else if (!patch.revoked) (patch as any).revokedAt = null
+      await patchDoc(`${invites}/${id}`, patch, access)
+      return json({ ok: true, invite: { id, ...invite.data, ...patch } })
+    }
+
+    if (action === 'deleteInvite') {
+      const id = String(body.inviteId || '')
+      const invite = await getDoc(`${invites}/${id}`, access)
+      if (invite?.data && invite.data.tableId === tableId) await deleteDoc(`${invites}/${id}`, access)
+      return json({ ok: true })
     }
 
     if (action === 'revokeInvite') {

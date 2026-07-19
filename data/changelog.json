@@ -1,7 +1,23 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.50",
+  "currentVersion": "v59.51",
   "entries": [
+    {
+      "version": "v59.51",
+      "date": "2026-07-19",
+      "title": "Table administration, Keeper live sync, legacy import, Proficiency and catalogue hotfix",
+      "changes": [
+        "Kept the latest invitation passkey visible on the table owner device until it is replaced or deleted, and added invitation metadata, edit, revoke/reactivate and permanent-delete controls.",
+        "Added Player Tool Proficiency display and applied Proficiency to weapon damage dice, including critical and Massive damage plans, without adding Proficiency to attack rolls.",
+        "Moved Keeper live changes, notes, session name, handouts and roll broadcasts through the authenticated table API so players receive one shared table state.",
+        "Added compatibility and automatic migration for legacy table passwords, including browser PBKDF2 records, the temporary server salt format, legacy SHA-256 records and older plain records.",
+        "Made Character Vault refreshes coalesce and retry before falling back to local completed records, avoiding transient error banners when usable data is already loaded.",
+        "Upgraded Creator, Level Up and Player Tool JSON import paths so legacy Creator, Charsheet and Player Tool records receive a permanent VF ID and are stored in Character Vault.",
+        "Strengthened Player Tool deduplication for permanent IDs, pending IDs and exact legacy no-ID fingerprints; reopening or importing one character updates the existing record.",
+        "Restored the Player Tool Log as a top-level closable overlay with a server-backed reset action and removed the stray numeric zero rendered by empty optional sections.",
+        "Expanded Weapon & Armory and Item Inventory with custom in-app filters for category, mechanical property, ownership, cost, source, tier and sorting across weapons, armor, gear and augments."
+      ]
+    },
     {
       "version": "v59.50",
       "date": "2026-07-19",
@@ -570,5 +586,5 @@
       ]
     }
   ],
-  "version": "v59.50"
+  "version": "v59.51"
 }
