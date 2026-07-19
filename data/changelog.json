@@ -1,7 +1,22 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.52",
+  "currentVersion": "v59.53",
   "entries": [
+    {
+      "version": "v59.53",
+      "date": "2026-07-19",
+      "title": "Vault import, server-mediated Keeper sync, global Spectrum and production Player Tool build",
+      "changes": [
+        "Added Character Vault JSON import: compatible legacy Creator, Charsheet and Player Tool records are routed through the canonical Creator upgrader, assigned a permanent VF ID when authenticated, saved to the Vault and opened directly on the final Creator step.",
+        "Made Creator and Level Up legacy imports await Vault synchronization instead of launching a background save with no completion state.",
+        "Replaced Keeper Tool browser Firestore session reads with authenticated table-api reads and controlled polling, removing the dependency on preview-wide Firestore Rules that caused permission-denied connections.",
+        "Made every catalogue filter multi-select except sorting, with OR matching inside a filter group and AND matching across groups.",
+        "Made Shake to Roll open the Duality roller and immediately roll Hope/Fear using the selected 2D or 3D renderer.",
+        "Enabled Spectrum of Fate by default as a global Player Tool device setting, moved it into Options and grouped Options into Appearance, Rules, Dice, Audio and Spotlight sections.",
+        "Precompiled Player Tool JSX and Tailwind CSS for production, removing the browser Babel transformer, Tailwind CDN and their console/CSP warnings.",
+        "Serialized Player Tool Firebase initialization so parallel UI paths reuse one authentication/configuration promise."
+      ]
+    },
     {
       "version": "v59.52",
       "date": "2026-07-19",
@@ -600,5 +615,5 @@
       ]
     }
   ],
-  "version": "v59.52"
+  "version": "v59.53"
 }

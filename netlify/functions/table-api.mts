@@ -61,7 +61,7 @@ export default async (req: Request, _ctx: Context) => {
     if (action === 'list') {
       const docs = await listDocs(directory, access)
       const legacy = await listDocs(sessions, access)
-      const map = new Map(docs.map(item => [item.id, safeDirectory(item.data, item.id)]))
+      const map = new Map<string, any>(docs.map(item => [item.id, safeDirectory(item.data, item.id)]))
       legacy.forEach(item => {
         if (map.has(item.id)) return
         map.set(item.id, {
@@ -242,6 +242,24 @@ export default async (req: Request, _ctx: Context) => {
         ownerUid: data.ownerUid,
         user: { id: user.id, email: user.email || '' },
       })
+    }
+
+    if (action === 'readSession') {
+      if (!isOwner && !isMember) return json({ error: 'Join the table before reading its live state.' }, 403)
+      const source = data || {}
+      const safeSession = {
+        name: cleanString(source.name || tableId, 160),
+        characters: Array.isArray(source.characters) ? source.characters : [],
+        fearTokens: Math.max(0, Math.min(99, Number(source.fearTokens) || 0)),
+        spotlight: cleanString(source.spotlight, 160),
+        keeperNotes: cleanString(source.keeperNotes || source.notes, 100000),
+        sessionName: cleanString(source.sessionName, 120),
+        handouts: Array.isArray(source.handouts) ? source.handouts.filter((item:any) => item && (!item.tableId || item.tableId === tableId)) : [],
+        rollHistory: Array.isArray(source.rollHistory) ? source.rollHistory.filter((item:any) => item && (!item.tableId || item.tableId === tableId) && (!item.visibility || item.visibility === 'public')).slice(-200) : [],
+        updatedAt: Number(source.updatedAt || 0),
+        lastActive: Number(source.lastActive || 0),
+      }
+      return json({ ok: true, tableId, role: isOwner ? 'owner' : 'member', locked, session: safeSession })
     }
 
     if (action === 'patchSession') {

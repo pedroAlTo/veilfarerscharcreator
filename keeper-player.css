@@ -1,4 +1,4 @@
-/* VeilFarers Keeper Tool v59.52 — Player Tool visual convergence */
+/* VeilFarers Keeper Tool v59.53 — Player Tool visual convergence */
 :root{--vf-k-bg:#020617;--vf-k-panel:rgba(15,23,42,.82);--vf-k-panel-2:rgba(2,6,23,.76);--vf-k-line:#1e293b;--vf-k-line-bright:#155e75;--vf-k-cyan:#22d3ee;--vf-k-cyan-soft:#67e8f9;--vf-k-amber:#fbbf24;--vf-k-text:#e2e8f0;--vf-k-muted:#64748b}
 body.vf-keeper-page{background:radial-gradient(circle at 68% 12%,rgba(8,145,178,.08),transparent 32%),radial-gradient(circle at 20% 82%,rgba(245,158,11,.06),transparent 26%),#020617!important;color:var(--vf-k-text);font-family:Inter,ui-sans-serif,system-ui,sans-serif!important}
 body.vf-keeper-page::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:linear-gradient(rgba(34,211,238,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.035) 1px,transparent 1px);background-size:36px 36px;z-index:0}

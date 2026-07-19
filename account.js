@@ -122,6 +122,14 @@
   el('refresh-vault').addEventListener('click',refreshVault);
   el('sync-current').addEventListener('click',()=>syncCurrent().catch(error=>setStatus(error.message||String(error),'bad')));
   el('new-character').addEventListener('click',()=>location.href='/creator.html');
+  el('import-character').addEventListener('click',()=>{const input=el('vault-import-input');if(input){input.value='';input.click();}});
+  el('vault-import-input').addEventListener('change',event=>{
+    const file=event.target.files&&event.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>{try{const raw=JSON.parse(reader.result);localStorage.setItem('veilfarers.character.pendingImport.v1',JSON.stringify(raw));location.href='/creator.html?import=vault';}catch(error){setStatus(`Import failed: ${error.message||error}`,'bad');}};
+    reader.onerror=()=>setStatus('Import failed: the JSON file could not be read.','bad');
+    reader.readAsText(file);
+  });
   el('login-button').addEventListener('click',()=>ID?.open('login'));
   el('signup-button').addEventListener('click',()=>ID?.open('signup'));
   el('logout-button').addEventListener('click',()=>ID?.logout());

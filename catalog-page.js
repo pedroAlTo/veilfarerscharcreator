@@ -9,7 +9,8 @@
   let active = config.tabs[0][0];
   let data = {};
   let visibleItems = [];
-  const filterState = { pack:'', tier:'', category:'', property:'', owned:'', cost:'', sort:'name' };
+  const filterState = { pack:[], tier:[], category:[], property:[], owned:[], cost:[], sort:'name' };
+  const multiFilterNames = new Set(['pack','tier','category','property','owned','cost']);
   const filterNames = Object.keys(filterState);
   const els = {
     tabs: document.querySelector('#catalog-tabs'), cards:document.querySelector('#catalog-cards'), count:document.querySelector('#catalog-count'),
@@ -147,15 +148,23 @@
   function renderFilter(name){
     const root=els.filters.find(node=>node.dataset.filterName===name);
     if(!root)return;
-    const current=filterState[name];
     const options=filterOptions(name);
-    if(current && !options.some(option=>option.value===current)) filterState[name]=name==='sort'?'name':'';
+    if(multiFilterNames.has(name)){
+      const valid=new Set(options.map(option=>option.value));
+      filterState[name]=(Array.isArray(filterState[name])?filterState[name]:[]).filter(value=>valid.has(value));
+      const selected=filterState[name];
+      const label=selected.length===0?defaultLabels[name]:(selected.length===1?(options.find(option=>option.value===selected[0])?.label||selected[0]):`${selected.length} selected`);
+      root.querySelector('[data-filter-label]').textContent=label;
+      root.querySelector('[data-filter-menu]').innerHTML=[{value:'',label:`Clear · ${defaultLabels[name]}`},...options]
+        .map(option=>{const active=option.value?selected.includes(option.value):selected.length===0;return `<button type="button" role="option" aria-selected="${active}" class="vf-filter-option ${active?'active':''}" data-filter-value="${esc(option.value)}"><span aria-hidden="true">${option.value?(active?'✓':'○'):'×'}</span> ${esc(option.label)}</button>`;}).join('');
+      return;
+    }
+    const current=filterState[name];
+    if(current && !options.some(option=>option.value===current)) filterState[name]='name';
     const finalValue=filterState[name];
     const label=options.find(option=>option.value===finalValue)?.label || defaultLabels[name];
     root.querySelector('[data-filter-label]').textContent=label;
-    root.querySelector('[data-filter-menu]').innerHTML=[{value:name==='sort'?'name':'',label:defaultLabels[name]},...options]
-      .filter((option,index,array)=>array.findIndex(item=>item.value===option.value)===index)
-      .map(option=>`<button type="button" role="option" aria-selected="${option.value===finalValue}" class="vf-filter-option ${option.value===finalValue?'active':''}" data-filter-value="${esc(option.value)}">${esc(option.label)}</button>`).join('');
+    root.querySelector('[data-filter-menu]').innerHTML=options.map(option=>`<button type="button" role="option" aria-selected="${option.value===finalValue}" class="vf-filter-option ${option.value===finalValue?'active':''}" data-filter-value="${esc(option.value)}">${esc(option.label)}</button>`).join('');
   }
   function renderFilters(){ filterNames.forEach(renderFilter); }
 
@@ -164,13 +173,14 @@
     let items=[...(data[active]||[])];
     items=items.filter(item=>{
       const qty=inventoryQty(item.id);
+      const matchAny=(selected,values)=>!selected.length||selected.some(value=>values.includes(value));
       return (!q || textBlob(item).includes(q))
-        && (!filterState.pack || item.pack===filterState.pack)
-        && (!filterState.tier || D.tierName(item)===filterState.tier)
-        && (!filterState.category || itemCategories(item).includes(filterState.category))
-        && (!filterState.property || itemProperties(item).includes(filterState.property))
-        && (!filterState.owned || (filterState.owned==='owned'?qty>0:qty===0))
-        && (!filterState.cost || costBand(item)===filterState.cost);
+        && matchAny(filterState.pack,[item.pack])
+        && matchAny(filterState.tier,[D.tierName(item)])
+        && matchAny(filterState.category,itemCategories(item))
+        && matchAny(filterState.property,itemProperties(item))
+        && matchAny(filterState.owned,[qty>0?'owned':'not-owned'])
+        && matchAny(filterState.cost,[costBand(item)]);
     });
     const sort=filterState.sort;
     if(sort==='tier') items.sort((a,b)=>D.tierRank(a)-D.tierRank(b)||String(a.name).localeCompare(String(b.name)));
@@ -223,7 +233,7 @@
   els.tabs.addEventListener('click',event=>{
     const button=event.target.closest('[data-tab]');if(!button)return;
     active=button.dataset.tab;
-    filterState.category='';filterState.property='';
+    filterState.category=[];filterState.property=[];
     renderTabs();renderFilters();filterItems();
   });
   els.search.addEventListener('input',filterItems);
@@ -235,15 +245,22 @@
       closeFilters(root);root.classList.toggle('open',opening);toggle.setAttribute('aria-expanded',String(opening));
     });
     root.querySelector('[data-filter-menu]').addEventListener('click',event=>{
-      const option=event.target.closest('[data-filter-value]');if(!option)return;
-      filterState[root.dataset.filterName]=option.dataset.filterValue;
-      renderFilter(root.dataset.filterName);closeFilters();filterItems();
+      event.stopPropagation();const option=event.target.closest('[data-filter-value]');if(!option)return;
+      const name=root.dataset.filterName,value=option.dataset.filterValue;
+      if(multiFilterNames.has(name)){
+        const selected=Array.isArray(filterState[name])?filterState[name].slice():[];
+        if(!value)filterState[name]=[];
+        else filterState[name]=selected.includes(value)?selected.filter(item=>item!==value):selected.concat(value);
+        renderFilter(name);filterItems();
+      }else{
+        filterState[name]=value;renderFilter(name);closeFilters();filterItems();
+      }
     });
   });
   document.addEventListener('click',()=>closeFilters());
   document.addEventListener('keydown',event=>{if(event.key==='Escape')closeFilters();});
   els.reset.addEventListener('click',()=>{
-    els.search.value='';Object.assign(filterState,{pack:'',tier:'',category:'',property:'',owned:'',cost:'',sort:'name'});
+    els.search.value='';Object.assign(filterState,{pack:[],tier:[],category:[],property:[],owned:[],cost:[],sort:'name'});
     renderFilters();filterItems();
   });
   els.cards.addEventListener('click',event=>{const button=event.target.closest('[data-add]');if(!button)return;const item=allLoaded().find(x=>x.id===button.dataset.add);if(item)I.add(item,1);});

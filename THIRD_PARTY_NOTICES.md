@@ -37,6 +37,19 @@ The Tech and Biolum Hope, Fear, Damage, neutral, and discarded material maps are
 The locally bundled Dice Box browser distribution contains a narrowly scoped compatibility extension named `setDiceVisuals`. It exposes settled onscreen Babylon mesh presentation controls for outline, overlay, visibility, and per-instance colour. It does not alter dice physics, randomisation, result resolution, or the upstream roll/add/remove lifecycle. The extension is distributed under the same MIT terms as the bundled Dice Box code.
 
 
+
+## React and ReactDOM 18.3.1
+
+- Project: https://react.dev/
+- Copyright: Meta Platforms, Inc. and affiliates
+- License: MIT
+
+VeilFarers bundles the production browser builds locally in `assets/vendor/` so Player Tool does not depend on an external React CDN. The original license headers remain in the distributed files.
+
+## Tailwind CSS and Babel build tools
+
+Tailwind CSS and Babel are used only during the release build to generate `assets/player-tool-tailwind.css` and `player-tool.bundle.js`. Their browser runtimes are not loaded in production. Both projects are MIT licensed.
+
 ## Netlify Identity and Functions
 
 - `@netlify/identity` 1.2.0 — MIT — https://github.com/netlify/primitives

@@ -1,62 +1,37 @@
-VEILFARERS PORTAL v59.52 — START HERE
-=====================================
+VEILFARERS PORTAL v59.53 - START HERE
+Date: 2026-07-19
 
-PRIMARY DEPLOY ARTIFACT
------------------------
-VeilFarers_Portal_v59.52.zip
+DEPLOY ARTIFACT
+VeilFarers_Portal_v59.53.zip
 
-DEPLOY TO TEST BRANCH
----------------------
-1. Preserve the current v59.51 artifact and active Firestore Rules.
-2. Extract the v59.52 ZIP locally.
-3. Replace the branch contents with the CONTENTS of the ZIP. index.html must remain at repository root.
-4. Commit with GitHub Desktop and push to a test branch.
-5. Wait for all Netlify checks and Deploy Preview build steps.
-6. Hard-refresh the preview, sign out and sign back in on every test account.
+BRANCH / DEPLOY PREVIEW
+1. Preserve the current production ZIP and Firestore Rules.
+2. Extract the v59.53 ZIP.
+3. Copy its CONTENTS into a clean branch so index.html is at repository root.
+4. Commit and push using GitHub Desktop or Git.
+5. Open a Deploy Preview and confirm npm installs from registry.npmjs.org.
+6. Hard-refresh, sign out and sign in again before testing.
 
-REQUIRED VAULT TEST
--------------------
-1. Create/import at least three completed characters under one account.
-2. Account must show all three and exactly one ACTIVE badge.
-3. Set another active character, refresh, and verify the same selection in Account/navigation/Player Tool.
-4. Repeat from another browser session for the same account.
-5. Trash the active character and verify one remaining record becomes active.
-6. Restore it; unrelated characters must remain intact.
+ENVIRONMENT
+No new variable names. Verify FIREBASE_SERVICE_ACCOUNT_JSON is available to Functions in Deploy Preview/Branch contexts. Do not expose it in browser configuration.
 
-REQUIRED TABLE COMMUNICATION TEST
----------------------------------
-Use three distinct accounts:
-- Keeper/owner in Table A;
-- Player A1 in Table A;
-- Player A2 in Table A;
-- optionally the Keeper or a fourth account with a player in Table B.
+FIRST ACCEPTANCE TESTS
+1. Keeper: connect to a disposable open table, protected table and already-joined table.
+2. Confirm Keeper loads state and does not loop on permission-denied.
+3. Vault: use Import Character with a representative old JSON.
+4. Confirm Creator opens the final review step and the character receives/retains VF-###### and appears in Vault.
+5. Import the same permanent-ID JSON again and confirm it updates one record.
+6. Select multiple values in each equipment filter group.
+7. On a real mobile device, enable Shake to Roll and test one Hope/Fear roll in 2D and 3D.
+8. In a fresh browser profile, confirm Spectrum of Fate starts enabled and one toggle applies across Player Tool tabs.
+9. Confirm the console has no Tailwind CDN/Babel standalone warning and Firebase initialization occurs once.
 
-1. Send a note to Player A1 only. A1 receives it; A2 and Table B do not.
-2. Send a note to all Table A players. A1 and A2 receive it; Table B does not.
-3. Change A1's active character and repeat the private note; account UID targeting must still work.
-4. Select KEEPER ONLY and roll. No Player receives the roll and no public table-history record is created.
-5. Select BROADCAST and roll. Only Table A receives it.
-6. Change to Table B and verify private Keeper history is not mixed between tables.
+RULES
+firestore_v59.53.rules is included as the retained authenticated baseline. Do not deploy project-wide Rules merely to test Keeper readSession; Player direct real-time table access still requires the coordinated Rules acceptance plan.
 
-KEEPER UI TEST
---------------
-- Compare desktop visual hierarchy with Player Tool.
-- Check fixed Keeper Console, tabs, panels, cyan states and amber actions.
-- Open the Player Note modal; it must appear above navigation and console.
-- Test keyboard focus and responsive/mobile console placement.
-
-REGRESSION
-----------
-Re-test v59.51 invitations, old passwords, Keeper state changes, old JSON import, Player deduplication/runtime preservation, Proficiency damage, Player Log and equipment filters. Re-test 2D/3D dice, Shake, Mods, drones, Level Up and Charsheet print.
-
-FIRESTORE RULES
----------------
-firestore_v59.52.rules is included for the coordinated authenticated table-security cutover. Rules are project-wide. Do not deploy a different Rules set merely to test this branch against the production Firebase project.
-
-DOCUMENTATION
--------------
-GITHUB_DEPLOY_SUMMARY_v59.52.md
-VALIDATION_v59.52.txt
-SECURITY_TABLES_v59.52.md
-PORTAL_HANDOVER_v59.52.md
-PORTAL_HANDOVER_v59.52.docx
+DOCUMENTS
+GITHUB_DEPLOY_SUMMARY_v59.53.md
+VALIDATION_v59.53.txt
+SECURITY_TABLES_v59.53.md
+PORTAL_HANDOVER_v59.53.md
+PORTAL_HANDOVER_v59.53.docx

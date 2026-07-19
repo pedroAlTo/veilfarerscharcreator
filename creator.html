@@ -2601,7 +2601,7 @@ async function registerImportedCreatorState(fresh,source='creator-json-import'){
   let payload=null;
   try{if(window.VeilFarersSheetBridge){const out=await window.VeilFarersSheetBridge.convert(fresh);payload={app:'Veilfarers Character Sheet',version:'2.84-RC3.2',schema:'veilfarers.character/2',characterId:fresh.characterId,fields:{...(out.fields||{}),character_id:fresh.characterId},tracks:out.tracks||{},advancementHistory:fresh.advancementHistory||[]};window.VeilFarersSheetBridge.saveOutput(out,fresh);}}catch(error){console.warn('Imported sheet payload conversion deferred',error);}
   const record=registry.saveLocalData(fresh.characterId,{creatorState:JSON.parse(JSON.stringify(fresh)),sheetPayload:payload,advancementHistory:fresh.advancementHistory||[]},{source,status:'active',completedAt:ensured.completedAt||new Date().toISOString()});
-  registry.sync(record,{source}).catch(()=>{});return fresh;
+  const synced=await registry.sync(record,{source});fresh.characterId=(synced&&synced.characterId)||record.characterId;return fresh;
 }
 async function loadCharacterData(obj,options={}){
   obj=normalizeImportedCreatorData(obj);
@@ -2622,7 +2622,7 @@ async function loadCharacterData(obj,options={}){
   if(options.register)await registerImportedCreatorState(fresh,options.source||'creator-json-import');
   state=fresh;canonicalizeLevelState();autosave();
   document.getElementById("substrain-section").innerHTML="";document.getElementById("subclass-section").style.display="none";
-  renderAncestries();renderSubStrain();renderCommunities();renderClasses();renderSubclasses();renderTraits();renderAffiliations();renderLevelUpView();updateBgQuestion();syncFieldsFromState();goStep(1);flashStatus(options.register?`Character imported · ${fresh.characterId}`:"Character loaded");return fresh;
+  renderAncestries();renderSubStrain();renderCommunities();renderClasses();renderSubclasses();renderTraits();renderAffiliations();renderLevelUpView();updateBgQuestion();syncFieldsFromState();goStep(options.register?9:1);flashStatus(options.register?`Character imported and saved · ${fresh.characterId}`:"Character loaded");return fresh;
 }
 window.VFNormalizeCreatorImport=normalizeImportedCreatorData;
 window.VFRegisterImportedCreatorState=registerImportedCreatorState;
@@ -2681,6 +2681,13 @@ document.getElementById("step-nav").addEventListener("click",e=>{
 });
 
 document.getElementById("load-file-input").addEventListener("change",handleLoadFile);
+(async function consumeVaultImport(){
+  const key='veilfarers.character.pendingImport.v1';let raw='';
+  try{raw=localStorage.getItem(key)||'';}catch(_){return;}
+  if(!raw)return;
+  try{localStorage.removeItem(key);await loadCharacterData(JSON.parse(raw),{register:true,source:'vault-json-import'});}
+  catch(error){console.error('Vault JSON import failed',error);alert('Could not import that VeilFarers character: '+(error.message||error));}
+})();
 
 document.getElementById("wizard-back").addEventListener("click",()=>{if(typeof currentStep==="number"&&currentStep>1)goStep(currentStep-1);});
 document.getElementById("wizard-next").addEventListener("click",()=>{
