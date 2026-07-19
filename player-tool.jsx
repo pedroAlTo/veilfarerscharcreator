@@ -1259,7 +1259,7 @@
               markSeenNote(sessionId, n.id);
               openNote(n);
             });
-          }, [handouts, character && character.id, character && character.characterId, sessionId]);
+          }, [handouts, activeTab, sessionId]);
           const [rollerScale, setRollerScale] = useState(1);
           const [rolling, setRolling] = useState(false);
           const [rollHistory, setRollHistory] = useState([]);

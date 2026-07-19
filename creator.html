@@ -2262,9 +2262,9 @@ function updateWizardDock(){
   next.classList.toggle("ready",ready);
 }
 
-function goStep(step){
+function goStep(step,options={}){
   saveInputs();
-  if(step>currentStep && typeof currentStep==="number" && !validateStep(currentStep))return;
+  if(!options.skipValidation && step>currentStep && typeof currentStep==="number" && !validateStep(currentStep))return;
   autosave();
   document.querySelectorAll(".step-panel").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".step-nav-item").forEach(ni=>{
@@ -2557,8 +2557,19 @@ async function saveCharacter(){
   flashStatus("Character saved");
 }
 function importIdentity(list,value){
-  const wanted=String(value||'').trim().toLowerCase();if(!wanted)return null;
-  return (list||[]).find(item=>[item&&item.id,item&&item.slug,item&&item.name,item&&item.canonicalId].some(v=>String(v||'').trim().toLowerCase()===wanted))||null;
+  const raw=value&&typeof value==='object'?(value.id||value.slug||value.name||value.canonicalId):value;
+  const key=input=>String(input||'').trim().toLowerCase().replace(/^vf\.core\.(?:ancestry|community|class|affiliation)\./,'').replace(/ailurean/g,'ailuran').replace(/[\s_]+/g,'-');
+  const wanted=key(raw);if(!wanted)return null;
+  return (list||[]).find(item=>[item&&item.id,item&&item.slug,item&&item.name,item&&item.canonicalId].some(v=>key(v)===wanted))||null;
+}
+function importSubStrain(ancestry,value){
+  if(!ancestry||!Array.isArray(ancestry.subStrains)||!ancestry.subStrains.length)return null;
+  const raw=value&&typeof value==='object'?(value.id||value.name||value.featName):value;
+  const wanted=String(raw||'').trim().toLowerCase().replace(/[ _]+/g,'-');
+  if(!wanted)return null;
+  const aliases={shroud:'shroud-strain','still-hunters':'shroud-strain',surge:'surge-strain','kinetic-predators':'surge-strain'};
+  const target=aliases[wanted]||wanted;
+  return ancestry.subStrains.find(item=>[item.id,item.name,item.epithet,item.featName].some(v=>String(v||'').trim().toLowerCase().replace(/[ _]+/g,'-')===target))||null;
 }
 function signedNumber(value){const n=parseInt(String(value==null?'':value).replace(/[^\d+-]/g,''),10);return Number.isFinite(n)?n:0;}
 function normalizeImportedCreatorData(input){
@@ -2576,7 +2587,8 @@ function normalizeImportedCreatorData(input){
     const f=sheet.fields||{},fresh=freshState();
     const path=String(f.chosen_path||f.path||'').toLowerCase()==='sleeping'?'Sleeping':'Awakened';
     const anc=importIdentity(ANCESTRIES,f.ancestry),com=importIdentity(COMMUNITIES,f.community),aff=importIdentity(AFFILIATIONS,f.affiliation),cls=importIdentity(CLASSES,f.class);
-    Object.assign(fresh,{characterId:String(sheet.characterId||f.character_id||'').trim().toUpperCase(),name:f.name||'',pronouns:f.pron||f.pronouns||'',path,ancestry:anc&&anc.id||null,community:com&&com.id||null,affiliation:aff&&aff.id||null,cls:cls&&cls.id||null,subclass:f.subclass||null,level:Math.max(1,Math.min(10,Number(f.level)||1)),proficiency:Math.max(1,Math.min(6,Number(f.prof)||1)),bgAnswer:f.seed_motive||f.bg_answer||'',anchor:f.s_anchor||'',wound:f.equipment_notes||'',traits:{agility:signedNumber(f.tr_agility||f.base_tr_agility),strength:signedNumber(f.tr_strength||f.base_tr_strength),finesse:signedNumber(f.tr_finesse||f.base_tr_finesse),knowledge:signedNumber(f.tr_knowledge||f.base_tr_knowledge),instinct:signedNumber(f.tr_instinct||f.base_tr_instinct),presence:signedNumber(f.tr_presence||f.base_tr_presence)}});
+    const strain=importSubStrain(anc,f.sub_strain||f.substrain||f.subStrain||f.ancestry_substrain||f.ancestry_variant||f.ailuran_variant);
+    Object.assign(fresh,{characterId:String(sheet.characterId||f.character_id||'').trim().toUpperCase(),name:f.name||'',pronouns:f.pron||f.pronouns||'',path,ancestry:anc&&anc.id||null,subStrain:strain&&strain.id||null,community:com&&com.id||null,affiliation:aff&&aff.id||null,cls:cls&&cls.id||null,subclass:f.subclass||null,level:Math.max(1,Math.min(10,Number(f.level)||1)),proficiency:Math.max(1,Math.min(6,Number(f.prof)||1)),bgAnswer:f.seed_motive||f.bg_answer||'',anchor:f.s_anchor||'',wound:f.equipment_notes||'',traits:{agility:signedNumber(f.tr_agility||f.base_tr_agility),strength:signedNumber(f.tr_strength||f.base_tr_strength),finesse:signedNumber(f.tr_finesse||f.base_tr_finesse),knowledge:signedNumber(f.tr_knowledge||f.base_tr_knowledge),instinct:signedNumber(f.tr_instinct||f.base_tr_instinct),presence:signedNumber(f.tr_presence||f.base_tr_presence)}});
     fresh.experiences=[0,1,2].map(i=>f[`${path==='Sleeping'?'s':'a'}_exp_${i}`]||f[`s_exp_${i}`]||f[`a_exp_${i}`]||'');
     fresh.experienceBonuses=[0,1,2].map(i=>Math.max(2,Math.min(5,signedNumber(f[`${path==='Sleeping'?'s':'a'}_exp_${i}_bonus`]||2))));
     fresh.weapons=[f.wpri_name,f.wsec_name].filter(Boolean);fresh.armors=[f.armor_name].filter(Boolean);
@@ -2588,7 +2600,8 @@ function normalizeImportedCreatorData(input){
   const looksPlayer=obj.stats||obj.hp||obj.entityType==='character'||obj.playerName;
   if(looksPlayer){
     const fresh=freshState(),anc=importIdentity(ANCESTRIES,obj.ancestry||obj.heritage),com=importIdentity(COMMUNITIES,obj.community),aff=importIdentity(AFFILIATIONS,obj.affiliation),cls=importIdentity(CLASSES,obj.class||obj.cls);
-    Object.assign(fresh,{characterId:String(obj.characterId||obj.id||'').trim().toUpperCase(),name:obj.name||'',pronouns:obj.pronouns||'',path:String(obj.path||'').toLowerCase()==='sleeping'?'Sleeping':'Awakened',ancestry:anc&&anc.id||null,community:com&&com.id||null,affiliation:aff&&aff.id||null,cls:cls&&cls.id||null,subclass:obj.subclass||null,level:Math.max(1,Math.min(10,Number(obj.level)||1)),proficiency:Math.max(1,Math.min(6,Number(obj.proficiency)||1)),traits:{agility:Number(obj.stats?.agility)||0,strength:Number(obj.stats?.strength)||0,finesse:Number(obj.stats?.finesse)||0,knowledge:Number(obj.stats?.knowledge)||0,instinct:Number(obj.stats?.instinct)||0,presence:Number(obj.stats?.presence)||0},experiences:(obj.experiences||[]).slice(0,3).map(x=>typeof x==='string'?x:(x.description||x.name||'')),experienceBonuses:(obj.experiences||[]).slice(0,3).map(x=>Math.max(2,Math.min(5,Number(x&&x.bonus)||2))),weapons:(obj.weapons||obj.weaponArsenal||[]).slice(0,2).map(x=>typeof x==='string'?x:x.name).filter(Boolean),armors:[obj.armor||((obj.armorArsenal||[]).find(x=>(x.id||x.canonicalId)===obj.activeArmorId))||((obj.armorArsenal||[])[0])].filter(Boolean).map(x=>typeof x==='string'?x:x.name),subclassRank:obj.subclassRank||'Foundation',resolveDie:obj.resolveDie||'d4',advancementHistory:obj.advancementHistory||[]});
+    const strain=importSubStrain(anc,obj.subStrain||obj.substrain||obj.sub_strain||obj.ancestrySubStrain||obj.ancestryVariant);
+    Object.assign(fresh,{characterId:String(obj.characterId||obj.id||'').trim().toUpperCase(),name:obj.name||'',pronouns:obj.pronouns||'',path:String(obj.path||'').toLowerCase()==='sleeping'?'Sleeping':'Awakened',ancestry:anc&&anc.id||null,subStrain:strain&&strain.id||null,community:com&&com.id||null,affiliation:aff&&aff.id||null,cls:cls&&cls.id||null,subclass:obj.subclass||null,level:Math.max(1,Math.min(10,Number(obj.level)||1)),proficiency:Math.max(1,Math.min(6,Number(obj.proficiency)||1)),traits:{agility:Number(obj.stats?.agility)||0,strength:Number(obj.stats?.strength)||0,finesse:Number(obj.stats?.finesse)||0,knowledge:Number(obj.stats?.knowledge)||0,instinct:Number(obj.stats?.instinct)||0,presence:Number(obj.stats?.presence)||0},experiences:(obj.experiences||[]).slice(0,3).map(x=>typeof x==='string'?x:(x.description||x.name||'')),experienceBonuses:(obj.experiences||[]).slice(0,3).map(x=>Math.max(2,Math.min(5,Number(x&&x.bonus)||2))),weapons:(obj.weapons||obj.weaponArsenal||[]).slice(0,2).map(x=>typeof x==='string'?x:x.name).filter(Boolean),armors:[obj.armor||((obj.armorArsenal||[]).find(x=>(x.id||x.canonicalId)===obj.activeArmorId))||((obj.armorArsenal||[])[0])].filter(Boolean).map(x=>typeof x==='string'?x:x.name),subclassRank:obj.subclassRank||'Foundation',resolveDie:obj.resolveDie||'d4',advancementHistory:obj.advancementHistory||[]});
     while(fresh.experiences.length<3)fresh.experiences.push('');while(fresh.experienceBonuses.length<3)fresh.experienceBonuses.push(2);
     return fresh;
   }
@@ -2622,7 +2635,7 @@ async function loadCharacterData(obj,options={}){
   if(options.register)await registerImportedCreatorState(fresh,options.source||'creator-json-import');
   state=fresh;canonicalizeLevelState();autosave();
   document.getElementById("substrain-section").innerHTML="";document.getElementById("subclass-section").style.display="none";
-  renderAncestries();renderSubStrain();renderCommunities();renderClasses();renderSubclasses();renderTraits();renderAffiliations();renderLevelUpView();updateBgQuestion();syncFieldsFromState();goStep(options.register?9:1);flashStatus(options.register?`Character imported and saved · ${fresh.characterId}`:"Character loaded");return fresh;
+  renderAncestries();renderSubStrain();renderCommunities();renderClasses();renderSubclasses();renderTraits();renderAffiliations();renderLevelUpView();updateBgQuestion();syncFieldsFromState();goStep(options.register?9:1,{skipValidation:!!options.register});flashStatus(options.register?`Character imported and saved · ${fresh.characterId}`:"Character loaded");return fresh;
 }
 window.VFNormalizeCreatorImport=normalizeImportedCreatorData;
 window.VFRegisterImportedCreatorState=registerImportedCreatorState;

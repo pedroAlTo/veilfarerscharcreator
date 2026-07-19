@@ -1,7 +1,13 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.53",
+  "currentVersion": "v59.54",
   "entries": [
+    {
+      "version": "v59.54",
+      "date": "2026-07-19",
+      "title": "Player Tool, Vault and Creator import hotfix",
+      "summary": "Fixes the Player Tool startup crash, ensures new/imported characters receive a new ID instead of replacing the active Vault character, preserves Ailuran Sub-Strain and legacy Ailurean naming during import, and opens imported builds directly on review."
+    },
     {
       "version": "v59.53",
       "date": "2026-07-19",

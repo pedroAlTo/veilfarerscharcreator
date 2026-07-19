@@ -9,6 +9,8 @@
   function featureObject(feature, label) { if(!feature || !feature.name)return null; return { name:[label,feature.name,feature.type].filter(Boolean).join(' · '), text:S(feature.desc || feature.text) }; }
   function acquiredSubclassMoves(rules, rank) { var steps=[['Foundation',rules.foundation],['Specialization',rules.specialization],['Mastery',rules.mastery]]; return steps.slice(0,rankValue(rank)).map(function(step){return featureObject(step[1],step[0]);}).filter(Boolean); }
   function sameText(a,b){return S(a).trim().toLowerCase()===S(b).trim().toLowerCase();}
+  function identityKey(value){ var raw=value&&typeof value==='object'?(value.id||value.slug||value.name||value.canonicalId):value; return S(raw).trim().toLowerCase().replace(/^vf\.core\.(?:ancestry|community|class|affiliation)\./,'').replace(/ailurean/g,'ailuran').replace(/[\s_]+/g,'-'); }
+  function sameIdentity(a,b){ var left=identityKey(a),right=identityKey(b); return !!left&&left===right; }
   function addUniqueMove(list,move){if(!move||!move.name)return;if(!(list||[]).some(function(item){return sameText(item.name,move.name)||sameText(item.name,S(move.name).replace(/^[^·]+·\s*/,''));}))list.push(move);}
   function classCompatFor(canonical, rawClass, className){ return findBy(canonical.classCompat,function(item){return item.id===rawClass||item.slug===rawClass||item.name===rawClass||item.name===className;})||{}; }
   function classRulesForPath(compat, canonicalClass, path){ if(path==='sleeping')return compat.sleepingRules||compat; return compat&&Object.keys(compat).length?compat:((canonicalClass&&canonicalClass.rules)||canonicalClass||{}); }
@@ -222,7 +224,7 @@
     if (!raw.ancestry && !raw.cls && !raw.name) return null;
     canonical = canonical || (typeof window !== 'undefined' ? window.VF_CANONICAL_DATA : null) || {};
 
-    var ancestry = findBy(canonical.ancestries, function (x) { return x.slug === raw.ancestry || x.id === raw.ancestry || x.name === raw.ancestry; });
+    var ancestry = findBy(canonical.ancestries, function (x) { return sameIdentity(x.slug,raw.ancestry) || sameIdentity(x.id,raw.ancestry) || sameIdentity(x.name,raw.ancestry) || sameIdentity(x.canonicalId,raw.ancestry); });
     var community = findBy(canonical.communities, function (x) { return x.slug === raw.community || x.id === raw.community || x.name === raw.community; });
     var cls = findBy(canonical.classes, function (x) { return x.slug === raw.cls || x.id === raw.cls || x.name === raw.cls; });
     var subclass = subclassFor(canonical, raw.subclass, cls && cls.name);

@@ -1,37 +1,31 @@
-VEILFARERS PORTAL v59.53 - START HERE
-Date: 2026-07-19
+VEILFARERS PORTAL v59.54 — START HERE
 
-DEPLOY ARTIFACT
-VeilFarers_Portal_v59.53.zip
+BASE PACKAGE
+This hotfix was built from the user-revised 59_53.zip, including the manually updated Downloads manifest and new PDF files.
 
-BRANCH / DEPLOY PREVIEW
-1. Preserve the current production ZIP and Firestore Rules.
-2. Extract the v59.53 ZIP.
-3. Copy its CONTENTS into a clean branch so index.html is at repository root.
-4. Commit and push using GitHub Desktop or Git.
-5. Open a Deploy Preview and confirm npm installs from registry.npmjs.org.
-6. Hard-refresh, sign out and sign in again before testing.
+DEPLOY
+1. Create or use a clean test branch.
+2. Extract VeilFarers_Portal_v59.54.zip.
+3. Copy the CONTENTS of the ZIP into the repository root; index.html must remain at the root.
+4. Commit with GitHub Desktop or your normal signed workflow.
+5. Push and wait for all Netlify checks.
+6. Open the Deploy Preview and perform a hard refresh.
 
-ENVIRONMENT
-No new variable names. Verify FIREBASE_SERVICE_ACCOUNT_JSON is available to Functions in Deploy Preview/Branch contexts. Do not expose it in browser configuration.
+IMMEDIATE ACCEPTANCE
+1. Open Player Tool. It must render without `Cannot access 'character' before initialization`.
+2. Create two different characters. Vault must retain both with different VF IDs and one active marker.
+3. Import an old JSON with no VF ID from Account/Vault and from Creator. It must receive a new VF ID and appear as an additional record.
+4. Reimport a JSON carrying an existing VF ID. It must update only that record.
+5. Import an Ailuran Shroud-Strain and Surge-Strain character. Creator must open Step 9 with the correct Sub-Strain retained.
+6. Open Downloads and verify the 11.31 Corebook, 11.3 Keeper's Companion, Rust & Steel, Alien Species and fillable sheet.
 
-FIRST ACCEPTANCE TESTS
-1. Keeper: connect to a disposable open table, protected table and already-joined table.
-2. Confirm Keeper loads state and does not loop on permission-denied.
-3. Vault: use Import Character with a representative old JSON.
-4. Confirm Creator opens the final review step and the character receives/retains VF-###### and appears in Vault.
-5. Import the same permanent-ID JSON again and confirm it updates one record.
-6. Select multiple values in each equipment filter group.
-7. On a real mobile device, enable Shake to Roll and test one Hope/Fear roll in 2D and 3D.
-8. In a fresh browser profile, confirm Spectrum of Fate starts enabled and one toggle applies across Player Tool tabs.
-9. Confirm the console has no Tailwind CDN/Babel standalone warning and Firebase initialization occurs once.
+FILES
+- GITHUB_DEPLOY_SUMMARY_v59.54.md
+- VALIDATION_v59.54.txt
+- SECURITY_TABLES_v59.54.md
+- PORTAL_HANDOVER_v59.54.md
+- PORTAL_HANDOVER_v59.54.docx
+- firestore_v59.54.rules
 
-RULES
-firestore_v59.53.rules is included as the retained authenticated baseline. Do not deploy project-wide Rules merely to test Keeper readSession; Player direct real-time table access still requires the coordinated Rules acceptance plan.
-
-DOCUMENTS
-GITHUB_DEPLOY_SUMMARY_v59.53.md
-VALIDATION_v59.53.txt
-SECURITY_TABLES_v59.53.md
-PORTAL_HANDOVER_v59.53.md
-PORTAL_HANDOVER_v59.53.docx
+FIRESTORE RULES
+No Rules change is required to test this hotfix. The included file retains the v59.53 baseline.

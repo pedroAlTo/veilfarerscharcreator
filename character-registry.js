@@ -234,7 +234,7 @@
       characterData.sheetPayload?.fields?.character_id||
       characterData.playerCharacter?.characterId||
       characterData.playerCharacter?.id||
-      currentId()
+      (opts.reuseCurrentId===true?currentId():'')
     );
     if(!id)id=pendingId();
     let record=saveLocalData(id,{...characterData},opts);
@@ -263,7 +263,7 @@
   async function sync(recordOrId,opts={}){
     let record=typeof recordOrId==='string'?get(recordOrId):recordOrId;
     if(!record)return null;
-    if(!isFinal(record.characterId))record=await ensureId(record.characterData,opts);
+    if(!isFinal(record.characterId))record=await ensureId({characterId:record.characterId,...(record.characterData||{})},opts);
     if(!isFinal(record.characterId))return record;
     try{
       const result=await vaultApi('upsert',{record});
