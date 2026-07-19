@@ -3,6 +3,7 @@ import { getUser, verifyRequestOrigin } from '@netlify/identity'
 import { getDoc, googleAccessToken, putDoc, queryDocs, responseHeaders } from './_firebase-admin.mts'
 
 const collection='characters'
+const profiles='characterVaultProfiles'
 const json=(body:any,status=200)=>Response.json(body,{status,headers:responseHeaders})
 const validId=(value:any)=>/^VF-\d{6,}$/.test(String(value||'').trim().toUpperCase())
 const cleanRecord=(input:any,user:any,existing:any)=>{
@@ -36,7 +37,26 @@ export default async(req:Request,_ctx:Context)=>{
     if(action==='list'){
       const docs=await queryDocs(collection,'ownerId',user.id,access,200)
       const records=docs.map(item=>item.data)
-      return json({records,user:{id:user.id,email:user.email||''}})
+      const profilePath=`${profiles}/${user.id}`
+      const profileDoc=await getDoc(profilePath,access)
+      const activeIds=records.filter((record:any)=>record?.status!=='trashed').map((record:any)=>String(record?.characterId||'').toUpperCase())
+      let activeCharacterId=String(profileDoc?.data?.activeCharacterId||'').toUpperCase()
+      if(!activeIds.includes(activeCharacterId)){
+        activeCharacterId=activeIds[0]||''
+        await putDoc(profilePath,{ownerId:user.id,activeCharacterId,updatedAt:new Date().toISOString()},access)
+      }
+      return json({records,activeCharacterId,user:{id:user.id,email:user.email||''}})
+    }
+
+    if(action==='setActive'){
+      const characterId=String(body.characterId||'').trim().toUpperCase()
+      if(characterId){
+        if(!validId(characterId))return json({error:'A valid VF-###### Character ID is required.'},400)
+        const record=await getDoc(`${collection}/${characterId}`,access)
+        if(!record||record.data?.ownerId!==user.id||record.data?.status==='trashed')return json({error:'Select an active character from your own Vault.'},404)
+      }
+      await putDoc(`${profiles}/${user.id}`,{ownerId:user.id,activeCharacterId:characterId,updatedAt:new Date().toISOString()},access)
+      return json({ok:true,activeCharacterId:characterId})
     }
 
     const characterId=String(body.characterId||body.record?.characterId||'').trim().toUpperCase()
@@ -54,7 +74,19 @@ export default async(req:Request,_ctx:Context)=>{
       if(current&&current.data?.ownerId&&current.data.ownerId!==user.id)return json({error:'This character belongs to another account.'},403)
       const record=cleanRecord({...body.record,characterId},user,current?.data)
       await putDoc(path,record,access)
-      return json({record})
+      const profilePath=`${profiles}/${user.id}`
+      const profileDoc=await getDoc(profilePath,access)
+      let activeCharacterId=String(profileDoc?.data?.activeCharacterId||'').toUpperCase()
+      if(record.status!=='trashed'&&!activeCharacterId){
+        activeCharacterId=characterId
+        await putDoc(profilePath,{ownerId:user.id,activeCharacterId,updatedAt:new Date().toISOString()},access)
+      }else if(record.status==='trashed'&&activeCharacterId===characterId){
+        const docs=await queryDocs(collection,'ownerId',user.id,access,200)
+        const fallback=docs.map(item=>item.data).find((item:any)=>item?.status!=='trashed'&&String(item?.characterId||'').toUpperCase()!==characterId)
+        activeCharacterId=String(fallback?.characterId||'').toUpperCase()
+        await putDoc(profilePath,{ownerId:user.id,activeCharacterId,updatedAt:new Date().toISOString()},access)
+      }
+      return json({record,activeCharacterId})
     }
 
     return json({error:'Unknown Character Vault action.'},400)

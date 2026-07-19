@@ -1717,16 +1717,20 @@
           useEffect(() => {
             if (!handouts || !handouts.length) return;
             if (!seenNotesRef.current) loadSeenNotes(sessionId);
-            const myIds = characters.map(c => c && c.id).filter(Boolean);
+            const registryActive = window.VeilFarersCharacterRegistry && window.VeilFarersCharacterRegistry.currentId ? window.VeilFarersCharacterRegistry.currentId() : '';
+            const identityUser = window.netlifyIdentity && window.netlifyIdentity.currentUser ? window.netlifyIdentity.currentUser() : null;
+            const myIds = [identityUser && identityUser.id, character && character.memberUid, character && character.id, character && character.characterId, registryActive].filter(Boolean);
             handouts.forEach(n => {
               if (!n || !n.id || seenNotesRef.current.has(n.id)) return;
+              if (n.tableId && normalizeSessionKey(n.tableId) !== normalizeSessionKey(sessionId)) return;
               if (n.sentAt && connectedAtRef.current && n.sentAt < connectedAtRef.current - 3000) { seenNotesRef.current.add(n.id); return; } // skip stale handouts from before we joined
-              const forMe = n.targets === 'all' || (Array.isArray(n.targets) && n.targets.some(t => myIds.indexOf(t) !== -1));
+              const target=n.target || (Array.isArray(n.targets)?n.targets[0]:n.targets);
+              const forMe = target === 'all' || n.targets === 'all' || myIds.indexOf(target) !== -1;
               if (!forMe) return;
               markSeenNote(sessionId, n.id);
               openNote(n);
             });
-          }, [handouts, characters]);
+          }, [handouts, character && character.id, character && character.characterId, sessionId]);
           const [rollerScale, setRollerScale] = useState(1);
           const [rolling, setRolling] = useState(false);
           const [rollHistory, setRollHistory] = useState([]);
@@ -1839,6 +1843,14 @@
             };
           };
           const character = normChar(characters[activeTab] || characters[0] || {});
+          const activeCharacterIdentity = character && character.entityType !== 'drone' ? String(character.characterId || character.id || '') : '';
+          useEffect(() => {
+            if (!/^VF-\d{6,}$/i.test(activeCharacterIdentity)) return;
+            const registry=window.VeilFarersCharacterRegistry;
+            if(registry&&registry.currentId&&registry.currentId()!==activeCharacterIdentity){
+              if(registry.setActive)registry.setActive(activeCharacterIdentity,{strict:false});else registry.setCurrentId(activeCharacterIdentity);
+            }
+          }, [activeTab, activeCharacterIdentity]);
           const availableResolveMoves = resolveMovesForCharacter(character);
 
           // --- DRAGGING LOGIC ---
@@ -2635,7 +2647,7 @@
             const id = character && character.characterId;
             const registry = window.VeilFarersCharacterRegistry;
             if (!id || !registry || !registry.get(id)) { showAlert('Open a completed Character Vault record before using Level Up.', 'Level Up unavailable'); return; }
-            registry.setCurrentId(id);
+            if(registry.setActive)registry.setActive(id,{strict:false});else registry.setCurrentId(id);
             window.location.href='/creator.html#level-up';
           };
           const openCharacterVault = async () => {
@@ -2647,7 +2659,7 @@
             catch (error) { setVaultError(error.message || String(error)); setVaultRecords(registry.listForCurrentUser ? registry.listForCurrentUser({includeUnowned:true,completedOnly:true}) : registry.list()); }
             finally { setVaultLoading(false); }
           };
-          const openVaultCharacter = (record) => {
+          const openVaultCharacter = async (record) => {
             try {
               const payload = record && record.characterData && record.characterData.sheetPayload;
               let mapped = payload && window.veilfarersImportSheet && window.veilfarersImportSheet(payload, VF_CANON);
@@ -2655,6 +2667,7 @@
               if (!mapped && record && record.characterData && record.characterData.playerCharacter) mapped = normChar(record.characterData.playerCharacter);
               if (!mapped) throw new Error('This Vault record has no compatible build payload.');
               mapped = { ...mapped, characterId: record.characterId, id: record.characterId, transferSource:'character-vault' };
+              const registry=window.VeilFarersCharacterRegistry;if(registry&&registry.setActive)await registry.setActive(record.characterId,{strict:false});
               if (addOrUpdateMappedCharacter(mapped, 'Character Vault')) setShowVault(false);
             } catch (error) { setVaultError(error.message || String(error)); }
           };
@@ -2817,14 +2830,14 @@
                       }
                       if (typeof data.fearTokens === 'number' && (Date.now() - lastFearEditRef.current > 2500)) { setFear(data.fearTokens); }
                       if (typeof data.spotlight === 'string') { setSpotlight(data.spotlight); }
-                      setHandouts(Array.isArray(data.handouts) ? data.handouts : []);
+                      setHandouts((Array.isArray(data.handouts) ? data.handouts : []).filter(n => !n || !n.tableId || normalizeSessionKey(n.tableId) === normalizeSessionKey(session)));
                       if (data.rollHistory && Array.isArray(data.rollHistory)) {
-                          const sortedHistory = [...data.rollHistory].sort((a, b) => rollTimeMs(b.timestamp) - rollTimeMs(a.timestamp));
+                          const sortedHistory = data.rollHistory.filter(r => !r || !r.visibility || r.visibility === 'public').sort((a, b) => rollTimeMs(b.timestamp) - rollTimeMs(a.timestamp));
                           setRollHistory(sortedHistory);
                           const freshCutoff = Math.max(connectedAtRef.current - 2000, Date.now() - 12000);
                           sortedHistory.filter(item => rollTimeMs(item.timestamp) >= freshCutoff).slice(0, 12).reverse().forEach(registerCallout);
                       }
-                      if (data.lastRoll) {
+                      if (data.lastRoll && (!data.lastRoll.visibility || data.lastRoll.visibility === 'public')) {
                           const incoming = { ...data.lastRoll, timestamp: rollTimeMs(data.lastRoll.timestamp) || Date.now() };
                           const incomingKey = rollEventKey(incoming);
                           const isInitialSnapshot = !listenerPrimedRef.current;
@@ -2858,7 +2871,10 @@
                   const { db, doc, setDoc } = fbServices;
                   const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', normalizeSessionKey(sessionId));
                   try {
-                      const savePayload = { characters: characters, lastUpdated: new Date().toISOString() };
+                      const identityUser = window.netlifyIdentity && window.netlifyIdentity.currentUser ? window.netlifyIdentity.currentUser() : null;
+                      const accountUid = identityUser && identityUser.id ? identityUser.id : '';
+                      const ownedCharacters = characters.map(item => item && item.entityType !== 'drone' && accountUid ? { ...item, memberUid: accountUid } : item);
+                      const savePayload = { characters: ownedCharacters, lastUpdated: new Date().toISOString() };
                       const undefinedPaths = window.vfFindUndefinedPaths(savePayload);
                       if (undefinedPaths.length) console.warn('Character session contained optional undefined values; normalized before save:', undefinedPaths);
                       await setDoc(docRef, savePayload, { merge: true });
@@ -3618,7 +3634,7 @@
                       {vaultLoading && <div className="rounded-lg border border-cyan-800/50 bg-cyan-950/20 p-4 text-xs text-cyan-200 animate-pulse">Refreshing cloud Vault…</div>}
                       {!vaultLoading && vaultRecords.length === 0 && <div className="rounded-lg border border-dashed border-slate-700 p-8 text-center text-xs text-slate-500">No completed characters are available. Finish a character in Character Creator first.</div>}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {vaultRecords.map(record => { const item=window.VeilFarersCharacterRegistry && window.VeilFarersCharacterRegistry.summary ? window.VeilFarersCharacterRegistry.summary(record) : {name:'Unnamed Veilfarer',characterId:record.characterId,level:1,path:'',className:''}; return <button key={record.characterId} onClick={() => openVaultCharacter(record)} className="text-left rounded-xl border border-slate-800 bg-slate-900/55 p-4 hover:border-cyan-600 hover:bg-cyan-950/20 transition-colors"><div className="text-sm font-black text-white">{item.name}</div><div className="mt-1 text-[9px] font-mono uppercase tracking-wide text-cyan-400">{item.characterId}</div><div className="mt-2 text-[10px] text-slate-400">Level {item.level} · {[item.path,item.className,item.subclass].filter(Boolean).join(' · ')}</div><div className="mt-2 text-[8px] uppercase font-black text-slate-600">{item.cloudState || 'local'}</div></button>; })}
+                        {vaultRecords.map(record => { const registry=window.VeilFarersCharacterRegistry; const item=registry && registry.summary ? registry.summary(record) : {name:'Unnamed Veilfarer',characterId:record.characterId,level:1,path:'',className:''}; const active=registry&&registry.currentId&&registry.currentId()===item.characterId; return <button key={record.characterId} onClick={() => openVaultCharacter(record)} className={`text-left rounded-xl border p-4 transition-colors ${active?'border-cyan-500 bg-cyan-950/25 shadow-[0_0_18px_rgba(34,211,238,.08)]':'border-slate-800 bg-slate-900/55 hover:border-cyan-600 hover:bg-cyan-950/20'}`}><div className="flex items-start justify-between gap-2"><div className="text-sm font-black text-white">{item.name}</div>{active&&<span className="rounded-full border border-cyan-600/60 bg-cyan-500/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-cyan-300">Active</span>}</div><div className="mt-1 text-[9px] font-mono uppercase tracking-wide text-cyan-400">{item.characterId}</div><div className="mt-2 text-[10px] text-slate-400">Level {item.level} · {[item.path,item.className,item.subclass].filter(Boolean).join(' · ')}</div><div className="mt-2 text-[8px] uppercase font-black text-slate-600">{item.cloudState || 'local'} · {active?'Open active':'Set active & open'}</div></button>; })}
                       </div>
                     </div>
                     <div className="p-3 border-t border-slate-800 flex justify-between gap-2"><button onClick={openCharacterVault} disabled={vaultLoading} className="px-3 py-2 rounded border border-cyan-800 text-[10px] font-black uppercase text-cyan-300 disabled:opacity-40">Refresh</button><button onClick={() => setShowVault(false)} className="px-3 py-2 rounded border border-slate-700 text-[10px] font-black uppercase text-slate-300">Close</button></div>

@@ -1,52 +1,62 @@
-VEILFARERS PORTAL v59.51 — START HERE
+VEILFARERS PORTAL v59.52 — START HERE
+=====================================
 
-PACKAGE
--------
-VeilFarers_Portal_v59.51.zip
+PRIMARY DEPLOY ARTIFACT
+-----------------------
+VeilFarers_Portal_v59.52.zip
 
-DEPLOY
-------
-1. Preserve the current v59.50 branch/deploy and Firestore Rules.
-2. Create or update a test branch from the intended base.
-3. Replace the branch contents with the CONTENTS of the v59.51 ZIP.
-4. Confirm index.html remains at repository root.
-5. Do not commit node_modules, .env files or service-account JSON.
-6. Commit/push and wait for all Netlify checks.
-7. Hard-refresh the Deploy Preview, sign out and sign in.
+DEPLOY TO TEST BRANCH
+---------------------
+1. Preserve the current v59.51 artifact and active Firestore Rules.
+2. Extract the v59.52 ZIP locally.
+3. Replace the branch contents with the CONTENTS of the ZIP. index.html must remain at repository root.
+4. Commit with GitHub Desktop and push to a test branch.
+5. Wait for all Netlify checks and Deploy Preview build steps.
+6. Hard-refresh the preview, sign out and sign back in on every test account.
 
-NO NEW ENVIRONMENT VARIABLE NAMES
+REQUIRED VAULT TEST
+-------------------
+1. Create/import at least three completed characters under one account.
+2. Account must show all three and exactly one ACTIVE badge.
+3. Set another active character, refresh, and verify the same selection in Account/navigation/Player Tool.
+4. Repeat from another browser session for the same account.
+5. Trash the active character and verify one remaining record becomes active.
+6. Restore it; unrelated characters must remain intact.
+
+REQUIRED TABLE COMMUNICATION TEST
 ---------------------------------
-FIREBASE_API_KEY
-FIREBASE_AUTH_DOMAIN
-FIREBASE_PROJECT_ID
-FIREBASE_STORAGE_BUCKET
-FIREBASE_MESSAGING_SENDER_ID
-FIREBASE_APP_ID
-FIREBASE_MEASUREMENT_ID
-FIREBASE_PUBLIC_TABLE_DIRECTORY=false
-FIREBASE_SERVICE_ACCOUNT_JSON
+Use three distinct accounts:
+- Keeper/owner in Table A;
+- Player A1 in Table A;
+- Player A2 in Table A;
+- optionally the Keeper or a fourth account with a player in Table B.
 
-FIREBASE_SERVICE_ACCOUNT_JSON must have Functions scope and values for Deploy Previews / Branch deploys as required. Never expose or commit it.
+1. Send a note to Player A1 only. A1 receives it; A2 and Table B do not.
+2. Send a note to all Table A players. A1 and A2 receive it; Table B does not.
+3. Change A1's active character and repeat the private note; account UID targeting must still work.
+4. Select KEEPER ONLY and roll. No Player receives the roll and no public table-history record is created.
+5. Select BROADCAST and roll. Only Table A receives it.
+6. Change to Table B and verify private Keeper history is not mixed between tables.
 
-TEST FIRST
+KEEPER UI TEST
+--------------
+- Compare desktop visual hierarchy with Player Tool.
+- Check fixed Keeper Console, tabs, panels, cyan states and amber actions.
+- Open the Player Note modal; it must appear above navigation and console.
+- Test keyboard focus and responsive/mobile console placement.
+
+REGRESSION
 ----------
-- Invitation persistence/details/edit/revoke/reactivate/delete.
-- Second-account invitation + protected-table password join.
-- One historical table password migration.
-- Keeper changes, notes, handouts and rolls reaching Player Tool.
-- Legacy JSON imports in Creator, Level Up and Player Tool.
-- One Player record per Character ID after repeated opens/imports.
-- Proficiency-scaled weapon damage.
-- Player Log Close/Reset and absence of stray 0.
-- All catalogue filters on desktop/mobile.
+Re-test v59.51 invitations, old passwords, Keeper state changes, old JSON import, Player deduplication/runtime preservation, Proficiency damage, Player Log and equipment filters. Re-test 2D/3D dice, Shake, Mods, drones, Level Up and Charsheet print.
 
-RULES WARNING
+FIRESTORE RULES
+---------------
+firestore_v59.52.rules is included for the coordinated authenticated table-security cutover. Rules are project-wide. Do not deploy a different Rules set merely to test this branch against the production Firebase project.
+
+DOCUMENTATION
 -------------
-firestore_v59.51.rules is included for the coordinated authenticated table-security cutover. Firestore Rules are project-wide. Do not deploy a different Rules set merely to test this branch against the production Firebase project.
-
-READ
-----
-GITHUB_DEPLOY_SUMMARY_v59.51.md
-VALIDATION_v59.51.txt
-SECURITY_TABLES_v59.51.md
-PORTAL_HANDOVER_v59.51.md
+GITHUB_DEPLOY_SUMMARY_v59.52.md
+VALIDATION_v59.52.txt
+SECURITY_TABLES_v59.52.md
+PORTAL_HANDOVER_v59.52.md
+PORTAL_HANDOVER_v59.52.docx

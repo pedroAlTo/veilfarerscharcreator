@@ -1,7 +1,21 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.51",
+  "currentVersion": "v59.52",
   "entries": [
+    {
+      "version": "v59.52",
+      "date": "2026-07-19",
+      "title": "Single active Vault character, table-scoped Keeper communication and Player Tool visual convergence",
+      "changes": [
+        "Made Character Vault an account-owned multi-character collection with exactly one selected active Character ID synchronized through a server-only Vault profile.",
+        "Added explicit Set Active controls in Account and made Charsheet, Player Tool and Level Up selections update the shared active Character ID before opening.",
+        "Scoped Keeper notes to the connected table and validated the recipient server-side as either all players in that table or exactly one connected player.",
+        "Stamped Player Tool table characters with their authenticated member UID so private Keeper notes follow the selected player rather than leaking to unrelated characters or tables.",
+        "Added Keeper roll visibility controls: hidden rolls remain local to the Keeper browser, while broadcast rolls are stored only in the current table and displayed to its connected players.",
+        "Rebuilt Keeper Tool presentation around the Player Tool visual system with dark navy panels, cyan state accents, amber actions, compact tabs and a persistent live Keeper Console.",
+        "Added defensive Player Tool filtering for table IDs and public roll visibility so stale or incorrectly scoped notes and hidden rolls are ignored."
+      ]
+    },
     {
       "version": "v59.51",
       "date": "2026-07-19",
@@ -586,5 +600,5 @@
       ]
     }
   ],
-  "version": "v59.51"
+  "version": "v59.52"
 }

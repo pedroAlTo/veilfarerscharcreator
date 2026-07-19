@@ -29,6 +29,22 @@ const safeDirectory = (data: any, id: string) => ({
   ownerName: data.ownerName || '',
   updatedAt: data.updatedAt || 0,
 })
+export const tablePlayerIds=(data:any)=>new Set((Array.isArray(data?.characters)?data.characters:[])
+  .filter((item:any)=>item&&item.entityType!=='drone')
+  .flatMap((item:any)=>[item.memberUid,item.ownerUid,item.id,item.characterId,item.syncId].map((value:any)=>cleanString(value,160)).filter(Boolean)))
+export const normalizeHandout=(raw:any,tableId:string,user:any,data:any)=>{
+  const target=raw?.target==='all'||raw?.targets==='all'?'all':cleanString(raw?.target||raw?.targetId||(Array.isArray(raw?.targets)?raw.targets[0]:''),160)
+  if(target!=='all'&&!tablePlayerIds(data).has(target))throw Object.assign(new Error('Choose one player currently connected to this table, or All players.'),{status:400})
+  const table=raw?.table&&typeof raw.table==='object'?raw.table:null
+  return {
+    id:cleanString(raw?.id||`note-${now()}-${Math.random().toString(36).slice(2,8)}`,120),
+    tableId,
+    title:cleanString(raw?.title,160), subtitle:cleanString(raw?.subtitle,240), body:cleanString(raw?.body,20000),
+    table, target, targets:target==='all'?'all':[target],
+    volatile:!!raw?.volatile, expires:Math.max(0,Math.min(3600000,Number(raw?.expires)||0)),
+    sentAt:Number(raw?.sentAt)||now(), senderUid:user.id, from:'Keeper',
+  }
+}
 const json = (body: any, status = 200) => Response.json(body, { status, headers: responseHeaders })
 
 export default async (req: Request, _ctx: Context) => {
@@ -252,7 +268,7 @@ export default async (req: Request, _ctx: Context) => {
       if (!isOwner && !isMember) return json({ error: 'Join the table before broadcasting rolls.' }, 403)
       const roll = body.roll && typeof body.roll === 'object' ? body.roll : null
       if (!roll) return json({ error: 'A roll payload is required.' }, 400)
-      const normalized = { ...roll, timestamp: Number(roll.timestamp) || now(), broadcastId: cleanString(roll.broadcastId || `roll-${now()}`, 120) }
+      const normalized = { ...roll, visibility:'public', tableId, senderUid:user.id, timestamp: Number(roll.timestamp) || now(), broadcastId: cleanString(roll.broadcastId || `roll-${now()}`, 120) }
       const history = Array.isArray(data.rollHistory) ? data.rollHistory.slice() : []
       const exists = history.some((item:any) => item && item.broadcastId === normalized.broadcastId)
       if (!exists) history.push(normalized)
@@ -267,10 +283,30 @@ export default async (req: Request, _ctx: Context) => {
       return json({ ok: true })
     }
 
+    if (action === 'sendHandout') {
+      if (!isOwner) return json({ error: 'Only the table owner can send Keeper notes.' }, 403)
+      const note=normalizeHandout(body.note,tableId,user,data)
+      if(!note.title&&!note.body&&!note.table)return json({error:'Add a title, body, or table.'},400)
+      const handouts=Array.isArray(data.handouts)?data.handouts.slice():[]
+      handouts.push(note)
+      const trimmed=handouts.sort((a:any,b:any)=>Number(a?.sentAt||0)-Number(b?.sentAt||0)).slice(-50)
+      await patchDoc(path,{handouts:trimmed,updatedAt:now(),lastActive:now()},access)
+      return json({ok:true,note,count:trimmed.length})
+    }
+
+    if (action === 'deleteHandout') {
+      if (!isOwner) return json({ error: 'Only the table owner can remove Keeper notes.' }, 403)
+      const id=cleanString(body.noteId,120)
+      const handouts=(Array.isArray(data.handouts)?data.handouts:[]).filter((item:any)=>cleanString(item?.id,120)!==id)
+      await patchDoc(path,{handouts,updatedAt:now(),lastActive:now()},access)
+      return json({ok:true,count:handouts.length})
+    }
+
     if (action === 'setHandouts') {
-      if (!isOwner && !isMember) return json({ error: 'Join the table before changing handouts.' }, 403)
-      const handouts = Array.isArray(body.handouts) ? body.handouts.slice(-50) : null
-      if (!handouts) return json({ error: 'A handout list is required.' }, 400)
+      if (!isOwner) return json({ error: 'Only the table owner can change Keeper notes.' }, 403)
+      const raw = Array.isArray(body.handouts) ? body.handouts.slice(-50) : null
+      if (!raw) return json({ error: 'A handout list is required.' }, 400)
+      const handouts=raw.map((item:any)=>normalizeHandout({...item,sentAt:item?.sentAt||now()},tableId,user,data))
       await patchDoc(path, { handouts, updatedAt: now(), lastActive: now() }, access)
       return json({ ok: true, count: handouts.length })
     }

@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isMember(data) { return signedIn() && data.memberIds is list && request.auth.uid in data.memberIds; }
+    function protectedMetadataUnchanged() {
+      return request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.ownerEmail == resource.data.ownerEmail
+        && request.resource.data.memberIds == resource.data.memberIds
+        && request.resource.data.memberProfiles == resource.data.memberProfiles
+        && request.resource.data.passAuth == resource.data.passAuth
+        && request.resource.data.passHash == resource.data.passHash
+        && request.resource.data.isOpen == resource.data.isOpen;
+    }
+    match /artifacts/{appId}/public/data/sessions/{tableId} {
+      allow read: if isMember(resource.data);
+      allow update: if isMember(resource.data) && protectedMetadataUnchanged();
+      allow create, delete: if false;
+    }
+    match /artifacts/{appId}/public/data/tableDirectory/{tableId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /artifacts/{appId}/public/data/tableInvites/{inviteId} {
+      allow read, write: if false;
+    }
+    match /artifacts/{appId}/public/data/tableSecrets/{tableId} {
+      allow read, write: if false;
+    }
+    match /characters/{characterId} {
+      allow read: if signedIn() && resource.data.ownerId == request.auth.uid;
+      allow update: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && (resource.data.ownerId == request.auth.uid || resource.data.status == 'allocated');
+      allow create, delete: if false;
+    }
+    match /systemCounters/{document=**} { allow read, write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

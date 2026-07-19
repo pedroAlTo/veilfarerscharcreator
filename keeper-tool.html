@@ -8,6 +8,7 @@
   <title>Veilfarers - Keeper's Companion</title>
   <link rel="stylesheet" href="portal.css">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="keeper-player.css">
   <style>body.vf-keeper-page .header{top:var(--vf-portal-height,49px)} body.vf-keeper-page .campaign-select-screen{min-height:calc(100vh - var(--vf-portal-height,49px))} .vf-spotlight{position:relative;border:1px solid rgba(250,204,21,0.85) !important;} .vf-spotlight::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(150% 150% at 23px 22px, rgba(250,204,21,0.30) 0%, rgba(250,204,21,0.13) 32%, rgba(250,204,21,0.04) 60%, transparent 82%);-webkit-mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);} .vf-spotlight > *{position:relative;z-index:1;} @keyframes vf-wash-flicker{0%{opacity:1;}2%{opacity:0.12;}5%{opacity:0.85;}8%{opacity:0.06;}11%{opacity:0.55;}14%{opacity:0;}60%{opacity:0;}64%{opacity:0.1;}68%{opacity:0.02;}73%{opacity:0.5;}77%{opacity:0.1;}83%{opacity:0.82;}88%{opacity:0.35;}94%{opacity:0.95;}100%{opacity:1;}} .vf-spotlight.flicker::before{animation:vf-wash-flicker 1.6s steps(1,end) 1;} .vf-spotlight .character-name, .vf-spotlight .stat-label, .vf-spotlight span, .vf-spotlight .text-gray{ text-shadow: 0 1px 2px rgba(0,0,0,0.85); } .vf-spot-toggle:hover{opacity:1 !important;}</style>
   <script src="equipment-mods.js"></script>
   <script src="compact-rules.js"></script>
@@ -26,7 +27,7 @@
 <body class="vf-keeper-page">
   <script src="portal.js"></script>
 
-  <div class="vf-construction-banner" role="status"><strong>Keeper Tool · Under construction</strong><span>Navigation and campaign workflows are being rebuilt inside the unified VeilFarers portal.</span></div>
+  <div class="vf-keeper-productbar" role="status"><strong>KEEPER TOOL</strong><span>LIVE TABLE CONTROL · PRIVATE PREP · TARGETED PLAYER COMMUNICATION</span></div>
 
   <div id="vf-gate" style="position:fixed;inset:0;z-index:100000;background:#0b1220;display:flex;flex-direction:column;
      align-items:center;justify-content:center;font-family:ui-sans-serif,system-ui,sans-serif;color:#e2e8f0;padding:24px;text-align:center;">
@@ -953,7 +954,7 @@
 
 <div id="vf-live" style="position:fixed;bottom:12px;right:12px;z-index:9000;width:290px;background:#0b1220;border:1px solid #1e293b;border-radius:10px;padding:12px;font-family:ui-sans-serif,system-ui,sans-serif;color:#e2e8f0;font-size:12px;box-shadow:0 6px 24px rgba(0,0,0,0.55);">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-    <span style="font-weight:800;color:#e2b45a;letter-spacing:1px;">LIVE SESSION</span>
+    <span class="vf-live-title">KEEPER CONSOLE</span>
     <button id="vf-live-min" title="Minimize" style="background:none;border:0;color:#64748b;cursor:pointer;font-size:14px;">_</button>
   </div>
   <div id="vf-live-body">
@@ -988,13 +989,19 @@
       <div id="vf-drone-signals" style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;color:#64748b;font-style:italic;">No drones connected.</span></div>
     </div>
     <div style="margin-top:8px;border-top:1px solid #1e293b;padding-top:8px;">
-      <div style="font-size:10px;color:#e2b45a;font-weight:700;letter-spacing:1px;margin-bottom:4px;">SEND TO PLAYERS</div>
+      <div class="vf-console-section-title">KEEPER ROLL</div>
+      <div class="vf-roll-visibility" role="group" aria-label="Keeper roll visibility">
+        <button type="button" data-roll-visibility="hidden" class="active">Keeper only</button>
+        <button type="button" data-roll-visibility="broadcast">Broadcast</button>
+        <input type="hidden" id="vf-roll-visibility" value="hidden" />
+      </div>
       <input id="vf-send-label" placeholder="Label (e.g. Weaver Swarm attack)" style="width:100%;padding:5px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;margin-bottom:4px;" />
       <div style="display:flex;gap:4px;">
         <input id="vf-send-dmg" placeholder="Dmg (e.g. 2d8+3)" style="flex:1;min-width:0;padding:5px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
-        <button id="vf-send-roll" style="padding:5px 8px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:700;cursor:pointer;">Roll+Send</button>
+        <button id="vf-send-roll" style="padding:5px 8px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:700;cursor:pointer;">Roll</button>
       </div>
-      <button id="vf-send-note" style="width:100%;margin-top:4px;padding:5px;border:0;border-radius:6px;background:#334155;color:#e2e8f0;font-weight:600;cursor:pointer;">New Handout / Note</button>
+      <div id="vf-roll-visibility-help" class="vf-console-help">Hidden rolls stay only in this Keeper browser.</div>
+      <button id="vf-send-note" style="width:100%;margin-top:4px;padding:5px;border:0;border-radius:6px;background:#334155;color:#e2e8f0;font-weight:600;cursor:pointer;">Send Player Note</button>
       <div id="vf-sent-notes-wrap" style="margin-top:8px;display:none;">
         <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;">Sent Handouts</div>
         <div id="vf-sent-notes" style="max-height:130px;overflow-y:auto;"></div>
@@ -1005,7 +1012,7 @@
 
 <div id="vf-note-modal" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.78);align-items:center;justify-content:center;font-family:ui-sans-serif,system-ui,sans-serif;">
   <div style="background:#0b1220;border:1px solid #334155;border-radius:12px;padding:16px;width:440px;max-width:94vw;max-height:90vh;overflow-y:auto;color:#e2e8f0;box-shadow:0 10px 40px rgba(0,0,0,0.6);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><b style="color:#e2b45a;letter-spacing:1px;">NEW HANDOUT</b><button id="vf-note-cancel" style="background:none;border:0;color:#94a3b8;cursor:pointer;font-size:16px;">✕</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><b style="color:#e2b45a;letter-spacing:1px;">SEND PLAYER NOTE</b><button id="vf-note-cancel" style="background:none;border:0;color:#94a3b8;cursor:pointer;font-size:16px;">✕</button></div>
     <input id="vf-note-title" placeholder="Title (header)" style="width:100%;box-sizing:border-box;padding:7px;margin-bottom:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;font-weight:700;" />
     <input id="vf-note-subtitle" placeholder="Subtitle (optional)" style="width:100%;box-sizing:border-box;padding:7px;margin-bottom:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#e2e8f0;" />
     <textarea id="vf-note-body" placeholder="Body text (optional)" style="width:100%;box-sizing:border-box;padding:7px;height:80px;margin-bottom:8px;border-radius:6px;border:1px solid #334155;background:#111827;color:#e2e8f0;resize:vertical;"></textarea>
@@ -1014,8 +1021,10 @@
     <label style="display:block;font-size:11px;margin-bottom:10px;"><input type="checkbox" id="vf-note-tablehdr" checked /> First row is a header</label>
     <div style="border-top:1px solid #1e293b;padding-top:8px;margin-bottom:8px;">
       <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Send to</div>
-      <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;"><input type="checkbox" id="vf-note-all" checked /> All players</label>
-      <div id="vf-note-targets-list" style="opacity:0.4;pointer-events:none;padding-left:6px;"></div>
+      <label class="vf-note-target-choice"><input type="radio" name="vf-note-target-mode" id="vf-note-all" value="all" checked /> All players in this table</label>
+      <label class="vf-note-target-choice"><input type="radio" name="vf-note-target-mode" id="vf-note-one" value="one" /> One player only</label>
+      <select id="vf-note-target-one" disabled aria-label="Player receiving this note"><option value="">Select a connected player</option></select>
+      <div id="vf-note-targets-list" hidden></div>
     </div>
     <div style="display:flex;gap:14px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
       <label style="font-size:11px;"><input type="checkbox" id="vf-note-volatile" /> Volatile (can't be saved)</label>
@@ -1031,13 +1040,14 @@
 <script>
 (function () {
   var db = null, firebaseInitPromise = null, unsub = null, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false;
+  window.__publicKeeperRolls=window.__publicKeeperRolls||[]; window.__privateKeeperRolls=window.__privateKeeperRolls||[];
   function $id(id) { return document.getElementById(id); }
   function setStatus(m) { var e = $id('vf-live-status'); if (e) e.textContent = m; }
   function toPlayer(c, idx) {
     c = c || {}; var hp = c.hp || {}, st = c.stress || {}, thr = c.thresholds || {};
     var isSleeper = c.path === 'sleeping';
     return {
-      id: 90000 + idx, _syncIndex: idx, syncId: c.id || null, name: c.name || ('Player ' + (idx + 1)),
+      id: 90000 + idx, _syncIndex: idx, syncId: c.characterId || c.id || null, memberUid: c.memberUid || c.ownerUid || null, name: c.name || ('Player ' + (idx + 1)),
       subtitle: ((c.heritage || '') + ' ' + (c.class || '')).trim() || 'Adventurer',
       hp: (hp.current) || 0, maxHp: (hp.max) || 6, stress: (st.current) || 0, maxStress: (st.max) || 6,
       hope: isSleeper ? ((c.effort && c.effort.current) || 0) : ((c.hope && c.hope.current) || 0),
@@ -1052,7 +1062,11 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]; }); }
   function renderRolls(rolls) {
     var el = $id('vf-live-rolls'); if (!el) return;
-    el.innerHTML = (rolls || []).slice(0, 12).map(function (r) {
+    if(Array.isArray(rolls))window.__publicKeeperRolls=rolls;
+    var privateRolls=(window.__privateKeeperRolls||[]).filter(function(r){return !currentSessionId||!r.tableId||String(r.tableId)===String(currentSessionId);});
+    var publicRolls=(window.__publicKeeperRolls||[]).filter(function(r){return !currentSessionId||!r.tableId||String(r.tableId)===String(currentSessionId);});
+    var combined=publicRolls.concat(privateRolls).sort(function(a,b){return Number(b.timestamp||0)-Number(a.timestamp||0);});
+    el.innerHTML = combined.slice(0, 18).map(function (r) {
       var damageText = '';
       if (r.damage != null) {
         var expr = r.damageDice || r.damageBase || 'damage';
@@ -1070,8 +1084,9 @@
       } else {
         body = esc(r.label);
       }
-      return '<div style="border-bottom:1px solid #1e293b;padding:4px 0;">'
-        + '<div style="color:#cbd5e1;">' + esc(r.playerName || '?') + ' <span style="color:#64748b;">' + esc(r.label || '') + '</span></div>'
+      var visibilityBadge=r.visibility==='hidden'?'<span class="vf-roll-private">KEEPER ONLY</span>':'<span class="vf-roll-public">BROADCAST</span>';
+      return '<div class="vf-console-roll">'
+        + '<div style="color:#cbd5e1;">' + visibilityBadge + ' ' + esc(r.playerName || '?') + ' <span style="color:#64748b;">' + esc(r.label || '') + '</span></div>'
         + '<div style="font-size:11px;">' + body + '</div></div>';
     }).join('') || '<div style="color:#64748b;">No rolls yet.</div>';
   }
@@ -1108,8 +1123,8 @@
       var d = rollDmg(dmgStr); if (d) { roll.damage = d.total; roll.damageDetail = d.detail; roll.damageDice = d.dice; roll.damageRolls = d.rolls; roll.damageModifier = d.modifier; roll.damageBase = d.base; }
     } else { roll.type = 'note'; }
     try {
-      await publishKeeperRoll(roll);
-      setStatus('Sent to players: ' + label);
+      var published=await publishKeeperRoll(roll);
+      setStatus(published&&published.visibility==='public'?'Broadcast to this table: '+label:'Keeper-only roll: '+label);
     } catch (e) { setStatus('Send error: ' + e.message); }
   }
   function renderTables(tables) {
@@ -1172,7 +1187,7 @@
       if(unsub)unsub();unsub=SESSION.onSnapshot(function(snap){
         if(!snap.exists){setStatus('Session "'+sid+'" is empty (waiting for players).');return;}var data=snap.data();
         try{if(data.characters&&typeof state!=='undefined'){window.__sessionCharsRaw=JSON.parse(JSON.stringify(data.characters));if(!(window.__keeperLastEdit&&(Date.now()-window.__keeperLastEdit<2500))){state.players=data.characters.reduce(function(list,entity,originalIndex){if(entity&&entity.entityType!=='drone')list.push(toPlayer(entity,originalIndex));return list;},[]);}}if(typeof data.fearTokens==='number'&&typeof state!=='undefined')state.fearTokens=data.fearTokens;if(typeof state!=='undefined'){state.spotlight=data.spotlight||'';state.notes=data.keeperNotes||data.notes||'';if(data.sessionName)state.sessionName=data.sessionName;}if(typeof renderAll==='function')renderAll();var noteEl=$id('notesTextarea');if(noteEl&&document.activeElement!==noteEl)noteEl.value=(data.keeperNotes||data.notes||'');var sessionEl=$id('sessionNameInput');if(sessionEl&&document.activeElement!==sessionEl&&data.sessionName)sessionEl.value=data.sessionName;renderSpotlight(data.spotlight||'');renderDroneSignals(data.characters||[]);}catch(e){console.error('keeper sync render error',e);}
-        var rolls=(data.rollHistory||[]).slice().sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0);});window.__handouts=Array.isArray(data.handouts)?data.handouts:[];renderSentNotes();renderRolls(rolls);setStatus('Connected to "'+sid+'" · '+((data.characters||[]).length)+' entities');
+        var rolls=(data.rollHistory||[]).filter(function(r){return !r.visibility||r.visibility==='public';}).slice().sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0);});window.__handouts=Array.isArray(data.handouts)?data.handouts.filter(function(n){return !n.tableId||n.tableId===sid;}):[];renderSentNotes();renderRolls(rolls);setStatus('Connected to "'+sid+'" · '+((data.characters||[]).length)+' entities');
       },function(err){setStatus('Error: '+(err.code||err.message));});
       var cleanUrl=window.location.pathname+window.location.hash;window.history.replaceState({},'',cleanUrl);
     }catch(e){setStatus('Error: '+e.message);}
@@ -1204,11 +1219,18 @@
     if(password.length<4){setStatus('Use at least 4 characters. To remove the password, use Table Admin.');return;}if(password!==confirmPass){setStatus('Password confirmation does not match.');return;}
     try{var out=await window.VFTableAccess.api('setPassword',{tableId:currentSessionId,password:password});if($id('vf-new-pass'))$id('vf-new-pass').value='';if($id('vf-confirm-pass'))$id('vf-confirm-pass').value='';setPasswordUi(!!out.locked);setStatus('Table password updated.');listTables();}catch(e){setStatus('Password update failed: '+e.message);}
   }
+  function keeperRollVisibility(){var input=$id('vf-roll-visibility');return input&&input.value==='broadcast'?'broadcast':'hidden';}
   async function publishKeeperRoll(roll) {
     if (!currentSessionId || !roll) throw new Error('Connect to the table first.');
     roll.timestamp = Date.now();
     roll.broadcastId = roll.broadcastId || rollBroadcastId();
-    try{return await tableWrite('broadcastRoll',{roll:roll});}
+    if(keeperRollVisibility()==='hidden'){
+      var local={...roll,visibility:'hidden',tableId:currentSessionId};
+      window.__privateKeeperRolls=[local].concat(window.__privateKeeperRolls||[]).slice(0,100);
+      renderRolls();
+      return local;
+    }
+    try{var out=await tableWrite('broadcastRoll',{roll:{...roll,visibility:'public'}});var published=(out&&out.roll)||{...roll,visibility:'public'};return published;}
     catch(e){console.error('keeper roll broadcast',e);setStatus('Roll broadcast failed: '+(e.message||e));throw e;}
   }
   window.keeperBroadcastAbility = function (monsterName, abilityName, desc, fearCost) {
@@ -1242,12 +1264,11 @@
     return rows.length ? { headers: headers, rows: rows } : null;
   }
   function populateTargets() {
-    var box = document.getElementById('vf-note-targets-list'); if (!box) return;
-    var players = (typeof state !== 'undefined' && state.players) ? state.players : [];
-    box.innerHTML = players.length ? players.map(function (p, i) {
-      var key = p.syncId || p.name;
-      return '<label style="display:block;font-size:12px;margin:3px 0;"><input type="checkbox" data-target="' + esc(key) + '"/> ' + esc(p.name || ('Player ' + (i + 1))) + '</label>';
-    }).join('') : '<span style="font-size:11px;color:#64748b;">No players connected yet.</span>';
+    var select=$id('vf-note-target-one'); if(!select)return;
+    var players=(typeof state!=='undefined'&&state.players)?state.players:[];
+    var current=select.value;
+    var seen={};var options=players.map(function(p,i){var key=p.memberUid||p.syncId||p.characterId||p.name;if(!key||seen[key])return '';seen[key]=true;return '<option value="'+esc(key)+'">'+esc(p.name||('Player '+(i+1)))+'</option>';}).join('');select.innerHTML='<option value="">Select a connected player</option>'+options;
+    if(Array.prototype.some.call(select.options,function(option){return option.value===current;}))select.value=current;
   }
   function openNoteModal() {
     if (!SESSION) { setStatus('Connect first.'); return; }
@@ -1263,7 +1284,7 @@
     box.innerHTML = arr.map(function (n) {
       var d = new Date(n.sentAt || 0);
       var when = d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      var tgt = n.targets === 'all' ? 'All' : ((n.targets || []).length + ' player' + (((n.targets || []).length) === 1 ? '' : 's'));
+      var targetId=n.target||(Array.isArray(n.targets)?n.targets[0]:'');var targetPlayer=((typeof state!=='undefined'&&state.players)||[]).find(function(p){return [p.memberUid,p.syncId,p.characterId,p.name].indexOf(targetId)!==-1;});var tgt=(n.target==='all'||n.targets==='all')?'All players in this table':('One player · '+esc((targetPlayer&&targetPlayer.name)||targetId));
       var flags = (n.volatile ? ' \u00b7 volatile' : '') + (n.expires > 0 ? (' \u00b7 \u23f1' + Math.round(n.expires / 1000) + 's') : '');
       return '<div style="display:flex;align-items:center;gap:6px;background:#111827;border:1px solid #1e293b;border-radius:6px;padding:4px 6px;margin-bottom:3px;">'
         + '<div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(n.title || '(untitled)') + '</div>'
@@ -1273,9 +1294,7 @@
   }
   async function removeHandout(id) {
     if (!currentSessionId) return;
-    var arr = (window.__handouts || []).filter(function (n) { return n && n.id !== id; });
-    window.__handouts = arr; renderSentNotes();
-    try{await tableWrite('setHandouts',{handouts:arr});}catch(e){setStatus('Handout removal failed: '+e.message);}
+    try{await tableWrite('deleteHandout',{noteId:id});window.__handouts=(window.__handouts||[]).filter(function(n){return n&&n.id!==id;});renderSentNotes();}catch(e){setStatus('Player note removal failed: '+e.message);}
   }
   async function sendHandout() {
     if (!SESSION) { setStatus('Connect first.'); return; }
@@ -1286,21 +1305,18 @@
     var table = parseTable(v('vf-note-table'), ck('vf-note-tablehdr'));
     var timer = parseInt(v('vf-note-timer')) || 0;
     var volatile = ck('vf-note-volatile') || timer > 0;
-    var targets;
-    if (ck('vf-note-all')) targets = 'all';
-    else { targets = Array.prototype.slice.call(document.querySelectorAll('#vf-note-targets-list input[data-target]:checked')).map(function (cb) { return cb.getAttribute('data-target'); }); }
+    var target=ck('vf-note-all')?'all':v('vf-note-target-one');
     if (!title && !body && !table) { if (warn) warn.textContent = 'Add a title, body, or table.'; return; }
-    if (targets !== 'all' && (!targets || !targets.length)) { if (warn) warn.textContent = 'Pick at least one player, or All.'; return; }
-    var note = { id: 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: title, subtitle: subtitle, body: body, table: table, targets: targets, volatile: volatile, expires: timer > 0 ? timer * 1000 : 0, sentAt: Date.now(), from: 'Keeper' };
-    var arr = (window.__handouts || []).slice(); arr.push(note); arr = arr.slice(-25);
-    try{await tableWrite('setHandouts',{handouts:arr});}catch(e){if(warn)warn.textContent='Send failed: '+e.message;return;}
-    window.__handouts = arr;
+    if(target!=='all'&&!target){if(warn)warn.textContent='Choose one connected player, or All players.';return;}
+    var note={id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:title,subtitle:subtitle,body:body,table:table,target:target,targets:target==='all'?'all':[target],volatile:volatile,expires:timer>0?timer*1000:0};
+    var out;try{out=await tableWrite('sendHandout',{note:note});}catch(e){if(warn)warn.textContent='Send failed: '+e.message;return;}
+    var saved=(out&&out.note)||note;window.__handouts=(window.__handouts||[]).concat([saved]).slice(-50);
     renderSentNotes();
     ['vf-note-title', 'vf-note-subtitle', 'vf-note-body', 'vf-note-table'].forEach(function (id) { var el = $id(id); if (el) el.value = ''; });
     if ($id('vf-note-timer')) $id('vf-note-timer').value = '0';
     if ($id('vf-note-volatile')) $id('vf-note-volatile').checked = false;
     closeNoteModal();
-    setStatus('Handout sent' + (targets === 'all' ? ' to all players.' : '.'));
+    setStatus(target==='all'?'Note sent to all players in this table.':'Private note sent to one player.');
   }
   document.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'vf-connect-btn') connect();
@@ -1312,6 +1328,7 @@
     if (e.target && e.target.id === 'vf-live-min') { var b = $id('vf-live-body'); if (b) b.style.display = (b.style.display === 'none' ? 'block' : 'none'); }
     if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-spot')) { setSpotlight(e.target.getAttribute('data-spot')); }
     var st = e.target && e.target.closest ? e.target.closest('.vf-spot-toggle') : null; if (st && st.getAttribute('data-spot-id') != null) { e.stopPropagation(); toggleSpotlight(st.getAttribute('data-spot-id')); }
+    var visibilityButton=e.target&&e.target.closest?e.target.closest('[data-roll-visibility]'):null;if(visibilityButton){document.querySelectorAll('[data-roll-visibility]').forEach(function(btn){btn.classList.toggle('active',btn===visibilityButton);});var value=visibilityButton.getAttribute('data-roll-visibility');if($id('vf-roll-visibility'))$id('vf-roll-visibility').value=value;localStorage.setItem('veilfarers.keeper.rollVisibility.v1',value);var help=$id('vf-roll-visibility-help');if(help)help.textContent=value==='broadcast'?'Rolls will be sent only to players connected to this table.':'Hidden rolls stay only in this Keeper browser.';}
     if (e.target && e.target.id === 'vf-send-roll') { sendRoll(true); }
     if (e.target && e.target.id === 'vf-send-note') { openNoteModal(); }
     if (e.target && (e.target.id === 'vf-note-cancel' || e.target.id === 'vf-note-cancel2')) { closeNoteModal(); }
@@ -1321,9 +1338,8 @@
   });
   // "All players" toggles the individual target list on/off
   document.addEventListener('change', function (e) {
-    if (e.target && e.target.id === 'vf-note-all') {
-      var list = document.getElementById('vf-note-targets-list');
-      if (list) { list.style.opacity = e.target.checked ? '0.4' : '1'; list.style.pointerEvents = e.target.checked ? 'none' : 'auto'; }
+    if(e.target&&e.target.name==='vf-note-target-mode'){
+      var one=$id('vf-note-target-one'),all=$id('vf-note-all');if(one)one.disabled=!!(all&&all.checked);
     }
     if (e.target && e.target.id === 'vf-note-timer') {
       var vol = document.getElementById('vf-note-volatile');
@@ -1331,6 +1347,7 @@
     }
   });
   // Check whether table discovery is enabled; it is enabled unless explicitly disabled by environment configuration.
+  var savedVisibility=localStorage.getItem('veilfarers.keeper.rollVisibility.v1')||'hidden';if($id('vf-roll-visibility'))$id('vf-roll-visibility').value=savedVisibility;document.querySelectorAll('[data-roll-visibility]').forEach(function(btn){btn.classList.toggle('active',btn.getAttribute('data-roll-visibility')===savedVisibility);});var visibilityHelp=$id('vf-roll-visibility-help');if(visibilityHelp)visibilityHelp.textContent=savedVisibility==='broadcast'?'Rolls will be sent only to players connected to this table.':'Hidden rolls stay only in this Keeper browser.';
   var inviteDefaults=window.VFTableAccess?window.VFTableAccess.inviteFromUrl():{table:'',invite:''};
   if(inviteDefaults.table&&$id('vf-session-id'))$id('vf-session-id').value=inviteDefaults.table;
   if(inviteDefaults.invite&&$id('vf-session-invite'))$id('vf-session-invite').value=inviteDefaults.invite;

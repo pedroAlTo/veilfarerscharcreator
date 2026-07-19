@@ -26,13 +26,14 @@
   function visibleRecords(){return allRecords().filter(record=>showTrash?record.status==='trashed':record.status!=='trashed');}
   function dateText(value){try{return value?new Date(value).toLocaleString():'—';}catch(_){return '—';}}
 
-  function makeCurrent(record,source){
+  async function makeCurrent(record,source){
     if(!record)return;
     const creator=record.characterData?.creatorState;
     if(creator)localStorage.setItem(CREATOR_KEY,JSON.stringify({...creator,characterId:record.characterId}));
     REGISTRY?.replaceLocalRecord(record,{select:true,source:source||'account-vault-open'});
+    if(REGISTRY?.setActive)await REGISTRY.setActive(record.characterId,{strict:false});
   }
-  function openRecord(record,destination){makeCurrent(record,`account-open-${destination}`);location.href=destination;}
+  async function openRecord(record,destination){await makeCurrent(record,`account-open-${destination}`);location.href=destination;}
   function exportRecord(record){
     const item=summary(record);
     const blob=new Blob([JSON.stringify(record,null,2)],{type:'application/json'});
@@ -43,21 +44,21 @@
 
   function renderVault(){
     const records=visibleRecords();
-    el('vault-mode').textContent=showTrash?'Trash':'Active characters';
-    el('toggle-trash').textContent=showTrash?'Show active characters':'Open Trash';
+    el('vault-mode').textContent=showTrash?'Trash':'Characters · one active';
+    el('toggle-trash').textContent=showTrash?'Show characters':'Open Trash';
     if(!records.length){
       list.innerHTML=`<div class="vf-empty">${showTrash?'Trash is empty.':'No completed characters are available in this Vault yet.'}</div>`;
       return;
     }
     list.innerHTML=records.map(record=>{
-      const item=summary(record);const trashConfirm=pendingTrashId===item.characterId;const restoreConfirm=pendingRestoreId===item.characterId;
+      const item=summary(record);const trashConfirm=pendingTrashId===item.characterId;const restoreConfirm=pendingRestoreId===item.characterId;const isActive=REGISTRY?.currentId?.()===item.characterId;
       const meta=[item.path,item.className,item.subclass].filter(Boolean).join(' · ')||'Incomplete build';
       const state=item.cloudState==='deferred'?'Cloud pending':item.cloudState==='synced'?'Cloud synced':'Local';
       return `<article class="vf-character-row" data-id="${esc(item.characterId)}">
-        <div><div class="vf-eyebrow">${esc(item.characterId)}</div><h3>${esc(item.name)}</h3><p>${esc(meta)} · Level ${Number(item.level||1)}</p><p class="vf-muted">${esc(state)} · Updated ${esc(dateText(item.updatedAt))}</p></div>
+        <div><div class="vf-eyebrow">${esc(item.characterId)} ${isActive?'<span class="vf-active-character">ACTIVE</span>':''}</div><h3>${esc(item.name)}</h3><p>${esc(meta)} · Level ${Number(item.level||1)}</p><p class="vf-muted">${esc(state)} · Updated ${esc(dateText(item.updatedAt))}</p></div>
         <div class="vf-actions">
           ${showTrash?`${restoreConfirm?'<span class="vf-status bad">Restore this character?</span>':''}<button class="vf-button ${restoreConfirm?'primary':''}" data-action="restore">${restoreConfirm?'Confirm restore':'Restore'}</button>${restoreConfirm?'<button class="vf-button" data-action="cancel">Cancel</button>':''}`:
-          `<button class="vf-button primary" data-action="sheet">Charsheet</button><button class="vf-button" data-action="player">Player Tool</button><button class="vf-button" data-action="level">Level Up</button><button class="vf-button" data-action="export">Export</button>${trashConfirm?'<span class="vf-status bad">Move this character to Trash?</span>':''}<button class="vf-button ${trashConfirm?'danger':''}" data-action="trash">${trashConfirm?'Confirm Trash':'Trash'}</button>${trashConfirm?'<button class="vf-button" data-action="cancel">Cancel</button>':''}`}
+          `${isActive?'<button class="vf-button active-character" disabled>Active</button>':'<button class="vf-button" data-action="activate">Set Active</button>'}<button class="vf-button primary" data-action="sheet">Charsheet</button><button class="vf-button" data-action="player">Player Tool</button><button class="vf-button" data-action="level">Level Up</button><button class="vf-button" data-action="export">Export</button>${trashConfirm?'<span class="vf-status bad">Move this character to Trash?</span>':''}<button class="vf-button ${trashConfirm?'danger':''}" data-action="trash">${trashConfirm?'Confirm Trash':'Trash'}</button>${trashConfirm?'<button class="vf-button" data-action="cancel">Cancel</button>':''}`}
         </div>
       </article>`;
     }).join('');
@@ -97,14 +98,15 @@
     }
   }
 
-  list.addEventListener('click',event=>{
+  list.addEventListener('click',async event=>{
     const row=event.target.closest('[data-id]'),button=event.target.closest('[data-action]');if(!row||!button)return;
     const record=REGISTRY?.get(row.dataset.id);if(!record)return;
     const action=button.dataset.action;
     if(action==='cancel'){pendingTrashId='';pendingRestoreId='';renderVault();return;}
-    if(action==='sheet')openRecord(record,'/charsheet.html');
-    if(action==='player')openRecord(record,'/player-tool.html');
-    if(action==='level')openRecord(record,'/creator.html#level-up');
+    if(action==='activate'){await makeCurrent(record,'account-set-active');renderVault();setStatus(`${summary(record).name} is now the active character.`,'ok');}
+    if(action==='sheet')await openRecord(record,'/charsheet.html');
+    if(action==='player')await openRecord(record,'/player-tool.html');
+    if(action==='level')await openRecord(record,'/creator.html#level-up');
     if(action==='export')exportRecord(record);
     if(action==='trash'){
       if(pendingTrashId!==record.characterId){pendingTrashId=record.characterId;pendingRestoreId='';renderVault();return;}
@@ -124,6 +126,7 @@
   el('signup-button').addEventListener('click',()=>ID?.open('signup'));
   el('logout-button').addEventListener('click',()=>ID?.logout());
 
+  window.addEventListener('veilfarers:active-character-changed',renderVault);
   renderVault();
   if(window.VF_IS_LOCAL_TEST===true){
     signedOut.classList.add('vf-hidden');signedIn.classList.remove('vf-hidden');

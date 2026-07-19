@@ -35,6 +35,19 @@
     id=normalizeId(id);
     if(id)localStorage.setItem(CURRENT_KEY,id); else localStorage.removeItem(CURRENT_KEY);
     renderBadge(id);
+    window.dispatchEvent(new CustomEvent('veilfarers:active-character-changed',{detail:{characterId:id}}));
+    return id;
+  }
+  async function setActive(id,opts={}){
+    id=normalizeId(id);
+    const record=id?get(id):null;
+    if(id&&(!record||record.status==='trashed'))throw Error('Select an active character from the Vault.');
+    setCurrentId(id);
+    if(opts.cloud!==false){
+      try{await vaultApi('setActive',{characterId:id});}
+      catch(error){console.warn('Active character cloud sync deferred:',error.message||error);if(opts.strict)throw error;}
+    }
+    return record;
   }
 
   function list(options={}){
@@ -291,6 +304,9 @@
           const remote=(result.records||[]).map(item=>normalizeRemoteRecord(item.characterId,item));
           mergeRemoteRecords(remote);
           const records=listForCurrentUser({includeUnowned:true,completedOnly:true});
+          const remoteActive=normalizeId(result.activeCharacterId);
+          const selected=records.some(record=>record.characterId===remoteActive&&record.status!=='trashed')?remoteActive:(records.find(record=>record.status!=='trashed')?.characterId||'');
+          if(selected!==currentId())setCurrentId(selected);
           emitVault(records,'cloud');
           return records;
         }catch(error){lastError=error;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,450));}
@@ -325,9 +341,12 @@
     if(!record)return null;
     const trashed={...record,status:'trashed',deletedAt:now(),updatedAt:now(),source:opts.source||'vault-trash'};
     replaceLocalRecord(trashed,{emit:false});
-    if(currentId()===id)setCurrentId('');
+    const wasActive=currentId()===id;
+    if(wasActive){const fallback=list({includeDeleted:false}).find(item=>item.characterId!==id);setCurrentId(fallback?.characterId||'');}
     emit(trashed,opts.source||'vault-trash');
-    return sync(trashed,{source:opts.source||'vault-trash'});
+    const result=await sync(trashed,{source:opts.source||'vault-trash'});
+    if(wasActive)await setActive(currentId(),{strict:false});
+    return result;
   }
 
   async function restore(id,opts={}){
@@ -387,7 +406,7 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 
   window.VeilFarersCharacterRegistry=Object.freeze({
-    SCHEMA,normalizeId,isFinal,currentId,setCurrentId,currentOwnerId,list,listForCurrentUser,get,summary,subscribe,
+    SCHEMA,normalizeId,isFinal,currentId,setCurrentId,setActive,currentOwnerId,list,listForCurrentUser,get,summary,subscribe,
     saveLocalData,replaceLocalRecord,removeLocal,ensureId,sync,fetchRemote,
     refreshVault,listRemote,trash,restore,renderBadge
   });

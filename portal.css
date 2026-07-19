@@ -46,3 +46,8 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-portal-nav .vf-nav-character-id span{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#a99566}
 .vf-portal-nav .vf-nav-character-id strong{font-size:10px;letter-spacing:.07em;color:#fff1c9}
 @media(max-width:700px){.vf-portal-nav .vf-nav-character-id span{display:none}.vf-portal-nav .vf-nav-character-id{padding:7px 9px}}
+
+
+/* v59.52: a Vault may contain many characters, but exactly one is the active cross-tool character. */
+.vf-active-character{display:inline-flex;align-items:center;margin-left:7px;padding:2px 7px;border:1px solid rgba(34,211,238,.55);border-radius:999px;background:rgba(8,145,178,.16);color:#67e8f9;font:800 8px/1 Arial,sans-serif;letter-spacing:.12em;vertical-align:middle}
+.vf-button.active-character{border-color:rgba(34,211,238,.55)!important;background:rgba(8,145,178,.16)!important;color:#67e8f9!important;cursor:default!important;opacity:1!important}
