@@ -1,31 +1,36 @@
-VEILFARERS PORTAL v59.54 — START HERE
+VEILFARERS PORTAL v59.55 — START HERE
 
 BASE PACKAGE
-This hotfix was built from the user-revised 59_53.zip, including the manually updated Downloads manifest and new PDF files.
+This hotfix continues from v59.54. The user-revised Downloads manifest and five bundled PDFs remain unchanged.
 
 DEPLOY
 1. Create or use a clean test branch.
-2. Extract VeilFarers_Portal_v59.54.zip.
+2. Extract VeilFarers_Portal_v59.55.zip.
 3. Copy the CONTENTS of the ZIP into the repository root; index.html must remain at the root.
 4. Commit with GitHub Desktop or your normal signed workflow.
 5. Push and wait for all Netlify checks.
 6. Open the Deploy Preview and perform a hard refresh.
+7. Sign out and back in before testing table operations.
 
 IMMEDIATE ACCEPTANCE
-1. Open Player Tool. It must render without `Cannot access 'character' before initialization`.
-2. Create two different characters. Vault must retain both with different VF IDs and one active marker.
-3. Import an old JSON with no VF ID from Account/Vault and from Creator. It must receive a new VF ID and appear as an additional record.
-4. Reimport a JSON carrying an existing VF ID. It must update only that record.
-5. Import an Ailuran Shroud-Strain and Surge-Strain character. Creator must open Step 9 with the correct Sub-Strain retained.
-6. Open Downloads and verify the 11.31 Corebook, 11.3 Keeper's Companion, Rust & Steel, Alien Species and fillable sheet.
+1. Connect Keeper Tool as the table owner.
+2. Send a plain text note to all players.
+3. Send a private note to one selected player; another player must not receive it.
+4. Send a note containing pasted comma- or tab-separated table data.
+5. Delete the sent note.
+6. Confirm Network shows 200 for sendHandout/readSession/deleteHandout.
+7. If an error appears, copy the visible Reference value and locate it in Netlify → Logs & Metrics → Functions → table-api.
+
+BROWSER EXTENSION MESSAGE
+`A listener indicated an asynchronous response...` is normally emitted by a browser extension message channel. It is separate from the VeilFarers API. The relevant application signal is the `/api/table-api` status and its request reference.
 
 FILES
-- GITHUB_DEPLOY_SUMMARY_v59.54.md
-- VALIDATION_v59.54.txt
-- SECURITY_TABLES_v59.54.md
-- PORTAL_HANDOVER_v59.54.md
-- PORTAL_HANDOVER_v59.54.docx
-- firestore_v59.54.rules
+- GITHUB_DEPLOY_SUMMARY_v59.55.md
+- VALIDATION_v59.55.txt
+- SECURITY_TABLES_v59.55.md
+- PORTAL_HANDOVER_v59.55.md
+- PORTAL_HANDOVER_v59.55.docx
+- firestore_v59.55.rules
 
 FIRESTORE RULES
-No Rules change is required to test this hotfix. The included file retains the v59.53 baseline.
+No Rules change is required to test this server-mediated note hotfix. The included file retains the v59.54 baseline.

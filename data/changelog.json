@@ -1,7 +1,13 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.54",
+  "currentVersion": "v59.55",
   "entries": [
+    {
+      "version": "v59.55",
+      "date": "2026-07-19",
+      "title": "Keeper note delivery and privacy hotfix",
+      "summary": "Fixes Keeper note 500 errors by storing notes as table-scoped subcollection documents, converts pasted note tables into Firestore-safe row maps, prevents duplicate sends, adds request references, and filters private notes server-side so only the intended player receives them."
+    },
     {
       "version": "v59.54",
       "date": "2026-07-19",

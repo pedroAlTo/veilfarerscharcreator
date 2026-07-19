@@ -32,15 +32,49 @@ const safeDirectory = (data: any, id: string) => ({
 export const tablePlayerIds=(data:any)=>new Set((Array.isArray(data?.characters)?data.characters:[])
   .filter((item:any)=>item&&item.entityType!=='drone')
   .flatMap((item:any)=>[item.memberUid,item.ownerUid,item.id,item.characterId,item.syncId].map((value:any)=>cleanString(value,160)).filter(Boolean)))
+const handoutPath=(sessionPath:string,noteId:string)=>`${sessionPath}/handouts/${encodeURIComponent(cleanString(noteId,120))}`
+const cleanCells=(value:any,maxCells=40)=>Array.isArray(value)
+  ? value.slice(0,maxCells).map((cell:any)=>cleanString(cell,1000))
+  : []
+/** Firestore rejects an array whose direct elements are arrays. Store table rows
+ * as maps ({ cells: [...] }) and convert them back for the browser response. */
+export const normalizeNoteTable=(raw:any)=>{
+  if(!raw||typeof raw!=='object')return null
+  const headers=cleanCells(raw.headers)
+  const rows=(Array.isArray(raw.rows)?raw.rows:[]).slice(0,100).map((row:any)=>{
+    const cells=cleanCells(Array.isArray(row)?row:row?.cells)
+    return cells.length?{cells}:null
+  }).filter(Boolean)
+  return rows.length?{headers:headers.length?headers:null,rows}:null
+}
+export const noteTableForClient=(raw:any)=>{
+  if(!raw||typeof raw!=='object')return null
+  const headers=cleanCells(raw.headers)
+  const rows=(Array.isArray(raw.rows)?raw.rows:[]).slice(0,100).map((row:any)=>cleanCells(Array.isArray(row)?row:row?.cells)).filter((row:any[])=>row.length)
+  return rows.length?{headers:headers.length?headers:null,rows}:null
+}
+const handoutForClient=(raw:any)=>raw&&typeof raw==='object'?{...raw,table:noteTableForClient(raw.table)}:raw
+const userTargetIds=(data:any,user:any)=>{
+  const ids=new Set<string>([cleanString(user?.id,160)].filter(Boolean))
+  const characters=Array.isArray(data?.characters)?data.characters:[]
+  characters.filter((item:any)=>item&&item.entityType!=='drone'&&(item.memberUid===user?.id||item.ownerUid===user?.id)).forEach((item:any)=>{
+    ;[item.memberUid,item.ownerUid,item.id,item.characterId,item.syncId].map((value:any)=>cleanString(value,160)).filter(Boolean).forEach((value:string)=>ids.add(value))
+  })
+  return ids
+}
+export const canReceiveHandout=(note:any,data:any,user:any,isOwner:boolean)=>{
+  if(isOwner)return true
+  const target=note?.target==='all'||note?.targets==='all'?'all':cleanString(note?.target||(Array.isArray(note?.targets)?note.targets[0]:''),160)
+  return target==='all'||userTargetIds(data,user).has(target)
+}
 export const normalizeHandout=(raw:any,tableId:string,user:any,data:any)=>{
   const target=raw?.target==='all'||raw?.targets==='all'?'all':cleanString(raw?.target||raw?.targetId||(Array.isArray(raw?.targets)?raw.targets[0]:''),160)
   if(target!=='all'&&!tablePlayerIds(data).has(target))throw Object.assign(new Error('Choose one player currently connected to this table, or All players.'),{status:400})
-  const table=raw?.table&&typeof raw.table==='object'?raw.table:null
   return {
     id:cleanString(raw?.id||`note-${now()}-${Math.random().toString(36).slice(2,8)}`,120),
     tableId,
     title:cleanString(raw?.title,160), subtitle:cleanString(raw?.subtitle,240), body:cleanString(raw?.body,20000),
-    table, target, targets:target==='all'?'all':[target],
+    table:normalizeNoteTable(raw?.table), target, targets:target==='all'?'all':[target],
     volatile:!!raw?.volatile, expires:Math.max(0,Math.min(3600000,Number(raw?.expires)||0)),
     sentAt:Number(raw?.sentAt)||now(), senderUid:user.id, from:'Keeper',
   }
@@ -48,6 +82,8 @@ export const normalizeHandout=(raw:any,tableId:string,user:any,data:any)=>{
 const json = (body: any, status = 200) => Response.json(body, { status, headers: responseHeaders })
 
 export default async (req: Request, _ctx: Context) => {
+  const requestId=req.headers.get('x-vf-request-id')||`table-${now().toString(36)}-${Math.random().toString(36).slice(2,8)}`
+  let action=''; let tableIdForLog=''
   try {
     const user: any = await getUser()
     if (!user) return json({ error: 'You must be logged in.' }, 401)
@@ -55,7 +91,7 @@ export default async (req: Request, _ctx: Context) => {
     verifyRequestOrigin(req)
 
     const body: any = await req.json().catch(() => ({}))
-    const action = String(body.action || '')
+    action = String(body.action || '')
     const access = await googleAccessToken()
 
     if (action === 'list') {
@@ -82,6 +118,7 @@ export default async (req: Request, _ctx: Context) => {
     }
 
     const tableId = safeTableId(body.tableId)
+    tableIdForLog=tableId
     if (!tableId) return json({ error: 'Table name is required.' }, 400)
 
     const path = `${sessions}/${encodeURIComponent(tableId)}`
@@ -247,6 +284,11 @@ export default async (req: Request, _ctx: Context) => {
     if (action === 'readSession') {
       if (!isOwner && !isMember) return json({ error: 'Join the table before reading its live state.' }, 403)
       const source = data || {}
+      const storedNotes=(await listDocs(`${path}/handouts`,access)).map((item:any)=>({id:item.id,...item.data}))
+      const legacyNotes=Array.isArray(source.handouts)?source.handouts:[]
+      const byId=new Map<string,any>()
+      ;[...legacyNotes,...storedNotes].forEach((item:any)=>{if(item&&(!item.tableId||item.tableId===tableId)){const id=cleanString(item.id,120);if(id)byId.set(id,item)}})
+      const visibleNotes=[...byId.values()].filter((item:any)=>canReceiveHandout(item,source,user,isOwner)).sort((a:any,b:any)=>Number(a?.sentAt||0)-Number(b?.sentAt||0)).slice(-50).map(handoutForClient)
       const safeSession = {
         name: cleanString(source.name || tableId, 160),
         characters: Array.isArray(source.characters) ? source.characters : [],
@@ -254,7 +296,7 @@ export default async (req: Request, _ctx: Context) => {
         spotlight: cleanString(source.spotlight, 160),
         keeperNotes: cleanString(source.keeperNotes || source.notes, 100000),
         sessionName: cleanString(source.sessionName, 120),
-        handouts: Array.isArray(source.handouts) ? source.handouts.filter((item:any) => item && (!item.tableId || item.tableId === tableId)) : [],
+        handouts: visibleNotes,
         rollHistory: Array.isArray(source.rollHistory) ? source.rollHistory.filter((item:any) => item && (!item.tableId || item.tableId === tableId) && (!item.visibility || item.visibility === 'public')).slice(-200) : [],
         updatedAt: Number(source.updatedAt || 0),
         lastActive: Number(source.lastActive || 0),
@@ -305,27 +347,31 @@ export default async (req: Request, _ctx: Context) => {
       if (!isOwner) return json({ error: 'Only the table owner can send Keeper notes.' }, 403)
       const note=normalizeHandout(body.note,tableId,user,data)
       if(!note.title&&!note.body&&!note.table)return json({error:'Add a title, body, or table.'},400)
-      const handouts=Array.isArray(data.handouts)?data.handouts.slice():[]
-      handouts.push(note)
-      const trimmed=handouts.sort((a:any,b:any)=>Number(a?.sentAt||0)-Number(b?.sentAt||0)).slice(-50)
-      await patchDoc(path,{handouts:trimmed,updatedAt:now(),lastActive:now()},access)
-      return json({ok:true,note,count:trimmed.length})
+      await putDoc(handoutPath(path,note.id),note,access)
+      await patchDoc(path,{updatedAt:now(),lastActive:now()},access)
+      return json({ok:true,note:handoutForClient(note),count:(await listDocs(`${path}/handouts`,access)).length})
     }
 
     if (action === 'deleteHandout') {
       if (!isOwner) return json({ error: 'Only the table owner can remove Keeper notes.' }, 403)
       const id=cleanString(body.noteId,120)
-      const handouts=(Array.isArray(data.handouts)?data.handouts:[]).filter((item:any)=>cleanString(item?.id,120)!==id)
-      await patchDoc(path,{handouts,updatedAt:now(),lastActive:now()},access)
-      return json({ok:true,count:handouts.length})
+      if(!id)return json({error:'A note ID is required.'},400)
+      await deleteDoc(handoutPath(path,id),access)
+      const legacy=(Array.isArray(data.handouts)?data.handouts:[]).filter((item:any)=>cleanString(item?.id,120)!==id)
+      if(legacy.length!==(Array.isArray(data.handouts)?data.handouts.length:0))await patchDoc(path,{handouts:legacy,updatedAt:now(),lastActive:now()},access)
+      else await patchDoc(path,{updatedAt:now(),lastActive:now()},access)
+      return json({ok:true,count:(await listDocs(`${path}/handouts`,access)).length+legacy.length})
     }
 
     if (action === 'setHandouts') {
       if (!isOwner) return json({ error: 'Only the table owner can change Keeper notes.' }, 403)
       const raw = Array.isArray(body.handouts) ? body.handouts.slice(-50) : null
       if (!raw) return json({ error: 'A handout list is required.' }, 400)
+      const existingNotes=await listDocs(`${path}/handouts`,access)
+      await Promise.all(existingNotes.map((item:any)=>deleteDoc(handoutPath(path,item.id),access)))
       const handouts=raw.map((item:any)=>normalizeHandout({...item,sentAt:item?.sentAt||now()},tableId,user,data))
-      await patchDoc(path, { handouts, updatedAt: now(), lastActive: now() }, access)
+      await Promise.all(handouts.map((item:any)=>putDoc(handoutPath(path,item.id),item,access)))
+      await patchDoc(path,{handouts:[],updatedAt:now(),lastActive:now()},access)
       return json({ ok: true, count: handouts.length })
     }
 
@@ -467,9 +513,9 @@ export default async (req: Request, _ctx: Context) => {
 
     return json({ error: 'Unknown action.' }, 400)
   } catch (error: any) {
-    console.error(error)
     const status = Number(error?.status || error?.statusCode) || 500
-    return json({ error: status === 500 ? 'Table service failed.' : (error?.message || 'Request rejected.') }, status)
+    console.error('[table-api]',{requestId,action,tableId:tableIdForLog,status,message:error?.message||String(error),stack:error?.stack})
+    return json({ error: status === 500 ? `Table service failed. Reference ${requestId}.` : (error?.message || 'Request rejected.'), requestId }, status)
   }
 }
 

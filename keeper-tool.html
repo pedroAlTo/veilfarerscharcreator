@@ -1318,8 +1318,10 @@
     if (!currentSessionId) return;
     try{await tableWrite('deleteHandout',{noteId:id});window.__handouts=(window.__handouts||[]).filter(function(n){return n&&n.id!==id;});renderSentNotes();}catch(e){setStatus('Player note removal failed: '+e.message);}
   }
+  var noteSendBusy=false;
   async function sendHandout() {
     if (!SESSION) { setStatus('Connect first.'); return; }
+    if(noteSendBusy)return;
     var warn = $id('vf-note-warn'); if (warn) warn.textContent = '';
     var v = function (id) { var el = $id(id); return el ? el.value.trim() : ''; };
     var ck = function (id) { var el = $id(id); return el ? el.checked : false; };
@@ -1331,8 +1333,9 @@
     if (!title && !body && !table) { if (warn) warn.textContent = 'Add a title, body, or table.'; return; }
     if(target!=='all'&&!target){if(warn)warn.textContent='Choose one connected player, or All players.';return;}
     var note={id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:title,subtitle:subtitle,body:body,table:table,target:target,targets:target==='all'?'all':[target],volatile:volatile,expires:timer>0?timer*1000:0};
-    var out;try{out=await tableWrite('sendHandout',{note:note});}catch(e){if(warn)warn.textContent='Send failed: '+e.message;return;}
-    var saved=(out&&out.note)||note;window.__handouts=(window.__handouts||[]).concat([saved]).slice(-50);
+    var sendBtn=$id('vf-note-send'),oldLabel=sendBtn?sendBtn.textContent:'Send';noteSendBusy=true;if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='Sending…';sendBtn.style.opacity='.65';}
+    var out;try{out=await tableWrite('sendHandout',{note:note});}catch(e){if(warn)warn.textContent='Send failed: '+e.message;return;}finally{noteSendBusy=false;if(sendBtn){sendBtn.disabled=false;sendBtn.textContent=oldLabel;sendBtn.style.opacity='';}}
+    var saved=(out&&out.note)||note;window.__handouts=(window.__handouts||[]).filter(function(item){return item&&item.id!==saved.id;}).concat([saved]).slice(-50);
     renderSentNotes();
     ['vf-note-title', 'vf-note-subtitle', 'vf-note-body', 'vf-note-table'].forEach(function (id) { var el = $id(id); if (el) el.value = ''; });
     if ($id('vf-note-timer')) $id('vf-note-timer').value = '0';
