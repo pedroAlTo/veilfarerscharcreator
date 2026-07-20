@@ -1,0 +1,58 @@
+VEILFARERS PORTAL v59.70 — START HERE
+=====================================
+
+PURPOSE
+-------
+v59.70 stabilizes the release-candidate UI and live table connection.
+White Stone is temporarily disabled. VeilFarers Blue is the only active theme.
+
+DEPLOY
+------
+1. Extract VeilFarers_Portal_v59.70.zip.
+2. Deploy the extracted package root to a Netlify Deploy Preview.
+3. Do not deploy a parent folder containing the package root.
+4. Confirm /data/deploy-version.json reports v59.70.
+5. Confirm the HTML response header reports X-VeilFarers-Release: v59.70.
+6. Hard refresh or use a private window to prevent old CSS/JS cache contamination.
+
+REQUIRED LIVE ACCEPTANCE
+------------------------
+- No White Stone selector is visible; every page loads in VeilFarers Blue.
+- Human Inheritance of the Builders is chosen entirely in Equipment.
+- Experience rows and numeric fields have no overlapping up/down controls.
+- Player and Keeper tokens are compact and visually distinguish their states.
+- Expanded Effort/feature panels do not repeat the collapsed summary.
+- Clicking the 3D overlay during motion does not interrupt the roll.
+- Clicking anywhere in the overlay after settlement closes it.
+- An expired Identity session stops polling and shows a sign-in/reconnect message.
+- After signing in and reconnecting, Keeper ↔ Player updates work in both directions.
+
+AUTHENTICATION NOTE
+-------------------
+The console errors supplied for v59.69 show an expired or invalid Netlify Identity session:
+- /.netlify/identity/token returned 400;
+- /api/table-api returned 401.
+
+v59.70 retries once with a forced token refresh. If Identity cannot refresh the session, polling stops and the user must sign in again. This is deliberate; cloud table requests are never sent anonymously.
+
+HUMAN WORKFLOW
+--------------
+Select Human in Ancestry. Continue normally.
+In Equipment:
+1. choose The Graft or The Tool;
+2. select the exact inherited augmentation or item;
+3. choose normal starting weapon and armor.
+The inherited choice remains free and does not consume normal starting budgets.
+
+FILES TO REVIEW
+---------------
+- GITHUB_DEPLOY_SUMMARY_v59.70.md
+- PORTAL_HANDOVER_v59.70.md
+- VALIDATION_v59.70.txt
+- START_HERE_v59.70.txt
+- SHA256_v59.70.txt
+
+ROLLBACK
+--------
+The immediate rollback baseline is v59.69.
+Do not merge the editorial package's historical data folder over this portal.

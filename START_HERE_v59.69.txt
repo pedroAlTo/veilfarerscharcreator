@@ -1,0 +1,35 @@
+VEILFARERS PORTAL v59.69 — START HERE
+=====================================
+
+PURPOSE
+-------
+v59.69 integrates the approved editorial PDF line and implements the new Human ancestry gifts in Character Creator.
+
+DEPLOY
+------
+1. Extract VeilFarers_Portal_v59.69.zip.
+2. Place the CONTENTS of the extracted folder at the repository/publish root.
+3. Commit and push through the normal signed workflow.
+4. Use a Netlify Deploy Preview first.
+5. Confirm /data/deploy-version.json reports v59.69.
+
+PRIORITY TESTS
+--------------
+1. Human → The Graft → choose a Common augmentation → transfer to Charsheet.
+2. Human → The Graft → choose a Military augmentation → transfer to Charsheet.
+3. Human → The Tool → choose a TT3 / 9 Cr weapon, armor or gear item.
+4. Confirm the inherited item does not consume normal starting budgets.
+5. Confirm historical Human characters are prompted to complete the new inheritance choice.
+6. Download all five files from Downloads.
+7. Recheck Player Tool and Keeper Tool in Blue and White Stone.
+
+EDITORIAL DECISION
+------------------
+Use the supplied Corebook 11.35 and companion 11.33 PDFs unchanged. Do not create a new book version solely for the portal's newer Massive implementation. Track that wording as a later editorial clarification.
+
+READ
+----
+- GITHUB_DEPLOY_SUMMARY_v59.69.md
+- PORTAL_HANDOVER_v59.69.md
+- PRODUCT_REVIEW_v59.69.md
+- VALIDATION_v59.69.txt

@@ -1,0 +1,61 @@
+VEILFARERS PORTAL v59.72 — VALIDATION REPORT
+Date: 2026-07-20
+
+RESULT
+161 checks passed; 0 failed.
+
+SYNTAX AND STRUCTURE
+- All first-party JavaScript: node --check PASS.
+- All inline scripts in root HTML: node --check PASS.
+- All JSON files: parse PASS.
+- Root HTML duplicate IDs: none.
+- player-tool.bundle.js deterministic from player-tool.jsx: PASS.
+
+CHARSHEET ASSERTIONS
+- Armor track exists in the masthead beside Evasion: PASS.
+- Duplicate lower Active Armor token track removed: PASS.
+- Level/Evasion/Armor/Proficiency use a four-cell non-overlapping grid: PASS.
+- HP shield geometry: PASS.
+- Stress circular geometry: PASS.
+- Hope visible six-sided geometry: PASS.
+- Effort clean diamond geometry with no permanent divider: PASS.
+- Resolve exact square-diamond geometry: PASS.
+- Header Armor simple shield geometry: PASS.
+- Numeric contrast overrides present: PASS.
+
+CREATOR ASSERTIONS
+- True inner rotor exists: PASS.
+- Only rotor receives rotateY(180deg): PASS.
+- Outer card remains normally oriented: PASS.
+- Blue image-free reverse exists: PASS.
+- [+] and [−] controls exist: PASS.
+- Close/outside returns card to neutral: PASS.
+- Single active full-information card logic retained: PASS.
+- Selected-card lift/glow applies to the card itself: PASS.
+
+PLAYER / KEEPER ASSERTIONS
+- Player Shield simple cyan silhouette: PASS.
+- Player Fear simple red triangle: PASS.
+- Player Fear ornamental strip removed: PASS.
+- Keeper Fear red, bezel-free treatment: PASS.
+- Semantic data-token state and ARIA attributes retained: PASS.
+
+VISUAL VALIDATION
+- Controlled Chromium render of actual Charsheet masthead: PASS.
+- Controlled Chromium render of actual Damage & Health block: PASS.
+- Controlled Chromium render of actual Sleeping Engine block: PASS.
+- Controlled interaction fixture for selected/front and full-information/back card states: PASS.
+- Controlled fixture for Player Shield, Fear, Resolve and Health silhouettes: PASS.
+
+PROTECTED CONTENT
+- Bundled DiceBox/Babylon/Ammo/worker/theme assets byte-identical to v59.71: PASS.
+- Approved editorial PDFs byte-identical to v59.71: PASS.
+- White Stone remains disabled: PASS.
+- Canonical rules/data and cloud/table contracts were not intentionally changed.
+
+REQUIRED LIVE ACCEPTANCE
+- Netlify Deploy Preview in desktop and mobile browsers.
+- Creator real-data card selection and reverse interaction across all four requested categories.
+- Player Tool and Keeper Tool with a valid Netlify Identity session.
+- Keeper-to-Player synchronization against deployed Netlify Functions/Firebase.
+- Interrupted and completed 3D rolls in 2D/3D modes.

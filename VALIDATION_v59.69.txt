@@ -1,0 +1,65 @@
+VEILFARERS PORTAL v59.69 — VALIDATION REPORT
+============================================
+
+RESULT
+------
+PASS — all completed automated/static/data-transfer checks passed with zero failures.
+
+SCOPE
+-----
+- Editorial PDF line installation.
+- Human ancestry data synchronization.
+- Human Inheritance of the Builders Creator workflow.
+- Charsheet transfer for The Graft and The Tool.
+- Release/version integrity.
+- Preservation of protected 3D dice assets.
+
+CHECKS
+------
+PASS 86 JSON files parsed
+PASS root HTML duplicate-ID scan
+PASS standalone JavaScript and key inline scripts pass node --check
+PASS Human gifts present in flat, canonical and embedded Creator data
+PASS Creator contains 53 eligible Graft choices and 65 eligible Tool choices
+PASS Human branch is required at Step 1 and exact inheritance item at Step 8
+PASS deterministic Charsheet bridge tests for Graft and Tool
+PASS four editorial PDFs are byte-identical to supplied package
+PASS PDF parse: Corebook 205 pages; Keeper 162; Rust & Steel 303; Alien Species 168; fillable sheet 2
+PASS download paths, sizes and SHA-256 values
+PASS all 88 protected 3D-dice files preserved byte-for-byte
+PASS package, changelog and deploy markers report v59.69
+PASS editorial PDFs unmodified; Massive editorial wording intentionally retained
+
+EDITORIAL PDF INVENTORY
+-----------------------
+- Corebook 11.35: 205 pages
+- Keeper's Companion 11.33: 162 pages
+- Rust & Steel 11.33: 303 pages
+- Alien Species 11.33: 168 pages
+- Fillable Character Sheet: 2 pages
+
+The four editorial candidate PDFs are byte-identical to the uploaded editorial package and match its SHA256SUMS.txt. First-page render smoke tests were also visually inspected for all four books; no clipping, black glyph boxes or broken cover layout were observed.
+
+CONTROLLED TRANSFER FIXTURES
+----------------------------
+- Human / The Graft / Enhanced Muscles:
+  - human_inheritance_kind = graft
+  - inherited augmentation transferred
+  - Common graft marked 0 Augment Slots
+  - drawback removed
+- Human / The Tool / Portable Fabricator:
+  - human_inheritance_kind = tool
+  - item transferred to equipment inventory
+  - Experimental TT3 / 9 Cr provenance retained
+
+LIVE ACCEPTANCE STILL REQUIRED
+------------------------------
+- Visual and keyboard review of both Human catalogues in both portal themes.
+- Mobile review of the inheritance catalogue.
+- End-to-end Creator → Charsheet → Player Tool test on a Netlify Deploy Preview.
+- Download every PDF from the deployed origin.
+- Fresh-account and returning-character tests.
+
+KNOWN EDITORIAL DECISION
+------------------------
+The supplied Corebook 11.35 Massive wording remains unchanged. The portal's later Massive implementation is not used to create a new PDF version in this release.

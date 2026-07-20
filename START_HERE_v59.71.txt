@@ -1,0 +1,77 @@
+VEILFARERS PORTAL v59.71 — START HERE
+=====================================
+
+AUTHORITATIVE BASELINE
+----------------------
+Continue from v59.71. It supersedes v59.70 for all Player Tool and Creator UI work.
+
+WHAT THIS RELEASE DOES
+----------------------
+- Restores the Player Tool proportions and visual language of v59.56.
+- Keeps the v59.70 authentication and interrupted-dice stabilization.
+- Makes every class feature in Player Tool schematic, mechanical and concise.
+- Adds selected-card lift and a gold [+] full-information reverse to Creator cards.
+- Makes recommendations more visible, including Equipment.
+- Keeps Human Inheritance of the Builders entirely in Equipment.
+- Keeps White Stone disabled; VeilFarers Blue is the only active theme.
+
+DEPLOY
+------
+1. Extract VeilFarers_Portal_v59.71.zip.
+2. Deploy the extracted package root to a Netlify Deploy Preview.
+3. Do not deploy a parent folder containing the package root.
+4. Confirm /data/deploy-version.json reports v59.71.
+5. Confirm the HTML response header reports X-VeilFarers-Release: v59.71.
+6. Hard refresh or use a private window to avoid cached v59.70 CSS/JS.
+
+PLAYER TOOL ACCEPTANCE
+----------------------
+- Compare the HUD directly with the v59.56 reference.
+- Numeric fields show discreet custom chevrons, never native browser spinners.
+- Experience rows remain separate and do not overlap at 100%, 125% or 200% zoom.
+- Resource tracks are compact and preserve filled/empty/unavailable states.
+- Test Awakened and Sleeping variants of all nine classes.
+- Class cards contain only actionable mechanics; no flavor or editorial commentary.
+- Verify the title and summary of each card match the selected Class and Path.
+
+CREATOR ACCEPTANCE
+------------------
+- Selecting Ancestry, Community, Class or Affiliation visibly raises that card.
+- Cards with shortened/clipped copy show a gold [+] at bottom-right.
+- [+] moves the card forward and flips to complete text without artwork.
+- [−] returns to the front.
+- Opening a second reverse closes the first.
+- Recommendations are obvious in Traits, Powers and Equipment.
+
+HUMAN WORKFLOW
+--------------
+Select Human in Ancestry. In Equipment:
+1. choose The Graft or The Tool;
+2. choose the exact inherited augmentation/item;
+3. choose normal starting weapon and armor.
+The inherited item is free and does not consume normal starting budgets.
+
+LIVE TABLE / DICE ACCEPTANCE
+----------------------------
+- Run a 3D roll, click during motion, close deliberately, and run another roll.
+- Click the overlay after settlement and confirm it closes.
+- Sign in through Netlify Identity.
+- Connect Keeper Tool and Player Tool to the same table.
+- Confirm Keeper changes and notes reach the Player Tool.
+- Expire the session and confirm polling stops instead of repeating 401 requests.
+- Sign in again and reconnect successfully.
+
+FILES TO REVIEW
+---------------
+- GITHUB_DEPLOY_SUMMARY_v59.71.md
+- PORTAL_HANDOVER_v59.71.md
+- VALIDATION_v59.71.txt
+- START_HERE_v59.71.txt
+- UI_REVIEW_FIXTURE_v59.71.png
+- SHA256_v59.71.txt
+
+ROLLBACK
+--------
+v59.70 is the immediate functional rollback baseline, but it contains the rejected
+Player Tool visual direction. Do not use the editorial package's historical portal
+data as an application rollback.

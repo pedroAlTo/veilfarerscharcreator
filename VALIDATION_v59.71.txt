@@ -1,0 +1,71 @@
+VEILFARERS PORTAL v59.71 — VALIDATION REPORT
+=============================================
+
+STATUS: LOCAL STATIC/CONTROLLED VALIDATION PASSED
+DATE: 2026-07-20
+BASELINE: v59.70
+
+PASSED CHECKS
+-------------
+01. PASS — JavaScript syntax: 35 files
+02. PASS — JSON parsing: 86 files
+03. PASS — HTML structure: 11 root pages, no duplicate ids
+04. PASS — Inline script syntax: 10 inline scripts
+05. PASS — Release markers: v59.71 in deploy JSON, package metadata, _headers and netlify.toml
+06. PASS — Player bundle regeneration: deterministic JSX → bundle compile
+07. PASS — Class feature UI coverage: 36/36 Awakened/Sleeping Class and Hope/Effort feature titles mapped to compact display summaries
+08. PASS — Player Tool scope: v59.56-style HUD rules scoped to Player Tool; portal-wide accessibility CSS does not override compact controls
+09. PASS — Creator selected-card feedback: Ancestry, Community, Class and Affiliation selected cards lift in 3D
+10. PASS — Creator full-text reverse: gold [+]/[−], image-free reverse, one active flipped card, seven render-path activations
+11. PASS — Creator recommendations: Trait and Equipment recommendations have explicit badges and stronger visual treatment
+12. PASS — Human inheritance workflow: branch and exact inherited item selected and gated in Equipment; no Ancestry-stage invocation
+13. PASS — Theme lock: VeilFarers Blue only; White Stone selector removed at runtime
+14. PASS — v59.70 auth/dice stabilization preserved: table-access.js and vf-dice3d.js byte-identical
+15. PASS — Protected 3D renderer assets: 88 files byte-identical to v59.70
+16. PASS — Editorial PDFs: 5 PDFs byte-identical to v59.70/v59.69 editorial line
+17. PASS — Controlled Chromium Player UI: 3 Experience rows at 30px without overlap; 32 compact 11×9 chevrons; 49 semantic resource tokens; no horizontal overflow
+
+CONTROLLED PLAYER TOOL MEASUREMENTS
+-----------------------------------
+- Experience rows: 3
+- Experience row heights: 30, 30, 30 CSS px
+- Adjacent Experience overlap: NO
+- Numeric chevrons rendered: 32
+- Maximum chevron box: 11 × 9 CSS px
+- Resource tokens rendered: 49
+- Horizontal overflow: NO
+- The Drill title present: YES
+- The Held Line title present: YES
+- Rejected Soldier editorial sentence absent: YES
+
+TOKEN STATES OBSERVED
+---------------------
+- fear: empty
+- shields: filled
+- health: filled, unavailable
+- stress: empty, unavailable
+- effort: empty, filled
+- resolve: filled, unavailable
+
+PRESERVATION CHECKS
+-------------------
+- table-access.js: byte-identical to v59.70.
+- assets/3d-dice/vf-dice3d.js: byte-identical to v59.70.
+- 88 bundled 3D renderer/theme/Ammo assets: byte-identical to v59.70.
+- 5 downloadable editorial PDFs: byte-identical to v59.70.
+- Canonical classes.json and rule datasets were not rewritten for compact UI copy.
+
+LIMITS / REQUIRED DEPLOY PREVIEW CHECKS
+--------------------------------------
+- The controlled Player Tool test uses set_content and records one environment-only “Invalid base URL” page error; it does not occur in a normal served page and is excluded from functional assertions.
+- Full Creator navigation and real Keeper ↔ Player cloud synchronization still require a Netlify Deploy Preview with valid Identity and Firebase configuration.
+- Verify actual Netlify Identity refresh, table membership and Firebase propagation.
+- Verify all Creator card types at desktop/mobile sizes and keyboard focus order.
+- Verify Player Tool at 100%, 125% and 200% zoom with real populated characters.
+- Verify 3D cancellation/dismissal against the deployed WASM renderer.
+
+ARCHIVE INTEGRITY
+-----------------
+- Release archive contains 487 entries.
+- Full `unzip -t` CRC test: PASS; no compressed-data errors.
+- Final SHA-256 is recorded in SHA256_v59.71.txt.

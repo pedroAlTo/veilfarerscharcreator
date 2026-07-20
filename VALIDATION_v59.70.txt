@@ -1,0 +1,206 @@
+VEILFARERS PORTAL v59.70 — VALIDATION REPORT
+===================================================
+Date: 2026-07-20
+Baseline: v59.69
+Result: PASS
+Checks: 174 passed / 0 failed / 174 total
+
+SCOPE
+-----
+Blue-only theme lock, Human Equipment workflow, compact Player/Keeper controls, Experience layout, feature-card cleanup, table authentication retry/stop behavior, dice dismissal lifecycle, metadata integrity and protected-asset preservation.
+
+SUMMARY COUNTS
+--------------
+- Active JavaScript files checked: 35
+- JSON files parsed: 86
+- Root HTML pages checked: 11
+- Protected 3D files compared: 87
+- Identity scenarios: forced-refresh success; refresh failure; local request blocking; auth-expired event.
+- Chromium component fixture: 3 Experience rows at 32 px; 30 px bonus/action controls; 24 px token target with compact inner visual.
+
+DETAILED RESULTS
+----------------
+[PASS] JS syntax: account.js
+[PASS] JS syntax: admin.js
+[PASS] JS syntax: app.js
+[PASS] JS syntax: canonical-runtime.js
+[PASS] JS syntax: catalog-page.js
+[PASS] JS syntax: character-registry.js
+[PASS] JS syntax: character-sync-adapter.js
+[PASS] JS syntax: charsheet-redesign.js
+[PASS] JS syntax: charsheet.js
+[PASS] JS syntax: compact-rules.js
+[PASS] JS syntax: creator-redesign.js
+[PASS] JS syntax: downloads.js
+[PASS] JS syntax: equipment-mods.js
+[PASS] JS syntax: inventory-store.js
+[PASS] JS syntax: level-up.js
+[PASS] JS syntax: local-runtime.js
+[PASS] JS syntax: player-tool.bundle.js
+[PASS] JS syntax: portal.js
+[PASS] JS syntax: shared-data.js
+[PASS] JS syntax: sheet-bridge.js
+[PASS] JS syntax: table-access.js
+[PASS] JS syntax: veilfarers-accessibility.js
+[PASS] JS syntax: veilfarers-data.js
+[PASS] JS syntax: veilfarers-import.js
+[PASS] JS syntax: veilfarers-theme.js
+[PASS] JS syntax: assets/3d-dice/Dice.min.js
+[PASS] JS syntax: assets/3d-dice/dice-box.es.min.js
+[PASS] JS syntax: assets/3d-dice/dice.min.js
+[PASS] JS syntax: assets/3d-dice/display-results.js
+[PASS] JS syntax: assets/3d-dice/vf-dice3d.js
+[PASS] JS syntax: assets/3d-dice/world.none.min.js
+[PASS] JS syntax: assets/3d-dice/world.offscreen.min.js
+[PASS] JS syntax: assets/3d-dice/world.onscreen.min.js
+[PASS] JS syntax: assets/vendor/react-dom.production.min.js
+[PASS] JS syntax: assets/vendor/react.production.min.js
+[PASS] Inline JS: charsheet.html #5
+[PASS] Inline JS: charsheet.html #10
+[PASS] Inline JS: creator.html #6
+[PASS] Inline JS: feedback.html #3
+[PASS] Inline JS: keeper-tool.html #14
+[PASS] Inline JS: keeper-tool.html #16
+[PASS] Inline JS: keeper-tool.html #17
+[PASS] Inline JS: player-tool.html #6
+[PASS] Inline JS: player-tool.html #7
+[PASS] Inline JS: player-tool.html #13
+[PASS] JSON parse: firebase.json
+[PASS] JSON parse: package-lock.json
+[PASS] JSON parse: package.json
+[PASS] JSON parse: data/affiliations.json
+[PASS] JSON parse: data/ancestries.json
+[PASS] JSON parse: data/armor.json
+[PASS] JSON parse: data/changelog.json
+[PASS] JSON parse: data/classes.json
+[PASS] JSON parse: data/communities.json
+[PASS] JSON parse: data/deploy-version.json
+[PASS] JSON parse: data/features.json
+[PASS] JSON parse: data/powers.json
+[PASS] JSON parse: data/rules.json
+[PASS] JSON parse: data/traits.json
+[PASS] JSON parse: data/weapons.json
+[PASS] JSON parse: download/downloads.json
+[PASS] JSON parse: rules-data/aliases.json
+[PASS] JSON parse: rules-data/downloads.json
+[PASS] JSON parse: rules-data/feature-aliases.json
+[PASS] JSON parse: rules-data/features-registry.json
+[PASS] JSON parse: rules-data/manifest.json
+[PASS] JSON parse: rules-data/migration-map.json
+[PASS] JSON parse: rules-data/rules.json
+[PASS] JSON parse: rules-data/search-index.json
+[PASS] JSON parse: rules-data/alien-species/adversaries.json
+[PASS] JSON parse: rules-data/alien-species/ancestry-lore.json
+[PASS] JSON parse: rules-data/core/affiliations.json
+[PASS] JSON parse: rules-data/core/ancestries.json
+[PASS] JSON parse: rules-data/core/armor.json
+[PASS] JSON parse: rules-data/core/augments.json
+[PASS] JSON parse: rules-data/core/classes.json
+[PASS] JSON parse: rules-data/core/communities.json
+[PASS] JSON parse: rules-data/core/domains.json
+[PASS] JSON parse: rules-data/core/drills.json
+[PASS] JSON parse: rules-data/core/drone-grades.json
+[PASS] JSON parse: rules-data/core/drone-modules.json
+[PASS] JSON parse: rules-data/core/features.json
+[PASS] JSON parse: rules-data/core/gear.json
+[PASS] JSON parse: rules-data/core/powers.json
+[PASS] JSON parse: rules-data/core/resolve-moves.json
+[PASS] JSON parse: rules-data/core/subclasses.json
+[PASS] JSON parse: rules-data/core/tech-tiers.json
+[PASS] JSON parse: rules-data/core/traits.json
+[PASS] JSON parse: rules-data/core/weapons.json
+[PASS] JSON parse: rules-data/rust-and-steel/armor.json
+[PASS] JSON parse: rules-data/rust-and-steel/augments.json
+[PASS] JSON parse: rules-data/rust-and-steel/drone-grades.json
+[PASS] JSON parse: rules-data/rust-and-steel/drone-modules.json
+[PASS] JSON parse: rules-data/rust-and-steel/gear.json
+[PASS] JSON parse: rules-data/rust-and-steel/weapons.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioDamage/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioDamage/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioFear/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioFear/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioFearWin/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioFearWin/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioHope/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioHope/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioHopeWin/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfBioHopeWin/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfDamage/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfDamage/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfDiscarded/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfDiscarded/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfFear/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfFear/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfFearWin/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfFearWin/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfHope/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfHope/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfHopeWin/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfHopeWin/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfNeutral/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfNeutral/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainDamage/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainDamage/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainFear/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainFear/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainFearWin/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainFearWin/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainHope/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainHope/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainHopeWin/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainHopeWin/theme.config.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainNeutral/default.json
+[PASS] JSON parse: assets/3d-dice/assets/themes/vfPlainNeutral/theme.config.json
+[PASS] Unique HTML ids: admin.html
+[PASS] Unique HTML ids: armory.html
+[PASS] Unique HTML ids: charsheet.html
+[PASS] Unique HTML ids: creator.html
+[PASS] Unique HTML ids: downloads.html
+[PASS] Unique HTML ids: feedback.html
+[PASS] Unique HTML ids: index.html
+[PASS] Unique HTML ids: items.html
+[PASS] Unique HTML ids: keeper-tool.html
+[PASS] Unique HTML ids: login.html
+[PASS] Unique HTML ids: player-tool.html
+[PASS] package version 59.70.0
+[PASS] deploy release v59.70
+[PASS] release header v59.70
+[PASS] theme locked to blue
+[PASS] theme selector removed
+[PASS] Human ancestry no longer opens inheritance overlay
+[PASS] Human inheritance not required at step 1
+[PASS] Human branch chooser rendered in Equipment
+[PASS] Human branch handler exists
+[PASS] Human item remains Equipment gate
+[PASS] Human inherited item transfer preserved
+[PASS] custom numeric chevrons removed
+[PASS] Experience stable grid source
+[PASS] Experience CSS 3-column layout
+[PASS] Feature expanded header avoids duplicate
+[PASS] Display-only Effort commentary filter
+[PASS] Source and bundle synchronized
+[PASS] Compact semantic tokens
+[PASS] Mocked Identity refresh/block tests — PASS retry-once Bearer fresh
+PASS expired-token stops network and dispatches event
+[PASS] No anonymous table request fallback
+[PASS] One forced refresh retry
+[PASS] Auth-expired event
+[PASS] Keeper polling stops on auth error
+[PASS] Player polling stops on auth error
+[PASS] Dice wrapper v59.70
+[PASS] Overlay click only after resolution
+[PASS] Explicit close still cancels
+[PASS] Late results respect dismissal
+[PASS] Player roller requests safe close
+[PASS] Protected 3D assets byte-identical (87)
+[PASS] Editorial PDFs unchanged from v59.69
+[PASS] Controlled Chromium Experience/token geometry fixture — rows 3
+row boxes [{'x': 53, 'y': 120.8125, 'width': 520, 'height': 32}, {'x': 53, 'y': 156.8125, 'width': 520, 'height': 32}, {'x': 53, 'y': 192.8125, 'width': 520, 'height': 32}]
+bonus {'x': 53, 'y': 121.8125, 'width': 34, 'height': 30} roll {'x': 543, 'y': 121.8125, 'width': 30, 'height': 30} token {'x': 53, 'y': 292.625, 'width': 24, 'height': 24}
+
+LIMITATIONS / REQUIRED DEPLOY PREVIEW ACCEPTANCE
+-----------------------------------------------
+- This environment cannot validate a real Netlify Identity refresh, owner/member authorization or Firebase propagation.
+- The Chromium run is an isolated component-geometry fixture, not a fully populated live Player Tool screenshot.
+- Verify Blue-only behavior, populated characters, mobile layout, 3D renderer cancellation/re-roll and Keeper ↔ Player synchronization on the Netlify Deploy Preview.
+- When Identity refresh is genuinely invalid, the correct result is a sign-in/reconnect prompt; the client must not bypass authorization.
