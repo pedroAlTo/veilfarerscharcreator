@@ -18,6 +18,6 @@ export default async(req:Request,_ctx:Context)=>{
    if(c.ok)return Response.json({characterId:id},{headers:responseHeaders});if(![409,412].includes(c.status))throw Error(`Commit failed (${c.status})`)
   }
   throw Error('Allocation contention')
- }catch(e:any){console.error(e);const status=Number(e?.status||e?.statusCode)||500;return Response.json({error:status===500?'Could not allocate character ID':(e?.message||'Request rejected.')},{status,headers:responseHeaders})}
+ }catch(error:any){const status=Number(error?.status||error?.statusCode)||500,code=String(error?.code||'CHARACTER_ID_ALLOCATION_FAILED');console.error('[allocate-character-id]',{status,code,message:error?.message||String(error),stack:error?.stack});const configurationFailure=code.startsWith('FIREBASE_ADMIN_')||code==='FIREBASE_PROJECT_ID_MISSING';return Response.json({error:configurationFailure?`${error.message} Configure FIREBASE_SERVICE_ACCOUNT_JSON as a Functions-only Netlify environment variable.`:(status>=500?'Could not allocate character ID':(error?.message||'Request rejected.')),code},{status,headers:responseHeaders})}
 }
 export const config:Config={path:'/api/allocate-character-id'}

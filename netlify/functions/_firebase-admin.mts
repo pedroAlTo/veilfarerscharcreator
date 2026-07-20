@@ -7,16 +7,53 @@ export const responseHeaders={
   'Referrer-Policy':'no-referrer'
 }
 const b64=(v:string|Buffer)=>Buffer.from(v).toString('base64url')
-export function serviceAccount(){const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON;if(!raw)throw new Error('Firebase Admin is not configured');return JSON.parse(raw)}
-export function projectId(sa=serviceAccount()){return process.env.FIREBASE_PROJECT_ID||sa.project_id}
+const serviceError=(message:string,code:string,status=503)=>Object.assign(new Error(message),{code,status})
+export function serviceAccount(){
+ const raw=String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'').trim()
+ if(!raw)throw serviceError('Firebase server credentials are not configured for this deploy.','FIREBASE_ADMIN_NOT_CONFIGURED')
+ let candidate:any=raw
+ try{
+  // Accept both a normal JSON object and a JSON-encoded string copied into Netlify.
+  if(candidate.startsWith('"')){const decoded=JSON.parse(candidate);if(typeof decoded==='string')candidate=decoded}
+  candidate=JSON.parse(candidate)
+ }catch(error){
+  console.error('[firebase-admin] FIREBASE_SERVICE_ACCOUNT_JSON could not be parsed as JSON.')
+  throw serviceError('Firebase server credentials are malformed.','FIREBASE_ADMIN_INVALID_JSON')
+ }
+ if(!candidate||typeof candidate!=='object')throw serviceError('Firebase server credentials are malformed.','FIREBASE_ADMIN_INVALID_JSON')
+ if(typeof candidate.private_key==='string')candidate.private_key=candidate.private_key.replace(/\\n/g,'\n')
+ const missing=['project_id','client_email','private_key'].filter(key=>!candidate[key])
+ if(missing.length){
+  console.error('[firebase-admin] Service account is missing required fields:',missing.join(', '))
+  throw serviceError('Firebase server credentials are incomplete.','FIREBASE_ADMIN_INCOMPLETE')
+ }
+ return candidate
+}
+export function projectId(sa=serviceAccount()){
+ const project=String(process.env.FIREBASE_PROJECT_ID||sa.project_id||'').trim()
+ if(!project)throw serviceError('Firebase project ID is not configured.','FIREBASE_PROJECT_ID_MISSING')
+ return project
+}
 export async function googleAccessToken(sa=serviceAccount()){
  const n=Math.floor(Date.now()/1000)
- const unsigned=`${b64(JSON.stringify({alg:'RS256',typ:'JWT'}))}.${b64(JSON.stringify({iss:sa.client_email,scope:'https://www.googleapis.com/auth/datastore',aud:'https://oauth2.googleapis.com/token',iat:n,exp:n+3600}))}`
- const signer=createSign('RSA-SHA256');signer.update(unsigned);signer.end()
- const assertion=`${unsigned}.${signer.sign(sa.private_key).toString('base64url')}`
+ let assertion=''
+ try{
+  const unsigned=`${b64(JSON.stringify({alg:'RS256',typ:'JWT'}))}.${b64(JSON.stringify({iss:sa.client_email,scope:'https://www.googleapis.com/auth/datastore',aud:'https://oauth2.googleapis.com/token',iat:n,exp:n+3600}))}`
+  const signer=createSign('RSA-SHA256');signer.update(unsigned);signer.end()
+  assertion=`${unsigned}.${signer.sign(sa.private_key).toString('base64url')}`
+ }catch(error){
+  console.error('[firebase-admin] Service-account private key could not sign the Google assertion.',error)
+  throw serviceError('Firebase server credentials contain an unusable private key.','FIREBASE_ADMIN_PRIVATE_KEY_INVALID')
+ }
  const r=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion})})
- if(!r.ok)throw new Error(`Google token exchange failed (${r.status})`)
- return (await r.json()).access_token as string
+ if(!r.ok){
+  const detail=(await r.text()).slice(0,800)
+  console.error(`[firebase-admin] Google token exchange failed (${r.status}): ${detail}`)
+  throw serviceError('Firebase server authentication failed. Check the service-account key and project.','FIREBASE_ADMIN_TOKEN_EXCHANGE_FAILED')
+ }
+ const body:any=await r.json()
+ if(!body?.access_token)throw serviceError('Firebase server authentication returned no access token.','FIREBASE_ADMIN_TOKEN_MISSING')
+ return body.access_token as string
 }
 export function firebaseCustomToken(uid:string,claims:Record<string,unknown>={}){
  const sa=serviceAccount(),n=Math.floor(Date.now()/1000)

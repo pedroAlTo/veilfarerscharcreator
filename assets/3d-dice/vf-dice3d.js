@@ -12,6 +12,27 @@ const PRELOAD_THEMES = [
 ];
 const ASSET_PATH = new URL('./assets/', import.meta.url).href;
 
+const VF_DICE_RELEASE = 'v59.63';
+async function assertWebAssemblyExecutionAllowed(){
+  if (typeof WebAssembly === 'undefined' || typeof WebAssembly.compile !== 'function') {
+    const error=new Error('3D dice require WebAssembly, but this browser does not expose WebAssembly.compile().');
+    error.code='VF_WASM_UNAVAILABLE';
+    throw error;
+  }
+  // Minimal valid empty WebAssembly module. Compilation is intentionally tested before
+  // Ammo starts so a stale/overridden CSP fails immediately instead of timing out.
+  const emptyModule=new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]);
+  try { await WebAssembly.compile(emptyModule); }
+  catch (cause) {
+    const error=new Error("3D dice WebAssembly is blocked by the effective Content Security Policy. Deploy v59.63 from the package root and verify the HTML response contains X-VeilFarers-Release: v59.63 and script-src 'wasm-unsafe-eval'.");
+    error.code='VF_WASM_CSP_BLOCKED';
+    error.cause=cause;
+    window.dispatchEvent(new CustomEvent('veilfarers:dice3d-error',{detail:{code:error.code,release:VF_DICE_RELEASE,message:error.message}}));
+    throw error;
+  }
+}
+console.info(`[VeilFarers ${VF_DICE_RELEASE}] 3D dice loader active`, {assetPath: ASSET_PATH, cspProfile:'wasm-3d-dice-v2'});
+
 let box = null;
 let display = null;
 let initPromise = null;
@@ -136,6 +157,7 @@ async function init(){
   if (initPromise) return initPromise;
   ensureStage();
   initPromise=(async()=>{
+    await assertWebAssemblyExecutionAllowed();
     box=new DiceBox({
       container:'#vf-dice3d-box', assetPath:ASSET_PATH, origin:'', theme:'vfNeutral', preloadThemes:PRELOAD_THEMES,
       scale:5.2, gravity:1.15, mass:1.15, friction:0.72, restitution:0.64, spinForce:6, throwForce:6.5,
@@ -548,5 +570,5 @@ window.VFDice3D={
     ready:!!box,assetPath:ASSET_PATH,style:currentStyle,critical:currentCritical,
     rendererVisuals:lastRendererVisuals.slice(),tracking:trackingSpecs.length,error:lastError?String(lastError.message||lastError):null
   }),
-  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.25'
+  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.63'
 };

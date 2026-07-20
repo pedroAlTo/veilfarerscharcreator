@@ -514,8 +514,13 @@ export default async (req: Request, _ctx: Context) => {
     return json({ error: 'Unknown action.' }, 400)
   } catch (error: any) {
     const status = Number(error?.status || error?.statusCode) || 500
-    console.error('[table-api]',{requestId,action,tableId:tableIdForLog,status,message:error?.message||String(error),stack:error?.stack})
-    return json({ error: status === 500 ? `Table service failed. Reference ${requestId}.` : (error?.message || 'Request rejected.'), requestId }, status)
+    const code=String(error?.code||'TABLE_SERVICE_FAILED')
+    console.error('[table-api]',{requestId,action,tableId:tableIdForLog,status,code,message:error?.message||String(error),stack:error?.stack})
+    const configurationFailure=code.startsWith('FIREBASE_ADMIN_')||code==='FIREBASE_PROJECT_ID_MISSING'
+    const message=configurationFailure
+      ? `${error.message} Configure FIREBASE_SERVICE_ACCOUNT_JSON as a Functions-only Netlify environment variable.`
+      : (status>=500?`Table service failed. Reference ${requestId}.`:(error?.message||'Request rejected.'))
+    return json({error:message,code,requestId},status)
   }
 }
 

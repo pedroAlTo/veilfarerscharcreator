@@ -1,35 +1,50 @@
-VEILFARERS PORTAL v59.56 — START HERE
+VEILFARERS PORTAL v59.63 — START HERE
+=====================================
 
-BASE PACKAGE
-v59.56 continues from v59.55 and changes only the Character Creator Affiliation card presentation plus the new crest assets and release documentation.
+RELEASE PURPOSE
+---------------
+v59.63 fixes the remaining production 3D-dice failure by making the WebAssembly CSP
+part of the deployed publish directory, not only netlify.toml. The browser logs supplied
+for v59.62 prove that Netlify was still serving the old CSP without 'wasm-unsafe-eval'.
 
 DEPLOY
-1. Create or use a clean test branch.
-2. Extract VeilFarers_Portal_v59.56.zip.
-3. Copy the CONTENTS of the ZIP into the repository root; index.html must remain at the root.
-4. Commit through GitHub Desktop or the normal signed workflow.
-5. Push and wait for Netlify checks.
-6. Open the Deploy Preview and hard-refresh.
+------
+1. Extract the ZIP. Deploy the CONTENTS at its root; do not deploy a parent folder.
+2. Confirm the deployed file explorer contains both /_headers and /netlify.toml.
+3. Publish a fresh production deploy, not merely a cached preview alias.
+4. Open /data/deploy-version.json and confirm version is v59.63.
+5. Hard-refresh /player-tool.html.
 
-IMMEDIATE ACCEPTANCE
-1. Open Character Creator.
-2. Navigate to Step 6 — Affiliation.
-3. Confirm 13 canonical cards remain available.
-4. Confirm supplied crests appear for Church of the Eternal Veil, Explorers' Guild, Free Fleet, Joric, Kurogane, Solari, Valerius, Volkov, Solara Compact, Stellar Commerce Guild and Kaelen.
-5. Confirm House Amaranth and Independent show monogram fallbacks.
-6. Test selection and Next on desktop and mobile.
-7. Import an existing character and confirm its affiliation is still selected.
+REQUIRED RESPONSE CHECK
+-----------------------
+In DevTools > Network, select player-tool.html and verify Response Headers include:
 
-CANON BOUNDARY
-Starborn Collective and Spire of Verita art is included as future-ready assets but no Affiliation choices were added because the current canonical Affiliation dataset does not contain those entries.
+  X-VeilFarers-Release: v59.63
+  X-VeilFarers-CSP-Profile: wasm-3d-dice-v2
 
-FIRESTORE RULES
-No Rules change is required. The included firestore_v59.56.rules is the unchanged coordinated baseline.
+and Content-Security-Policy > script-src includes:
 
-FILES
-- GITHUB_DEPLOY_SUMMARY_v59.56.md
-- VALIDATION_v59.56.txt
-- SECURITY_TABLES_v59.56.md
-- PORTAL_HANDOVER_v59.56.md
-- PORTAL_HANDOVER_v59.56.docx
-- firestore_v59.56.rules
+  'wasm-unsafe-eval'
+
+If the response still shows the old policy, the active deploy/publish directory is not
+this package or another CSP layer is being injected. Do not troubleshoot Ammo until the
+response header itself is correct.
+
+DICE ACCEPTANCE
+---------------
+- Console prints: [VeilFarers v59.63] 3D dice loader active.
+- The WASM preflight succeeds.
+- ammo.wasm.wasm returns 200 and Content-Type application/wasm.
+- Duality and damage dice render in 3D.
+- No VF_WASM_CSP_BLOCKED, Ammo-not-found, setValue or initialization-timeout cascade.
+
+PRESERVED
+---------
+- v59.60 exact-case Dice.min.js compatibility file.
+- v59.61 narrow WebAssembly permission; general JavaScript unsafe-eval remains blocked.
+- v59.62 Keeper Tool/Vault decoupling and Firebase Admin diagnostics.
+
+DOCUMENTS
+---------
+Read GITHUB_DEPLOY_SUMMARY_v59.63.md, PORTAL_HANDOVER_v59.63.md and
+VALIDATION_v59.63.txt.

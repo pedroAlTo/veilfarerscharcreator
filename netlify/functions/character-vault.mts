@@ -25,6 +25,7 @@ const cleanRecord=(input:any,user:any,existing:any)=>{
 }
 
 export default async(req:Request,_ctx:Context)=>{
+  const requestId=req.headers.get('x-vf-request-id')||`vault-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`
   try{
     if(req.method!=='POST')return json({error:'Method not allowed'},405)
     verifyRequestOrigin(req)
@@ -91,9 +92,14 @@ export default async(req:Request,_ctx:Context)=>{
 
     return json({error:'Unknown Character Vault action.'},400)
   }catch(error:any){
-    console.error(error)
     const status=Number(error?.status||error?.statusCode)||500
-    return json({error:status===500?'Character Vault service failed.':(error?.message||'Request rejected.')},status)
+    const code=String(error?.code||'CHARACTER_VAULT_FAILED')
+    console.error('[character-vault]',{requestId,status,code,message:error?.message||String(error),stack:error?.stack})
+    const configurationFailure=code.startsWith('FIREBASE_ADMIN_')||code==='FIREBASE_PROJECT_ID_MISSING'
+    const message=configurationFailure
+      ? `${error.message} Configure FIREBASE_SERVICE_ACCOUNT_JSON as a Functions-only Netlify environment variable.`
+      : (status>=500?'Character Vault service failed.':(error?.message||'Request rejected.'))
+    return json({error:message,code,requestId},status)
   }
 }
 

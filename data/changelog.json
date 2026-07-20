@@ -1,7 +1,25 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.60",
+  "currentVersion": "v59.63",
   "entries": [
+    {
+      "version": "v59.63",
+      "date": "2026-07-20",
+      "title": "Deploy-authoritative CSP and WebAssembly preflight for 3D dice",
+      "summary": "Adds a publish-directory _headers file so manual and repository deploys receive the WebAssembly-enabled CSP, adds release/CSP response markers and a fast WebAssembly preflight that reports stale or overridden headers before the Ammo timeout."
+    },
+    {
+      "version": "v59.62",
+      "date": "2026-07-20",
+      "title": "Keeper Tool Vault decoupling and Firebase Admin diagnostics",
+      "summary": "Stops Keeper Tool from making unnecessary Character Vault requests during startup, preserves Keeper local campaign access when Vault is unavailable, and returns explicit safe 503 diagnostics when the Functions-only Firebase service-account variable is missing, malformed or unusable."
+    },
+    {
+      "version": "v59.61",
+      "date": "2026-07-20",
+      "title": "WebAssembly CSP permission for 3D dice physics",
+      "summary": "Restores Ammo WebAssembly physics on Netlify by allowing the narrowly scoped 'wasm-unsafe-eval' CSP source while keeping general JavaScript 'unsafe-eval' blocked; the v59.60 filename compatibility fix remains included."
+    },
     {
       "version": "v59.60",
       "date": "2026-07-20",
@@ -657,5 +675,5 @@
       ]
     }
   ],
-  "version": "v59.59"
+  "version": "v59.63"
 }
