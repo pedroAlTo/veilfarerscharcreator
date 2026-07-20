@@ -151,6 +151,32 @@ html,body{
   text-shadow:0 2px 8px rgba(0,0,0,.9);text-align:center;padding:0 10px;
 }
 .vl-art:has(.vl-art-photo) .vl-art-name{top:auto;bottom:0;transform:none;padding:8px 10px 9px;}
+
+/* Affiliation crest headers */
+.vl-affiliation-art{
+  min-height:208px;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.12),transparent 48%),linear-gradient(155deg,#15171b,#08090c);
+}
+.vl-affiliation-art::before{display:none;}
+.vl-affiliation-art::after{background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.72));}
+.vl-affiliation-crest{
+  position:relative;z-index:1;display:block;width:auto;height:174px;max-width:88%;
+  object-fit:contain;filter:drop-shadow(0 10px 13px rgba(0,0,0,.58));
+  transform:translateY(-5px);
+}
+.vl-affiliation-monogram{
+  position:relative;z-index:1;display:flex;align-items:center;justify-content:center;
+  width:104px;height:132px;border:1px solid rgba(233,192,104,.55);
+  clip-path:polygon(50% 0,92% 14%,86% 76%,50% 100%,14% 76%,8% 14%);
+  background:linear-gradient(145deg,rgba(233,192,104,.18),rgba(0,0,0,.5));
+  color:var(--gold-1);font:700 32px/1 "Cinzel",serif;letter-spacing:.06em;
+  text-shadow:0 3px 12px rgba(0,0,0,.8);
+}
+.vl-affiliation-art .vl-art-name{top:auto;bottom:0;transform:none;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.78));}
+@media(max-width:640px){
+  .vl-affiliation-art{min-height:184px;}
+  .vl-affiliation-crest{height:154px;}
+}
 .vl-art-icon{
   position:absolute;left:10px;top:8px;z-index:2;
   font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.1em;
@@ -912,8 +938,12 @@ body.choice-open{overflow:hidden;}
 }
 </style>
   <link rel="stylesheet" href="portal.css">
+  <link rel="stylesheet" href="creator-redesign.css">
 <script src="/character-registry.js"></script>
+<script defer src="creator-redesign.js"></script>
 <script src="/character-sync-adapter.js"></script>
+  <script src="veilfarers-theme.js"></script>
+  <link rel="stylesheet" href="veilfarers-theme.css">
 </head>
 <body>
 <div class="app">
@@ -945,7 +975,12 @@ body.choice-open{overflow:hidden;}
   </div>
 
   <div id="creator-view">
-  <nav class="step-nav" id="step-nav">
+  <nav class="step-nav" id="step-nav" aria-label="Character creation progress">
+    <div class="creator-side-brand" aria-label="VeilFarers Character Creator">
+      <div class="creator-side-title">VeilFarers</div>
+      <div class="creator-side-subtitle">Character Creator</div>
+    </div>
+    <div class="creator-progress-label">Creation progress</div>
     <div class="step-nav-item active" data-step="1"><span class="step-num">Step 1</span><span class="step-label">Ancestry</span><span class="step-check">&#10003;</span></div>
     <div class="step-nav-item" data-step="2"><span class="step-num">Step 2</span><span class="step-label">Community</span><span class="step-check">&#10003;</span></div>
     <div class="step-nav-item" data-step="3"><span class="step-num">Step 3</span><span class="step-label">Class</span><span class="step-check">&#10003;</span></div>
@@ -956,6 +991,19 @@ body.choice-open{overflow:hidden;}
     <div class="step-nav-item" data-step="8"><span class="step-num">Step 8</span><span class="step-label">Equipment</span><span class="step-check">&#10003;</span></div>
     <div class="step-nav-item" data-step="9"><span class="step-num">Final</span><span class="step-label">Details</span><span class="step-check">&#10003;</span></div>
     <div class="step-nav-item" data-step="sheet"><span class="step-num">Sheet</span><span class="step-label">Character</span></div>
+    <div class="creator-side-quote">Every path leaves a mark.<br>Choose wisely.</div>
+  </nav>
+
+  <nav class="creator-top-rail" id="creator-top-rail" aria-label="Creator steps">
+    <button class="creator-top-step active" type="button" data-step="1"><span>01</span>Ancestry</button>
+    <button class="creator-top-step" type="button" data-step="2"><span>02</span>Community</button>
+    <button class="creator-top-step" type="button" data-step="3"><span>03</span>Class</button>
+    <button class="creator-top-step" type="button" data-step="4"><span>04</span>Traits</button>
+    <button class="creator-top-step" type="button" data-step="5"><span>05</span>Experiences</button>
+    <button class="creator-top-step" type="button" data-step="6"><span>06</span>Affiliation</button>
+    <button class="creator-top-step" type="button" data-step="7"><span>07</span>Powers</button>
+    <button class="creator-top-step" type="button" data-step="8"><span>08</span>Equipment</button>
+    <button class="creator-top-step" type="button" data-step="9"><span>09</span>Review</button>
   </nav>
 
   <div class="wizard-dock" id="wizard-dock" aria-live="polite">
@@ -984,7 +1032,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 1 -->
   <section class="step-panel active" id="step-1">
-    <h2 class="step-heading">Step 1 &middot; Ancestry</h2>
+    <h2 class="step-heading">Ancestry</h2>
     <p class="step-sub">Choose the body you walk through the galaxy in. Your ancestry grants two <strong>Ancestry Gifts</strong> and a complications table. Hover a card to inspect it.</p>
     <div class="validation-msg" id="val-1">Select an ancestry and complete any required ancestry option.</div>
     <div class="card-deck" id="ancestry-deck"></div>
@@ -994,7 +1042,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 2 -->
   <section class="step-panel" id="step-2">
-    <h2 class="step-heading">Step 2 &middot; Community</h2>
+    <h2 class="step-heading">Community</h2>
     <p class="step-sub">Choose the world that shaped you before you started carrying dice. Community grants a single <strong>Community Feature</strong>.</p>
     <div class="validation-msg" id="val-2">Please select a community to continue.</div>
     <div class="card-deck" id="community-deck"></div>
@@ -1006,7 +1054,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 3 -->
   <section class="step-panel" id="step-3">
-    <h2 class="step-heading">Step 3 &middot; Path, Class &amp; Subclass</h2>
+    <h2 class="step-heading">Path, Class &amp; Subclass</h2>
     <p class="step-sub">Choose your <strong>Path</strong>, your <strong>Class</strong> (role &amp; domain access), and your <strong>Subclass</strong> (specialization). Each subclass card shows its Level&nbsp;1 Foundation ability.</p>
     <div class="validation-msg" id="val-3">Please select a path, class, and subclass to continue.</div>
 
@@ -1023,9 +1071,18 @@ body.choice-open{overflow:hidden;}
     </div>
 
     <div class="section-divider"></div>
-    <h3 class="subsection-title">Class</h3>
-    <p class="subsection-note">Nine Awakened classes. The card shows domains, Spellcast Trait, starting Evasion &amp; Hit Points.</p>
-    <div class="card-deck cls-deck" id="class-deck"></div>
+    <div class="class-selection-shell locked" id="class-selection-shell" aria-disabled="true">
+      <div class="class-selection-heading">
+        <h3 class="subsection-title">Class</h3>
+        <p class="subsection-note" id="class-selection-note">Choose Awakened or Sleeping to unlock the class catalogue.</p>
+      </div>
+      <div class="class-lock-notice" id="class-lock-notice" role="status" aria-live="polite">
+        <span class="class-lock-glyph" aria-hidden="true">&#10022;</span>
+        <strong>Path required</strong>
+        <span>Your path changes class resources, features, subclasses, and advancement options.</span>
+      </div>
+      <div class="card-deck cls-deck" id="class-deck" aria-disabled="true"></div>
+    </div>
 
     <div id="subclass-section" style="display:none;">
       <div class="section-divider"></div>
@@ -1043,7 +1100,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 4 -->
   <section class="step-panel" id="step-4">
-    <h2 class="step-heading">Step 4 &middot; Traits</h2>
+    <h2 class="step-heading">Traits</h2>
     <p class="step-sub">Assign the fixed array <strong>+2, +1, +1, +0, +0, &minus;1</strong> to your six traits. Click a value, then click a trait. Your Spellcast Trait is marked &#9733; &mdash; it benefits most from your +2.</p>
     <div class="validation-msg" id="val-4">Assign all six trait values to continue.</div>
     <div class="array-pool" id="array-pool"><span class="array-pool-label">Pool:</span></div>
@@ -1056,7 +1113,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 5 -->
   <section class="step-panel" id="step-5">
-    <h2 class="step-heading">Step 5 &middot; Experiences</h2>
+    <h2 class="step-heading">Experiences</h2>
     <p class="step-sub">Choose <strong>three defining experiences</strong> from your past. Each starts at <strong>+2</strong> and can be invoked when relevant (spend 1 Hope or Effort) to add a flat bonus to a roll. Make them personal, applicable, and distinct.</p>
     <div class="validation-msg" id="val-5">Complete all three experiences to continue.</div>
     <div class="experience-inputs">
@@ -1084,7 +1141,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 6 -->
   <section class="step-panel" id="step-6">
-    <h2 class="step-heading">Step 6 &middot; Affiliation</h2>
+    <h2 class="step-heading">Affiliation</h2>
     <p class="step-sub">Choose the institution you answer to. It grants equipment access, <strong>+2 starting Reputation</strong>, and one Call per session &mdash; at the cost of dues and obligations.</p>
     <div class="validation-msg" id="val-6">Please select an affiliation to continue.</div>
     <div class="card-deck" id="affiliation-deck"></div>
@@ -1096,7 +1153,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 7: DOMAIN POWERS -->
   <section class="step-panel" id="step-7">
-    <h2 class="step-heading">Step 7 &middot; Domain Powers</h2>
+    <h2 class="step-heading">Domain Powers</h2>
     <p class="step-sub">Your <strong>Starter Loadout</strong>: choose <strong>2 Level&nbsp;1 Domain Powers</strong>. Both of your class's Domains are open &mdash; pick any two Powers from either. Each card shows the full Power description.</p>
     <div class="validation-msg" id="val-7">Choose exactly 2 Domain Powers to continue.</div>
     <div id="power-content"></div>
@@ -1108,7 +1165,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 8: EQUIPMENT -->
   <section class="step-panel" id="step-8">
-    <h2 class="step-heading">Step 8 &middot; Equipment</h2>
+    <h2 class="step-heading">Equipment</h2>
     <p class="step-sub">Choose from the canonical <strong>Core</strong> catalogue or include <strong>Rust &amp; Steel</strong>. Your Level&nbsp;1 Technology Access, class training, item tier, and separate <strong>4-credit weapon and armor budgets</strong> determine what you can select. Locked items remain available for reference when you enable <em>Show all</em>.</p>
     <div class="validation-msg" id="val-8">Choose at least one weapon and one armor piece (within budget) to continue.</div>
     <div id="equipment-content"></div>
@@ -1120,7 +1177,7 @@ body.choice-open{overflow:hidden;}
 
   <!-- STEP 9 -->
   <section class="step-panel" id="step-9">
-    <h2 class="step-heading">Final Step &middot; Personal Details</h2>
+    <h2 class="step-heading">Review &amp; Personal Details</h2>
     <p class="step-sub">Fill in your character's identity and answer your class's background question.</p>
     <div class="fields-two">
       <div class="field-group"><label class="field-label">Character Name</label>
@@ -1263,6 +1320,21 @@ let currentStep = 1;
 let selectedTraitId = null;
 let activeDependentChoice = null;
 
+function normalizeCreatorPath(value){
+  return value==="Awakened"||value==="Sleeping"?value:null;
+}
+function enforceClassPathGate(){
+  const normalized=normalizeCreatorPath(state.path);
+  if(!normalized){
+    state.path=null;state.cls=null;state.subclass=null;state.powers=[];state.veilAlignment=null;state.sleepingMysticDomains=[];
+    const subclassSection=document.getElementById("subclass-section");
+    if(subclassSection)subclassSection.style.display="none";
+    return false;
+  }
+  state.path=normalized;
+  return true;
+}
+
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c]);}
 
 function proficiencyFloorForLevel(level){
@@ -1385,8 +1457,9 @@ function attach3D(card,opts){
     const px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
     const rx=(0.5-py)*deg, ry=(px-0.5)*deg;
     card.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg) translateZ(${tz}px)`;
+    // v59.59: retain dimensional tilt, but never attach a light hotspot to the cursor.
     const sheen=card.querySelector(".sheen");
-    if(sheen) sheen.style.background=`radial-gradient(circle at ${px*100}% ${py*100}%, rgba(255,255,255,.5), rgba(255,255,255,.05) 45%, transparent 70%)`;
+    if(sheen) sheen.style.background="";
   });
   card.addEventListener("mouseleave",()=>{
     card.style.transform="";
@@ -1420,6 +1493,44 @@ function artImgErr(img){
   const e=(+img.dataset.e)+1;
   if(e<CARD_IMG_EXTS.length){ img.dataset.e=e; img.src=`img/${img.dataset.cat}/${img.dataset.n}.${CARD_IMG_EXTS[e]}`; }
   else img.remove();
+}
+
+const AFFILIATION_CRESTS=Object.freeze({
+  "church-veil":"church-of-the-eternal-veil.webp",
+  "church-of-the-eternal-veil":"church-of-the-eternal-veil.webp",
+  "explorers-guild":"explorers-guild.webp",
+  "free-fleet":"free-fleet.webp",
+  "house-joric":"house-joric.webp",
+  "house-kurogane":"house-kurogane.webp",
+  "house-solari":"house-solari.webp",
+  "house-valerius":"house-valerius.webp",
+  "house-volkov":"house-volkov.webp",
+  "solara-compact":"solara-compact.webp",
+  "commerce-guild":"stellar-commerce-guild.webp",
+  "stellar-commerce-guild":"stellar-commerce-guild.webp",
+  "house-kaelen":"house-kaelen.webp",
+  "house-amaranth":"house-amaranth.webp",
+  "house-amarath":"house-amaranth.webp",
+  "independent":"independent.webp",
+  "starborn-collective":"starborn-collective.webp",
+  "spire-of-verita":"spire-of-verita.webp"
+});
+function affiliationCrestError(img){
+  const mark=document.createElement("span");
+  mark.className="vl-affiliation-monogram";
+  mark.setAttribute("aria-hidden","true");
+  mark.textContent=img&&img.dataset&&img.dataset.initials||"?";
+  if(img&&img.parentNode) img.replaceWith(mark);
+}
+function affiliationCrest(a){
+  const id=String(a&&a.id||"").trim().toLowerCase();
+  const file=AFFILIATION_CRESTS[id];
+  if(file){
+    const initials=String(a&&a.name||"?").split(/\s+/).filter(Boolean).map(v=>v[0]).join("").slice(0,2).toUpperCase();
+    return `<img class="vl-affiliation-crest" src="img/affiliation/${file}" alt="${esc(a.name)} crest" data-initials="${esc(initials||"?")}" loading="lazy" decoding="async" onerror="affiliationCrestError(this)">`;
+  }
+  const initials=String(a&&a.name||"?").split(/\s+/).filter(Boolean).map(v=>v[0]).join("").slice(0,2).toUpperCase();
+  return `<span class="vl-affiliation-monogram" aria-hidden="true">${esc(initials||"?")}</span>`;
 }
 
 /* ── tinted art band ── */
@@ -1519,9 +1630,11 @@ function chooseDependentOption(kind,id){
   if(kind==="substrain"){
     state.subStrain=id;
     renderAncestries();
+    triggerPickedCard("ancestry",state.ancestry);
   }else if(kind==="subclass"){
     state.subclass=id; state.powers=[];
     renderClasses(); renderSubclasses(); renderTraits(); renderLevelUpView(); updateBgQuestion();
+    triggerPickedCard("cls",state.cls);
   }
   closeDependentChoice(true);
   autosave();
@@ -1570,12 +1683,37 @@ function classSubclassList(c){
 function subclassPathRules(s){ return s||{}; }
 function renderClasses(){
   const deck=document.getElementById("class-deck");
+  const shell=document.getElementById("class-selection-shell");
+  const notice=document.getElementById("class-lock-notice");
+  const note=document.getElementById("class-selection-note");
+  const locked=!enforceClassPathGate();
+  if(shell){shell.classList.toggle("locked",locked);shell.setAttribute("aria-disabled",locked?"true":"false");}
+  if(deck){
+    deck.setAttribute("aria-disabled",locked?"true":"false");
+    deck.inert=locked;
+    deck.tabIndex=locked?-1:0;
+    deck.hidden=locked;
+  }
+  if(notice)notice.hidden=!locked;
+  if(note)note.textContent=locked
+    ? "Choose Awakened or Sleeping to unlock the class catalogue."
+    : `Showing ${state.path} class rules, resources, and subclass paths.`;
+
+  if(locked){
+    // Hard gate: before Path there is no class catalogue in the DOM and therefore
+    // no pointer, keyboard, restored-state, or delegated-click route can select a class.
+    clearClassPathValidation();
+    deck.replaceChildren();
+    return;
+  }
+
+  deck.hidden=false;
   deck.innerHTML=CLASSES.map((c,i)=>{
     const r=classPathRules(c)||c;
     const domains=r.domainList||c.domainList||[];
     const feature=state.path==="Sleeping"?(r.effortFeature||{}):(r.hopeFeature||{});
     const featureLabel=state.path==="Sleeping"?"Effort Feature":"Hope Feature";
-    return `<div class="vl-card${state.cls===c.id?" selected":""}" data-pick="cls" data-id="${c.id}"><div class="vl-art" style="${artBg(c.color)}">${artImg("class",i+1)}<span class="vl-art-icon">${esc(state.path||"Class")}</span><span class="vl-checkmark">&#10003;</span><span class="vl-art-name">${esc(c.name)}</span></div><div class="vl-body"><div class="vl-domains">${domains.map(d=>`<span class="vl-domain" style="background:${DOMAIN_COLORS[d]||'#666'}">${esc(d)}</span>`).join("")}</div><div class="vl-desc" style="margin-top:9px;">${esc(trim(r.desc||c.desc,170))}</div><div class="vl-stats"><span class="vl-stat">Evasion ${r.evasion||c.evasion}</span><span class="vl-stat">${r.hp||c.hp} HP</span><span class="vl-stat">Spellcast ${esc(r.spellcastTrait||c.spellcastTrait)}</span></div><div class="vl-feature"><div class="vl-feature-label">${featureLabel}</div><div class="vl-feature-name">${esc(feature.name||'')}</div><div class="vl-feature-text">${esc(trim(feature.text||feature.desc||'',175))}</div></div></div><div class="sheen"></div><div class="frame"></div></div>`;
+    return `<div class="vl-card${state.cls===c.id?" selected":""}" data-pick="cls" data-id="${c.id}"><div class="vl-art" style="${artBg(c.color)}">${artImg("class",i+1)}<span class="vl-art-icon">${esc(state.path)}</span><span class="vl-checkmark">&#10003;</span><span class="vl-art-name">${esc(c.name)}</span></div><div class="vl-body"><div class="vl-domains">${domains.map(d=>`<span class="vl-domain" style="background:${DOMAIN_COLORS[d]||'#666'}">${esc(d)}</span>`).join("")}</div><div class="vl-desc" style="margin-top:9px;">${esc(trim(r.desc||c.desc,170))}</div><div class="vl-stats"><span class="vl-stat">Evasion ${r.evasion||c.evasion}</span><span class="vl-stat">${r.hp||c.hp} HP</span><span class="vl-stat">Spellcast ${esc(r.spellcastTrait||c.spellcastTrait)}</span></div><div class="vl-feature"><div class="vl-feature-label">${featureLabel}</div><div class="vl-feature-name">${esc(feature.name||'')}</div><div class="vl-feature-text">${esc(trim(feature.text||feature.desc||'',175))}</div></div></div><div class="sheen"></div><div class="frame"></div></div>`;
   }).join("");
   attachAll3D(deck);
 }
@@ -1629,10 +1767,10 @@ function renderSubclasses(){
 /* ── RENDER: Affiliation ── */
 function renderAffiliations(){
   const deck=document.getElementById("affiliation-deck");
-  deck.innerHTML=AFFILIATIONS.map((a,i)=>`
+  deck.innerHTML=AFFILIATIONS.map((a)=>`
     <div class="vl-card${state.affiliation===a.id?" selected":""}" data-pick="affiliation" data-id="${a.id}">
-      <div class="vl-art" style="${artBg(a.color)}">
-        ${artImg("affiliation",i+1)}
+      <div class="vl-art vl-affiliation-art" style="--affiliation-color:${esc(a.color||'#584d3a')}">
+        ${affiliationCrest(a)}
         <span class="vl-checkmark">&#10003;</span>
         <span class="vl-art-name" style="font-size:14px;">${esc(a.name)}</span>
       </div>
@@ -1773,6 +1911,7 @@ function togglePower(pid){
   if(i>=0){ state.powers.splice(i,1); }
   else { if(state.powers.length>=2) return; state.powers.push(pid); }
   renderPowers();
+  if(i<0){const safe=escapeSelectorValue(pid);triggerSelectionArrival(`.power-card[data-power="${safe}"]`);}
 }
 
 /* ── Equipment ── */
@@ -1987,11 +2126,13 @@ function toggleWeapon(name){
   const i=state.weapons.indexOf(name);
   if(i>=0)state.weapons.splice(i,1);else{const w=WEAPONS.find(x=>x.name===name);const cls=CLASSES.find(c=>c.id===state.cls);if(!w||!equipmentEligibility(w,"weapon",cls).eligible||weaponSpend()+w.cost>EQUIP_BUDGET)return;state.weapons.push(name);}
   EQUIPMENT_FILTERS.notice="";renderEquipment();
+  if(i<0){const safe=escapeSelectorValue(name);triggerSelectionArrival(`.power-card[data-weapon="${safe}"]`);}
 }
 function toggleArmor(name){
   const i=state.armors.indexOf(name);
   if(i>=0)state.armors.splice(i,1);else{const a=ARMOR.find(x=>x.name===name);const cls=CLASSES.find(c=>c.id===state.cls);if(!a||!equipmentEligibility(a,"armor",cls).eligible||armorSpend()+a.cost>EQUIP_BUDGET)return;state.armors.push(name);}
   EQUIPMENT_FILTERS.notice="";renderEquipment();
+  if(i<0){const safe=escapeSelectorValue(name);triggerSelectionArrival(`.power-card[data-armor="${safe}"]`);}
 }
 // Render a feature string as clickable help chips
 function featureChips(str){
@@ -2030,8 +2171,49 @@ function hideFeatTip(){
   },140);
 }
 
+function escapeSelectorValue(value){
+  const raw=String(value);
+  if(window.CSS&&typeof CSS.escape==="function")return CSS.escape(raw);
+  return raw.replace(/\\/g,"\\\\").replace(/"/g,'\\"');
+}
+function triggerSelectionArrival(selector){
+  requestAnimationFrame(()=>{
+    const node=document.querySelector(selector);
+    if(!node)return;
+    node.classList.remove("selection-arrival");
+    void node.offsetWidth;
+    node.classList.add("selection-arrival");
+    window.setTimeout(()=>node.classList.remove("selection-arrival"),1050);
+  });
+}
+function triggerPickedCard(key,value){
+  const safe=escapeSelectorValue(value);
+  triggerSelectionArrival(`.vl-card[data-pick="${key}"][data-id="${safe}"]`);
+}
+function clearClassPathValidation(){
+  const msg=document.getElementById("val-3");
+  if(!msg)return;
+  msg.textContent="Please select a path, class, and subclass to continue.";
+  msg.classList.remove("visible");
+}
+
 /* ── Click delegation for cards ── */
+// Capture-phase guard. The class area is non-interactive until a canonical Path exists.
 document.addEventListener("click",e=>{
+  if(!normalizeCreatorPath(state.path) && e.target.closest && e.target.closest("#class-selection-shell")){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    enforceClassPathGate();
+    renderClasses();
+    clearClassPathValidation();
+  }
+},true);
+
+document.addEventListener("click",e=>{
+  const attemptedLockedClass=e.target.closest("#class-deck .vl-card");
+  if(attemptedLockedClass&&!normalizeCreatorPath(state.path)){
+    e.preventDefault();e.stopImmediatePropagation();clearClassPathValidation();renderClasses();return;
+  }
   const option=e.target.closest(".choice-option[data-choice-kind]");
   if(option){chooseDependentOption(option.dataset.choiceKind,option.dataset.choiceId);return;}
 
@@ -2043,31 +2225,33 @@ document.addEventListener("click",e=>{
     state.ancestry=val; state.subStrain=null;
     if(val!=="ailuran" && state.community==="displaced-enclave") state.community=null;
     renderAncestries(); renderSubStrain();
+    triggerPickedCard(key,val);
     if(anc&&anc.subStrains&&anc.subStrains.length) openDependentChoice("ancestry");
   } else if(key==="community"){
-    state.community=val; renderCommunities();
+    state.community=val; renderCommunities(); triggerPickedCard(key,val);
   } else if(key==="cls"){
-    if(!state.path){
-      const msg=document.getElementById("val-3");
-      if(msg){msg.textContent="Choose Awakened or Sleeping before selecting a class.";msg.classList.add("visible");}
-      document.getElementById("path-toggle")?.scrollIntoView({behavior:"smooth",block:"center"});
-      return;
-    }
+    if(!state.path)return;
+    clearClassPathValidation();
     if(state.cls!==val){ state.cls=val; state.subclass=null; state.powers=[]; state.veilAlignment=null; state.sleepingMysticDomains=[]; state.weapons=[]; state.armors=[]; resetEquipmentFiltersForClass(); }
     renderClasses(); renderSubclasses(); renderTraits(); renderLevelUpView(); updateBgQuestion();
+    triggerPickedCard(key,val);
     openDependentChoice("class");
   } else if(key==="subclass"){
     state.subclass=val; state.powers=[];
     renderSubclasses(); renderTraits(); renderLevelUpView(); updateBgQuestion();
+    triggerPickedCard(key,val);
   } else if(key==="affiliation"){
-    state.affiliation=val; renderAffiliations();
+    state.affiliation=val; renderAffiliations(); triggerPickedCard(key,val);
   }
   updateWizardDock();
 });
 
 function selectPath(p){
+  p=normalizeCreatorPath(p);
+  if(!p)return;
   const changed=state.path&&state.path!==p;
   state.path=p;
+  clearClassPathValidation();
   if(changed){state.cls=null;state.subclass=null;state.powers=[];state.veilAlignment=null;state.sleepingMysticDomains=[];state.weapons=[];state.armors=[];resetEquipmentFiltersForClass();}
   document.querySelectorAll(".path-btn").forEach(b=>{
     b.className="path-btn"+(b.dataset.path===p?` sel-${p.toLowerCase()}`:"");
@@ -2075,6 +2259,7 @@ function selectPath(p){
   const anchor=document.getElementById("anchor-field");
   if(anchor) anchor.style.display=p==="Sleeping"?"block":"none";
   renderClasses(); renderSubclasses(); renderTraits(); renderLevelUpView(); updateWizardDock();
+  triggerSelectionArrival(`.path-btn[data-path="${p}"]`);
 }
 
 /* ── Traits ── */
@@ -2209,6 +2394,7 @@ const LEGACY_STORAGE_KEY="void"+"light-character";
 
 /* ── Navigation ── */
 function autosave(){
+  enforceClassPathGate();
   try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }catch(e){}
 }
 const STEP_META={
@@ -2226,7 +2412,7 @@ const STEP_META={
 function isStepReady(step){
   if(step===1){const anc=ANCESTRIES.find(a=>a.id===state.ancestry);return !!state.ancestry&&(!(anc&&anc.subStrains&&anc.subStrains.length)||!!state.subStrain);}
   if(step===2)return !!state.community;
-  if(step===3)return !!(state.path&&state.cls&&state.subclass);
+  if(step===3)return enforceClassPathGate()&&!!(state.cls&&state.subclass);
   if(step===4){
     const ids=["agility","strength","finesse","instinct","presence","knowledge"];
     if(!ids.every(id=>Object.prototype.hasOwnProperty.call(state.traits||{},id)))return false;
@@ -2620,7 +2806,7 @@ async function loadCharacterData(obj,options={}){
   const validTraitIds=new Set(["agility","strength","finesse","instinct","presence","knowledge"]);
   fresh.traits=Object.fromEntries(Object.entries(fresh.traits||{}).filter(([id,value])=>validTraitIds.has(id)&&Number.isFinite(Number(value))).map(([id,value])=>[id,Number(value)]));
   if(options.register)await registerImportedCreatorState(fresh,options.source||'creator-json-import');
-  state=fresh;canonicalizeLevelState();autosave();
+  state=fresh;enforceClassPathGate();canonicalizeLevelState();autosave();
   document.getElementById("substrain-section").innerHTML="";document.getElementById("subclass-section").style.display="none";
   renderAncestries();renderSubStrain();renderCommunities();renderClasses();renderSubclasses();renderTraits();renderAffiliations();renderLevelUpView();updateBgQuestion();syncFieldsFromState();goStep(options.register?9:1);flashStatus(options.register?`Character imported and saved · ${fresh.characterId}`:"Character loaded");return fresh;
 }
@@ -3013,6 +3199,7 @@ async function loadData(){
     await loadData();
     canonicalizeLevelState();
     renderAncestries();
+    renderClasses();
     renderSubclasses();
     renderTraits();
     renderLevelUpView();

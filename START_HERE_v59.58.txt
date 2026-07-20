@@ -1,0 +1,47 @@
+VEILFARERS PORTAL v59.58 — START HERE
+=====================================
+
+PURPOSE
+-------
+This release refines the redesigned Character Creator. Class selection stays locked until Awakened or Sleeping is chosen, and selected cards receive a smooth metallic-gold energy line with subtle particles.
+
+DEPLOY
+------
+1. Create a branch from the current v59.57 production/deploy baseline.
+2. Replace the repository contents with VeilFarers_Portal_v59.58.zip.
+3. Do not overlay files from older ZIPs.
+4. Commit the complete package and open a Deploy Preview.
+5. No Firestore Rules deployment is required.
+6. No new Netlify environment variable is required.
+
+PRIORITY TESTS
+--------------
+1. Enter Step 3 without choosing a Path: Class must be dark, contracted and non-clickable.
+2. Click the locked Class region: no persistent validation error should appear.
+3. Choose Awakened and confirm all nine canonical Class cards unlock.
+4. Switch to Sleeping and confirm incompatible Class/Subclass state resets as before.
+5. Select Classes, Ancestries, Communities, Affiliations, Powers and Equipment; confirm the gold energy border and sparse particles.
+6. Verify selection remains clear with reduced-motion enabled and animations disabled.
+7. Test the locked notice and guided footer at 390 x 844 and near the 820 px breakpoint.
+8. Complete a new character and verify Character ID, Vault and Charsheet transfer.
+9. Import a historical JSON and verify migration and Review behavior.
+10. Confirm Level Up, Player Tool, Keeper Tool, Downloads and Card Library still open.
+
+PRESERVED ASSETS
+----------------
+- download/downloads.json and all five bundled PDFs are byte-identical to v59.57.
+- All 87 protected 3D dice files are byte-identical to v59.57.
+- No canonical rules, Firebase implementation, Netlify Function or Firestore Rule changed.
+
+FILES OF INTEREST
+-----------------
+creator.html
+creator-redesign.css
+GITHUB_DEPLOY_SUMMARY_v59.58.md
+PORTAL_HANDOVER_v59.58.md
+VALIDATION_v59.58.txt
+SECURITY_TABLES_v59.58.md
+
+CHECKSUM
+--------
+Use VeilFarers_Portal_v59.58.sha256 after packaging.

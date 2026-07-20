@@ -1,36 +1,35 @@
-VEILFARERS PORTAL v59.55 — START HERE
+VEILFARERS PORTAL v59.56 — START HERE
 
 BASE PACKAGE
-This hotfix continues from v59.54. The user-revised Downloads manifest and five bundled PDFs remain unchanged.
+v59.56 continues from v59.55 and changes only the Character Creator Affiliation card presentation plus the new crest assets and release documentation.
 
 DEPLOY
 1. Create or use a clean test branch.
-2. Extract VeilFarers_Portal_v59.55.zip.
+2. Extract VeilFarers_Portal_v59.56.zip.
 3. Copy the CONTENTS of the ZIP into the repository root; index.html must remain at the root.
-4. Commit with GitHub Desktop or your normal signed workflow.
-5. Push and wait for all Netlify checks.
-6. Open the Deploy Preview and perform a hard refresh.
-7. Sign out and back in before testing table operations.
+4. Commit through GitHub Desktop or the normal signed workflow.
+5. Push and wait for Netlify checks.
+6. Open the Deploy Preview and hard-refresh.
 
 IMMEDIATE ACCEPTANCE
-1. Connect Keeper Tool as the table owner.
-2. Send a plain text note to all players.
-3. Send a private note to one selected player; another player must not receive it.
-4. Send a note containing pasted comma- or tab-separated table data.
-5. Delete the sent note.
-6. Confirm Network shows 200 for sendHandout/readSession/deleteHandout.
-7. If an error appears, copy the visible Reference value and locate it in Netlify → Logs & Metrics → Functions → table-api.
+1. Open Character Creator.
+2. Navigate to Step 6 — Affiliation.
+3. Confirm 13 canonical cards remain available.
+4. Confirm supplied crests appear for Church of the Eternal Veil, Explorers' Guild, Free Fleet, Joric, Kurogane, Solari, Valerius, Volkov, Solara Compact, Stellar Commerce Guild and Kaelen.
+5. Confirm House Amaranth and Independent show monogram fallbacks.
+6. Test selection and Next on desktop and mobile.
+7. Import an existing character and confirm its affiliation is still selected.
 
-BROWSER EXTENSION MESSAGE
-`A listener indicated an asynchronous response...` is normally emitted by a browser extension message channel. It is separate from the VeilFarers API. The relevant application signal is the `/api/table-api` status and its request reference.
-
-FILES
-- GITHUB_DEPLOY_SUMMARY_v59.55.md
-- VALIDATION_v59.55.txt
-- SECURITY_TABLES_v59.55.md
-- PORTAL_HANDOVER_v59.55.md
-- PORTAL_HANDOVER_v59.55.docx
-- firestore_v59.55.rules
+CANON BOUNDARY
+Starborn Collective and Spire of Verita art is included as future-ready assets but no Affiliation choices were added because the current canonical Affiliation dataset does not contain those entries.
 
 FIRESTORE RULES
-No Rules change is required to test this server-mediated note hotfix. The included file retains the v59.54 baseline.
+No Rules change is required. The included firestore_v59.56.rules is the unchanged coordinated baseline.
+
+FILES
+- GITHUB_DEPLOY_SUMMARY_v59.56.md
+- VALIDATION_v59.56.txt
+- SECURITY_TABLES_v59.56.md
+- PORTAL_HANDOVER_v59.56.md
+- PORTAL_HANDOVER_v59.56.docx
+- firestore_v59.56.rules

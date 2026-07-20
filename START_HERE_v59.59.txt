@@ -1,0 +1,48 @@
+VEILFARERS PORTAL v59.59 — START HERE
+=====================================
+
+RELEASE PURPOSE
+---------------
+v59.59 makes the Path/Class dependency absolute, removes cursor-following card light,
+increases selected-state particles, and adds two persistent portal-wide themes:
+VeilFarers Blue and White Stone.
+
+DEPLOY
+------
+1. Create or switch to a test branch.
+2. Replace the repository contents with the contents of VeilFarers_Portal_v59.59.zip.
+3. Commit and push through GitHub Desktop or your normal signed workflow.
+4. Let Netlify create a Deploy Preview.
+5. Do not deploy new Firestore Rules for this release; firestore_v59.59.rules is carried
+   forward unchanged for reference.
+
+PRIORITY ACCEPTANCE TESTS
+-------------------------
+1. Character Creator → Step 3, without Path:
+   - Class deck is contracted and contains no Class cards.
+   - clicking the Class area does nothing and shows no error.
+   - keyboard focus cannot enter a Class option.
+2. Choose Awakened, then Sleeping:
+   - nine Class cards appear only after Path;
+   - changing Path clears incompatible Class/Subclass state.
+3. Hover unselected cards:
+   - dimensional tilt may remain;
+   - no light hotspot follows the cursor.
+4. Select several cards and Domain Powers:
+   - metallic gold border remains smooth;
+   - particle presence is slightly denser than v59.58.
+5. Open the custom Theme control in the portal navigation:
+   - switch between VeilFarers Blue and White Stone;
+   - reload and confirm the choice persists;
+   - inspect every portal page in both themes.
+6. Complete Creator → Vault → Charsheet and import a historical JSON.
+7. Verify Player Tool, Keeper Tool, Downloads and 3D dice behavior remain functional.
+
+ROLLBACK
+--------
+Redeploy VeilFarers_Portal_v59.58.zip. No data migration or Firestore rollback is required.
+
+REFERENCE
+---------
+Read GITHUB_DEPLOY_SUMMARY_v59.59.md for the PR description and
+PORTAL_HANDOVER_v59.59.md for the complete project handover.

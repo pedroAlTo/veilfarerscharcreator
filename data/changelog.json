@@ -1,7 +1,31 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.55",
+  "currentVersion": "v59.59",
   "entries": [
+    {
+      "version": "v59.59",
+      "date": "2026-07-20",
+      "title": "Portal-wide VeilFarers themes and absolute Path/Class gate",
+      "summary": "Introduces persistent VeilFarers Blue and White Stone themes across every portal page, removes cursor-following card illumination, increases selected-card gold particles, and prevents any Class catalogue or state from existing until Awakened or Sleeping is selected."
+    },
+    {
+      "version": "v59.58",
+      "date": "2026-07-20",
+      "title": "Path-gated classes and selected-card energy feedback",
+      "summary": "Keeps Class selection visibly locked until Awakened or Sleeping is chosen, removes the persistent premature-class validation error, and adds a restrained animated metallic-gold border with subtle golden particles to selected Creator cards."
+    },
+    {
+      "version": "v59.57",
+      "date": "2026-07-19",
+      "title": "Complete Character Creator visual reconstruction",
+      "summary": "Rebuilds all nine Character Creator steps in the approved dark navy, gold and heraldic application language, adds synchronized desktop/mobile progress navigation, completes House Amaranth and Independent crest coverage, and preserves the existing canonical creation, import, Character ID and Vault workflows."
+    },
+    {
+      "version": "v59.56",
+      "date": "2026-07-19",
+      "title": "Affiliation crest integration in Character Creator",
+      "summary": "Adds the supplied House and faction crests as optimized transparent Affiliation card headers, preserves canonical affiliation rules, supplies responsive/mobile presentation and accessible fallbacks, and stores Starborn Collective and Spire of Verita artwork without adding unsupported affiliation options."
+    },
     {
       "version": "v59.55",
       "date": "2026-07-19",
@@ -627,5 +651,5 @@
       ]
     }
   ],
-  "version": "v59.53"
+  "version": "v59.59"
 }
