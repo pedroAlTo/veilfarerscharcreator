@@ -194,7 +194,7 @@
       classFeature: S(f.features),
       playerNotes: [f.seed_motive, f.seed_afraid, f.seed_loss, f.seed_crew, f.a_quick_notes, f.s_anchor, f.aff_notes, f.equipment_notes].filter(Boolean).join('\n\n'),
       domains: S(f.a_domain_ref),
-      ancestryGift: S(f.ancestry_gift), communityGift: S(f.community_gift),
+      ancestryGift: S(f.ancestry_gift), communityGift: S(f.community_gift), humanInheritance:S(f.human_inheritance_kind), humanInheritanceItem:S(f.human_inheritance_item_id),
       armor: { name: S(f.armor_name), thresholds: S(f.armor_thr), feature: S(f.armor_feat), tier: S(f.armor_tier), installedMods:modApi?modApi.normalize(f.armor_mods,'armor'):[] },
       modInventory: {
         weapon: modApi?modApi.normalize(f.mod_inventory_weapon,'weapon'):[],
@@ -269,6 +269,15 @@
     if(ancestryRules.extra) gifts.push([ancestryRules.extra.name,ancestryRules.extra.text].filter(Boolean).join(': '));
     var strain = (ancestryRules.subStrains || []).find(function(x){ return x.id === raw.subStrain || x.name === raw.subStrain; });
     if(strain) gifts.push([strain.name, strain.featName, strain.featText].filter(Boolean).join(' · '));
+    var inheritedAugment = raw.humanInheritance==='graft' ? findBy(canonical.augments,function(x){return sameIdentity(x.id,raw.humanInheritanceItem)||sameIdentity(x.name,raw.humanInheritanceItem);}) : null;
+    var inheritedTool = raw.humanInheritance==='tool'
+      ? (findBy(canonical.weapons,function(x){return sameIdentity(x.id,raw.humanInheritanceItem)||sameIdentity(x.name,raw.humanInheritanceItem);})
+        ||findBy(canonical.armor,function(x){return sameIdentity(x.id,raw.humanInheritanceItem)||sameIdentity(x.name,raw.humanInheritanceItem);})
+        ||findBy(canonical.gear,function(x){return sameIdentity(x.id,raw.humanInheritanceItem)||sameIdentity(x.name,raw.humanInheritanceItem);}))
+      : null;
+    if(inheritedAugment) gifts.push('Inheritance Selected — The Graft: '+inheritedAugment.name+' · no drawback');
+    if(inheritedTool) { gifts.push('Inheritance Selected — The Tool: '+inheritedTool.name+' · Experimental (TT3) · 9 Cr'); inventory[0]=inheritedTool.name; }
+
     var communityFeature = communityRules.feature ? [communityRules.feature.name, communityRules.feature.text].filter(Boolean).join(': ') : '';
     var classFeature = classRulesFull.classFeature ? [classRulesFull.classFeature.name, classRulesFull.classFeature.text].filter(Boolean).join(': ') : '';
     var hopeFeature = (pathLower==='sleeping' ? classRulesFull.effortFeature : classRulesFull.hopeFeature) ? [(pathLower==='sleeping'?classRulesFull.effortFeature:classRulesFull.hopeFeature).name, (pathLower==='sleeping'?classRulesFull.effortFeature:classRulesFull.hopeFeature).text].filter(Boolean).join(': ') : '';
@@ -297,6 +306,8 @@
       experiences: ensureThreeExperiences((raw.experiences || []).map(function (text,index) { return { description: S(text), bonus: num((raw.experienceBonuses||[])[index],2) }; })),
       playerNotes: [raw.appearance, raw.voice, raw.bgAnswer, raw.anchor, raw.wound].filter(Boolean).join('\n'),
       inventory: inventory,
+      humanInheritance:S(raw.humanInheritance), humanInheritanceItem:S(raw.humanInheritanceItem),
+      augments: inheritedAugment ? [{id:inheritedAugment.id,canonicalId:inheritedAugment.id,name:inheritedAugment.name,tier:inheritedAugment.tier,benefit:inheritedAugment.benefit||'',drawback:'',humanInheritance:true}] : [],
       weapons: selectedWeapons.map(function (weapon) { return hydrateWeapon(weapon, canonical); }),
       weaponInventory: selectedWeapons.map(function(weapon){ return weapon.id; }),
       weaponArsenal: selectedWeapons.map(function (weapon) { return hydrateWeapon(weapon, canonical); }),

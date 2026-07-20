@@ -617,3 +617,141 @@ html[data-vf-theme="stone"] body.vf-full-sheet .online-vault-card input{backgrou
   body.vf-full-sheet .head{box-shadow:none!important}
   body.vf-full-sheet .block{box-shadow:none!important}
 }
+
+
+/* v59.72 — restore the original character-sheet token language and correct masthead geometry. */
+body.vf-full-sheet .head{
+  grid-template-columns:52px minmax(0,1fr) minmax(344px,382px)!important;
+  overflow:visible!important;
+}
+body.vf-full-sheet .head .stats{
+  display:grid!important;
+  grid-template-columns:112px 76px minmax(98px,1fr) 86px!important;
+  min-width:344px!important;
+  width:100%!important;
+  gap:7px!important;
+  align-items:stretch!important;
+}
+body.vf-full-sheet .stat-badge{
+  box-sizing:border-box!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:72px!important;
+  padding:7px 6px 8px!important;
+  overflow:visible!important;
+}
+body.vf-full-sheet .stat-badge.level-badge{width:auto!important;min-width:112px!important}
+body.vf-full-sheet .level-control{
+  display:grid!important;
+  grid-template-columns:25px minmax(38px,1fr) 25px!important;
+  gap:5px!important;
+  width:100%!important;
+}
+body.vf-full-sheet .level-step{width:25px!important;height:30px!important;min-width:25px!important;padding:0!important}
+body.vf-full-sheet .level-control input[data-f="level"]{width:100%!important;min-width:38px!important;padding:0 2px!important}
+body.vf-full-sheet .stat-badge input{
+  color:#f6f2e7!important;
+  opacity:1!important;
+  text-shadow:0 1px 0 rgba(0,0,0,.7)!important;
+}
+body.vf-full-sheet .armor-badge{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important}
+body.vf-full-sheet .armor-badge .pips{
+  display:grid!important;
+  grid-template-columns:repeat(4,15px)!important;
+  gap:3px 4px!important;
+  justify-content:center!important;
+  margin-top:5px!important;
+  width:auto!important;
+}
+body.vf-full-sheet .armor-block>.track-row{display:none!important}
+
+/* Every track owns its geometry; global button rules may not stretch these controls. */
+body.vf-full-sheet .pip{
+  box-sizing:border-box!important;
+  flex:0 0 auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+}
+body.vf-full-sheet .pips{align-items:center!important;gap:6px!important;flex-wrap:nowrap!important;overflow:visible!important}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex{
+  width:20px!important;height:25px!important;
+  background:var(--track-rim)!important;
+  clip-path:polygon(20% 0,80% 0,100% 18%,88% 84%,70% 100%,30% 100%,12% 84%,0 18%)!important;
+}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex::after{
+  inset:2px!important;background:var(--paper)!important;
+  clip-path:polygon(20% 0,80% 0,100% 18%,88% 84%,70% 100%,30% 100%,12% 84%,0 18%)!important;
+}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex.marked::after{background:var(--track-rim)!important;opacity:.24!important}
+body.vf-full-sheet .health-block [data-track="stress"] .pip{
+  width:20px!important;height:20px!important;border-radius:50%!important;border-width:2px!important;background:var(--paper)!important;
+}
+body.vf-full-sheet .health-block [data-track="stress"] .pip.marked{background:var(--track-rim)!important;box-shadow:inset 0 0 0 4px var(--paper)!important}
+
+/* Hope remains visibly distinct: a compact six-sided token, not a washed-out ghost. */
+body.vf-full-sheet .engine [data-track="a_hope"] .pip.hex{
+  width:21px!important;height:23px!important;opacity:1!important;background:var(--track-rim)!important;
+  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)!important;
+}
+body.vf-full-sheet .engine [data-track="a_hope"] .pip.hex::after{
+  inset:2px!important;background:var(--paper)!important;
+  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)!important;
+}
+body.vf-full-sheet .engine [data-track="a_hope"] .pip.hex.marked::after{background:var(--track-rim)!important;opacity:.22!important}
+body.vf-full-sheet .engine [data-track="a_hope"] .pip.hex.locked{opacity:.34!important}
+
+/* Effort: one clean diamond per point. Half Effort is shown by a quiet half-fill, never a permanent divider. */
+body.vf-full-sheet .pip.effort{
+  position:relative!important;
+  width:19px!important;height:19px!important;
+  border:2px solid var(--track-rim)!important;
+  border-radius:1px!important;
+  background:var(--paper)!important;
+  transform:rotate(45deg)!important;
+  overflow:hidden!important;
+}
+body.vf-full-sheet .pip.effort:hover{transform:rotate(45deg) scale(1.08)!important}
+body.vf-full-sheet .pip.effort::before{content:none!important}
+body.vf-full-sheet .pip.effort::after{content:none!important}
+body.vf-full-sheet .pip.effort.half-marked{background:linear-gradient(135deg,var(--track-rim) 0 50%,var(--paper) 50% 100%)!important}
+body.vf-full-sheet .pip.effort.marked{background:var(--track-rim)!important;box-shadow:inset 0 0 0 3px var(--paper)!important}
+body.vf-full-sheet .pip.effort.locked{border-style:dashed!important;background:transparent!important;opacity:.34!important}
+
+/* Resolve: exact square tokens rotated into true diamonds. */
+body.vf-full-sheet .engine [data-track="s_resolve"]{gap:9px!important;padding:3px 2px!important}
+body.vf-full-sheet .engine [data-track="s_resolve"] .pip.dia{
+  width:17px!important;height:17px!important;aspect-ratio:1/1!important;
+  border-radius:2px!important;border-width:2px!important;
+  transform:rotate(45deg)!important;background:var(--paper)!important;
+}
+body.vf-full-sheet .engine [data-track="s_resolve"] .pip.dia:hover{transform:rotate(45deg) scale(1.08)!important}
+body.vf-full-sheet .engine [data-track="s_resolve"] .pip.dia.marked{background:var(--track-rim)!important;box-shadow:inset 0 0 0 3px var(--paper)!important}
+
+/* Header armor uses the original simple shield silhouette. */
+body.vf-full-sheet .pip.shield{
+  position:relative!important;width:15px!important;height:18px!important;border:0!important;border-radius:0!important;
+  background:var(--track-rim)!important;
+  clip-path:polygon(8% 0,92% 0,92% 62%,50% 100%,8% 62%)!important;
+}
+body.vf-full-sheet .pip.shield::after{
+  content:"";position:absolute;inset:1.7px;background:#07131f;
+  clip-path:polygon(8% 0,92% 0,92% 62%,50% 100%,8% 62%);
+}
+body.vf-full-sheet .pip.shield.marked{background:#22d3ee!important;filter:drop-shadow(0 0 3px rgba(34,211,238,.42))}
+body.vf-full-sheet .pip.shield.marked::after{background:#22d3ee!important}
+body.vf-full-sheet .pip.shield.locked{background:#445362!important;opacity:.42!important}
+body.vf-full-sheet .pip.shield.locked::after{background:#07131f!important}
+
+body.vf-full-sheet .thr-chip,
+body.vf-full-sheet .trait .tmod input,
+body.vf-full-sheet .trait .tmod select{opacity:1!important;color:var(--ink)!important;font-weight:800!important}
+body.vf-full-sheet .thr-chip{font-size:16px!important}
+body.vf-full-sheet .trait .tmod input,
+body.vf-full-sheet .trait .tmod select{color:#f4efe1!important}
+
+@media(max-width:900px){
+  body.vf-full-sheet .head{grid-template-columns:44px minmax(0,1fr)!important;grid-template-areas:'sigil stats' 'id id'!important}
+  body.vf-full-sheet .head .stats{grid-template-columns:repeat(4,minmax(70px,1fr))!important;min-width:0!important}
+}

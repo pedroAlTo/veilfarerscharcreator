@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta name="veilfarers-release" content="v59.68">
+  <meta name="veilfarers-release" content="v59.72">
   <script src="local-runtime.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4780,7 +4780,6 @@ function armorBlock() {
     </div>
     <textarea data-f="armor_tier" hidden></textarea><textarea data-f="armor_mods" hidden></textarea><textarea data-f="mod_inventory_armor" hidden></textarea>
     <div data-vf-mod-manager data-mod-type="armor" data-mod-target="armor"></div>
-    ${trackRow("Armor","armor_slots",8)}
   </div>`;
 }
 
@@ -4838,7 +4837,7 @@ function awakenedQuickRefBlock() {
 function sleeperEngine() {
   return `<div class="block engine">
     <div class="sec-title">The Sleeping Engine <span class="hint">run on yourself</span></div>
-    ${trackRow("Effort","s_effort",6,"half")}
+    ${trackRow("Effort","s_effort",6,"effort")}
     <div class="note" style="margin-top:0">Gain +½ Effort when Hope is higher on a Duality Roll, whether the check succeeds or fails. Spend Effort only in whole points.</div>
     ${trackRow("Resolve","s_resolve",6,"dia")}
     <div class="note" style="margin-top:0">Spend on Signature Moves. Starts each session full · Short Rest +1 · Long Rest full.</div>
@@ -4934,8 +4933,9 @@ function headBand(path) {
     </div>
     <div class="stats">
       <div class="stat-badge level-badge"><span class="lbl">Level</span><div class="level-control" aria-label="Adjust level"><button type="button" class="level-step" data-level-step="-1" title="Decrease level">−</button><input data-f="level" placeholder="1" inputmode="numeric"/><button type="button" class="level-step" data-level-step="1" title="Increase level">+</button></div></div>
-      <div class="stat-badge"><span class="lbl">Evasion</span><input data-f="evasion" placeholder="—"/></div>
-      <div class="stat-badge"><span class="lbl">Proficiency</span><input data-f="prof" placeholder="—"/></div>
+      <div class="stat-badge evasion-badge"><span class="lbl">Evasion</span><input data-f="evasion" placeholder="—"/></div>
+      <div class="stat-badge armor-badge"><span class="lbl">Armor</span>${pips("armor_slots",8,"shield")}</div>
+      <div class="stat-badge proficiency-badge"><span class="lbl">Proficiency</span><input data-f="prof" placeholder="—"/></div>
     </div>
   </div>`;
 }

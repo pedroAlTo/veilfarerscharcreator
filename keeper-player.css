@@ -69,3 +69,10 @@ body.vf-keeper-page #vf-send-note{flex:0 0 auto;padding:7px 10px!important;borde
 body.vf-keeper-page #vf-sent-notes-wrap{margin-top:8px;padding-top:7px;border-top:1px solid rgba(103,232,249,.16)}
 body.vf-keeper-page .vf-note-console-subhead{font-size:8px;color:#94a3b8;text-transform:uppercase;font-weight:800;letter-spacing:.1em;margin-bottom:4px}
 body.vf-keeper-page #vf-sent-notes{max-height:112px;overflow-y:auto;padding-right:2px}
+
+/* v59.72 — Fear is an aggressive red table resource, without ornamental bezel. */
+body.vf-keeper-page .fear-tokens-container{border:0!important;background:transparent!important;border-radius:0!important;padding:2px 0!important;box-shadow:none!important}
+body.vf-keeper-page .fear-label{color:#f87171!important}
+body.vf-keeper-page .fear-count{color:#ef4444!important;text-shadow:0 0 8px rgba(239,68,68,.28)!important}
+body.vf-keeper-page .fear-tokens-container .btn-token{border:1px solid rgba(239,68,68,.46)!important;background:rgba(127,29,29,.18)!important;color:#fecaca!important;border-radius:3px!important;box-shadow:none!important}
+body.vf-keeper-page .fear-tokens-container .btn-token:hover{background:rgba(185,28,28,.34)!important;border-color:#ef4444!important}

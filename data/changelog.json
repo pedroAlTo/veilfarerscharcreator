@@ -1,7 +1,50 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.68",
+  "currentVersion": "v59.72",
   "entries": [
+    {
+      "version": "v59.72",
+      "date": "2026-07-20",
+      "title": "Sheet geometry and card interaction correction",
+      "changes": [
+        "Moves Armor Slot shields into the character masthead beside Evasion and prevents Level, Evasion, Armor and Proficiency from overlapping.",
+        "Restores distinct, non-deformed Charsheet tokens: shield-shaped HP, circular Stress, visible Hope, clean Effort diamonds without a permanent divider, and exact square Resolve diamonds.",
+        "Rebuilds Creator card expansion as a true two-face rotation: the card lifts and glows when chosen, rises further on [+], rotates to a blue image-free full-text reverse, and returns to neutral on [−] or outside click.",
+        "Restores simple cyan Player Tool Shield silhouettes and aggressive red Fear triangles without decorative bezels; Keeper Fear controls use the same red language.",
+        "Preserves v59.71 schematic class-feature summaries, v59.70 authentication recovery, v59.65 dice cancellation, Human inheritance in Equipment, and the approved editorial PDFs."
+      ]
+    },
+    {
+      "version": "v59.71",
+      "date": "2026-07-20",
+      "title": "Player Tool visual rollback and Creator card feedback",
+      "changes": [
+        "Restores the v59.56 Player Tool visual proportions for thresholds, compact steppers, Experiences and horizontal resource tracks while retaining v59.70 authentication and dice lifecycle fixes.",
+        "Applies schematic mechanical summaries to every Awakened and Sleeping class feature in Player Tool; canonical source data remains unchanged.",
+        "Raises selected Ancestry, Community, Class and Affiliation cards and adds a gold [+] control to reveal a full-text, image-free reverse side; only one card may be flipped at a time.",
+        "Strengthens Trait and Equipment recommendations with explicit non-canonical UI guidance.",
+        "Keeps White Stone disabled and Human Inheritance selection in Equipment."
+      ]
+    },
+    {
+      "version": "v59.70",
+      "date": "2026-07-20",
+      "title": "Release-candidate UI and table stabilization",
+      "changes": [
+        "Temporarily locks the portal to VeilFarers Blue and removes the White Stone selector.",
+        "Moves Human Inheritance of the Builders selection entirely into Equipment.",
+        "Restores compact, elegant Player/Keeper resource tokens and removes overlapping number chevrons.",
+        "Fixes Experience rows and removes duplicated/non-mechanical Effort Feature copy from compact UI.",
+        "Stops Keeper/Player polling after expired authentication and retries a table request once with a refreshed token.",
+        "Makes overlay dice dismissible by clicking anywhere only after the roll has resolved; the explicit close button safely cancels an active roll."
+      ]
+    },
+    {
+      "version": "v59.69",
+      "date": "2026-07-20",
+      "title": "Editorial line integration and Human inheritance workflow",
+      "summary": "Installs the approved Corebook 11.35 and companion 11.33 PDF candidates in Downloads, adds Made for the Graft and Inheritance of the Builders to Human ancestry canon, requires the Graft or Tool choice in Character Creator, provides a searchable inheritance catalogue during Equipment, and transfers the selected graft or item into Charsheet-compatible data without changing the editorial Massive wording."
+    },
     {
       "version": "v59.68",
       "date": "2026-07-20",
@@ -699,5 +742,5 @@
       ]
     }
   ],
-  "version": "v59.67"
+  "version": "59.72.0"
 }

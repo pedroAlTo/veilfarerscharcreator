@@ -325,9 +325,9 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC2-draft6",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
-        "line": 119,
+        "version": "11.35",
+        "sourceFile": "VeilFarers_Corebook_11.35-PDF-Candidate_FULL_SOURCE.md",
+        "section": "Human · Ancestry Gifts · Made for the Graft / Inheritance of the Builders",
         "collection": "ancestries"
       }
     ],
@@ -346,6 +346,14 @@
         {
           "name": "Cultural Bridge",
           "text": "Humans are found everywhere and have learned to read the motivations and customs of many other species. During a rest, you can mark 1 Stress to represent the mental effort of sorting through cultural knowledge. You may then ask the Keeper one question about a specific group's core motivations or most important customs. The Keeper answers truthfully."
+        },
+        {
+          "name": "Made for the Graft",
+          "text": "Augmentation is overwhelmingly human work, built by human engineers around human anatomy, and human physiology accepts grafted hardware with a readiness no other ancestry quite matches. You gain +2 Augment Capacity (Chapter 13). Where another ancestry leans on an innate gift, a human as often leans on a better arm."
+        },
+        {
+          "name": "Inheritance of the Builders",
+          "text": "Human civilization built most of what the galaxy buys, flies, and grafts, and a human character starts play already holding a piece of that inheritance. Choose one at character creation: The Graft — one free Common (TT1) or Military (TT2) augmentation; a Common graft consumes no Augment Slot, a Military graft consumes 1 slot, and either has no drawback. The Tool — one Experimental (TT3), 9 Cr (WT3) item from any equipment catalogue in play."
         }
       ],
       "extra": null,
@@ -381,7 +389,22 @@
           "name": "Resource Drain",
           "text": "Supplies run dry faster than planned; the Keeper removes or reduces a resource."
         }
-      ]
+      ],
+      "inheritanceOptions": [
+        {
+          "id": "graft",
+          "name": "The Graft",
+          "tag": "A body made to take the upgrade",
+          "text": "Choose one free Common (TT1) or Military (TT2) augmentation. A Common graft consumes no Augment Slot; a Military graft consumes 1 slot. The chosen graft has no drawback."
+        },
+        {
+          "id": "tool",
+          "name": "The Tool",
+          "tag": "A piece of the civilization that built the lanes",
+          "text": "Choose one Experimental (TT3) item worth 9 Cr (WT3) from any equipment catalogue in play. It is yours, paid for, and nobody asks how."
+        }
+      ],
+      "augmentCapacityBonus": 2
     }
   },
   {

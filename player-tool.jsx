@@ -152,20 +152,26 @@
             </div>
           );
         };
-
-        /* Number input with custom up/down chevrons (native browser spinners are hidden via CSS). */
+        /* v59.72: restore the compact v59.56 stepper without browser-native controls. */
         const NumField = ({ value, onChange, className, min, max, onClick, style, placeholder }) => {
           const full = /w-full/.test(className || '');
-          const cur = () => { const n = parseFloat(value); return isNaN(n) ? 0 : n; };
-          const clamp = (v) => { if (min !== undefined && min !== null && v < min) return min; if (max !== undefined && max !== null && v > max) return max; return v; };
-          const bump = (d, e) => { e.preventDefault(); e.stopPropagation(); onChange({ target: { value: String(clamp(cur() + d)) } }); };
+          const currentNumber = () => { const n = parseFloat(value); return Number.isFinite(n) ? n : 0; };
+          const clampNumber = (next) => {
+            if (min !== undefined && min !== null && next < Number(min)) return Number(min);
+            if (max !== undefined && max !== null && next > Number(max)) return Number(max);
+            return next;
+          };
+          const bump = (delta, event) => {
+            event.preventDefault(); event.stopPropagation();
+            onChange({ target: { value: String(clampNumber(currentNumber() + delta)) } });
+          };
           return (
             <span className={`vf-num ${full ? 'vf-num-full' : ''}`}>
-              <input type="number" value={value} onChange={onChange} min={min} max={max} placeholder={placeholder} style={style}
+              <input type="number" inputMode="numeric" value={value} onChange={onChange} min={min} max={max} placeholder={placeholder} style={style}
                 onClick={(e) => { e.stopPropagation(); if (onClick) onClick(e); }} className={className} />
-              <span className="vf-num-btns">
-                <button type="button" tabIndex={-1} onMouseDown={(e) => bump(1, e)} aria-label="increase">▲</button>
-                <button type="button" tabIndex={-1} onMouseDown={(e) => bump(-1, e)} aria-label="decrease">▼</button>
+              <span className="vf-num-btns" aria-hidden="true">
+                <button type="button" tabIndex={-1} onMouseDown={(e) => bump(1, e)} aria-label="Increase">▲</button>
+                <button type="button" tabIndex={-1} onMouseDown={(e) => bump(-1, e)} aria-label="Decrease">▼</button>
               </span>
             </span>
           );
@@ -717,8 +723,76 @@
           if (!actions.length && cost) actions.push({ type: 'use', label: fallbackTitle || 'Use feature', cost });
           return actions;
         };
+        const FEATURE_UI_OVERRIDES_RAW = Object.freeze({
+          'the power of suggestion':'3 Hope · Choose 1: ally’s next Presence/Knowledge/Finesse roll has Advantage; ally’s next attack or Finesse roll to sneak/hide has Advantage; or gain 1 relevant secret Clue from the Keeper.',
+          'cultural lens':'Passive · Advantage on Social tests. Start each session with 2 Favor (max 4). Gain 1 Favor on successful Persuasion/Deception and each Long Rest. Spend Favor through class/contact effects; 5 Favor: +1 Reputation with one faction. Known culture protocol: no roll; unknown culture: Knowledge to read norms.',
+          'the prepared mind':'2 Effort · Choose 1: Cite the File—gain 1 true, useful prepared fact; Anticipated Move—Reaction before the next NPC social/political action, with Advantage; Quiet Word—one NPC treats a private statement as credible. Influence: Success scene; Hope persists; Critical spreads; Fear turns against you.',
+          'standing reputation':'Passive · Start each session with 2 Favor (max 4, plus background/subclass increases). Gain 1 Favor on successful Persuasion/Deception and each Long Rest. Spend through subclass/contact/institutional effects; 5 Favor: +1 Reputation. Known culture protocol: no roll; unknown culture: Knowledge to read norms.',
+          'scrap genius':'3 Hope · Create one plausible temporary device from available materials. It works for the scene, then becomes unusable. Keeper determines plausibility.',
+          'technical intuition':'Passive · Advantage on repair and diagnosis. 1/session, when a system fails: mark 1 Stress to make a perfect fix until your next Long Rest.',
+          'brute-force diagnostic':'2 Effort · Choose 1: Find the Failure—after 1 minute, learn the exact fault and concealed sabotage; Never Rated for This—machine performs 1 tier higher for the scene, then breaks; Field Manual—the next 4 related rolls by you or instructed allies have Advantage.',
+          'logged tools':'Passive · Maintain a list of 3 salvaged/prepared components. Declare one on hand when needed. Keeper may require a downtime restock between missions.',
+          'pathfinder’s insight':'3 Hope · On a Travel or Scan the Area roll during a Void Crawl: roll 1 Fear die and 2 Hope dice; choose which Hope die to keep, then resolve normally.',
+          "pathfinder's insight":'3 Hope · On a Travel or Scan the Area roll during a Void Crawl: roll 1 Fear die and 2 Hope dice; choose which Hope die to keep, then resolve normally.',
+          'foremost survivor':'Passive · Advantage on Survival tests. 1/session: spend 1 Stress for immunity to one environmental hazard for the scene. 1/Exploration Turn: spend 1 Stress to prevent 1 segment on Supplies Running Low or Attention Drawn.',
+          'methodical reconnaissance':'2 Effort · Choose 1: Margin Note—declare one recorded physical feature; Trail—learn who passed, number, direction and approximate time; Charted Route—declare a real, useful route. Keeper may add an appropriate complication.',
+          'the logbook':'1/session · At a previously logged location, recall one specific recorded detail. It is accurate as of the entry date.',
+          'reality unfold':'3 Hope · Gain Advantage on all rolls until you roll with Fear. When the effect ends, mark 1d4 Stress.',
+          'psychic resonance & veil alignment':'Psychic Resonance: 1/round on a Mystic feature, reroll one die; if the new result is lower, mark 1 Stress. Veil Alignment: choose Lux or Void; equip only that alignment. Switch at Levels 2, 5 or 8; previous-alignment cards become dormant.',
+          'the reading':'2 Effort · Study a person, place, object, active Power or Veil phenomenon with instruments/notes. Ask 1 question about exposure, signature, history, instability, likely behavior or procedure. Keeper answers truthfully to the limit of current evidence.',
+          'uncanny archive':'Passive · No Loadout or Vault. At creation, unlock Level 1 in 2 different Domains. Access unlocked-path Powers through Uncanny Power and its access roll. Unlock new paths with Study Projects during Long Rests; higher-level study requires breadth at the previous level.',
+          'veil surge':'3 Hope · Gain Advantage on all piloting tests and ignore one instance of Severe ship damage until your next Rest.',
+          'stellar instinct':'Passive · Advantage on piloting/navigation. 1/session: reroll one failed Void-related test. When spending Hope on Finesse (Pilot/Navigate), add +1d8.',
+          'stick time':'2 Effort · Choose 1: Hands on the Stick—ignore 1 environmental penalty on the next piloting maneuver, or change Failure with Fear to Failure; The Read—after 1 minute studying a vessel, learn its likely action next round; Veteran’s Burst—Advantage on the next maneuver and clear 1 Hull Stress.',
+          "the ship knows you":'After flying the same primary vessel for one full mission arc, gain Practiced Pair: Advantage on practiced maneuvers with that ship. Maintain the practiced-maneuver list; add entries during mission downtime.',
+          'eureka moment':'3 Hope · Automatically succeed on one research or analysis test. Keeper also reveals one hidden connection between the research and the wider campaign.',
+          'pattern weaver':'Passive · Advantage on Knowledge analysis. 1/session: mark 1 Stress; Keeper reveals one hidden truth or key vulnerability relevant to the scene. During Long Rests, advance research projects with Knowledge rolls against project complexity.',
+          'applied science':'2 Effort · Choose 1: Countdown—define remaining time and what changes it; Improvised Reaction—create one immediate scene-length chemical effect from local materials; Lost Source—produce a partial, complicating source on a topic believed lost.',
+          'the open question':'Campaign project · Each Long Rest, roll Knowledge (DC 15): Success gains 1 new piece of information; Critical gains a substantive lead. Completion grants a permanent campaign advancement agreed with the Keeper.',
+          'vanishing act':'3 Hope · Become undetectable by visual, audio, thermal, network and psionic tracking for 1 minute.',
+          'shadow operative':'Passive · Advantage on Stealth; reroll one failed Evasion roll. Attack with Advantage: +1d6 Sneak Attack damage (+2d6 Tier 2; +3d6 Tier 3).',
+          'hands that know':'2 Effort · Choose 1: Cased the Joint—learn one concrete weakness and gain Advantage on the job roll; False Face—use an established alternate identity for the scene; Backup Plan—1/scene, produce a contingency item, ally or information that resolves the immediate problem.',
+          'the quiet network':'Sneak Attack: attack with Advantage deals +1d6 damage (+2d6 Tier 2; +3d6 Tier 3). Network: 1/session, declare a contact in the current city/station/region; Keeper defines what they will and will not do.',
+          'combat surge':'After a successful attack · 2 Hope: deal +1d6 damage.',
+          'combat focus':'Focus die d4, starts at 1. While Focused, choose applicable effects: reroll 1 weapon damage die per attack; add Focus die to damage or attack; or give one ally Advantage/+2 Evasion and pass them the Spotlight.',
+          'the held line':'After a successful attack · 1 Effort: deal +1d6 damage.',
+          'the drill':'Session start · Prepare 4 Drills. You know all 4 Common Drills and unlock 1 subclass Drill at Foundation, Specialization and Mastery. Action/Reaction Drills: 1/scene; Passive Drills remain active while prepared.',
+          'path to nirvana':'3 Hope · Enter Nirvana for rounds equal to Proficiency. Choose Agility, Instinct or Strength: Advantage with that trait. Immune to Stunned and Dazed. First Melee attack in the state deals +2d6 Void damage.',
+          'unbroken focus':'Without Heavy/Very Heavy armor: +1 Evasion. Unarmed and Lightweight Melee attacks gain the Energy tag and deal Void damage. 1/turn: spend 1 Stress to ignore Evasion penalties for 1 round.',
+          'the refused path':'2 Effort · Enter Disciplined State for Proficiency + Presence rounds. Choose Agility, Instinct or Strength: Advantage with it and add its modifier to Melee/unarmed damage. Immune to Stunned/Dazed. First Melee hit: +2d6 branch damage. Later Melee attacks in a round have Disadvantage while 2+ enemies are in Melee.',
+          'trained body':'Choose Strength or Agility for unarmed strikes. Damage: d6; d8 at Level 5; d10 at Level 8.',
+          'the refusal':'1/scene · 1 Effort: impose Disadvantage on a Domain/Veil attack or Spellcast Roll, or grant Advantage on an allowed Reaction Roll.',
+          'sleeping vanguard features':'Passive · Trained Body: choose Strength or Agility for unarmed strikes; d6 physical damage, d8 at Level 5, d10 at Level 8. Unbroken Focus: +1 Evasion without Heavy/Very Heavy armor; 1/scene spend 1 Effort to prevent Stress without an Action. The Refusal: 1/scene spend 1 Effort to impose Disadvantage on a Domain/Veil attack or Spellcast Roll, or grant Advantage on an allowed Reaction Roll.'
+        });
+        const FEATURE_UI_OVERRIDES = Object.freeze(Object.fromEntries(Object.entries(FEATURE_UI_OVERRIDES_RAW).map(([key,value]) => [normalizeRuleName(key), value])));
+        const normalizeFeatureTitle = (value) => normalizeRuleName(String(value || '').replace(/\([^)]*(?:hope|effort|stress|resolve)[^)]*\)/ig, '').replace(/^(?:class|hope|effort|ancestry|community) feature\s*/i, '').trim());
+        const featureDisplayText = (text, fallbackTitle) => {
+          const source = String(text || '').replace(/\r/g, '').trim();
+          if (!source) return '';
+          const directKey = normalizeFeatureTitle(fallbackTitle);
+          if (FEATURE_UI_OVERRIDES[directKey]) return FEATURE_UI_OVERRIDES[directKey];
+          const chunks = source.split(/\n{2,}/).filter(Boolean);
+          const replaced = chunks.map(chunk => {
+            const titleMatch = chunk.match(/^([^:\n—]{2,90})(?::|\s+—\s+)/);
+            const rawTitle = titleMatch ? titleMatch[1].trim() : '';
+            const key = normalizeFeatureTitle(rawTitle || chunk.split(/[.:\n]/)[0]);
+            if (FEATURE_UI_OVERRIDES[key]) return FEATURE_UI_OVERRIDES[key];
+            return chunk
+              .replace(/^>.*$/gm, '')
+              .replace(/Where the Awakened[^.]*\./gi, '')
+              .replace(/Where the Sleeping[^.]*\./gi, '')
+              .replace(/The Sleeping [A-Za-z]+(?:'|’)s signature[^.]*\./gi, '')
+              .replace(/The [A-Za-z]+ uses (?:Hope|Effort)[^.]*\./gi, '')
+              .replace(/This is the smallest[^.]*\./gi, '')
+              .replace(/not saved for capstone moments\.?/gi, '')
+              .replace(/Discipline is small, and constant\.?/gi, '')
+              .replace(/\s{2,}/g, ' ').trim();
+          }).filter(Boolean).join('\n\n');
+          return replaced;
+        };
         const compactFeature = (text, fallbackTitle) => {
-          const rawSource = String(text || '').replace(/\r/g, '').trim();
+          const rawOriginal = String(text || '').replace(/\r/g, '').trim();
+          const rawSource = featureDisplayText(rawOriginal, fallbackTitle);
           const source = window.VFCompactRules ? window.VFCompactRules.compactBundle(rawSource, fallbackTitle) : rawSource;
           if (!source) return { title: fallbackTitle, bullets: [], full: '', actions: [] };
           const firstLine = source.split('\n').find(Boolean) || source;
@@ -2346,6 +2420,17 @@
           }, []);
 
           useEffect(() => {
+              const expired = (event) => {
+                  if (unsubscribeRef.current) { try { unsubscribeRef.current(); } catch(_) {} unsubscribeRef.current=null; }
+                  setFbServices(null);setIsConnected(false);setConnectedTableLocked(false);
+                  setStatusMsg('Login expired. Sign in again to reconnect the table.');
+                  setErrorMsg((event && event.detail && event.detail.message) || 'Your VeilFarers login expired.');
+              };
+              window.addEventListener('veilfarers:auth-expired', expired);
+              return () => window.removeEventListener('veilfarers:auth-expired', expired);
+          }, []);
+
+          useEffect(() => {
               if (!isConnected || !sessionId || !window.VFTableAccess) return;
               let stopped=false, busy=false;
               const pollHandouts=async()=>{
@@ -2354,8 +2439,12 @@
                       const out=await window.VFTableAccess.api('readSession',{tableId:normalizeSessionKey(sessionId)});
                       const notes=out&&out.session&&Array.isArray(out.session.handouts)?out.session.handouts:[];
                       if(!stopped)setHandouts(notes.filter(n=>!n||!n.tableId||normalizeSessionKey(n.tableId)===normalizeSessionKey(sessionId)));
-                  }catch(error){if(!stopped)console.warn('Keeper Notes polling unavailable:',error.message||error);}
-                  finally{busy=false;}
+                  }catch(error){
+                      if(!stopped && window.VFTableAccess && window.VFTableAccess.isAuthError && window.VFTableAccess.isAuthError(error)){
+                          stopped=true;clearInterval(timer);setIsConnected(false);setConnectedTableLocked(false);
+                          setStatusMsg('Login expired. Sign in again to reconnect the table.');setErrorMsg(error.message||'Login expired.');
+                      }else if(!stopped)console.warn('Keeper Notes polling unavailable:',error.message||error);
+                  }finally{busy=false;}
               };
               pollHandouts();
               const timer=setInterval(pollHandouts,1250);
@@ -2722,7 +2811,25 @@
             logRoll({ type:'note', label:`Drone module: ${canonical.name}${cost ? ` · operator ${cost.amount} ${cost.resource}` : ''}${temporary ? ` · +${temporary} Evasion for one attack` : ''}\n${canonical.use || ''}`, playerName:character.name || 'Drone', actorId:character.id, resourceCost:cost || null, timestamp:Date.now() });
           };
 
-          const featureAccent = {
+          const CLASS_FEATURE_TITLES = Object.freeze({
+          diplomat:{awakened:{class:'Cultural Lens',effort:'The Power of Suggestion'},sleeping:{class:'Standing Reputation',effort:'The Prepared Mind'}},
+          engineer:{awakened:{class:'Technical Intuition',effort:'Scrap Genius'},sleeping:{class:'Logged Tools',effort:'Brute-Force Diagnostic'}},
+          explorer:{awakened:{class:'Foremost Survivor',effort:"Pathfinder's Insight"},sleeping:{class:'The Logbook',effort:'Methodical Reconnaissance'}},
+          mystic:{awakened:{class:'Psychic Resonance & Veil Alignment',effort:'Reality Unfold'},sleeping:{class:'Uncanny Archive',effort:'The Reading'}},
+          pilot:{awakened:{class:'Stellar Instinct',effort:'Veil Surge'},sleeping:{class:'The Ship Knows You',effort:'Stick Time'}},
+          scholar:{awakened:{class:'Pattern Weaver',effort:'Eureka Moment'},sleeping:{class:'The Open Question',effort:'Applied Science'}},
+          scoundrel:{awakened:{class:'Shadow Operative',effort:'Vanishing Act'},sleeping:{class:'The Quiet Network',effort:'Hands That Know'}},
+          soldier:{awakened:{class:'Combat Focus',effort:'Combat Surge'},sleeping:{class:'The Drill',effort:'The Held Line'}},
+          vanguard:{awakened:{class:'Unbroken Focus',effort:'Path to Nirvana'},sleeping:{class:'Sleeping Vanguard Features',effort:'The Refused Path'}}
+        });
+        const playerFeatureTitle = (kind) => {
+          if (kind !== 'class' && kind !== 'effort') return '';
+          const classKey = normalizeRuleName(character && character.class);
+          const pathKey = normalizeRuleName(character && character.path) === 'sleeping' ? 'sleeping' : 'awakened';
+          const classEntry = CLASS_FEATURE_TITLES[classKey] && CLASS_FEATURE_TITLES[classKey][pathKey];
+          return classEntry && classEntry[kind] || '';
+        };
+        const featureAccent = {
             ancestry: { label:'Ancestry Gift', text:'text-amber-300', border:'border-amber-800/50', bg:'bg-amber-950/20' },
             class: { label:'Class Feature', text:'text-emerald-300', border:'border-emerald-800/50', bg:'bg-emerald-950/20' },
             community: { label:'Community Feature', text:'text-cyan-300', border:'border-cyan-800/50', bg:'bg-cyan-950/20' },
@@ -2748,7 +2855,10 @@
           };
           const FeatureSummaryCard = ({ kind, text }) => {
               const accent = featureAccent[kind] || featureAccent.class;
-              const summary = compactFeature(text, accent.label);
+              const actualTitle = playerFeatureTitle(kind);
+              const canonicalTitle = actualTitle || accent.label;
+              const summary = compactFeature(text, canonicalTitle);
+              if (actualTitle) summary.title = actualTitle;
               const panelId = `feature-${kind}`;
               const expanded = panelExpanded(panelId);
               return (
@@ -2757,7 +2867,7 @@
                     <span className="min-w-0">
                       <span className={`block text-[9px] font-black uppercase tracking-widest ${accent.text}`}>{accent.label}</span>
                       <span className="block text-[12px] font-bold text-slate-100 mt-0.5 leading-tight">{summary.title}</span>
-                      <span className="block mt-1 text-[10px] text-slate-400 leading-snug line-clamp-2">{summary.bullets[0] || compactLine(summary.full, 130)}</span>
+                      {!expanded && <span className="block mt-1 text-[10px] text-slate-400 leading-snug line-clamp-2">{summary.bullets[0] || compactLine(summary.full, 130)}</span>}
                     </span>
                     <span className={`shrink-0 w-7 h-7 rounded-full border grid place-items-center ${expanded ? 'border-slate-500 bg-slate-800 text-white' : 'border-slate-700 bg-slate-950 text-slate-400'}`} aria-hidden="true">
                       {expanded ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
@@ -2838,7 +2948,33 @@
 
 
           // Helper UI Components
-          const ResourceTrack = ({ label, current, max, cap, color, icon: Icon, onChange, tokenKey }) => { var total = cap || max; var tk = tokenKey || label.toLowerCase(); return ( <div className={`bg-slate-900/90 px-3 py-2 rounded border border-${color}-900/30 flex items-center justify-between shadow-sm h-full`}> <div className="flex items-center gap-2 mr-2 shrink-0" data-resicon={tk}> {Icon && <Icon className={`w-3 h-3 text-${color}-500`} />} <div className="flex flex-col leading-none"><label className={`text-[9px] font-bold uppercase text-${color}-400 tracking-wider`}>{label}</label><span className={`text-[9px] font-mono text-${color}-300 opacity-60`}>{current}/{max}</span></div> </div> <div className="flex gap-1 flex-wrap justify-end"> {Array.from({ length: total }).map((_, i) => { var active = i < max; var filled = i < current && !pending[tk + '-' + i]; return ( <button key={i} data-token={tk + '-' + i} data-token-kind={tk} data-token-state={!active ? 'unavailable' : (filled ? 'filled' : 'empty')} aria-pressed={filled ? 'true' : 'false'} aria-label={`${label} slot ${i + 1} of ${total}: ${!active ? 'unavailable' : (filled ? 'filled' : 'empty')}`} disabled={!active} onClick={() => { if (active) onChange(i + 1 === current ? i : i + 1); }} className={`vf-resource-token w-3 h-4 shrink-0 rounded-[1px] border transition-all duration-100 ${!active ? "bg-transparent border border-dashed border-slate-600 cursor-not-allowed" : (filled ? `bg-${color}-600 border-${color}-400` : `bg-slate-950 border-slate-800 hover:border-${color}-500/50`)}`} /> ); })} </div> </div> ); };
+          const ResourceTrack = ({ label, current, max, cap, color, icon: Icon, onChange, tokenKey }) => {
+            const total = cap || max;
+            const tk = tokenKey || label.toLowerCase();
+            return (
+              <div className={`vf-resource-row bg-slate-900/90 px-3 py-2 rounded border border-${color}-900/30 flex items-center justify-between shadow-sm h-full`}>
+                <div className="flex items-center gap-2 mr-2 shrink-0" data-resicon={tk}>
+                  {Icon && <Icon className={`w-3 h-3 text-${color}-500`} />}
+                  <div className="flex flex-col leading-none">
+                    <label className={`text-[9px] font-bold uppercase text-${color}-400 tracking-wider`}>{label}</label>
+                    <span className={`text-[9px] font-mono text-${color}-300 opacity-60`}>{current}/{max}</span>
+                  </div>
+                </div>
+                <div className="vf-resource-track flex gap-1 flex-wrap justify-end">
+                  {Array.from({ length: total }).map((_, i) => {
+                    const available = i < max;
+                    const filled = i < current && !pending[tk + '-' + i];
+                    const stateName = !available ? 'unavailable' : (filled ? 'filled' : 'empty');
+                    return (
+                      <button key={i} type="button" data-token={tk + '-' + i} data-token-kind={tk} data-token-state={stateName}
+                        aria-pressed={filled ? 'true' : 'false'} aria-label={`${label} slot ${i + 1} of ${total}: ${stateName}`} disabled={!available}
+                        onClick={() => { if (available) onChange(i + 1 === current ? i : i + 1); }} className="vf-resource-token" />
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          };
           const StatBlock = ({ label, statKey, skills, color }) => ( <div className="bg-slate-900/60 border-b border-slate-800/80 last:border-0 p-2 flex items-center gap-3 group hover:bg-slate-800/60 transition-colors cursor-pointer" onClick={() => openRollerWithStat(label, character.stats[statKey])}> <div className={`flex flex-col items-center justify-center min-w-[3rem]`}> <NumField onClick={(e) => e.stopPropagation()} className={`w-8 h-7 bg-slate-950 border border-slate-700 rounded text-center text-white font-bold text-lg leading-none focus:border-${color}-500 focus:outline-none`} value={character.stats[statKey]} onChange={(e) => handleStatChange(statKey, e.target.value)} /> <h3 onClick={(e) => { e.stopPropagation(); openRollerWithStat(label, character.stats[statKey]); }} title="Tap to roll" className={`font-bold text-${color}-500 uppercase text-[11px] sm:text-[9px] mt-1 tracking-tighter cursor-pointer select-none active:opacity-60 px-2 py-1 sm:p-0 -mx-2 sm:mx-0 rounded hover:bg-${color}-500/10`}>{label}</h3> </div> <div className="flex flex-wrap gap-1 content-center"> {skills.map(skill => (<span key={skill} className="px-1.5 py-0.5 bg-slate-800/50 text-slate-400 text-[9px] rounded uppercase font-medium border border-transparent hover:border-slate-700 cursor-default">{skill}</span>))} </div> </div> );
           const DomainCard = ({ card, onDelete }) => {
             const amount = parseInt(card.cost) || 0;
@@ -3343,7 +3479,7 @@
                                   <button onClick={() => setDiceMode(value => value === '2d' ? '3d' : '2d')} title="Toggle 2D / 3D dice" className={`px-1.5 py-1 rounded border text-[8px] font-black ${diceMode === '3d' ? 'border-cyan-500 text-cyan-300 bg-cyan-950/40' : 'border-slate-700 text-slate-400'}`}>{diceMode.toUpperCase()}</button>
                                   <button onClick={() => setRollerScale(s => Math.max(0.5, Math.round((s-0.1)*10)/10))} title="Smaller" className="p-1 rounded hover:bg-slate-700 text-slate-400 text-xs font-bold w-5">-</button><button onClick={() => setRollerScale(s => Math.min(1, Math.round((s+0.1)*10)/10))} title="Larger" className="p-1 rounded hover:bg-slate-700 text-slate-400 text-xs font-bold w-5">+</button><button onClick={() => setPinned(p => ({...p, player: !p.player}))} title="Pin Window (Prevents auto-close)" className={`p-1 rounded hover:bg-slate-700 ${pinned.player ? 'text-cyan-400' : 'text-slate-500'}`}><Pin className="w-3 h-3" /></button>
                                   <button onClick={() => setMinimized(p => ({...p, player: !p.player}))} title="Minimize" className="p-1 rounded hover:bg-slate-700 text-slate-400"><Minus className="w-3 h-3" /></button>
-                                  <button onClick={() => setShowRoller(false)} title="Close" className="p-1 rounded hover:bg-red-900/50 text-slate-400 hover:text-red-400"><X className="w-3 h-3" /></button>
+                                  <button onClick={() => { if (diceMode === '3d' && window.VFDice3D) window.VFDice3D.hide({reason:'user'}); setShowRoller(false); }} title="Close" className="p-1 rounded hover:bg-red-900/50 text-slate-400 hover:text-red-400"><X className="w-3 h-3" /></button>
                               </div>
                           </div>
                           
@@ -3815,8 +3951,8 @@
 
                     {/* COL 2: VITALES */}
                     <div className="col-span-12 md:col-span-8 lg:col-span-5 flex flex-col gap-2">
-                       <div className="bg-purple-950/30 rounded border border-purple-900/40 px-3 py-1 mb-2 flex items-center justify-between">
-                         <span className="text-[9px] font-bold uppercase text-purple-400 tracking-wider flex items-center gap-1 shrink-0" data-resicon="fear"><AlertCircle className="w-3 h-3" /> Fear (table)</span>
+                       <div className="vf-fear-strip px-1 py-1 mb-2 flex items-center justify-between">
+                         <span className="text-[9px] font-bold uppercase text-red-400 tracking-wider flex items-center gap-1 shrink-0" data-resicon="fear"><AlertCircle className="w-3 h-3" /> Fear (table)</span>
                          <div className="flex gap-0.5 flex-wrap justify-end ml-2">
                            {Array.from({length:12}).map(function(_,i){ var filled = i < fear && !pending['fear-'+i]; return (<button key={i} data-token={"fear-"+i} data-token-kind="fear" data-token-state={filled ? 'filled' : 'empty'} aria-pressed={filled ? 'true' : 'false'} aria-label={`Fear token ${i + 1} of 12: ${filled ? 'filled' : 'empty'}`} onClick={() => pushFear(i+1===fear ? i : i+1)} title={"Fear " + (i+1)} style={{clipPath:"polygon(0 0, 100% 0, 50% 100%)"}} className={"vf-resource-token vf-token-fear w-4 h-5 shrink-0 transition-all " + (filled ? "bg-red-600" : "bg-slate-700/40 hover:bg-red-900/50")} />); })}
                          </div>
@@ -3938,9 +4074,10 @@
                          <h2 className="text-[9px] font-bold uppercase text-slate-500 mb-2 flex items-center gap-1 tracking-wider"><Star className="w-3 h-3 text-purple-500" /> Experiences</h2>
                          <div className="space-y-1">
                            {(character.experiences || []).map((exp, i) => (
-                             <div key={i} className="flex gap-1 items-stretch h-6">
-                               <div className="w-6 bg-slate-950 border border-slate-700 rounded flex items-center justify-center shrink-0"><NumField className="w-full h-full bg-transparent text-center font-bold text-purple-400 outline-none text-xs" value={exp.bonus} onChange={(e) => handleExperienceChange(i, 'bonus', parseInt(e.target.value))} /></div>
-                               <input type="text" className="flex-grow bg-slate-900/50 border-b border-slate-800 text-[10px] px-2 outline-none text-slate-300 focus:border-purple-500/50 transition-colors" placeholder="Experience..." value={exp.description} onChange={(e) => handleExperienceChange(i, 'description', e.target.value)} /><button disabled={character.path !== 'sleeping' && (((character.hope&&character.hope.current)||0) < 1)} onClick={() => rollDuality({label: 'Exp: ' + (exp.description || 'Experience'), extraMod: parseInt(exp.bonus)||0, spend: (character.path === 'sleeping' ? null : {resource: 'hope', amount: 1})})} title="Roll with this experience (awakened spends 1 Hope; free for sleepers)" className="px-1 bg-slate-950 border border-slate-700 rounded flex items-center justify-center shrink-0 hover:border-purple-500 text-purple-400 disabled:opacity-30 disabled:cursor-not-allowed"><Zap className="w-3 h-3" /></button>
+                             <div key={i} className="vf-experience-row">
+                               <NumField min={-9} max={9} className="vf-experience-bonus" value={exp.bonus} onChange={(e) => handleExperienceChange(i, 'bonus', parseInt(e.target.value)||0)} />
+                               <input type="text" className="vf-experience-name" placeholder="Experience..." value={exp.description} onChange={(e) => handleExperienceChange(i, 'description', e.target.value)} />
+                               <button type="button" disabled={character.path !== 'sleeping' && (((character.hope&&character.hope.current)||0) < 1)} onClick={() => rollDuality({label: 'Exp: ' + (exp.description || 'Experience'), extraMod: parseInt(exp.bonus)||0, spend: (character.path === 'sleeping' ? null : {resource: 'hope', amount: 1})})} title="Roll with this experience (awakened spends 1 Hope; free for sleepers)" className="vf-experience-roll disabled:opacity-30 disabled:cursor-not-allowed" aria-label={`Roll ${exp.description || 'experience'} with bonus ${parseInt(exp.bonus)||0}`}><Zap className="w-3 h-3" /></button>
                              </div>
                            ))}
                          </div>

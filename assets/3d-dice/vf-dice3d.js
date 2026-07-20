@@ -12,7 +12,7 @@ const PRELOAD_THEMES = [
 ];
 const ASSET_PATH = new URL('./assets/', import.meta.url).href;
 
-const VF_DICE_RELEASE = 'v59.68';
+const VF_DICE_RELEASE = 'v59.70';
 async function assertWebAssemblyExecutionAllowed(){
   if (typeof WebAssembly === 'undefined' || typeof WebAssembly.compile !== 'function') {
     const error=new Error('3D dice require WebAssembly, but this browser does not expose WebAssembly.compile().');
@@ -24,7 +24,7 @@ async function assertWebAssemblyExecutionAllowed(){
   const emptyModule=new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]);
   try { await WebAssembly.compile(emptyModule); }
   catch (cause) {
-    const error=new Error("3D dice WebAssembly is blocked by the effective Content Security Policy. Deploy v59.68 from the package root and verify the HTML response contains X-VeilFarers-Release: v59.68 and script-src 'wasm-unsafe-eval'.");
+    const error=new Error("3D dice WebAssembly is blocked by the effective Content Security Policy. Deploy v59.70 from the package root and verify the HTML response contains X-VeilFarers-Release: v59.70 and script-src 'wasm-unsafe-eval'.");
     error.code='VF_WASM_CSP_BLOCKED';
     error.cause=cause;
     window.dispatchEvent(new CustomEvent('veilfarers:dice3d-error',{detail:{code:error.code,release:VF_DICE_RELEASE,message:error.message}}));
@@ -135,7 +135,12 @@ function ensureStage(){
   labelNode=stage.querySelector('#vf-dice3d-label');
   outcomeNode=stage.querySelector('#vf-dice3d-outcome');
   analysisNode=stage.querySelector('#vf-dice3d-analysis');
-  stage.querySelector('#vf-dice3d-close').addEventListener('click',()=>hide({reason:'user'}));
+  stage.querySelector('#vf-dice3d-close').addEventListener('click',event=>{event.stopPropagation();hide({reason:'user'});});
+  stage.addEventListener('pointerup',event=>{
+    if (currentStyle!=='overlay' || rollPending || stage.classList.contains('is-hidden')) return;
+    if (event.target && event.target.closest && event.target.closest('#vf-dice3d-close')) return;
+    hide({reason:'user'});
+  });
   display=new DisplayResults('#vf-dice3d-box');
   cueLayer=document.createElement('div');
   cueLayer.className='vf-dice-cue-layer';
@@ -651,5 +656,5 @@ window.VFDice3D={
     ready:!!box,assetPath:ASSET_PATH,style:currentStyle,critical:currentCritical,
     rendererVisuals:lastRendererVisuals.slice(),tracking:trackingSpecs.length,rollPending,userDismissed,activeRoll:activeRollController?activeRollController.token:null,error:lastError?String(lastError.message||lastError):null
   }),
-  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.68'
+  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.70'
 };

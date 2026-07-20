@@ -1,62 +1,24 @@
-VEILFARERS PORTAL v59.68 — START HERE
-=====================================
+VEILFARERS PORTAL v59.72 — START HERE
 
-RELEASE PURPOSE
----------------
-v59.68 fixes compact Player Tool and Keeper Tool token states in White Stone and
-stabilizes the equivalent token palette in VeilFarers Blue.
+1. Deploy VeilFarers_Portal_v59.72.zip to a Netlify Deploy Preview.
+2. Confirm /data/deploy-version.json reports v59.72.
+3. Confirm the response header X-VeilFarers-Release is v59.72.
+4. Test Charsheet:
+   - Level/Evasion/Armor/Proficiency do not overlap.
+   - Armor shields appear beside Evasion.
+   - HP, Stress, Hope, Effort and Resolve shapes are stable.
+5. Test Creator:
+   - chosen card lifts/glows;
+   - [+] rotates to an image-free blue reverse;
+   - reverse text is not mirrored;
+   - [−] or outside click restores the front and neutral position.
+6. Test Player Tool:
+   - simple cyan Shield tokens;
+   - red Fear triangles;
+   - no decorative token bevels.
+7. Test Keeper Fear and table communication with a valid login.
+8. Test completed and interrupted 3D rolls.
 
-ROOT CAUSE
-----------
-White Stone applied a paper background to every Player Tool button. Resource tokens
-are buttons, so filled and empty states were visually flattened. Some Blue resource
-colors also relied on dynamically generated Tailwind classes absent from the compiled
-stylesheet.
-
-DEPLOY
-------
-1. Extract VeilFarers_Portal_v59.68.zip.
-2. Put the ZIP contents at the repository/publish root — not inside an extra folder.
-3. Commit and push to a test branch.
-4. Let Netlify create a Deploy Preview.
-5. Open /data/deploy-version.json and confirm version v59.68.
-6. Hard-refresh Player Tool and Keeper Tool.
-
-PRIORITY ACCEPTANCE TESTS
--------------------------
-1. Player Tool + White Stone:
-   - Health, Stress, Hope/Effort, Resolve, Fear and Armor show different filled and
-     empty states;
-   - unavailable capacity is dashed;
-   - pending particle destinations stay empty until arrival.
-2. Player Tool + VeilFarers Blue:
-   - repeat all resource checks;
-   - Hope/Effort and Stress are visibly filled rather than transparent.
-3. Drone Shields:
-   - filled and empty Shield tokens remain distinct in both themes.
-4. Keeper Tool + White Stone:
-   - available Armor is teal;
-   - spent Armor is paper/dashed;
-   - Fear has distinct 0, active and 12/max states.
-5. Keeper Tool + VeilFarers Blue:
-   - available Armor is cyan;
-   - spent Armor is slate/dashed.
-6. Keyboard:
-   - focus every compact token/control;
-   - confirm a visible focus ring;
-   - confirm screen-reader labels identify resource, slot number and state.
-
-NO MANUAL CLOUD STEP
---------------------
-No Firebase migration, Firestore Rules deployment or environment-variable change is
-required for v59.68.
-
-ROLLBACK
---------
-Redeploy VeilFarers_Portal_v59.67.zip. No data rollback is required.
-
-REFERENCE FILES
----------------
-- GITHUB_DEPLOY_SUMMARY_v59.68.md
-- PORTAL_HANDOVER_v59.68.md
-- VALIDATION_v59.68.txt
+White Stone remains intentionally disabled.
+Human inheritance remains selected in Equipment.
+Editorial PDFs are unchanged.

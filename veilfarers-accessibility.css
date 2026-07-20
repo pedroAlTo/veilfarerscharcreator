@@ -3,7 +3,7 @@
 :root{
   --vf-a11y-focus:#72c7ff;
   --vf-a11y-focus-inner:#08131f;
-  --vf-a11y-target:44px;
+  --vf-a11y-target:32px;
 }
 :root[data-vf-theme="stone"]{
   --vf-bg:#eeeae1;
@@ -270,43 +270,69 @@ html[data-vf-theme="stone"] :where(.lib-pnl-body,.lib-pnl-sub,.lib-pnl-foot,.lib
 html[data-vf-theme="stone"] .lib-p{background:#e8e1d5!important;color:#37454e!important;border-color:#8f7446!important;}
 html[data-vf-theme="stone"] .lib-p.dc{background:#d6b15a!important;color:#1b160b!important;border-color:#684617!important;}
 
-/* v59.68 compact state controls: meet WCAG 2.2 AA 24px target minimum without expanding resource tracks to 44px. */
-body.vf-page-player-tool .vf-resource-token{
-  min-width:24px!important;min-height:24px!important;width:24px!important;height:24px!important;padding:0!important;
-}
-body.vf-keeper-page .armor-slot,
-body.vf-keeper-page .dashboard-armor-slot{
-  min-width:24px!important;min-height:24px!important;height:24px!important;
-}
-body.vf-keeper-page .btn-token{
-  min-width:32px!important;min-height:32px!important;width:32px!important;height:32px!important;padding:0!important;
-}
 
-/* v59.68 explicit Blue token palette; do not depend on dynamically generated Tailwind classes. */
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token{
-  appearance:none!important;-webkit-appearance:none!important;color:transparent!important;
-  background:#020617!important;border:2px solid #64748b!important;box-shadow:none!important;opacity:1!important;
+/* v59.70 — Blue-only release stabilization. Compact controls retain visible focus and a 24px interaction target. */
+:root{--vf-a11y-target:32px;}
+.vf-theme-trigger,.vf-theme-panel{display:none!important;}
+:where(.vf-page-player-tool,.vf-keeper-page) :where(button,.btn){min-height:24px;}
+:where(.vf-page-player-tool,.vf-keeper-page) :where(.vf-primary-action,.btn-primary,.nav-link,.tab-button){min-height:36px;}
+
+/* Number controls: no browser or custom up/down arrows. */
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+input[type=number]{-moz-appearance:textfield;appearance:textfield;}
+.vf-num-btns{display:none!important;}
+.vf-num>input{padding-right:0!important;}
+
+/* Player resource tokens: restore the compact pre-redesign proportions with explicit semantic state. */
+body.vf-page-player-tool .vf-resource-track{align-items:center;min-height:24px;}
+body.vf-page-player-tool .vf-resource-token{
+  appearance:none!important;-webkit-appearance:none!important;box-sizing:border-box!important;
+  width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;
+  padding:3px 4px!important;border-radius:2px!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;
+  opacity:1!important;transform:none!important;
 }
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-state="empty"]{
-  background:#020617!important;border-color:#64748b!important;
+body.vf-page-player-tool .vf-resource-token::before{content:"";display:block;box-sizing:border-box;width:16px;height:18px;margin:0 auto;border-radius:2px;border:1px solid #334155;background:#020817;box-shadow:inset 0 0 0 1px rgba(255,255,255,.015);}
+body.vf-page-player-tool .vf-resource-token[data-token-state="unavailable"]{opacity:.46!important;}
+body.vf-page-player-tool .vf-resource-token[data-token-state="unavailable"]::before{border-style:dashed!important;border-color:#475569!important;background:transparent!important;}
+body.vf-page-player-tool .vf-resource-token[data-token-state="empty"]::before{border-color:#475569!important;background:#020817!important;}
+body.vf-page-player-tool .vf-resource-token[data-token-state="filled"]::before{border-color:var(--vf-token-edge,#94a3b8)!important;background:linear-gradient(160deg,var(--vf-token-hi,#94a3b8),var(--vf-token-fill,#475569))!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24),0 0 5px color-mix(in srgb,var(--vf-token-fill,#64748b) 45%,transparent)!important;}
+body.vf-page-player-tool .vf-resource-token[data-token-kind="health"]{--vf-token-fill:#b91c1c;--vf-token-hi:#ef4444;--vf-token-edge:#f87171;}
+body.vf-page-player-tool .vf-resource-token[data-token-kind="stress"]{--vf-token-fill:#9d174d;--vf-token-hi:#db2777;--vf-token-edge:#f472b6;}
+body.vf-page-player-tool .vf-resource-token[data-token-kind="hope"]{--vf-token-fill:#b77910;--vf-token-hi:#eab83e;--vf-token-edge:#fde68a;}
+body.vf-page-player-tool .vf-resource-token[data-token-kind="effort"]{--vf-token-fill:#71808b;--vf-token-hi:#aab6be;--vf-token-edge:#d5dde2;}
+body.vf-page-player-tool .vf-resource-token[data-token-kind="resolve"]{--vf-token-fill:#617380;--vf-token-hi:#98a8b3;--vf-token-edge:#cbd5dc;}
+body.vf-page-player-tool .vf-resource-token[data-token-kind="fear"]{--vf-token-fill:#7e1f55;--vf-token-hi:#c0267a;--vf-token-edge:#f472b6;}
+body.vf-page-player-tool .vf-resource-token[data-token-kind="shields"]{--vf-token-fill:#087b91;--vf-token-hi:#0ea5c6;--vf-token-edge:#67e8f9;}
+body.vf-page-player-tool .vf-resource-token:focus-visible{outline:2px solid #72c7ff!important;outline-offset:2px!important;box-shadow:0 0 0 1px #08131f,0 0 0 3px #72c7ff!important;}
+
+/* Experience rows: contained, non-overlapping and readable at desktop and mobile widths. */
+body.vf-page-player-tool .vf-experience-row{display:grid;grid-template-columns:34px minmax(0,1fr) 30px;gap:5px;align-items:center;min-height:32px;}
+body.vf-page-player-tool .vf-experience-row .vf-num{display:block;width:34px;height:30px;}
+body.vf-page-player-tool .vf-experience-bonus{box-sizing:border-box;width:34px!important;height:30px!important;min-height:30px!important;padding:0 3px!important;border:1px solid #475569!important;border-radius:4px!important;background:#020817!important;color:#c084fc!important;text-align:center!important;font-weight:800!important;font-size:12px!important;line-height:30px!important;}
+body.vf-page-player-tool .vf-experience-name{box-sizing:border-box;min-width:0;width:100%;height:30px;min-height:30px;padding:0 8px;border:1px solid transparent;border-bottom-color:#263449;border-radius:3px;background:rgba(15,23,42,.5);color:#cbd5e1;font-size:10px;outline:none;}
+body.vf-page-player-tool .vf-experience-name:focus{border-color:#7e22ce;}
+body.vf-page-player-tool .vf-experience-roll{box-sizing:border-box;width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;padding:0!important;border:1px solid #475569!important;border-radius:4px!important;background:#020817!important;color:#c084fc!important;display:grid!important;place-items:center!important;}
+body.vf-page-player-tool .vf-experience-roll:hover:not(:disabled){border-color:#a855f7!important;background:#15102a!important;}
+
+/* Compact numeric editors and controls must not be inflated by portal-wide button sizing. */
+body.vf-page-player-tool :where(.vf-num button,.vf-experience-row button,.vf-resource-token),
+body.vf-keeper-page :where(.stat-btn,.dashboard-stat-btn,.clock-btn,.quick-note-btn,.btn-token,.armor-slot,.dashboard-armor-slot){min-height:24px!important;}
+
+/* Keeper armor: elegant shield-like marks rather than large blocks. */
+body.vf-keeper-page .armor-slots,body.vf-keeper-page .dashboard-armor-slots{align-items:center;gap:5px;}
+body.vf-keeper-page .armor-slot,body.vf-keeper-page .dashboard-armor-slot{
+  appearance:none!important;-webkit-appearance:none!important;box-sizing:border-box!important;
+  min-width:24px!important;width:24px!important;min-height:24px!important;height:24px!important;padding:3px 4px!important;
+  border:0!important;background:transparent!important;opacity:1!important;position:relative!important;
 }
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-state="unavailable"]{
-  background:transparent!important;border-color:#64748b!important;border-style:dashed!important;opacity:.62!important;
-}
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-state="filled"]{
-  border-style:solid!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.20),0 0 6px rgba(114,199,255,.16)!important;
-}
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="health"][data-token-state="filled"]{background:#dc2626!important;border-color:#f87171!important;}
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="stress"][data-token-state="filled"]{background:#be185d!important;border-color:#f472b6!important;}
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="hope"][data-token-state="filled"],
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="effort"][data-token-state="filled"]{background:#d8a63b!important;border-color:#fde68a!important;}
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="resolve"][data-token-state="filled"],
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="shields"][data-token-state="filled"]{background:#0891b2!important;border-color:#67e8f9!important;}
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="fear"][data-token-state="filled"]{background:#dc2626!important;border-color:#fb7185!important;}
-html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token:focus-visible{outline:3px solid #72c7ff!important;outline-offset:3px!important;}
-html[data-vf-theme="blue"] body.vf-keeper-page [data-token-kind="armor"][data-token-state="filled"]{
-  background:#0891b2!important;border:2px solid #67e8f9!important;opacity:1!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)!important;
-}
-html[data-vf-theme="blue"] body.vf-keeper-page [data-token-kind="armor"][data-token-state="spent"]{
-  background:#1f2937!important;border:2px dashed #64748b!important;opacity:.66!important;box-shadow:none!important;
-}
+body.vf-keeper-page .armor-slot::before,body.vf-keeper-page .dashboard-armor-slot::before{content:"";display:block;width:16px;height:18px;margin:auto;clip-path:polygon(50% 0,94% 15%,88% 72%,50% 100%,12% 72%,6% 15%);border:1px solid #64748b;background:#07101e;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);}
+body.vf-keeper-page [data-token-kind="armor"][data-token-state="filled"]::before{background:linear-gradient(155deg,#22d3ee,#08798f);border-color:#67e8f9;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 0 5px rgba(34,211,238,.28);}
+body.vf-keeper-page [data-token-kind="armor"][data-token-state="spent"]::before{background:#07101e;border:1px dashed #526175;opacity:.65;}
+body.vf-keeper-page .dashboard-armor-slot{flex:0 0 24px!important;}
+body.vf-keeper-page .btn-token{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;padding:0!important;border-radius:50%!important;}
+
+/* Charsheet compact selects: no decorative arrows over trait or experience values. */
+.vf-full-sheet .trait .tmod select,.vf-full-sheet .exp-row select{background-image:none!important;padding-right:4px!important;}
+
+@media(max-width:600px){body.vf-page-player-tool .vf-experience-row{grid-template-columns:34px minmax(0,1fr) 32px;}}

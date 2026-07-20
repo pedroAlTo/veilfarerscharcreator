@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <meta name="veilfarers-release" content="v59.68">
+  <meta name="veilfarers-release" content="v59.72">
   <script src="local-runtime.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1048,7 +1048,7 @@
 </div>
 <script>
 (function () {
-  var db = null, firebaseInitPromise = null, unsub = null, sessionPollTimer = null, sessionPollBusy = false, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false;
+  var db = null, firebaseInitPromise = null, unsub = null, sessionPollTimer = null, sessionPollBusy = false, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false, authSyncBlocked = false;
   window.__publicKeeperRolls=window.__publicKeeperRolls||[]; window.__privateKeeperRolls=window.__privateKeeperRolls||[];
   function $id(id) { return document.getElementById(id); }
   function setStatus(m) { var e = $id('vf-live-status'); if (e) e.textContent = m; }
@@ -1114,7 +1114,8 @@
     }).join('') + '<button data-spot="" style="padding:3px 6px;border-radius:5px;border:1px solid #334155;background:#111827;color:#94a3b8;font-size:10px;cursor:pointer;">Clear</button>';
   }
   async function tableWrite(action, payload) { if(!currentSessionId) throw new Error('Connect to the table first.'); return window.VFTableAccess.api(action, Object.assign({tableId:currentSessionId}, payload||{})); }
-  function patchLive(changes) { if(!currentSessionId)return Promise.resolve(null); return tableWrite('patchSession',{changes:changes}).catch(function(e){console.error('keeper live update',e);setStatus('Table update failed: '+e.message);throw e;}); }
+  function stopPollingForAuth(error){authSyncBlocked=true;if(sessionPollTimer){clearInterval(sessionPollTimer);sessionPollTimer=null;}setStatus((error&&error.message)||'Login expired. Sign in again to reconnect the table.');}
+  function patchLive(changes) { if(!currentSessionId||authSyncBlocked)return Promise.resolve(null); return tableWrite('patchSession',{changes:changes}).catch(function(e){if(window.VFTableAccess&&window.VFTableAccess.isAuthError&&window.VFTableAccess.isAuthError(e)){stopPollingForAuth(e);}else{console.error('keeper live update',e);setStatus('Table update failed: '+e.message);}throw e;}); }
   function setSpotlight(name) { if (typeof state !== 'undefined') state.spotlight = name || ''; patchLive({spotlight:name||''}).catch(function(){}); if (typeof renderAll === 'function') { try { renderAll(); } catch(e){} } renderSpotlight(name || ''); }
   function toggleSpotlight(name) { var cur = (typeof state !== 'undefined' ? state.spotlight : ''); setSpotlight(cur === name ? '' : name); }
   function rollDmg(str) { if (!str) return null; var m = String(str).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i); if (!m) return null; var count = parseInt(m[1] || '1', 10) || 1; var sides = parseInt(m[2], 10); var mod = m[3] ? parseInt(m[3].replace(/\s/g, ''), 10) : 0; var sum = 0, rolls = []; for (var k = 0; k < count; k++) { var r = Math.floor(Math.random() * sides) + 1; rolls.push(r); sum += r; } return { total: sum + mod, detail: rolls.join('+') + (mod ? (mod > 0 ? '+' + mod : mod) : ''), dice: count + 'd' + sides, rolls: rolls, modifier: mod, base: String(str) }; }
@@ -1207,24 +1208,25 @@
     renderSentNotes();renderRolls(rolls);setStatus('Connected to "'+sid+'" · '+((data.characters||[]).length)+' entities');
   }
   async function readCurrentSession(){
-    if(!currentSessionId||sessionPollBusy)return;
+    if(!currentSessionId||sessionPollBusy||authSyncBlocked)return;
     sessionPollBusy=true;
     try{var out=await window.VFTableAccess.api('readSession',{tableId:currentSessionId});if(out&&out.session)applySessionData(out.session,currentSessionId);}
-    catch(error){setStatus('Table sync error: '+(error.message||error));}
+    catch(error){if(window.VFTableAccess&&window.VFTableAccess.isAuthError&&window.VFTableAccess.isAuthError(error))stopPollingForAuth(error);else setStatus('Table sync error: '+(error.message||error));}
     finally{sessionPollBusy=false;}
   }
-  function startSessionPolling(){if(sessionPollTimer)clearInterval(sessionPollTimer);readCurrentSession();sessionPollTimer=setInterval(readCurrentSession,1250);}
+  function startSessionPolling(){authSyncBlocked=false;if(sessionPollTimer)clearInterval(sessionPollTimer);readCurrentSession();sessionPollTimer=setInterval(readCurrentSession,1250);}
   async function connect() {
     var sid=(($id('vf-session-id')||{}).value||'Table').trim()||'Table';setStatus('Authorizing table…');
     try{
       var pass=(($id('vf-session-pass')||{}).value||'').trim(),invite=(($id('vf-session-invite')||{}).value||'').trim();
       var access=await window.VFTableAccess.authorize({tableId:sid,password:pass,invite:invite,createIfMissing:true});
-      SESSION={tableId:sid,role:access.role||'member'};window.__keeperSession=SESSION;window.__handouts=[];currentSessionId=sid;setPasswordUi(!!access.locked);renderSentNotes();
+      authSyncBlocked=false;SESSION={tableId:sid,role:access.role||'member'};window.__keeperSession=SESSION;window.__handouts=[];currentSessionId=sid;setPasswordUi(!!access.locked);renderSentNotes();
       if($id('vf-session-pass'))$id('vf-session-pass').value='';if($id('vf-session-invite'))$id('vf-session-invite').value='';window.VFTableAccess.mountAdmin(sid,access.role);
       startSessionPolling();
       var cleanUrl=window.location.pathname+window.location.hash;window.history.replaceState({},'',cleanUrl);
     }catch(e){setStatus('Error: '+e.message);}
   }
+  window.addEventListener('veilfarers:auth-expired',function(event){stopPollingForAuth({message:event&&event.detail&&event.detail.message});});
   window.keeperPushFear = function () { if (currentSessionId && typeof state !== 'undefined') patchLive({fearTokens:state.fearTokens}).catch(function(){}); };
   var keeperNotesTimer=null;
   window.keeperPushNotes=function(value){if(typeof state!=='undefined')state.notes=String(value||'');if(!currentSessionId)return;clearTimeout(keeperNotesTimer);keeperNotesTimer=setTimeout(function(){patchLive({keeperNotes:String(value||'')}).catch(function(){});},350);};

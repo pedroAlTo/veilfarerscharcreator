@@ -119,9 +119,16 @@
     const aff=byIdentity(c.affiliations,raw.affiliation);
     const ar=rules(anc), cr=rules(com), sr=pathSubclassRules(canonicalSubclass||subclass,path), afr=rules(aff);
     const strain=(ar.subStrains||[]).find(x=>[x.id,x.name].some(v=>clean(v).toLowerCase()===clean(raw.subStrain).toLowerCase()));
+    const humanInheritance=clean(raw.humanInheritance).toLowerCase();
+    const humanGraft=humanInheritance==='graft'?byIdentity(c.augments,raw.humanInheritanceItem):null;
+    const humanTool=humanInheritance==='tool'
+      ?(byIdentity(c.weapons,raw.humanInheritanceItem)||byIdentity(c.armor,raw.humanInheritanceItem)||byIdentity(c.gear,raw.humanInheritanceItem))
+      :null;
     const ancestryParts=(ar.gifts||[]).map(featureText).filter(Boolean);
     if(ar.extra)ancestryParts.push(featureText(ar.extra));
     if(strain)ancestryParts.push([strain.name,strain.featName,strain.featText].filter(Boolean).join(' · '));
+    if(humanGraft)ancestryParts.push(`Inheritance Selected — The Graft: ${humanGraft.name} · ${tierLabel(humanGraft)==='TT1'?'0 Augment Slots':'1 Augment Slot'} · no drawback`);
+    if(humanTool)ancestryParts.push(`Inheritance Selected — The Tool: ${humanTool.name} · Experimental (TT3) · 9 Cr · paid for`);
     const communityFeature=featureText(cr.feature);
     const classFeature=featureText(classRules.classFeature);
     const pathFeature=path==='sleeping'?(classRules.effortFeature||{}):(classRules.hopeFeature||{});
@@ -134,6 +141,7 @@
     const selectedPowers=path==='awakened'?(raw.powers||[]).map(v=>powerFromValue(c.powers,v)).filter(Boolean).slice(0,5):[];
     const selectedGear=[];
     if(raw.kit){const exact=byIdentity(c.gear,raw.kit);if(exact)selectedGear.push(exact);}
+    if(humanTool)selectedGear.push({...humanTool,use:humanTool.use||humanTool.raw?.use||humanTool.damage||humanTool.thresholds?.raw||humanTool.category||'Inherited Experimental equipment'});
     const experiences=(Array.isArray(raw.experiences)?raw.experiences:[]).slice(0,5);
     const experienceBonuses=Array.isArray(raw.experienceBonuses)?raw.experienceBonuses:[];
     while(experiences.length<3)experiences.push('');
@@ -153,6 +161,7 @@
     const f={
       character_id:clean(raw.characterId),name:clean(raw.name),pron:clean(raw.pronouns),level:String(level),prof:String(proficiency),chosen_path:pathLabel,
       ancestry:(anc&&anc.name)||clean(raw.ancestry),ancestry_gift:compactRule(ancestryParts.join('\n\n'),'Ancestry Gift'),ancestry_note:compactRule(ancestryParts.join('\n\n'),'Ancestry Gift'),ailuran_variant:strain?strain.name:'',
+      human_inheritance_kind:humanInheritance,human_inheritance_item_id:clean(raw.humanInheritanceItem),human_inheritance_item_name:humanGraft?.name||humanTool?.name||'',
       community:(com&&com.name)||clean(raw.community),community_note:compactRule(communityFeature,'Community'),community_gift:compactRule(communityFeature,'Community'),community_advantages:compactRule(communityFeature,'Community'),
       affiliation:(aff&&aff.name)||clean(raw.affiliation),aff_standing:'+1 Good Standing',aff_reputation:'Unknown (0)',aff_notes:[affiliationNotes,appearanceNotes].filter(Boolean).join('\n\n'),aff_faction_notes:affiliationNotes,
       class:(cls&&cls.name)||compat.name||clean(raw.cls),subclass:(subclass&&subclass.name)||clean(raw.subclass),signature_trait:signatureTrait,
@@ -185,6 +194,14 @@
       f.armor_score=String(selectedArmor.armorSlots||0);f.base_armor_slots=String(selectedArmor.armorSlots||0);
       f.armor_feat=(selectedArmor.features||[]).join(', ');f.armor_tier=tierLabel(selectedArmor);
     }
+    if(humanGraft){
+      f.aug_0_name=humanGraft.name;
+      f.aug_0_tier=tierLabel(humanGraft);
+      f.aug_0_benefit=clean(humanGraft.benefit||humanGraft.raw?.benefit);
+      f.aug_0_stress=clean(humanGraft.activationStress);
+      f.aug_0_deg='Human inheritance · no drawback · '+(tierLabel(humanGraft)==='TT1'?'0 Augment Slots':'1 Augment Slot');
+      f.augment_notes='Human — Made for the Graft grants +2 Augment Capacity. Inherited graft has no drawback.';
+    }
     selectedPowers.forEach((power,i)=>{
       f[`a_pwr_${i}_n`]=power.name;
       f[`a_pwr_${i}_d`]=[power.domain,`L${power.level}`,power.powerType,power.cost].filter(Boolean).join(' · ');
@@ -209,7 +226,7 @@
     localStorage.setItem(tracksKey(),JSON.stringify(out.tracks));
     localStorage.setItem(LATEST_SHEET_KEY,JSON.stringify(sheetPayload(out)));
     localStorage.setItem(LAST_SYNC_KEY,JSON.stringify(raw));
-    localStorage.setItem(RELEASE_KEY,'11.1-RC3.2');
+    localStorage.setItem(RELEASE_KEY,'11.35-Portal');
   }
   function queueTransfer(target,out,raw,source='charsheet'){
     const envelope=makeEnvelope(out,raw,source,target);
