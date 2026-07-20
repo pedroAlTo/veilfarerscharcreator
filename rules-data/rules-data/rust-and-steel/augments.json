@@ -1,0 +1,2188 @@
+[
+  {
+    "id": "vf.rs.augment.audio-enhancement-basic",
+    "type": "augment",
+    "name": "AUDIO ENHANCEMENT (BASIC)",
+    "slug": "audio-enhancement-basic",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7533,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "The character's auditory system is enhanced with implanted processors providing:",
+      "cost": "1",
+      "drawback": "Universal.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "The character's auditory system is enhanced with implanted processors providing:",
+    "drawback": "Universal.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.active-toxin-purger",
+    "type": "augment",
+    "name": "Active Toxin Purger",
+    "slug": "active-toxin-purger",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [
+      "TOXIN FILTER"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8891,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "Advantage on Reaction Rolls against poisons and toxins. Can purge all toxins from system over 10 minutes (exhausting but effective).",
+      "cost": "1",
+      "drawback": "Universal.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "Advantage on Reaction Rolls against poisons and toxins. Can purge all toxins from system over 10 minutes (exhausting but effective).",
+    "drawback": "Universal.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.communications-implant",
+    "type": "augment",
+    "name": "COMMUNICATIONS IMPLANT",
+    "slug": "communications-implant",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7911,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "Can communicate silently with others who have compatible implants. Coordination in stealth situations has no verbal component to detect.",
+      "cost": "1",
+      "drawback": "Universal.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "Can communicate silently with others who have compatible implants. Coordination in stealth situations has no verbal component to detect.",
+    "drawback": "Universal.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.data-jack",
+    "type": "augment",
+    "name": "DATA-JACK",
+    "slug": "data-jack",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7589,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "A universal data port installed at the temple, base of skull, or behind the ear allows:",
+      "cost": "1",
+      "drawback": "Universal. The most common augmentation in existence.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "A universal data port installed at the temple, base of skull, or behind the ear allows:",
+    "drawback": "Universal. The most common augmentation in existence.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.environmental-adaptation-basic",
+    "type": "augment",
+    "name": "ENVIRONMENTAL ADAPTATION (BASIC)",
+    "slug": "environmental-adaptation-basic",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8922,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "No penalties from environmental conditions within listed parameters. +2 to saves against environmental hazards outside those parameters.",
+      "cost": "1",
+      "drawback": "Universal.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "No penalties from environmental conditions within listed parameters. +2 to saves against environmental hazards outside those parameters.",
+    "drawback": "Universal.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.internal-storage-compartment",
+    "type": "augment",
+    "name": "INTERNAL STORAGE COMPARTMENT",
+    "slug": "internal-storage-compartment",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8860,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "Items in compartment cannot be found by standard search; requires specific medical scanning or Awareness DC 20 to detect.",
+      "cost": "1",
+      "drawback": "Universal.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "Items in compartment cannot be found by standard search; requires specific medical scanning or Awareness DC 20 to detect.",
+    "drawback": "Universal.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.memory-core-basic",
+    "type": "augment",
+    "name": "MEMORY CORE (BASIC)",
+    "slug": "memory-core-basic",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7880,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "+1 to Knowledge checks involving recalled information. Can perfectly recall anything experienced since installation.",
+      "cost": "1",
+      "drawback": "Universal.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "+1 to Knowledge checks involving recalled information. Can perfectly recall anything experienced since installation.",
+    "drawback": "Universal.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.muscle-weave-basic",
+    "type": "augment",
+    "name": "MUSCLE WEAVE (BASIC)",
+    "slug": "muscle-weave-basic",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8295,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "+1 to Strength for carrying capacity, melee damage, and Strength checks. Can perform sustained physical activity twice as long before fatigue.",
+      "cost": "1",
+      "drawback": "Universal. Popular among laborers, soldiers, and athletes.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "+1 to Strength for carrying capacity, melee damage, and Strength checks. Can perform sustained physical activity twice as long before fatigue.",
+    "drawback": "Universal. Popular among laborers, soldiers, and athletes.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.olfactory-booster",
+    "type": "augment",
+    "name": "OLFACTORY BOOSTER",
+    "slug": "olfactory-booster",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7562,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "Enhanced chemical receptors in the nasal cavity provide:",
+      "cost": "1",
+      "drawback": "Specialty medical suppliers, frontier outfitters.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "Enhanced chemical receptors in the nasal cavity provide:",
+    "drawback": "Specialty medical suppliers, frontier outfitters.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.optical-enhancement-basic",
+    "type": "augment",
+    "name": "OPTICAL ENHANCEMENT (BASIC)",
+    "slug": "optical-enhancement-basic",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7506,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "The character's eyes are replaced with or enhanced by optical implants providing the following capabilities:",
+      "cost": "1",
+      "drawback": "Universal. Available from any medical facility with augmentation capability.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "The character's eyes are replaced with or enhanced by optical implants providing the following capabilities:",
+    "drawback": "Universal. Available from any medical facility with augmentation capability.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.reflex-trigger",
+    "type": "augment",
+    "name": "REFLEX TRIGGER",
+    "slug": "reflex-trigger",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7942,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "+1 to Spotlight contests. Once per combat, may use Reaction even if Reaction has already been used this round.",
+      "cost": "1",
+      "drawback": "Universal. Popular among those who expect violence.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "+1 to Spotlight contests. Once per combat, may use Reaction even if Reaction has already been used this round.",
+    "drawback": "Universal. Popular among those who expect violence.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.respiratory-enhancement",
+    "type": "augment",
+    "name": "RESPIRATORY ENHANCEMENT",
+    "slug": "respiratory-enhancement",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8325,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "Immune to common airborne toxins and pollutants. Can survive in low-oxygen environments that would incapacitate unaugmented humans. Extended breath-holding and limited water breathing.",
+      "cost": "1",
+      "drawback": "Universal. Popular among those who work in hazardous environments.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "Immune to common airborne toxins and pollutants. Can survive in low-oxygen environments that would incapacitate unaugmented humans. Extended breath-holding and limited water breathing.",
+    "drawback": "Universal. Popular among those who work in hazardous environments.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.subdermal-plating-light",
+    "type": "augment",
+    "name": "SUBDERMAL PLATING (LIGHT)",
+    "slug": "subdermal-plating-light",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8266,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "benefit": "+1 to Minor and Major Damage Thresholds. Damage from unarmed attacks and simple blades reduced by 2.",
+      "cost": "1",
+      "drawback": "Universal.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "+1 to Minor and Major Damage Thresholds. Damage from unarmed attacks and simple blades reduced by 2.",
+    "drawback": "Universal.",
+    "cost": {
+      "credits": "1"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.berserker-protocol",
+    "type": "augment",
+    "name": "BERSERKER PROTOCOL",
+    "slug": "berserker-protocol",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9278,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Activate as Free Action. While active: +3 to Strength, ignore pain-based penalties and effects, immune to fear, but -2 to all defensive actions and cannot retreat voluntarily. State lasts until combat ends or manually deactivated.",
+      "cost": "4",
+      "drawback": "House Volkov warrior suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Activate as Free Action. While active: +3 to Strength, ignore pain-based penalties and effects, immune to fear, but -2 to all defensive actions and cannot retreat voluntarily. State lasts until combat ends or manually deactivated.",
+    "drawback": "House Volkov warrior suppliers.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.cognitive-accelerator",
+    "type": "augment",
+    "name": "COGNITIVE ACCELERATOR",
+    "slug": "cognitive-accelerator",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8004,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to Knowledge checks. In combat, the first round feels like two rounds for planning purposes (though only normal actions can be taken).",
+      "cost": "4",
+      "drawback": "House Kurogane, academic institutions, research facilities.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Knowledge checks. In combat, the first round feels like two rounds for planning purposes (though only normal actions can be taken).",
+    "drawback": "House Kurogane, academic institutions, research facilities.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.cybernetic-limb-standard",
+    "type": "augment",
+    "name": "CYBERNETIC LIMB (STANDARD)",
+    "slug": "cybernetic-limb-standard",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8356,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to Strength-based checks using the limb. +1 to Finesse-based checks requiring precision. Limb cannot be \"injured\" and provides natural +1 to Damage Thresholds when used defensively.",
+      "cost": "4",
+      "drawback": "Universal. Many providers, varying quality and aesthetics.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Strength-based checks using the limb. +1 to Finesse-based checks requiring precision. Limb cannot be \"injured\" and provides natural +1 to Damage Thresholds when used defensively.",
+    "drawback": "Universal. Many providers, varying quality and aesthetics.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.dermal-armor",
+    "type": "augment",
+    "name": "DERMAL ARMOR",
+    "slug": "dermal-armor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8419,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to Armor Score (maximum combined bonus from dermal and worn armor is +10). +2 to Damage Thresholds. Can survive vacuum exposure for up to 5 minutes.",
+      "cost": "4",
+      "drawback": "Military and security suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Armor Score (maximum combined bonus from dermal and worn armor is +10). +2 to Damage Thresholds. Can survive vacuum exposure for up to 5 minutes.",
+    "drawback": "Military and security suppliers.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.echo-location-implant",
+    "type": "augment",
+    "name": "ECHO-LOCATION IMPLANT",
+    "slug": "echo-location-implant",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7683,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Ignore penalties from darkness, smoke, or visual obscurement within 20 meters. +2 to checks detecting hidden compartments or passages.",
+      "cost": "4",
+      "drawback": "Specialty medical suppliers. Popular among spelunkers, infiltrators, and those who work in darkness.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "Ignore penalties from darkness, smoke, or visual obscurement within 20 meters. +2 to checks detecting hidden compartments or passages.",
+    "drawback": "Specialty medical suppliers. Popular among spelunkers, infiltrators, and those who work in darkness.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.grapple-system",
+    "type": "augment",
+    "name": "GRAPPLE SYSTEM",
+    "slug": "grapple-system",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9016,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Can ascend vertical surfaces at normal movement speed. Can pull objects up to 300 kg. Can cross gaps by anchoring and swinging.",
+      "cost": "4",
+      "drawback": "Military and security suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "Can ascend vertical surfaces at normal movement speed. Can pull objects up to 300 kg. Can cross gaps by anchoring and swinging.",
+    "drawback": "Military and security suppliers.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.integrated-weapon-system",
+    "type": "augment",
+    "name": "INTEGRATED WEAPON SYSTEM",
+    "slug": "integrated-weapon-system",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8651,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Weapon cannot be disarmed. Drawing is Free Action. +1 to attack rolls when using linked targeting systems.",
+      "cost": "4",
+      "drawback": "Military and Black Market. Concealed weapons attract legal attention.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Weapon cannot be disarmed. Drawing is Free Action. +1 to attack rolls when using linked targeting systems.",
+    "drawback": "Military and Black Market. Concealed weapons attract legal attention.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.medical-nanite-reservoir",
+    "type": "augment",
+    "name": "MEDICAL NANITE RESERVOIR",
+    "slug": "medical-nanite-reservoir",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8954,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Heal 2 HP per Short Rest instead of 1. Automatically stabilized when reduced to 0 HP. Advantage on disease and poison Reaction Rolls.",
+      "cost": "4",
+      "drawback": "Medical suppliers, House Kurogane.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Heal 2 HP per Short Rest instead of 1. Automatically stabilized when reduced to 0 HP. Advantage on disease and poison Reaction Rolls.",
+    "drawback": "Medical suppliers, House Kurogane.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.memory-core-advanced",
+    "type": "augment",
+    "name": "MEMORY CORE (ADVANCED)",
+    "slug": "memory-core-advanced",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8069,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to Knowledge checks involving recalled information. Perfect recall of all experiences. Protected memories are immune to telepathic reading or chemical interrogation.",
+      "cost": "4",
+      "drawback": "House Kurogane, intelligence agencies, executive protection services.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Knowledge checks involving recalled information. Perfect recall of all experiences. Protected memories are immune to telepathic reading or chemical interrogation.",
+    "drawback": "House Kurogane, intelligence agencies, executive protection services.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.muscle-weave-advanced",
+    "type": "augment",
+    "name": "MUSCLE WEAVE (ADVANCED)",
+    "slug": "muscle-weave-advanced",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8450,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to Strength for all purposes. Jump distance doubled. Sprint speed increased by 50%. Can maintain maximum exertion for one hour before fatigue.",
+      "cost": "4",
+      "drawback": "Military suppliers, athletic enhancement services.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Strength for all purposes. Jump distance doubled. Sprint speed increased by 50%. Can maintain maximum exertion for one hour before fatigue.",
+    "drawback": "Military suppliers, athletic enhancement services.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.neural-interface-direct",
+    "type": "augment",
+    "name": "NEURAL INTERFACE (DIRECT)",
+    "slug": "neural-interface-direct",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7971,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to checks involving vehicle operation, drone control, or computer hacking when directly connected. Can control up to 3 systems simultaneously.",
+      "cost": "4",
+      "drawback": "House Kurogane suppliers, military neural specialists.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to checks involving vehicle operation, drone control, or computer hacking when directly connected. Can control up to 3 systems simultaneously.",
+    "drawback": "House Kurogane suppliers, military neural specialists.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.optical-enhancement-advanced",
+    "type": "augment",
+    "name": "OPTICAL ENHANCEMENT (ADVANCED)",
+    "slug": "optical-enhancement-advanced",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7617,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to Awareness checks involving vision; +1 to ranged attack rolls at Long range or beyond.",
+      "cost": "4",
+      "drawback": "Military suppliers, licensed medical facilities. Restricted in some jurisdictions.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Awareness checks involving vision; +1 to ranged attack rolls at Long range or beyond.",
+    "drawback": "Military suppliers, licensed medical facilities. Restricted in some jurisdictions.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.reaction-booster",
+    "type": "augment",
+    "name": "REACTION BOOSTER",
+    "slug": "reaction-booster",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8686,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to Spotlight contests. Can take one additional Reaction per round (can be used for reactive strikes, defensive actions, or other Reaction abilities).",
+      "cost": "4",
+      "drawback": "Military suppliers. Popular among bodyguards and quick-draw specialists.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Spotlight contests. Can take one additional Reaction per round (can be used for reactive strikes, defensive actions, or other Reaction abilities).",
+    "drawback": "Military suppliers. Popular among bodyguards and quick-draw specialists.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.sensor-suite-standard",
+    "type": "augment",
+    "name": "SENSOR SUITE (STANDARD)",
+    "slug": "sensor-suite-standard",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7652,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Cannot be surprised while conscious; +2 to checks detecting hidden electronic devices.",
+      "cost": "4",
+      "drawback": "Military and security suppliers. Common among House Kurogane personnel.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Cannot be surprised while conscious; +2 to checks detecting hidden electronic devices.",
+    "drawback": "Military and security suppliers. Common among House Kurogane personnel.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.skeletal-reinforcement",
+    "type": "augment",
+    "name": "SKELETAL REINFORCEMENT",
+    "slug": "skeletal-reinforcement",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8387,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Immune to broken bones. Fall damage reduced by 1d6. +2 to Damage Thresholds against bludgeoning. Required for some advanced physical augmentations.",
+      "cost": "4",
+      "drawback": "Military suppliers, industrial augmentation providers.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Immune to broken bones. Fall damage reduced by 1d6. +2 to Damage Thresholds against bludgeoning. Required for some advanced physical augmentations.",
+    "drawback": "Military suppliers, industrial augmentation providers.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.skill-module-port",
+    "type": "augment",
+    "name": "SKILL MODULE PORT",
+    "slug": "skill-module-port",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8035,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "Neural architecture supporting downloadable skill modules:",
+      "cost": "4",
+      "drawback": "House Kurogane, educational suppliers. Modules available from various specialized sources.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Neural architecture supporting downloadable skill modules:",
+    "drawback": "House Kurogane, educational suppliers. Modules available from various specialized sources.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.tactical-hud-interface",
+    "type": "augment",
+    "name": "TACTICAL HUD INTERFACE",
+    "slug": "tactical-hud-interface",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7713,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+1 to Spotlight contests when working with a linked squad. Allies can share target marking, granting +1 to strike marked targets.",
+      "cost": "4",
+      "drawback": "Military suppliers. Standard issue for House forces in squad-based operations.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "+1 to Spotlight contests when working with a linked squad. Allies can share target marking, granting +1 to strike marked targets.",
+    "drawback": "Military suppliers. Standard issue for House forces in squad-based operations.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.targeting-reticle",
+    "type": "augment",
+    "name": "TARGETING RETICLE",
+    "slug": "targeting-reticle",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8618,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to ranged attack rolls. Ignore penalties for target movement and environmental conditions.",
+      "cost": "4",
+      "drawback": "Military and hunting suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "+2 to ranged attack rolls. Ignore penalties for target movement and environmental conditions.",
+    "drawback": "Military and hunting suppliers.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.tool-hand",
+    "type": "augment",
+    "name": "TOOL HAND",
+    "slug": "tool-hand",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8985,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "benefit": "+2 to all checks involving repair, maintenance, or technical work. Always have appropriate basic tools available.",
+      "cost": "4",
+      "drawback": "Technical suppliers, engineering outfitters.",
+      "source": "rust-and-steel",
+      "complexity": 1
+    },
+    "benefit": "+2 to all checks involving repair, maintenance, or technical work. Always have appropriate basic tools available.",
+    "drawback": "Technical suppliers, engineering outfitters.",
+    "cost": {
+      "credits": "4"
+    },
+    "complexity": 1,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.centurion-s-resilience",
+    "type": "augment",
+    "name": "CENTURION'S RESILIENCE",
+    "slug": "centurion-s-resilience",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9245,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+4 to Damage Thresholds. When reduced to 0 HP, may continue acting for 1d4 rounds before collapsing. Advantage on Reaction Rolls against instant death effects.",
+      "cost": "9",
+      "drawback": "House Joric military suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+4 to Damage Thresholds. When reduced to 0 HP, may continue acting for 1d4 rounds before collapsing. Advantage on Reaction Rolls against instant death effects.",
+    "drawback": "House Joric military suppliers.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.combat-computer",
+    "type": "augment",
+    "name": "COMBAT COMPUTER",
+    "slug": "combat-computer",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8101,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+2 to Spotlight contests; +1 to all attack rolls; +1 to Evasion. Once per combat, may reroll an attack roll.",
+      "cost": "9",
+      "drawback": "Military neural specialists, elite mercenary suppliers. Restricted military equipment.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+2 to Spotlight contests; +1 to all attack rolls; +1 to Evasion. Once per combat, may reroll an attack roll.",
+    "drawback": "Military neural specialists, elite mercenary suppliers. Restricted military equipment.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.combat-drug-injector",
+    "type": "augment",
+    "name": "COMBAT DRUG INJECTOR",
+    "slug": "combat-drug-injector",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8747,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "Inject drugs as Free Action. Automatic injection when specified trigger conditions occur (unconsciousness, below half HP, etc.).",
+      "cost": "9",
+      "drawback": "Military medical suppliers, Black Market.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Inject drugs as Free Action. Automatic injection when specified trigger conditions occur (unconsciousness, below half HP, etc.).",
+    "drawback": "Military medical suppliers, Black Market.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.cybernetic-limb-combat",
+    "type": "augment",
+    "name": "CYBERNETIC LIMB (COMBAT)",
+    "slug": "cybernetic-limb-combat",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8483,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+4 to Strength-based checks using the limb. Integrated weapon equivalent to Tier 2 weapon of chosen type. Can use limb to block, gaining +2 to Evasion against melee attacks as a Reaction.",
+      "cost": "9",
+      "drawback": "Military and Black Market. Concealed weapons in this format are illegal in many jurisdictions.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+4 to Strength-based checks using the limb. Integrated weapon equivalent to Tier 2 weapon of chosen type. Can use limb to block, gaining +2 to Evasion against melee attacks as a Reaction.",
+    "drawback": "Military and Black Market. Concealed weapons in this format are illegal in many jurisdictions.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.electromagnetic-pulse-shielding",
+    "type": "augment",
+    "name": "ELECTROMAGNETIC PULSE SHIELDING",
+    "slug": "electromagnetic-pulse-shielding",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9079,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "Immune to EMP effects. Augmentations function normally in environments that would disable unshielded electronics. Can isolate systems to prevent hacking or remote shutdown.",
+      "cost": "9",
+      "drawback": "Military cybernetics suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Immune to EMP effects. Augmentations function normally in environments that would disable unshielded electronics. Can isolate systems to prevent hacking or remote shutdown.",
+    "drawback": "Military cybernetics suppliers.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.full-body-conversion-standard",
+    "type": "augment",
+    "name": "FULL-BODY CONVERSION (STANDARD)",
+    "slug": "full-body-conversion-standard",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8546,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "All physical Traits (Strength, Agility) set to +3 minimum. +4 to Damage Thresholds. Immune to poison, disease, and most biological hazards. Does not need to eat, drink, or breathe (though power is required). Takes damage as normal but is repaired rather than healed.",
+      "cost": "16",
+      "drawback": "House Kurogane specialists. Expensive and irreversible.",
+      "source": "rust-and-steel",
+      "complexity": "Special (see description)"
+    },
+    "benefit": "All physical Traits (Strength, Agility) set to +3 minimum. +4 to Damage Thresholds. Immune to poison, disease, and most biological hazards. Does not need to eat, drink, or breathe (though power is required). Takes damage as normal but is repaired rather than healed.",
+    "drawback": "House Kurogane specialists. Expensive and irreversible.",
+    "cost": {
+      "credits": "16"
+    },
+    "complexity": "Special (see description)",
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.ghost-protocol-suite",
+    "type": "augment",
+    "name": "GHOST PROTOCOL SUITE",
+    "slug": "ghost-protocol-suite",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9183,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+4 to all Stealth checks. Invisible to thermal sensors. Cannot be tracked by scent. Advantage on checks to avoid electronic detection.",
+      "cost": "9",
+      "drawback": "House Valerius operative suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+4 to all Stealth checks. Invisible to thermal sensors. Cannot be tracked by scent. Advantage on checks to avoid electronic detection.",
+    "drawback": "House Valerius operative suppliers.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.kurogane-integration-suite",
+    "type": "augment",
+    "name": "KUROGANE INTEGRATION SUITE",
+    "slug": "kurogane-integration-suite",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9122,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+1 to all benefits from other augmentations. Installation DC for future augmentations reduced by 2. Aware of any malfunction or tampering immediately.",
+      "cost": "9",
+      "drawback": "House Kurogane suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+1 to all benefits from other augmentations. Installation DC for future augmentations reduced by 2. Aware of any malfunction or tampering immediately.",
+    "drawback": "House Kurogane suppliers.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.medical-nanite-reservoir-advanced",
+    "type": "augment",
+    "name": "MEDICAL NANITE RESERVOIR (ADVANCED)",
+    "slug": "medical-nanite-reservoir-advanced",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9047,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "Heal 4 HP per Short Rest. Automatically receive emergency medical treatment when critically injured (equivalent to Tier 2 medical attention). Regenerate lost limbs and organs over time. Biological aging slowed to approximately 1/4 normal rate.",
+      "cost": "9",
+      "drawback": "House Kurogane medical specialists. Expensive and rare.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "Heal 4 HP per Short Rest. Automatically receive emergency medical treatment when critically injured (equivalent to Tier 2 medical attention). Regenerate lost limbs and organs over time. Biological aging slowed to approximately 1/4 normal rate.",
+    "drawback": "House Kurogane medical specialists. Expensive and rare.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.neural-interface-full-spectrum",
+    "type": "augment",
+    "name": "NEURAL INTERFACE (FULL-SPECTRUM)",
+    "slug": "neural-interface-full-spectrum",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8133,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+3 to checks involving connected systems. Can pilot vehicles, control drones, and operate weapons through thought alone with no physical interface required (if systems are wireless-capable).",
+      "cost": "9",
+      "drawback": "House Kurogane elite specialists, military special operations units.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+3 to checks involving connected systems. Can pilot vehicles, control drones, and operate weapons through thought alone with no physical interface required (if systems are wireless-capable).",
+    "drawback": "House Kurogane elite specialists, military special operations units.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.optical-enhancement-elite",
+    "type": "augment",
+    "name": "OPTICAL ENHANCEMENT (ELITE)",
+    "slug": "optical-enhancement-elite",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7747,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+3 to Awareness checks involving vision; +2 to ranged attack rolls; Advantage on checks to detect hidden or cloaked enemies.",
+      "cost": "9",
+      "drawback": "House Kurogane elite suppliers, Black Market at premium prices. Restricted military equipment in most jurisdictions.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+3 to Awareness checks involving vision; +2 to ranged attack rolls; Advantage on checks to detect hidden or cloaked enemies.",
+    "drawback": "House Kurogane elite suppliers, Black Market at premium prices. Restricted military equipment in most jurisdictions.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.personal-shield-generator",
+    "type": "augment",
+    "name": "PERSONAL SHIELD GENERATOR",
+    "slug": "personal-shield-generator",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8715,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "Shield provides 10 points of damage absorption. Activating costs Reaction but shield remains active. Regenerates when not damaged. Depleted shield requires 1 minute to restart.",
+      "cost": "9",
+      "drawback": "House Kurogane military, high-end security suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Shield provides 10 points of damage absorption. Activating costs Reaction but shield remains active. Regenerates when not damaged. Depleted shield requires 1 minute to restart.",
+    "drawback": "House Kurogane military, high-end security suppliers.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.psychic-resistance-module",
+    "type": "augment",
+    "name": "PSYCHIC RESISTANCE MODULE",
+    "slug": "psychic-resistance-module",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8167,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "Advantage on Reaction Rolls against fear, mind-reading, and mental influence. +4 to resist interrogation. Immune to involuntary telepathic contact.",
+      "cost": "9",
+      "drawback": "Intelligence agencies, executive protection services, House security specialists.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Advantage on Reaction Rolls against fear, mind-reading, and mental influence. +4 to resist interrogation. Immune to involuntary telepathic contact.",
+    "drawback": "Intelligence agencies, executive protection services, House security specialists.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.reflex-enhancement-system",
+    "type": "augment",
+    "name": "REFLEX ENHANCEMENT SYSTEM",
+    "slug": "reflex-enhancement-system",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8514,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+3 to Spotlight contests. +1 to Agility for Evasion and Agility checks. Once per round, may take an additional Reaction.",
+      "cost": "9",
+      "drawback": "Military neural specialists, elite mercenary suppliers.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+3 to Spotlight contests. +1 to Agility for Evasion and Agility checks. Once per round, may take an additional Reaction.",
+    "drawback": "Military neural specialists, elite mercenary suppliers.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.sensor-suite-advanced",
+    "type": "augment",
+    "name": "SENSOR SUITE (ADVANCED)",
+    "slug": "sensor-suite-advanced",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7780,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "Cannot be surprised; +3 to checks detecting hidden creatures or devices; can attempt to detect lies by reading biometric stress (opposed check vs. target's Presence).",
+      "cost": "9",
+      "drawback": "House Kurogane specialists, intelligence agencies. High-end Black Market.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "Cannot be surprised; +3 to checks detecting hidden creatures or devices; can attempt to detect lies by reading biometric stress (opposed check vs. target's Presence).",
+    "drawback": "House Kurogane specialists, intelligence agencies. High-end Black Market.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.synesthetic-integration",
+    "type": "augment",
+    "name": "SYNESTHETIC INTEGRATION",
+    "slug": "synesthetic-integration",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7812,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+2 to Spotlight contests (threat perception); +2 to Knowledge checks involving data analysis; can interface with systems intuitively, reducing hacking time by half.",
+      "cost": "9",
+      "drawback": "House Kurogane neural specialists. Experimental; not widely available.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "+2 to Spotlight contests (threat perception); +2 to Knowledge checks involving data analysis; can interface with systems intuitively, reducing hacking time by half.",
+    "drawback": "House Kurogane neural specialists. Experimental; not widely available.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.wired-reflexes-military-grade",
+    "type": "augment",
+    "name": "WIRED REFLEXES (MILITARY-GRADE)",
+    "slug": "wired-reflexes-military-grade",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8792,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "benefit": "+4 to Spotlight contests. +2 to Agility for Evasion. Once per combat, may take an additional Action on your turn. All movement speeds increased by 50%.",
+      "cost": "9",
+      "drawback": "Military special operations suppliers. Restricted technology.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+4 to Spotlight contests. +2 to Agility for Evasion. Once per combat, may take an additional Action on your turn. All movement speeds increased by 50%.",
+    "drawback": "Military special operations suppliers. Restricted technology.",
+    "cost": {
+      "credits": "9"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.assassination-toolkit",
+    "type": "augment",
+    "name": "ASSASSINATION TOOLKIT",
+    "slug": "assassination-toolkit",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9210,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "benefit": "+2d6 damage on successful surprise attacks. Poison delivery adds effects of chosen",
+      "cost": "16",
+      "drawback": "House Valerius exclusive. Never sold.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "+2d6 damage on successful surprise attacks. Poison delivery adds effects of chosen",
+    "drawback": "House Valerius exclusive. Never sold.",
+    "cost": {
+      "credits": "16"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.black-box-memory",
+    "type": "augment",
+    "name": "BLACK BOX MEMORY",
+    "slug": "black-box-memory",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 9149,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "benefit": "Complete record of user's experiences preserved even if user dies. Core can be recovered and memories accessed by authorized personnel.",
+      "cost": "16",
+      "drawback": "House Kurogane intelligence assets.",
+      "source": "rust-and-steel",
+      "complexity": 2
+    },
+    "benefit": "Complete record of user's experiences preserved even if user dies. Core can be recovered and memories accessed by authorized personnel.",
+    "drawback": "House Kurogane intelligence assets.",
+    "cost": {
+      "credits": "16"
+    },
+    "complexity": 2,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.combat-synchronization-system",
+    "type": "augment",
+    "name": "COMBAT SYNCHRONIZATION SYSTEM",
+    "slug": "combat-synchronization-system",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8823,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "benefit": "All synchronized fighters act on the highest Spotlight position in the group. Coordinated attacks gain +3 to strike. Synchronized flanking grants +4 bonus instead of standard flanking bonus. Cannot be surprised as a group if any member is not surprised.",
+      "cost": "16",
+      "drawback": "House Kurogane elite military units. Requires compatible installation in all synchronized members.",
+      "source": "rust-and-steel",
+      "complexity": 3
+    },
+    "benefit": "All synchronized fighters act on the highest Spotlight position in the group. Coordinated attacks gain +3 to strike. Synchronized flanking grants +4 bonus instead of standard flanking bonus. Cannot be surprised as a group if any member is not surprised.",
+    "drawback": "House Kurogane elite military units. Requires compatible installation in all synchronized members.",
+    "cost": {
+      "credits": "16"
+    },
+    "complexity": 3,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.military-grade-combat-chassis",
+    "type": "augment",
+    "name": "MILITARY-GRADE COMBAT CHASSIS",
+    "slug": "military-grade-combat-chassis",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8581,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "benefit": "Superior physical statistics as listed. Integrated weapons equivalent to Tier 3 weapons. Heavy armor equivalent to military battle plate. Speed 150% of normal. EMP resistance (save at Advantage; effects reduced to 1 round on failure).",
+      "cost": "25",
+      "drawback": "House Kurogane military exclusive. Not available for civilian purchase.",
+      "source": "rust-and-steel",
+      "complexity": "Special (Full-Body Conversion required)"
+    },
+    "benefit": "Superior physical statistics as listed. Integrated weapons equivalent to Tier 3 weapons. Heavy armor equivalent to military battle plate. Speed 150% of normal. EMP resistance (save at Advantage; effects reduced to 1 round on failure).",
+    "drawback": "House Kurogane military exclusive. Not available for civilian purchase.",
+    "cost": {
+      "credits": "25"
+    },
+    "complexity": "Special (Full-Body Conversion required)",
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.superintelligence-core",
+    "type": "augment",
+    "name": "SUPERINTELLIGENCE CORE",
+    "slug": "superintelligence-core",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8231,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "benefit": "+4 to all Knowledge checks. Can take 20 on any Knowledge check instantly (representing rapid exhaustive analysis). Once per session, may ask the Keeper one question about the logical implications of current situation.",
+      "cost": "25",
+      "drawback": "House Kurogane highest-level research assets. Extremely rare; possibly fewer than 100 individuals in the galaxy have this augmentation.",
+      "source": "rust-and-steel",
+      "complexity": 4
+    },
+    "benefit": "+4 to all Knowledge checks. Can take 20 on any Knowledge check instantly (representing rapid exhaustive analysis). Once per session, may ask the Keeper one question about the logical implications of current situation.",
+    "drawback": "House Kurogane highest-level research assets. Extremely rare; possibly fewer than 100 individuals in the galaxy have this augmentation.",
+    "cost": {
+      "credits": "25"
+    },
+    "complexity": 4,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.tactical-gestalt-processor",
+    "type": "augment",
+    "name": "TACTICAL GESTALT PROCESSOR",
+    "slug": "tactical-gestalt-processor",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 8198,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "benefit": "All gestalt-linked characters act on the highest Spotlight position in the group. Coordinated attacks gain +2 to strike. Flanking bonuses doubled. Once per encounter, the entire gestalt may act simultaneously on a single Spotlight order.",
+      "cost": "16",
+      "drawback": "House Kurogane military elite, specialized mercenary units. Requires linked installation across all gestalt members.",
+      "source": "rust-and-steel",
+      "complexity": 4
+    },
+    "benefit": "All gestalt-linked characters act on the highest Spotlight position in the group. Coordinated attacks gain +2 to strike. Flanking bonuses doubled. Once per encounter, the entire gestalt may act simultaneously on a single Spotlight order.",
+    "drawback": "House Kurogane military elite, specialized mercenary units. Requires linked installation across all gestalt members.",
+    "cost": {
+      "credits": "16"
+    },
+    "complexity": 4,
+    "capacityCost": 1
+  },
+  {
+    "id": "vf.rs.augment.total-sensory-replacement",
+    "type": "augment",
+    "name": "TOTAL SENSORY REPLACEMENT",
+    "slug": "total-sensory-replacement",
+    "pack": "rust-and-steel",
+    "status": "supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7843,
+        "collection": "augments"
+      }
+    ],
+    "tier": {
+      "name": "Precursor",
+      "rank": 4,
+      "code": "TT4"
+    },
+    "raw": {
+      "tier": "Precursor",
+      "benefit": "All benefits of component systems; immune to sensory overload attacks; can perceive through deployed sensor drones within 1km.",
+      "cost": "16",
+      "drawback": "House Kurogane highest-tier specialists. Extremely rare; typically reserved for key intelligence assets.",
+      "source": "rust-and-steel",
+      "complexity": 4
+    },
+    "benefit": "All benefits of component systems; immune to sensory overload attacks; can perceive through deployed sensor drones within 1km.",
+    "drawback": "House Kurogane highest-tier specialists. Extremely rare; typically reserved for key intelligence assets.",
+    "cost": {
+      "credits": "16"
+    },
+    "complexity": 4,
+    "capacityCost": 1
+  }
+]

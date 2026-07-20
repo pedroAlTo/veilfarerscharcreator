@@ -1,0 +1,1124 @@
+[
+  {
+    "id": "vf.core.drone-module.extended-link",
+    "type": "drone-module",
+    "name": "Extended Link",
+    "slug": "extended-link",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Signal / Control",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "When distance or ordinary structure would worsen signal, treat it as one step better. Does not bypass hard Lost zones.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "When distance or ordinary structure would worsen signal, treat it as one step better. Does not bypass hard Lost zones.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.relay-node",
+    "type": "drone-module",
+    "name": "Relay Node",
+    "slug": "relay-node",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Signal / Control",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Acts as a local repeater. One allied drone or short comm signal routed through it treats signal as one step better while the relay survives.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Acts as a local repeater. One allied drone or short comm signal routed through it treats signal as one step better while the relay survives.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.basic-autonomy-chip",
+    "type": "drone-module",
+    "name": "Basic Autonomy Chip",
+    "slug": "basic-autonomy-chip",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Signal / Control",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "When signal is Lost, execute one loaded protocol: Freeze, Return, Follow Beacon, Record, Deliver, or Trigger Module. Cannot improvise.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "When signal is Lost, execute one loaded protocol: Freeze, Return, Follow Beacon, Record, Deliver, or Trigger Module. Cannot improvise.",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.shielded-receiver",
+    "type": "drone-module",
+    "name": "Shielded Receiver",
+    "slug": "shielded-receiver",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Signal / Control",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Gain Advantage on checks to resist spoofing, light jamming, or ordinary interference. Does not resist hard Lost zones.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Gain Advantage on checks to resist spoofing, light jamming, or ordinary interference. Does not resist hard Lost zones.",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.neural-network-control",
+    "type": "drone-module",
+    "name": "Neural Network Control",
+    "slug": "neural-network-control",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Signal / Control",
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "0",
+      "use": "Allows registered crew members to take control of the drone by turns while signal is Stable. It moves spotlight, not action economy.",
+      "source": "core"
+    },
+    "slots": 0,
+    "use": "Allows registered crew members to take control of the drone by turns while signal is Stable. It moves spotlight, not action economy.",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.flight-module",
+    "type": "drone-module",
+    "name": "Flight Module",
+    "slug": "flight-module",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Movement",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Hover, cross gaps, move vertically, and fly at low speed. While flying, take -2 to stealth rolls.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Hover, cross gaps, move vertically, and fly at low speed. While flying, take -2 to stealth rolls.",
+    "cost": {
+      "credits": "2 Cr"
+    },
+    "statModifiers": {
+      "stealthWhileFlying": -2
+    }
+  },
+  {
+    "id": "vf.core.drone-module.wall-crawler",
+    "type": "drone-module",
+    "name": "Wall-Crawler",
+    "slug": "wall-crawler",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Movement",
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "1",
+      "use": "Climb walls, ceilings, ducts, and uneven surfaces unless slick, electrified, shielded, or hostile.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Climb walls, ceilings, ducts, and uneven surfaces unless slick, electrified, shielded, or hostile.",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.cargo-grip",
+    "type": "drone-module",
+    "name": "Cargo Grip",
+    "slug": "cargo-grip",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Movement",
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "1",
+      "use": "Carry small objects, drag light loads, or retrieve items. Cannot carry a conscious adult unless the frame is built for hauling.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Carry small objects, drag light loads, or retrieve items. Cannot carry a conscious adult unless the frame is built for hauling.",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.low-light-camera",
+    "type": "drone-module",
+    "name": "Low-Light Camera",
+    "slug": "low-light-camera",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Sensors",
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "1",
+      "use": "Ignore penalties from darkness short of total blackout, smoke, or sensor-obscuring interference.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Ignore penalties from darkness short of total blackout, smoke, or sensor-obscuring interference.",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.thermal-camera",
+    "type": "drone-module",
+    "name": "Thermal Camera",
+    "slug": "thermal-camera",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Sensors",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Detect heat signatures through darkness, smoke, or light cover. Insulation, decoys, cold-blooded species, and thermal masking can defeat it.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Detect heat signatures through darkness, smoke, or light cover. Insulation, decoys, cold-blooded species, and thermal masking can defeat it.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.radiation-chem-sensor",
+    "type": "drone-module",
+    "name": "Radiation/Chem Sensor",
+    "slug": "radiation-chem-sensor",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Sensors",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Detect radiation, toxins, corrosives, atmospheric hazards, or chemical traces. Grants Advantage on checks to identify environmental danger.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Detect radiation, toxins, corrosives, atmospheric hazards, or chemical traces. Grants Advantage on checks to identify environmental danger.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.audio-suite",
+    "type": "drone-module",
+    "name": "Audio Suite",
+    "slug": "audio-suite",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Sensors",
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "1",
+      "use": "Directional listening and clean recording. Grants Advantage when eavesdropping through ordinary barriers.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Directional listening and clean recording. Grants Advantage when eavesdropping through ordinary barriers.",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.medical-scanner",
+    "type": "drone-module",
+    "name": "Medical Scanner",
+    "slug": "medical-scanner",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Sensors",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Reads vitals and triage data. Grants Advantage to assess injury or stabilize remotely, but does not replace a Medic.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Reads vitals and triage data. Grants Advantage to assess injury or stabilize remotely, but does not replace a Medic.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.manipulator-arm",
+    "type": "drone-module",
+    "name": "Manipulator Arm",
+    "slug": "manipulator-arm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Tools",
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "1",
+      "use": "Move small objects, plug cables, press controls, retrieve samples, or perform simple manual tasks.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Move small objects, plug cables, press controls, retrieve samples, or perform simple manual tasks.",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.tool-mount",
+    "type": "drone-module",
+    "name": "Tool Mount",
+    "slug": "tool-mount",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Tools",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Mount one small legal tool: welder, injector, scanner, lock probe, solder kit, sample drill.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Mount one small legal tool: welder, injector, scanner, lock probe, solder kit, sample drill.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.cutter",
+    "type": "drone-module",
+    "name": "Cutter",
+    "slug": "cutter",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Tools",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Cut light doors, panels, cables, locks, and thin plating. Hardened targets require time or a successful roll.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Cut light doors, panels, cables, locks, and thin plating. Hardened targets require time or a successful roll.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.repair-kit",
+    "type": "drone-module",
+    "name": "Repair Kit",
+    "slug": "repair-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Tools",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "With operator Action, grants Advantage on a repair roll or lets the drone perform minor repairs at range.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "With operator Action, grants Advantage on a repair roll or lets the drone perform minor repairs at range.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.medgel-injector",
+    "type": "drone-module",
+    "name": "Medgel Injector",
+    "slug": "medgel-injector",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Tools",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "Stabilize a wounded target at range with operator Action. Does not heal HP unless another rule allows it.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Stabilize a wounded target at range with operator Action. Does not heal HP unless another rule allows it.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.noise-dampener",
+    "type": "drone-module",
+    "name": "Noise Dampener",
+    "slug": "noise-dampener",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Stealth / Evasion",
+    "raw": {
+      "tier": "Common",
+      "cost": "1 Cr",
+      "slots": "1",
+      "use": "Movement is silent to ordinary hearing. Does not hide heat, signal, light, airflow, or physical traces.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Movement is silent to ordinary hearing. Does not hide heat, signal, light, airflow, or physical traces.",
+    "cost": {
+      "credits": "1 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.stealth-shell",
+    "type": "drone-module",
+    "name": "Stealth Shell",
+    "slug": "stealth-shell",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Stealth / Evasion",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Gain +1 to stealth rolls while moving slowly and avoiding loud modules. Does not cancel the flight penalty.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Gain +1 to stealth rolls while moving slowly and avoiding loud modules. Does not cancel the flight penalty.",
+    "cost": {
+      "credits": "4 Cr"
+    },
+    "statModifiers": {
+      "stealthConditional": 1
+    }
+  },
+  {
+    "id": "vf.core.drone-module.agile-servos",
+    "type": "drone-module",
+    "name": "Agile Servos",
+    "slug": "agile-servos",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Stealth / Evasion",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Gain +1 Evasion.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Gain +1 Evasion.",
+    "cost": {
+      "credits": "4 Cr"
+    },
+    "statModifiers": {
+      "evasion": 1
+    }
+  },
+  {
+    "id": "vf.core.drone-module.low-profile-frame",
+    "type": "drone-module",
+    "name": "Low-Profile Frame",
+    "slug": "low-profile-frame",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Stealth / Evasion",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Gain +1 Evasion against ranged attacks while not carrying a heavy tool, weapon mount, cargo load, or armor plating.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Gain +1 Evasion against ranged attacks while not carrying a heavy tool, weapon mount, cargo load, or armor plating.",
+    "cost": {
+      "credits": "4 Cr"
+    },
+    "statModifiers": {
+      "conditionalEvasion": {
+        "key": "lowProfile",
+        "value": 1,
+        "label": "Ranged attack; no heavy tool, weapon mount, cargo, or armor plating",
+        "blockedByModules": [
+          "Armor Plating"
+        ]
+      }
+    }
+  },
+  {
+    "id": "vf.core.drone-module.decoy-flare-pod",
+    "type": "drone-module",
+    "name": "Decoy Flare Pod",
+    "slug": "decoy-flare-pod",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Stealth / Evasion",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "One use per reload. Against ranged, missile, sensor-guided, or drone attacks, impose Disadvantage or gain +2 Evasion against that attack.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "One use per reload. Against ranged, missile, sensor-guided, or drone attacks, impose Disadvantage or gain +2 Evasion against that attack.",
+    "cost": {
+      "credits": "4 Cr"
+    },
+    "statModifiers": {
+      "temporaryEvasion": 2
+    }
+  },
+  {
+    "id": "vf.core.drone-module.smoke-flash-pod",
+    "type": "drone-module",
+    "name": "Smoke/Flash Pod",
+    "slug": "smoke-flash-pod",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Non-Lethal Systems",
+    "raw": {
+      "tier": "Common",
+      "cost": "2 Cr",
+      "slots": "1",
+      "use": "One use per reload. Create a brief escape, distraction, breach window, or Advantage on one repositioning or infiltration action.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "One use per reload. Create a brief escape, distraction, breach window, or Advantage on one repositioning or infiltration action.",
+    "cost": {
+      "credits": "2 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.compliance-taser",
+    "type": "drone-module",
+    "name": "Compliance Taser",
+    "slug": "compliance-taser",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Non-Lethal Systems",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "2",
+      "use": "Operator Action. Close attack. On hit, mark 1 Stress and force the target to drop an object, lose footing, or suffer momentary stun if fiction allows.",
+      "source": "core"
+    },
+    "slots": 2,
+    "use": "Operator Action. Close attack. On hit, mark 1 Stress and force the target to drop an object, lose footing, or suffer momentary stun if fiction allows.",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.stun-dart",
+    "type": "drone-module",
+    "name": "Stun Dart",
+    "slug": "stun-dart",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "DG1"
+    },
+    "category": "Non-Lethal Systems",
+    "raw": {
+      "tier": "Common",
+      "cost": "4 Cr",
+      "slots": "2",
+      "use": "Operator Action. Close/Far attack. On hit, deal 1d6 non-lethal physical damage or mark 1 Stress. Limited ammo.",
+      "source": "core"
+    },
+    "slots": 2,
+    "use": "Operator Action. Close/Far attack. On hit, deal 1d6 non-lethal physical damage or mark 1 Stress. Limited ammo.",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.military-flight-module",
+    "type": "drone-module",
+    "name": "Military Flight Module",
+    "slug": "military-flight-module",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "DG2"
+    },
+    "category": "Military",
+    "raw": {
+      "tier": "Military",
+      "cost": "6 Cr",
+      "slots": "1",
+      "use": "Controlled tactical flight. While airborne, operator gains +1 on movement/piloting rolls; drone takes -2 to stealth.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Controlled tactical flight. While airborne, operator gains +1 on movement/piloting rolls; drone takes -2 to stealth.",
+    "cost": {
+      "credits": "6 Cr"
+    },
+    "statModifiers": {
+      "movementRollConditional": 1,
+      "stealthWhileFlying": -2
+    }
+  },
+  {
+    "id": "vf.core.drone-module.military-stealth-shell",
+    "type": "drone-module",
+    "name": "Military Stealth Shell",
+    "slug": "military-stealth-shell",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "DG2"
+    },
+    "category": "Military",
+    "raw": {
+      "tier": "Military",
+      "cost": "8 Cr",
+      "slots": "1",
+      "use": "Gain +2 to stealth rolls while moving slowly and avoiding loud modules. Does not cancel the flight penalty.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Gain +2 to stealth rolls while moving slowly and avoiding loud modules. Does not cancel the flight penalty.",
+    "cost": {
+      "credits": "8 Cr"
+    },
+    "statModifiers": {
+      "stealthConditional": 2
+    }
+  },
+  {
+    "id": "vf.core.drone-module.armor-plating",
+    "type": "drone-module",
+    "name": "Armor Plating",
+    "slug": "armor-plating",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "DG2"
+    },
+    "category": "Military",
+    "raw": {
+      "tier": "Military",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Gain +1 Armor Slot. Lose 1 Evasion while flying, sneaking, evading, or moving through tight terrain.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Gain +1 Armor Slot. Lose 1 Evasion while flying, sneaking, evading, or moving through tight terrain.",
+    "cost": {
+      "credits": "4 Cr"
+    },
+    "statModifiers": {
+      "armorSlots": 1,
+      "conditionalEvasion": {
+        "key": "armorPlatingPenalty",
+        "value": -1,
+        "label": "Flying, sneaking, evading, or tight terrain"
+      }
+    }
+  },
+  {
+    "id": "vf.core.drone-module.target-painter",
+    "type": "drone-module",
+    "name": "Target Painter",
+    "slug": "target-painter",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "DG2"
+    },
+    "category": "Military",
+    "raw": {
+      "tier": "Military",
+      "cost": "4 Cr",
+      "slots": "1",
+      "use": "Operator Action. Mark one target. The next ally attacking it gains Advantage or the system-equivalent bonus.",
+      "source": "core"
+    },
+    "slots": 1,
+    "use": "Operator Action. Mark one target. The next ally attacking it gains Advantage or the system-equivalent bonus.",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  },
+  {
+    "id": "vf.core.drone-module.micro-laser",
+    "type": "drone-module",
+    "name": "Micro-Laser",
+    "slug": "micro-laser",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-modules"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "DG2"
+    },
+    "category": "Military",
+    "raw": {
+      "tier": "Military",
+      "cost": "4 Cr",
+      "slots": "2",
+      "use": "Operator Action. Far attack. Deal 1d6 energy. Does not scale with Proficiency unless explicitly upgraded.",
+      "source": "core"
+    },
+    "slots": 2,
+    "use": "Operator Action. Far attack. Deal 1d6 energy. Does not scale with Proficiency unless explicitly upgraded.",
+    "cost": {
+      "credits": "4 Cr"
+    }
+  }
+]

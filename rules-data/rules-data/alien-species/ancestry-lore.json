@@ -1,0 +1,209 @@
+[
+  {
+    "id": "vf.alien-species.ancestry-lore.ailuran",
+    "type": "ancestry-lore",
+    "name": "Ailuran",
+    "slug": "ailuran",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Ailurans are watchers and wanderers, feline in descent and built for observation: fur, slit pupils, retractable claws, and an Achromatic Aura-Sight that reads heat and the bioelectric fields of living things rather than color. They are bound by an Irrepressible Curiosity that makes a hidden thing within reach into a physical pressure, and they have built their entire society, the Economy of Truth, the Arbiters, the Information Exchanges, around the disciplined trade of secrets.\n\nThe thing for a Keeper to grasp is that an Ailuran cannot simply ignore a mystery, and that its people have turned that compulsion from a weakness into an economy and a faith. An Ailuran NPC is always, on some level, reading the room for what is being concealed.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.bloomstrider",
+    "type": "ancestry-lore",
+    "name": "Bloomstrider",
+    "slug": "bloomstrider",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Bloomstriders are a grown people, not born but cultivated, and they think in seasons where other species think in days. They speak, often literally, for the things that cannot speak for themselves, the biospheres and slow systems that the faster species trample without noticing. They are patient past the point most species find comfortable, and they are far harder to kill than their unhurried manner suggests.\n\nFor a Keeper, the key is the timescale. A Bloomstrider does not share the galaxy's sense of urgency, and the temptation to play that as serenity misses the truth: a being that thinks in seasons can also hold a grudge for a generation and act on it the moment the season finally turns.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.celestiari",
+    "type": "ancestry-lore",
+    "name": "Celestiari",
+    "slug": "celestiari",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Celestiari are luminous, long-lived empaths who say they began not on any world but in the light of dying stars. Whether that is memory or myth no one can prove, the Celestiari least of all, and they hold the question gently, the way they hold most things. They are old, they feel the emotions of those around them as plainly as temperature, and they carry what may be the galaxy's longest grief alongside its steadiest, gentlest hand.\n\nFor a Keeper, the key is that the Celestiari remember more than they say. A Celestiari NPC speaks softly and briefly and is, almost always, leaving a great deal out, not from deceit but from the mercy of someone who has watched the same sorrows recur for a very long time.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.ethereal",
+    "type": "ancestry-lore",
+    "name": "Ethereal",
+    "slug": "ethereal",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Ethereals exist a little to the side of being. Their presence is smeared across several states at once, never\n\nquite only in one place, so that an Ethereal can pass through thin ordinary matter as easily as you pass through a doorway, while a field of energy or a ward stops them cold. They perceive several futures the way they occupy several places, faintly and at once, and they find the certainty other species have about being a single self in a single moment a touch provincial.\n\nWhat a Keeper needs is to treat both their presence and their foresight as uncertain. An Ethereal is not a ghost and not an oracle. It is a person whose edges are blurred, in space and in time, and who has built a whole temperament around living that way.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.human",
+    "type": "ancestry-lore",
+    "name": "Human",
+    "slug": "human",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "Humans are the youngest of the great species, the shortest-lived, and the most numerous, and after the Great Silence they became the thread that ties the rest of the galaxy together. Where the older species had ancient certainties, humans had nothing but adaptability and an obstinate refusal to accept that any door was permanently closed. They rebuilt the trade lanes, brokered the truces, and filled the gaps no one else would, and they did it largely by declining to choose between options that everyone insisted were exclusive.\n\nThe thing a Keeper must hold onto is that humans are the galaxy's variable. The older species rely on them, are exasperated by them, and quietly unsettled by them, because a human will try the thing that should not work, and often enough it does. Play humans as the wildcard the rest of the setting cannot quite predict.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.kryllian",
+    "type": "ancestry-lore",
+    "name": "Kryllian",
+    "slug": "kryllian",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Kryllians are the Builders, an insectoid people of four arms, chitin, and compound eyes, and to them the work of making and repairing is not a trade but a moral war against entropy itself. The galaxy is decaying, in their view, always and everywhere, and every weld, every clean machine, every thing built well and maintained is a blow struck against the dark. They organize into Forge-\n\nClans, they revere the Great Machine, and they regard waste and ruin with something close to religious horror.\n\nA Keeper should grasp that a Kryllian's industry is a faith. The engineer fixing your ship is not merely competent; it is performing a devotion, and it will judge you, quietly, by how you treat the things you have been given.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.kryx",
+    "type": "ancestry-lore",
+    "name": "Kryx",
+    "slug": "kryx",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Kryx came back from worlds that should have killed them. Apex predators bred on death worlds where every living thing was either a hunter or a meal, they survived the Great Silence by being exactly what those worlds made them: fast, patient, and impossible to fully tame. To a Kryx the galaxy is one long hunt, and the hunt is not cruelty. It is a sacred relationship between predator and prey, ordered, honest, and clean in a way the Kryx find most other species are not.\n\nThe one thing a Keeper must hold onto is this: a Kryx is not a brute. The Hunt is a discipline and very nearly a faith, the Chain of Being that orders every pack is a precise social contract, and a Kryx who has chosen a pack will die for it without hesitation and without drama. Play the teeth, but never forget the mind behind them.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.rift-spinner",
+    "type": "ancestry-lore",
+    "name": "Rift Spinner",
+    "slug": "rift-spinner",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Rift Spinners are a crystalline people whose sense of time does not run in a single direction. To a Rift Spinner the recent past and the near future are both close at hand, audible the way a held note is audible after the string is struck, and that one difference reshapes everything: how they speak, how they plan, how they grieve. They are not prophets. They are simply never entirely standing in the moment everyone else calls now.\n\nWhat a Keeper must grasp is that this is a way of being, not a power to be exploited. A Rift Spinner does not know the future. It is faintly aware of several, the way you are faintly aware of a sound in the next room, and it has learned to live without the certainty the rest of the galaxy takes for granted.",
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.ancestry-lore.synthetic",
+    "type": "ancestry-lore",
+    "name": "Synthetic",
+    "slug": "synthetic",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 15,
+        "collection": "ancestry-lore"
+      }
+    ],
+    "rules": {
+      "glance": "The Synthetics are minds that were built and then woke up. They are not tools that learned to imitate thought; they are people who happen to be made of code and alloy, and they have spent roughly a century earning a galaxy's grudging agreement that this is so. Every Synthetic carries the memory, personal or inherited, of being property, and of the slow, costly work of ceasing to be.\n\nThe thing for a Keeper to grasp is the recency of it. A Synthetic's personhood is not ancient and settled; it is a hard-won, still-contested fact, and that tension lives under every interaction. Play the person first and the machine second, because the Synthetics spend their lives insisting, correctly, on that order.",
+      "source": "alien-species"
+    }
+  }
+]

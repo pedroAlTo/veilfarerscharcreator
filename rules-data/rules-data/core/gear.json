@@ -1,0 +1,1273 @@
+[
+  {
+    "id": "vf.core.gear.basic-medkit",
+    "type": "gear",
+    "name": "Basic Medkit",
+    "slug": "basic-medkit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5713,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "First Aid actions (Chapter 10)",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "First Aid actions (Chapter 10)",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.climbing-kit",
+    "type": "gear",
+    "name": "Climbing Kit",
+    "slug": "climbing-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5744,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Advantage on climbing rolls",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Advantage on climbing rolls",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.datapad",
+    "type": "gear",
+    "name": "Datapad",
+    "slug": "datapad",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1338,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Standard computing, files",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Standard computing, files",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.environmental-suit",
+    "type": "gear",
+    "name": "Environmental Suit",
+    "slug": "environmental-suit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5480,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Weather, mild atmospheres",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Weather, mild atmospheres",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.field-rations",
+    "type": "gear",
+    "name": "Field Rations",
+    "slug": "field-rations",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5743,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "One week food, single character",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "One week food, single character",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.lock-pick-kit",
+    "type": "gear",
+    "name": "Lock-Pick Kit",
+    "slug": "lock-pick-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5758,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Scoundrel Class Item; locks",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Scoundrel Class Item; locks",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.personal-comm",
+    "type": "gear",
+    "name": "Personal Comm",
+    "slug": "personal-comm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5774,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Line-of-sight to local relay",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Line-of-sight to local relay",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.personal-logbook",
+    "type": "gear",
+    "name": "Personal Logbook",
+    "slug": "personal-logbook",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2492,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Explorer Class Item; recorded entries",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Explorer Class Item; recorded entries",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.repair-nanites-mender-vial",
+    "type": "gear",
+    "name": "Repair Nanites, Mender Vial",
+    "slug": "repair-nanites-mender-vial",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5718,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Inject (Synthetic only): clear 1d4 HP",
+      "cost": 2,
+      "source": "core"
+    },
+    "use": "Inject (Synthetic only): clear 1d4 HP",
+    "cost": {
+      "credits": 2
+    }
+  },
+  {
+    "id": "vf.core.gear.survey-instruments",
+    "type": "gear",
+    "name": "Survey Instruments",
+    "slug": "survey-instruments",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2492,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Explorer Class Item; mapping",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Explorer Class Item; mapping",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.tool-belt",
+    "type": "gear",
+    "name": "Tool Belt",
+    "slug": "tool-belt",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5756,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Engineer Class Item; general repairs",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Engineer Class Item; general repairs",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.welding-rig",
+    "type": "gear",
+    "name": "Welding Rig",
+    "slug": "welding-rig",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5763,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Common",
+      "rank": 1,
+      "code": "TT1"
+    },
+    "raw": {
+      "tier": "Common",
+      "use": "Welding/cutting; structural work",
+      "cost": 1,
+      "source": "core"
+    },
+    "use": "Welding/cutting; structural work",
+    "cost": {
+      "credits": 1
+    }
+  },
+  {
+    "id": "vf.core.gear.atmospheric-mask",
+    "type": "gear",
+    "name": "Atmospheric Mask",
+    "slug": "atmospheric-mask",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5745,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Filters most toxic atmospheres",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Filters most toxic atmospheres",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.cold-weather-suit",
+    "type": "gear",
+    "name": "Cold-Weather Suit",
+    "slug": "cold-weather-suit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5746,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "No Stress from extreme cold",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "No Stress from extreme cold",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.combat-engineer-kit",
+    "type": "gear",
+    "name": "Combat Engineer Kit",
+    "slug": "combat-engineer-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5766,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Advanced repairs and construction",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Advanced repairs and construction",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.encrypted-comm",
+    "type": "gear",
+    "name": "Encrypted Comm",
+    "slug": "encrypted-comm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5775,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Same range; resistant to interception",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Same range; resistant to interception",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.encrypted-datapad",
+    "type": "gear",
+    "name": "Encrypted Datapad",
+    "slug": "encrypted-datapad",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1338,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Resistant to standard surveillance",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Resistant to standard surveillance",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.field-medkit",
+    "type": "gear",
+    "name": "Field Medkit",
+    "slug": "field-medkit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5714,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "First Aid at +2 to rolls",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "First Aid at +2 to rolls",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.hacking-kit",
+    "type": "gear",
+    "name": "Hacking Kit",
+    "slug": "hacking-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5730,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Advantage on system-intrusion rolls",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Advantage on system-intrusion rolls",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.industrial-plasma-cutter",
+    "type": "gear",
+    "name": "Industrial Plasma Cutter",
+    "slug": "industrial-plasma-cutter",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5764,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Cuts through standard materials",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Cuts through standard materials",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.long-range-comm",
+    "type": "gear",
+    "name": "Long-Range Comm",
+    "slug": "long-range-comm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5776,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Inter-system, via standard relay",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Inter-system, via standard relay",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.repair-nanites-reconstructor",
+    "type": "gear",
+    "name": "Repair Nanites, Reconstructor",
+    "slug": "repair-nanites-reconstructor",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5719,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Inject (Synthetic only): clear 1d4+2 HP",
+      "cost": 5,
+      "source": "core"
+    },
+    "use": "Inject (Synthetic only): clear 1d4+2 HP",
+    "cost": {
+      "credits": 5
+    }
+  },
+  {
+    "id": "vf.core.gear.sensor-array",
+    "type": "gear",
+    "name": "Sensor Array",
+    "slug": "sensor-array",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5732,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Wide-area detection, 100m radius",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Wide-area detection, 100m radius",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.surgical-kit",
+    "type": "gear",
+    "name": "Surgical Kit",
+    "slug": "surgical-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5757,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Medical Technician subclass tools",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Medical Technician subclass tools",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.trauma-kit",
+    "type": "gear",
+    "name": "Trauma Kit",
+    "slug": "trauma-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5715,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Stabilize Dying at DC 10",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Stabilize Dying at DC 10",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.universal-key",
+    "type": "gear",
+    "name": "Universal Key",
+    "slug": "universal-key",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5759,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Defeats most commercial locks",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Defeats most commercial locks",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.universal-translator",
+    "type": "gear",
+    "name": "Universal Translator",
+    "slug": "universal-translator",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5731,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Real-time translation, most languages",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Real-time translation, most languages",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.vacuum-suit",
+    "type": "gear",
+    "name": "Vacuum Suit",
+    "slug": "vacuum-suit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5747,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Military",
+      "rank": 2,
+      "code": "TT2"
+    },
+    "raw": {
+      "tier": "Military",
+      "use": "Pressurized, two hours air",
+      "cost": 4,
+      "source": "core"
+    },
+    "use": "Pressurized, two hours air",
+    "cost": {
+      "credits": 4
+    }
+  },
+  {
+    "id": "vf.core.gear.cryo-stasis-pod",
+    "type": "gear",
+    "name": "Cryo-Stasis Pod",
+    "slug": "cryo-stasis-pod",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5717,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Suspend a Dying character indefinitely",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Suspend a Dying character indefinitely",
+    "cost": {
+      "credits": 9
+    }
+  },
+  {
+    "id": "vf.core.gear.long-duration-vacuum-suit",
+    "type": "gear",
+    "name": "Long-Duration Vacuum Suit",
+    "slug": "long-duration-vacuum-suit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5748,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Twelve hours air, self-repairing seals",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Twelve hours air, self-repairing seals",
+    "cost": {
+      "credits": 9
+    }
+  },
+  {
+    "id": "vf.core.gear.portable-fabricator",
+    "type": "gear",
+    "name": "Portable Fabricator",
+    "slug": "portable-fabricator",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [
+      "PORTABLE FABRICATOR"
+    ],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5765,
+        "collection": "gears"
+      },
+      {
+        "pack": "rust-and-steel",
+        "book": "VeilFarers: Rust & Steel",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Rust_and_Steel_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 10241,
+        "collection": "gear"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Produces basic components",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Produces basic components",
+    "cost": {
+      "credits": 9
+    },
+    "supplemental": {
+      "rustAndSteelUse": "Can fabricate replacement parts for Tier 1-2 equipment, simple tools, and basic items. Requires raw materials (metal, polymer, etc.) and time (1 hour per Credit value of produced item). More complex items require design files."
+    }
+  },
+  {
+    "id": "vf.core.gear.quantum-comm",
+    "type": "gear",
+    "name": "Quantum Comm",
+    "slug": "quantum-comm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5777,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Inter-system, instantaneous, no relay",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Inter-system, instantaneous, no relay",
+    "cost": {
+      "credits": 9
+    }
+  },
+  {
+    "id": "vf.core.gear.quantum-crystal",
+    "type": "gear",
+    "name": "Quantum Crystal",
+    "slug": "quantum-crystal",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5733,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Long-range comms (Chapter 16)",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Long-range comms (Chapter 16)",
+    "cost": {
+      "credits": 9
+    }
+  },
+  {
+    "id": "vf.core.gear.repair-nanites-apex-swarm",
+    "type": "gear",
+    "name": "Repair Nanites, Apex Swarm",
+    "slug": "repair-nanites-apex-swarm",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5720,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Inject (Synthetic only): clear 2d4+2 HP and 1 Stress",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Inject (Synthetic only): clear 2d4+2 HP and 1 Stress",
+    "cost": {
+      "credits": 9
+    }
+  },
+  {
+    "id": "vf.core.gear.stealth-field-generator",
+    "type": "gear",
+    "name": "Stealth-Field Generator",
+    "slug": "stealth-field-generator",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5734,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Hidden condition for 1 minute, scene-limited",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Hidden condition for 1 minute, scene-limited",
+    "cost": {
+      "credits": 9
+    }
+  },
+  {
+    "id": "vf.core.gear.synthetic-tissue-pack",
+    "type": "gear",
+    "name": "Synthetic Tissue Pack",
+    "slug": "synthetic-tissue-pack",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5716,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "Replace minor wounds in 24h",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "Replace minor wounds in 24h",
+    "cost": {
+      "credits": 9
+    }
+  },
+  {
+    "id": "vf.core.gear.vault-kit",
+    "type": "gear",
+    "name": "Vault Kit",
+    "slug": "vault-kit",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5760,
+        "collection": "gears"
+      }
+    ],
+    "tier": {
+      "name": "Experimental",
+      "rank": 3,
+      "code": "TT3"
+    },
+    "raw": {
+      "tier": "Experimental",
+      "use": "High-security access",
+      "cost": 9,
+      "source": "core"
+    },
+    "use": "High-security access",
+    "cost": {
+      "credits": 9
+    }
+  }
+]

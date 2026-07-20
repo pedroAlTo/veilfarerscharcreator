@@ -1,0 +1,54 @@
+VEILFARERS PORTAL v59.62 — VALIDATION REPORT
+================================================
+
+BASELINE
+--------
+Source package: VeilFarers_Portal_v59.61_3D_Dice_WASM_CSP_Hotfix.zip
+Release type: Keeper startup isolation plus Firebase Admin configuration diagnostics
+
+STATIC RESULT
+-------------
+PASS  package.json and package-lock.json report 59.62.0.
+PASS  data/changelog.json reports v59.62 as current.
+PASS  keeper-tool.html no longer loads character-registry.js.
+PASS  keeper-tool.html no longer loads character-sync-adapter.js.
+PASS  Keeper page retains its dedicated local Charsheet-to-Keeper importer.
+PASS  TypeScript compilation completed for all Netlify .mts functions.
+PASS  JavaScript syntax checks completed for first-party standalone JavaScript.
+PASS  Firebase Admin parser returns 503 / FIREBASE_ADMIN_NOT_CONFIGURED when absent.
+PASS  Firebase Admin parser returns 503 / FIREBASE_ADMIN_INVALID_JSON for malformed JSON.
+PASS  Firebase Admin parser normalizes literal \n sequences in private_key.
+PASS  Character Vault, table API, Firebase custom-token and ID allocation preserve safe diagnostic codes.
+PASS  service-account content is never returned by the new response paths.
+PASS  netlify.toml retains 'wasm-unsafe-eval'.
+PASS  assets/3d-dice/Dice.min.js exists and is byte-identical to dice.min.js.
+PASS  No Firestore Rules file, canonical rules dataset or downloads manifest was edited.
+
+BEHAVIORAL BOUNDARY
+-------------------
+The code change guarantees that opening Keeper Tool no longer initializes Character Vault.
+It cannot manufacture Firebase server credentials. Cloud table, Vault, permanent-ID and
+Firebase custom-token success still requires a valid FIREBASE_SERVICE_ACCOUNT_JSON in the
+actual Netlify deployment context.
+
+LIVE ACCEPTANCE REQUIRED
+------------------------
+- Verify Keeper campaign selection opens on the deployed origin.
+- Confirm Network contains no Keeper-startup /api/character-vault request.
+- Confirm /api/table-api returns 200 after server credentials are configured.
+- Confirm /api/character-vault returns 200 on Account/Creator/Charsheet workflows.
+- Confirm missing credentials in a disposable context return 503 and no secret material.
+- Confirm Player Tool 3D dice still initialize Ammo WASM and render rolls.
+- Confirm the effective HTTP CSP, not merely netlify.toml, contains 'wasm-unsafe-eval'.
+
+ROLLBACK
+--------
+Redeploy v59.61. No database or Rules rollback is required.
+
+RELEASE ARTIFACT
+----------------
+PASS  Final ZIP passes CRC validation and extracts successfully.
+PASS  Final ZIP contains index.html at root and the v59.62 summary, validation and full handover.
+PASS  Extracted artifact contains 88 3D-dice files, including both exact-case compatibility modules.
+PASS  Extracted artifact retains all five bundled PDFs.
+PASS  node_modules and server credentials are absent from the deploy artifact.

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="veilfarers-release" content="v59.63">
+  <script src="local-runtime.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veilfarers - Spectrum of Fate Edition</title>
+    <link rel="stylesheet" href="portal.css">
+    <link rel="stylesheet" href="assets/3d-dice/vf-dice3d.css">
+    <link rel="stylesheet" href="assets/player-tool-tailwind.css">
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="assets/vendor/react.production.min.js"></script>
+    <script crossorigin src="assets/vendor/react-dom.production.min.js"></script>
+
+    <!-- Firebase SDK (VERSION COMPATIBILIDAD - MÁS ROBUSTA PARA ESTE ENTORNO) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // La configuración de Firebase se sirve en tiempo de ejecución desde una
+        // Netlify Function (/api/firebase-config) que lee los valores desde
+        // variables de entorno. Así ninguna clave queda escrita en el repositorio.
+        let firebaseConfigPromise = null;
+        window.loadFirebaseConfig = async () => {
+            if (!firebaseConfigPromise) {
+                firebaseConfigPromise = fetch('/api/firebase-config', { cache: 'no-store' })
+                    .then((res) => {
+                        if (!res.ok) throw new Error(`No se pudo cargar la configuración de Firebase (${res.status}).`);
+                        return res.json();
+                    })
+                    .catch((err) => {
+                        firebaseConfigPromise = null; // permitir reintento
+                        throw err;
+                    });
+            }
+            return firebaseConfigPromise;
+        };
+
+        // Firestore rejects undefined values. Character data can contain optional
+        // fields from older JSON exports or custom equipment, so every write is
+        // normalized before it reaches Firestore. Object properties with undefined
+        // values are omitted; undefined array positions become null to preserve order.
+        window.vfFindUndefinedPaths = (value, path = '$', found = [], seen = new WeakSet()) => {
+            if (value === undefined) { found.push(path); return found; }
+            if (!value || typeof value !== 'object') return found;
+            if (seen.has(value)) return found;
+            seen.add(value);
+            if (Array.isArray(value)) value.forEach((item, index) => window.vfFindUndefinedPaths(item, `${path}[${index}]`, found, seen));
+            else Object.keys(value).forEach((key) => window.vfFindUndefinedPaths(value[key], `${path}.${key}`, found, seen));
+            return found;
+        };
+        window.vfSanitizeFirestore = (value, seen = new WeakSet()) => {
+            if (value === undefined) return undefined;
+            if (value === null || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+            if (value instanceof Date) return value;
+            if (typeof value !== 'object') return undefined;
+
+            // Preserve Firestore native values and transform sentinels.
+            const ctor = value.constructor && value.constructor.name;
+            if ((ctor && /FieldValue|Timestamp|GeoPoint|DocumentReference|FieldPath|Blob|Bytes/i.test(ctor)) ||
+                value._delegate || value._methodName || typeof value.toDate === 'function') return value;
+
+            if (seen.has(value)) return null;
+            seen.add(value);
+            if (Array.isArray(value)) {
+                return value.map((item) => {
+                    const clean = window.vfSanitizeFirestore(item, seen);
+                    return clean === undefined ? null : clean;
+                });
+            }
+            const cleanObject = {};
+            Object.keys(value).forEach((key) => {
+                const clean = window.vfSanitizeFirestore(value[key], seen);
+                if (clean !== undefined) cleanObject[key] = clean;
+            });
+            return cleanObject;
+        };
+
+        // Single-flight initialization prevents duplicate auth/configuration loops.
+        let firebaseRuntimeInitPromise = null;
+        window.initFirebase = async (config) => {
+            if (firebaseRuntimeInitPromise) return firebaseRuntimeInitPromise;
+            firebaseRuntimeInitPromise = (async () => {
+            console.log("--- INICIANDO CONEXIÓN FIREBASE ---");
+            try {
+                if (!window.firebase) throw new Error("Librerías Firebase no cargadas.");
+
+                // 0. Obtener configuración (desde variables de entorno vía función)
+                const activeConfig = config || await window.loadFirebaseConfig();
+
+                // 1. Inicializar App
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(activeConfig);
+                    console.log("App inicializada.");
+                }
+
+                const db = firebase.firestore();
+                const auth = firebase.auth();
+
+                // Primary SDK-level guard. The explicit sanitizer below remains in
+                // place so diagnostics are available and old/custom data is safe even
+                // when Firestore has already been initialized elsewhere on the page.
+                if (!window.__vfIgnoreUndefinedConfigured) {
+                    try {
+                        db.settings({ ignoreUndefinedProperties: true, merge: true });
+                        window.__vfIgnoreUndefinedConfigured = true;
+                    } catch (settingsErr) {
+                        console.warn('Firestore settings already active; using the VeilFarers write sanitizer.', settingsErr);
+                        window.__vfIgnoreUndefinedConfigured = true;
+                    }
+                }
+                
+                // 2. Configurar Persistencia (SESSION es más seguro en iframes que LOCAL)
+                await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+
+                // 3. Bridge the authenticated Netlify Identity user into Firebase.
+                if (!window.VFTableAccess) throw new Error("Table access bridge not loaded.");
+                const identityUser = await window.VFTableAccess.ensureFirebaseAuth(auth);
+                const user = auth.currentUser;
+                console.log("Authenticated table user:", identityUser.email || user.uid);
+
+                console.log("Verificando acceso a Firestore...");
+                
+                return { 
+                    db, auth, config: activeConfig, 
+                    // CORRECCIÓN CRÍTICA 1: Ruta completa (mantenida del paso anterior)
+                    doc: (db, ...path) => {
+                        const fullPath = path.join('/');
+                        console.log("Reference Doc Path:", fullPath); // Debug log
+                        return db.doc(fullPath);
+                    },
+                    collection: (db, ...path) => {
+                        const fullPath = path.join('/');
+                        return db.collection(fullPath);
+                    },
+                    setDoc: (ref, data, opt) => {
+                        const undefinedPaths = window.vfFindUndefinedPaths(data);
+                        if (undefinedPaths.length) console.warn('Firestore write normalized; omitted undefined fields:', undefinedPaths);
+                        return ref.set(window.vfSanitizeFirestore(data), opt);
+                    },
+                    updateDoc: (ref, data) => {
+                        const undefinedPaths = window.vfFindUndefinedPaths(data);
+                        if (undefinedPaths.length) console.warn('Firestore update normalized; omitted undefined fields:', undefinedPaths);
+                        return ref.update(window.vfSanitizeFirestore(data));
+                    },
+                    onSnapshot: (ref, next, err) => ref.onSnapshot(next, err),
+                    arrayUnion: (...args) => firebase.firestore.FieldValue.arrayUnion(...args.map(arg => window.vfSanitizeFirestore(arg)))
+                };
+
+            } catch (e) {
+                console.error("ERROR CRÍTICO:", e);
+                throw e;
+            }
+            })();
+            try { return await firebaseRuntimeInitPromise; }
+            catch (error) { firebaseRuntimeInitPromise = null; throw error; }
+        };
+    </script>
+    
+    <!-- Iconos -->
+    <script>
+        const Icons = {
+            User: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" }), React.createElement('circle', { cx: "12", cy: "7", r: "4" })),
+            Shield: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" })),
+            Activity: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('polyline', { points: "22 12 18 12 15 21 9 3 6 12 2 12" })),
+            Zap: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('polygon', { points: "13 2 3 14 12 14 11 22 21 10 12 10 13 2" })),
+            Heart: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" })),
+            Database: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('ellipse', { cx: "12", cy: "5", rx: "9", ry: "3" }), React.createElement('path', { d: "M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" }), React.createElement('path', { d: "M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" })),
+            AlertCircle: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('circle', { cx: "12", cy: "12", r: "10" }), React.createElement('line', { x1: "12", y1: "8", x2: "12", y2: "12" }), React.createElement('line', { x1: "12", y1: "16", x2: "12.01", y2: "16" })),
+            Sparkles: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z" })),
+            Skull: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('circle', { cx: "9", cy: "12", r: "1" }), React.createElement('circle', { cx: "15", cy: "12", r: "1" }), React.createElement('path', { d: "M8 20v2h8v-2" }), React.createElement('path', { d: "m12.5 17-.5-1-.5 1h1z" }), React.createElement('path', { d: "M16 20a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20" })),
+            Star: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('polygon', { points: "12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" })),
+            Plus: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('line', { x1: "12", y1: "5", x2: "12", y2: "19" }), React.createElement('line', { x1: "5", y1: "12", x2: "19", y2: "12" })),
+            X: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('line', { x1: "18", y1: "6", x2: "6", y2: "18" }), React.createElement('line', { x1: "6", y1: "6", x2: "18", y2: "18" })),
+            Cloud: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M17.5 19c0-1.7-1.3-3-3-3h-11a4 4 0 0 1-0-8h1a6 6 0 0 1 11.5-2.2" })),
+            CloudLightning: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973" }), React.createElement('path', { d: "m13 12-3 5h4l-3 5" })),
+            Link: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" }), React.createElement('path', { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" })),
+            Wifi: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M5 12.55a11 11 0 0 1 14.08 0" }), React.createElement('path', { d: "M1.42 9a16 16 0 0 1 21.16 0" }), React.createElement('path', { d: "M8.53 16.11a6 6 0 0 1 6.95 0" }), React.createElement('line', { x1: "12", y1: "20", x2: "12.01", y2: "20" })),
+            Dices: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('rect', { width: "12", height: "12", x: "2", y: "10", rx: "2", ry: "2" }), React.createElement('path', { d: "m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6" }), React.createElement('path', { d: "M6 18h.01" }), React.createElement('path', { d: "M10 14h.01" }), React.createElement('path', { d: "M15 6h.01" }), React.createElement('path', { d: "M18 9h.01" })),
+            CreditCard: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('rect', { width: "20", height: "14", x: "2", y: "5", rx: "2" }), React.createElement('line', { x1: "2", x2: "22", y1: "10", y2: "10" })),
+            Save: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" }), React.createElement('polyline', { points: "17 21 17 13 7 13 7 21" }), React.createElement('polyline', { points: "7 3 7 8 15 8" })),
+            Upload: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }), React.createElement('polyline', { points: "17 8 12 3 7 8" }), React.createElement('line', { x1: "12", y1: "3", x2: "12", y2: "15" })),
+            Download: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }), React.createElement('polyline', { points: "7 10 12 15 17 10" }), React.createElement('line', { x1: "12", y1: "15", x2: "12", y2: "3" })),
+            Crown: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" })),
+            ScrollText: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M15 12h-5" }), React.createElement('path', { d: "M15 8h-5" }), React.createElement('path', { d: "M19 17V5a2 2 0 0 0-2-2H4" }), React.createElement('path', { d: "M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v2a2 2 0 0 0 2 2Z" })),
+            Pin: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('line', { x1: "12", y1: "17", x2: "12", y2: "22" }), React.createElement('path', { d: "M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" })),
+            Minus: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('line', { x1: "5", y1: "12", x2: "19", y2: "12" })),
+            Move: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('polyline', { points: "5 9 2 12 5 15" }), React.createElement('polyline', { points: "9 5 12 2 15 5" }), React.createElement('polyline', { points: "19 9 22 12 19 15" }), React.createElement('polyline', { points: "9 19 12 22 15 19" }), React.createElement('line', { x1: "2", y1: "12", x2: "22", y2: "12" }), React.createElement('line', { x1: "12", y1: "2", x2: "12", y2: "22" })),
+            Settings: (props) => React.createElement('svg', { ...props, xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }, React.createElement('path', { d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" }), React.createElement('circle', { cx: "12", cy: "12", r: "3" }))
+        };
+    </script>
+
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .vf-player-topbar{overflow:visible!important;}
+        .vf-player-tabs,.vf-player-tools{overflow:visible!important;}
+        .vf-player-tabs>*{flex:0 0 auto;}
+        .vf-player-tools>*{flex:0 0 auto;}
+        .vf-player-tools button,.vf-player-tabs button{box-shadow:0 2px 8px rgba(0,0,0,.16);}
+        @media (max-width:700px){.vf-player-tools{gap:.35rem}.vf-player-tools button{padding-left:.55rem!important;padding-right:.55rem!important}}
+
+        /* Operational damage dice: weapon mechanics must remain visible in callouts. */
+        .vf-damage-dice{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:.38rem;margin:.2rem 0;}
+        .vf-damage-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:.08rem;min-width:38px;padding:.18rem .16rem .1rem;border:1px solid transparent;border-radius:.55rem;transition:opacity .48s ease,filter .48s ease,box-shadow .48s ease,border-color .48s ease,background-color .48s ease,transform .48s ease;}
+        .vf-damage-die.is-kept{border-color:rgba(248,113,113,.65);background:rgba(127,29,29,.22);box-shadow:0 0 12px rgba(248,113,113,.18);}
+        .vf-damage-die.is-discarded{opacity:.34;filter:grayscale(1) saturate(.05) brightness(.72);transform:scale(.92);border-color:rgba(100,116,139,.45);background:rgba(15,23,42,.52);}
+        .vf-damage-die.is-discarded .vf-damage-die-face:after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;background:#94a3b8;transform:rotate(-34deg);box-shadow:0 0 2px #020617;pointer-events:none;}
+        .vf-damage-die-face{position:relative;display:grid;place-items:center;}
+        .vf-damage-die-state{font-size:7px;line-height:1;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+        .vf-damage-die.is-kept .vf-damage-die-state{color:#fca5a5;}
+        .vf-damage-die.is-discarded .vf-damage-die-state{color:#94a3b8;text-decoration:line-through;}
+        .vf-damage-die-reroll{font-size:7px;line-height:1;color:#facc15;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+        .vf-damage-summary{font-size:8px;color:#cbd5e1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:center;}
+
+        body { background-color: #020617; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
+        .status-online { animation: pulse-green 2s infinite; }
+        .card-glow:hover { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
+        
+        @keyframes slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+        .toast-enter { animation: slide-up 0.5s ease-out forwards; }
+        /* ===== LANTERN SPOTLIGHT SYSTEM =====
+           States: OFF = lantern points up, unlit.
+                   ON  = lens lights up + smooth rotation to aim at the character name.
+           While ON: beam sways almost imperceptibly, faint dust motes drift in the light,
+                     and every 6-10s the lamp flickers briefly (JS-scheduled, sporadic). */
+        .vf-lantern { display:inline-block; width:18px; height:18px; vertical-align:middle; cursor:pointer; }
+        .vf-lantern svg { display:block; overflow:visible; }
+        .vf-lantern .vf-lantern-rot {
+          transform-origin: 12px 12px;
+          transform: rotate(0deg);                     /* OFF: facing up */
+          transition: transform 0.8s cubic-bezier(0.45, 0.05, 0.25, 1.2);
+        }
+        .vf-lantern.on .vf-lantern-rot { transform: rotate(102deg); }  /* ON: aim at the name (to the right) */
+        /* light parts: hidden when off, soft fade when switching */
+        .vf-lantern .vf-beam, .vf-lantern .vf-lens-glow, .vf-lantern .vf-dust { opacity:0; transition: opacity 0.45s ease 0s; }
+        .vf-lantern.on .vf-beam { opacity:1; transition-delay:0.7s; }        /* beam ignites once aimed at the name */
+        .vf-lantern.on .vf-lens-glow { opacity:1; transition-delay:0.62s; } /* lens lights only in position */
+        .vf-lantern.on .vf-dust { opacity:1; transition-delay:0.95s; }
+        .vf-lantern .vf-lens-off { opacity:1; transition: opacity 0.3s ease 0s; }
+        .vf-lantern.on .vf-lens-off { opacity:0; transition-delay:0.62s; }  /* stays dark through the swing */
+        /* subtle sway of the light while on (max ±1.6deg, barely perceptible) */
+        @keyframes vf-beam-sway { 0%,100% { transform: rotate(-0.8deg); } 50% { transform: rotate(0.8deg); } }
+        .vf-lantern.on .vf-beam-group { transform-origin: 12px 8.5px; animation: vf-beam-sway 7s ease-in-out infinite; }
+        /* very subtle breathing pulse of the light while on */
+        @keyframes vf-light-pulse { 0%,100% { opacity:1; } 50% { opacity:0.86; } }
+        .vf-lantern.on .vf-beam { animation: vf-light-pulse 3.4s ease-in-out infinite; }
+        .vf-lantern.on .vf-glow-halo { animation: vf-light-pulse 3.4s ease-in-out 0.4s infinite; }
+        /* dust motes drifting slowly through the beam */
+        @keyframes vf-dust-drift { 0% { transform: translate(0,0); opacity:0; } 15% { opacity:0.5; } 60% { opacity:0.35; } 100% { transform: translate(1.5px,-7px); opacity:0; } }
+        .vf-lantern .vf-dust circle { animation: vf-dust-drift 6s linear infinite; }
+        .vf-lantern .vf-dust circle:nth-child(2) { animation-duration: 8s; animation-delay: 2.4s; }
+        .vf-lantern .vf-dust circle:nth-child(3) { animation-duration: 7s; animation-delay: 4.2s; }
+        /* flicker: JS applies .flicker for ~620ms every 6-10s. The light dies out in bursts
+           while the lamp gets shaken (a few "hits" to make it work), then settles back to
+           its tilted position and works as normal. */
+        /* Sequenced flicker over 1.6s: (1) light stutters like it's breaking,
+           (2) light cuts fully OFF, (3) lamp gets wiggled as if hit, (4) it flickers
+           back and the beam returns to normal. Light + wash use the same timeline. */
+        @keyframes vf-lamp-flicker {
+          0% { opacity:1; } 2% { opacity:0.15; } 5% { opacity:0.85; } 8% { opacity:0.08; } 11% { opacity:0.6; }
+          14% { opacity:0; } 60% { opacity:0; } /* fully off through the wiggle */
+          64% { opacity:0.12; } 68% { opacity:0.02; } 73% { opacity:0.55; } 77% { opacity:0.12; }
+          83% { opacity:0.85; } 88% { opacity:0.4; } 94% { opacity:0.95; } 100% { opacity:1; } }
+        .vf-lantern.on.flicker .vf-beam, .vf-lantern.on.flicker .vf-lens-glow { animation: vf-lamp-flicker 1.6s steps(1,end) 1; }
+        .vf-lantern.on.flicker .vf-glow-halo { animation: vf-lamp-flicker 1.6s steps(1,end) 1; }
+        /* wiggle happens only while the light is off (~15%-60% of the timeline) */
+        @keyframes vf-lamp-shake { 0%,14% { transform: rotate(0deg) translate(0,0); }
+          20% { transform: rotate(-12deg) translate(-0.8px,0.5px); }
+          27% { transform: rotate(10deg) translate(0.8px,-0.4px); }
+          34% { transform: rotate(-9deg) translate(-0.6px,0.4px); }
+          41% { transform: rotate(8deg) translate(0.6px,-0.3px); }
+          48% { transform: rotate(-6deg) translate(-0.4px,0.3px); }
+          55% { transform: rotate(4deg) translate(0.3px,0); }
+          61% { transform: rotate(-1.5deg) translate(0,0); }
+          67%,100% { transform: rotate(0deg) translate(0,0); } }
+        .vf-lantern.on.flicker svg { animation: vf-lamp-shake 1.6s ease-in-out 1; transform-origin: 50% 70%; }
+        .vf-lantern:hover .vf-body { stroke:rgb(var(--vf-spot-rgb, 253,224,71)); }
+        /* spotlight colour driven by CSS vars (personal theme, set on the app root) */
+        #root { --vf-spot-rgb: 253,224,71; --vf-spot-halo-rgb: 254,249,195; --vf-spot-lens-rgb: 254,240,138; --vf-spot-text: #3a2c00; }
+        .vf-g-main { stop-color: rgb(var(--vf-spot-rgb, 253,224,71)); }
+        .vf-g-halo { stop-color: rgb(var(--vf-spot-halo-rgb, 254,249,195)); }
+        .vf-lens-lit { fill: rgb(var(--vf-spot-lens-rgb, 254,240,138)); stroke: rgb(var(--vf-spot-rgb, 253,224,71)); }
+        /* tab wash = ONLY the flashlight's cone of light. Radial brightness at the lantern
+           (left) masked to a forward wedge so nothing is lit behind the flashlight. */
+        @keyframes vf-wash-flicker {
+          0% { opacity:1; } 2% { opacity:0.12; } 5% { opacity:0.85; } 8% { opacity:0.06; } 11% { opacity:0.55; }
+          14% { opacity:0; } 60% { opacity:0; }
+          64% { opacity:0.1; } 68% { opacity:0.02; } 73% { opacity:0.5; } 77% { opacity:0.1; }
+          83% { opacity:0.82; } 88% { opacity:0.35; } 94% { opacity:0.95; } 100% { opacity:1; } }
+        .vf-tab-spot { position: relative; border-color:rgb(var(--vf-spot-rgb, 253,224,71)) !important; }
+        .vf-tab-spot::before { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+          background: radial-gradient(150% 175% at 27px 52%, rgba(var(--vf-spot-rgb, 253,224,71),0.95) 0%, rgba(var(--vf-spot-rgb, 253,224,71),0.42) 34%, rgba(var(--vf-spot-rgb, 253,224,71),0.12) 62%, rgba(var(--vf-spot-rgb, 253,224,71),0.02) 82%, transparent 92%);
+          -webkit-mask: conic-gradient(from 0deg at 27px 52%, transparent 44deg, #000 66deg, #000 114deg, transparent 136deg);
+          mask: conic-gradient(from 0deg at 27px 52%, transparent 44deg, #000 66deg, #000 114deg, transparent 136deg); }
+        .vf-tab-spot > * { position: relative; z-index: 1; }
+        .vf-tab-spot.flicker::before { animation: vf-wash-flicker 1.6s steps(1,end) 1; }
+        .vf-tab-spot .vf-tabname { color:var(--vf-spot-text, #3a2c00) !important; font-weight:900 !important; text-shadow:0 1px 2px rgba(0,0,0,0.35); }
+        @keyframes vf-tumble { 0% { transform: rotateX(0) rotateY(0) rotateZ(0) scale(0.6); } 30% { transform: rotateX(230deg) rotateY(180deg) rotateZ(80deg) scale(1.15); } 60% { transform: rotateX(430deg) rotateY(360deg) rotateZ(200deg) scale(0.95); } 100% { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg) scale(1); } }
+        .vf-die { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:9px; font-weight:900; font-size:16px; transform-style:preserve-3d; }
+        /* shaped die (SVG silhouette): tumbles in 3D while rolling, then settles */
+        .vf-die3 { display:inline-flex; align-items:center; justify-content:center; transform-style:preserve-3d; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.45)); }
+        .vf-die3 svg { display:block; overflow:visible; }
+        .vf-die3.rolling { animation: vf-tumble 0.72s cubic-bezier(0.2,0.7,0.3,1); }
+        @keyframes vf-crit-die-glow { 0%,100% { filter:drop-shadow(0 0 5px rgba(250,204,21,.72)) drop-shadow(0 0 10px rgba(168,85,247,.48)); transform:scale(1); } 50% { filter:drop-shadow(0 0 12px rgba(250,204,21,1)) drop-shadow(0 0 20px rgba(168,85,247,.86)); transform:scale(1.08); } }
+        .vf-die3.is-critical { animation:vf-crit-die-glow .9s ease-in-out infinite; }
+        .vf-die3.rolling.is-critical { animation:vf-tumble .72s cubic-bezier(0.2,0.7,0.3,1),vf-crit-die-glow .9s ease-in-out infinite; }
+        @keyframes vf-duality-winner-glow { 0%,100% { filter:drop-shadow(0 0 5px rgba(255,255,255,.72)) drop-shadow(0 0 10px rgba(255,255,255,.42)); transform:scale(1); } 50% { filter:drop-shadow(0 0 12px rgba(255,255,255,1)) drop-shadow(0 0 22px rgba(255,255,255,.8)); transform:scale(1.07); } }
+        .vf-die3.is-winner { animation:vf-duality-winner-glow .82s ease-in-out infinite; }
+        /* Button press feedback: pronounced scale-up + glowing ring + brightness flash */
+        @keyframes vf-btn-press { 0% { transform: scale(1); } 28% { transform: scale(1.13); box-shadow: 0 0 0 3px rgba(255,255,255,0.30), 0 0 20px 4px rgba(125,211,252,0.7); filter: brightness(1.35); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); filter: brightness(1); } }
+        .vf-btn-pressed { animation: vf-btn-press 0.42s cubic-bezier(0.3,0,0.3,1); z-index: 5; position: relative; }
+        /* Resource particle + token fill flash */
+        .vf-particle { position: fixed; left:0; top:0; width:11px; height:11px; border-radius:50%; pointer-events:none; z-index:300; will-change: transform, opacity; }
+        .vf-token-flash { position: fixed; border-radius: 2px; pointer-events: none; z-index: 299; box-shadow: 0 0 12px 3px currentColor; }
+        .vf-shard { position: fixed; left:0; top:0; width:6px; height:7px; pointer-events:none; z-index:301; clip-path: polygon(50% 0, 100% 70%, 18% 100%); }
+        .vf-gather { position: fixed; left:0; top:0; width:6px; height:6px; border-radius:50%; background:#a5f3fc; box-shadow:0 0 6px 2px #67e8f9; pointer-events:none; z-index:301; will-change:transform,opacity; }
+        .vf-shield-flash { position: fixed; left:0; top:0; pointer-events:none; z-index:302; clip-path: polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%); }
+        /* Hide native number spinners everywhere; use custom up/down chevrons instead */
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+        input[type=number] { -moz-appearance:textfield; appearance:textfield; }
+        .vf-num { position:relative; display:inline-flex; align-items:center; }
+        .vf-num.vf-num-full { display:flex; width:100%; }
+        .vf-num > input { padding-right:12px; }
+        .vf-num.vf-num-full > input { width:100%; }
+        .vf-num-btns { position:absolute; right:2px; top:0; height:100%; display:flex; flex-direction:column; justify-content:center; gap:1px; pointer-events:auto; z-index:30; }
+        .vf-num-btns button { font-size:8px; line-height:0.7; color:#64748b; background:none; border:0; cursor:pointer; padding:0; height:9px; width:11px; display:flex; align-items:center; justify-content:center; transition:color 0.1s; }
+        .vf-num-btns button:hover { color:#22d3ee; }
+        .vf-num-btns button:active { transform:scale(1.3); }
+        .vf-die.hope { background:linear-gradient(135deg,#22d3ee,#0e7490); color:#062c33; box-shadow:0 3px 10px rgba(8,145,178,0.55); }
+        .vf-die.fear { background:linear-gradient(135deg,#c084fc,#6b21a8); color:#2a0a45; box-shadow:0 3px 10px rgba(126,34,206,0.55); }
+        .vf-die.rolling { animation: vf-tumble 0.72s cubic-bezier(0.2,0.7,0.3,1); }
+        .vf-chip { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px; padding:0 4px; border-radius:50%; background:radial-gradient(circle at 50% 38%, #475569, #0f172a); border:3px dashed #f59e0b; color:#fbbf24; font-weight:900; font-size:11px; box-shadow:0 2px 7px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(245,158,11,0.15); }
+        .window-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8); }
+        .vf-callout-grid { position:fixed; right:14px; bottom:14px; z-index:180; display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,320px)); justify-content:end; gap:10px; width:min(96vw,1360px); max-height:calc(100vh - 80px); overflow-y:auto; overflow-x:hidden; scrollbar-width:none; pointer-events:none; transform-origin:bottom right; }
+        .vf-callout-grid::-webkit-scrollbar{display:none;}
+        .vf-callout-card { pointer-events:auto; background:rgba(2,6,23,.94); backdrop-filter:blur(12px); border:1px solid #334155; border-left:3px solid #06b6d4; border-radius:12px; box-shadow:0 18px 45px rgba(0,0,0,.55); padding:10px; min-width:0; animation:vf-callout-in .22s ease-out; }
+        .vf-callout-result{transition:opacity .24s ease,transform .24s ease;}
+        .vf-callout-result.is-rolling{opacity:.35;transform:translateY(2px);}
+        .vf-callout-dice{min-height:32px;display:flex;align-items:center;}
+        .vf-callout-card[data-kind="damage"] { border-left-color:#ef4444; }
+        .vf-callout-card[data-kind="note"] { border-left-color:#f59e0b; }
+        @keyframes vf-callout-in { from { opacity:0; transform:translateY(12px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .vf-callout-timer { height:2px; border-radius:99px; overflow:hidden; background:#1e293b; margin-top:8px; }
+        .vf-callout-timer > span { display:block; height:100%; background:#06b6d4; animation:vf-callout-shrink 12s linear forwards; }
+        @keyframes vf-callout-shrink { from { width:100%; } to { width:0%; } }
+        .vf-stepper { display:inline-grid; grid-template-columns:32px minmax(72px,1fr) 32px; align-items:center; border:1px solid #334155; border-radius:9px; overflow:hidden; background:#020617; }
+        .vf-stepper button { height:32px; color:#94a3b8; font-weight:900; background:#0f172a; transition:.15s; }
+        .vf-stepper button:hover { color:#67e8f9; background:#1e293b; }
+        .vf-stepper output { text-align:center; font-size:11px; font-weight:900; color:#e2e8f0; padding:0 6px; }
+        .vf-3d-stage { position:fixed; inset:0; z-index:230; background:radial-gradient(circle at center,rgba(15,23,42,.88),rgba(0,0,0,.96)); display:flex; align-items:center; justify-content:center; padding:16px; }
+        .vf-3d-canvas { position:absolute; inset:0; overflow:hidden; }
+        .vf-3d-canvas canvas { width:100% !important; height:100% !important; display:block; }
+        .vf-3d-hud { position:relative; z-index:2; align-self:flex-end; width:min(680px,94vw); margin-bottom:20px; border:1px solid #334155; border-radius:12px; background:rgba(2,6,23,.88); padding:12px; box-shadow:0 16px 40px rgba(0,0,0,.6); }
+        @media (max-width:720px) { .vf-callout-grid { grid-template-columns:minmax(250px,320px); width:min(96vw,320px); right:8px; bottom:8px; } }
+
+        .vf-loading-shell { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:
+          radial-gradient(circle at top, rgba(8,145,178,0.18), transparent 34%),
+          linear-gradient(180deg, #020617 0%, #0b1120 58%, #020617 100%);
+          color:#e2e8f0; font-family: Inter, system-ui, sans-serif; }
+        .vf-loading-panel { width:min(720px, 100%); padding:28px; border-radius:24px; border:1px solid rgba(51,65,85,.95);
+          background:linear-gradient(180deg, rgba(15,23,42,.94), rgba(2,6,23,.96)); box-shadow:0 28px 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(148,163,184,.08); }
+        .vf-loading-kicker { font-size:11px; letter-spacing:.36em; text-transform:uppercase; color:#67e8f9; margin-bottom:10px; font-weight:800; }
+        .vf-loading-panel h1 { margin:0; font-size:clamp(26px, 4vw, 38px); line-height:1.05; font-weight:900; color:#f8fafc; }
+        .vf-loading-lead { margin:12px 0 18px; color:#94a3b8; line-height:1.7; max-width:58ch; }
+        .vf-loading-progress { width:100%; height:14px; border-radius:999px; background:#0f172a; border:1px solid #334155; overflow:hidden; box-shadow: inset 0 0 18px rgba(0,0,0,.45); }
+        .vf-loading-progress > span { display:block; width:6%; height:100%; border-radius:999px; background:linear-gradient(90deg, #06b6d4 0%, #22d3ee 45%, #a78bfa 100%); box-shadow:0 0 30px rgba(34,211,238,.35); transition:width .24s ease; }
+        .vf-loading-meta { display:grid; grid-template-columns:120px 1fr; gap:18px; align-items:end; margin-top:14px; }
+        .vf-loading-label { font-size:10px; font-weight:800; letter-spacing:.24em; text-transform:uppercase; color:#64748b; margin-bottom:4px; }
+        .vf-loading-value { font-weight:800; color:#f8fafc; }
+        .vf-loading-detail { margin-top:10px; color:#67e8f9; font-size:13px; line-height:1.6; min-height:2.6em; }
+        .vf-loading-lore { margin-top:24px; padding:18px; border-radius:18px; border:1px solid rgba(71,85,105,.72); background:rgba(15,23,42,.7); }
+        .vf-loading-lore-head { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:10px; letter-spacing:.28em; text-transform:uppercase; color:#94a3b8; font-weight:800; margin-bottom:10px; }
+        .vf-loading-lore blockquote { margin:0 0 8px; color:#f8fafc; font-size:18px; line-height:1.5; font-weight:700; }
+        .vf-loading-lore p { margin:0; color:#94a3b8; line-height:1.65; }
+        @media (max-width: 640px){ .vf-loading-shell { padding:16px; align-items:flex-start; } .vf-loading-panel { padding:20px; border-radius:20px; margin-top:16px; } .vf-loading-meta { grid-template-columns:1fr; gap:12px; } .vf-loading-lore blockquote { font-size:16px; } }
+
+
+        html.vf-disable-dice-lock .vf-dice-tracking-layer,
+        html.vf-disable-dice-lock .vf-dice-settled-layer,
+        html.vf-disable-dice-lock .vf-dice3d-analysis,
+        html.vf-disable-dice-lock .vf-dice3d-outcome { display:none !important; }
+
+    </style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
+  <script src="veilfarers-theme.js"></script>
+  <link rel="stylesheet" href="veilfarers-theme.css">
+</head>
+<body>
+    <div id="root">
+      <div class="vf-loading-shell" role="status" aria-live="polite" aria-label="Loading Player Tool">
+        <div class="vf-loading-panel">
+          <div class="vf-loading-kicker">VeilFarers · Player Tool</div>
+          <h1>Preparing your station…</h1>
+          <p class="vf-loading-lead">Loading the canonical rules dataset, character systems and table interface. Your saves stay local-first while the bridge comes online.</p>
+          <div class="vf-loading-progress" aria-hidden="true">
+            <span id="vf-loading-bar"></span>
+          </div>
+          <div class="vf-loading-meta">
+            <div>
+              <div class="vf-loading-label">Progress</div>
+              <div class="vf-loading-value" id="vf-loading-percent">06%</div>
+            </div>
+            <div>
+              <div class="vf-loading-label">Current task</div>
+              <div class="vf-loading-value" id="vf-loading-status">Initializing VeilFarers systems…</div>
+            </div>
+          </div>
+          <div class="vf-loading-detail" id="vf-loading-detail">Bootstrapping interface shell and checking local runtime…</div>
+          <div class="vf-loading-lore">
+            <div class="vf-loading-lore-head">
+              <span>Transit feed</span>
+              <span id="vf-loading-tip-index">1 / 6</span>
+            </div>
+            <blockquote id="vf-loading-tip-quote">“I am not worried. I am merely preparing a very thorough list of who to blame.” — Aria-7</blockquote>
+            <p id="vf-loading-tip-text">Salvage crews have a saying: if the corridor lights flicker right before docking, someone will immediately blame the navigator.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        const tips = [
+          {
+            quote: '“I am not worried. I am merely preparing a very thorough list of who to blame.” — Aria-7',
+            text: 'Salvage crews have a saying: if the corridor lights flicker right before docking, someone will immediately blame the navigator.'
+          },
+          {
+            quote: '“The Veil rarely explains itself. That does not stop crews from pretending otherwise.”',
+            text: 'Local-first saves remain available even if cloud sync is unavailable, so characters can still travel with you.'
+          },
+          {
+            quote: '“A clean jump is a miracle. A controlled landing is professionalism.”',
+            text: 'The Player Tool uses the same canonical rules layer as the Creator, inventories and shared data modules.'
+          },
+          {
+            quote: '“Some doors are locked for security. Others are locked because nobody remembers what is behind them.”',
+            text: 'Duality rolls, damage logic and weapon traits are loaded after the canonical dataset is verified.'
+          },
+          {
+            quote: '“If the plan survives first contact, check whether it was really your plan.”',
+            text: 'Public table discovery can be disabled for privacy, but direct table names still allow shared play when configured.'
+          },
+          {
+            quote: '“Every ship leaves a story in its wake. The smart crews decide which parts become rumors.”',
+            text: 'The 3D dice chamber can be shown as a contained box or overlay, and lock-in tracking can be toggled in options.'
+          }
+        ];
+        const state = { value: 6, target: 6, tipIndex: 0, frame: null, tipTimer: null };
+        function byId(id){ return document.getElementById(id); }
+        function renderProgress(){ const bar = byId('vf-loading-bar'); const percent = byId('vf-loading-percent'); if (bar) bar.style.width = Math.max(0, Math.min(100, state.value)) + '%'; if (percent) percent.textContent = String(Math.round(state.value)).padStart(2, '0') + '%'; }
+        function animate(){ if (Math.abs(state.target - state.value) < 0.4){ state.value = state.target; renderProgress(); state.frame = null; return; } state.value += (state.target - state.value) * 0.08; renderProgress(); state.frame = requestAnimationFrame(animate); }
+        function schedule(){ if (!state.frame) state.frame = requestAnimationFrame(animate); }
+        function setTip(index){ state.tipIndex = index % tips.length; const tip = tips[state.tipIndex]; const quote = byId('vf-loading-tip-quote'); const text = byId('vf-loading-tip-text'); const idx = byId('vf-loading-tip-index'); if (quote) quote.textContent = tip.quote; if (text) text.textContent = tip.text; if (idx) idx.textContent = (state.tipIndex + 1) + ' / ' + tips.length; }
+        function nextTip(){ setTip(state.tipIndex + 1); }
+        window.VFLoading = {
+          advance(percent, status, detail){ if (typeof percent === 'number') { state.target = Math.max(state.target, percent); } if (status && byId('vf-loading-status')) byId('vf-loading-status').textContent = status; if (detail && byId('vf-loading-detail')) byId('vf-loading-detail').textContent = detail; schedule(); },
+          complete(){ this.advance(100, 'Opening Player Tool…', 'Canonical data confirmed. Finalizing interface render…'); }
+        };
+        renderProgress(); setTip(0); state.tipTimer = setInterval(nextTip, 4200); window.addEventListener('beforeunload', function(){ if (state.tipTimer) clearInterval(state.tipTimer); });
+        setTimeout(function(){ window.VFLoading.advance(14, 'Initializing VeilFarers systems…', 'Bootstrapping interface shell and checking local runtime…'); }, 80);
+        setTimeout(function(){ window.VFLoading.advance(22, 'Establishing local systems…', 'Preparing local-first saves, sheet bridge hooks and runtime helpers…'); }, 700);
+      })();
+    </script>
+
+    <!-- Canonical RC3 data shared with the Creator, inventories and Keeper Tool -->
+    <script src="equipment-mods.js"></script>
+    <script src="compact-rules.js"></script>
+    <script src="shared-data.js" onload="window.VFLoading && window.VFLoading.advance(38, 'Loading shared registries…', 'Source lists, traits and shared canonical helpers are now online.')"></script>
+    <script src="canonical-runtime.js" onload="window.VFLoading && window.VFLoading.advance(64, 'Verifying canonical rules…', 'Merging rule packs and exposing the current release manifest.')"></script>
+    <script src="table-access.js"></script>
+    <script src="veilfarers-import.js" onload="window.VFLoading && window.VFLoading.advance(79, 'Linking import bridges…', 'Character import compatibility and state migration bridges are ready.')"></script>
+    <script src="player-tool.bundle.js"></script>
+  <script type="module" src="assets/3d-dice/vf-dice3d.js"></script>
+  <script src="portal.js"></script>
+</body>
+</html>

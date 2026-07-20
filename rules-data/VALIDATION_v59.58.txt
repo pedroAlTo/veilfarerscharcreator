@@ -1,0 +1,80 @@
+VEILFARERS PORTAL v59.58 — VALIDATION REPORT
+============================================
+
+BASELINE
+--------
+Source package: VeilFarers_Portal_v59.57.zip
+Release type: Character Creator interaction and selection-feedback refinement
+
+STATIC VALIDATION
+-----------------
+PASS  creator.html parsed successfully.
+PASS  creator.html contains no duplicate IDs.
+PASS  all inline Creator JavaScript passes Node syntax validation.
+PASS  creator-redesign.js passes Node syntax validation.
+PASS  creator-redesign.css parses with zero CSS parser errors.
+PASS  all JSON files parse successfully.
+PASS  package.json and package-lock.json versions align at 59.58.0.
+PASS  data/changelog.json reports v59.58 as current.
+
+PATH-GATED CLASS BEHAVIOR
+-------------------------
+PASS  no Path produces a locked class-selection shell with aria-disabled=true.
+PASS  locked mode renders nine dark Class preview cards.
+PASS  locked mode exposes zero selectable Class targets.
+PASS  clicking the locked Class region does not create a visible validation error.
+PASS  the compact Path-required notice remains visible.
+PASS  choosing Awakened unlocks nine canonical Class targets.
+PASS  unlocked cards render Path-specific rules and use the existing state workflow.
+PASS  changing Path retains the existing dependent-selection reset behavior.
+
+SELECTED-CARD ENERGY FEEDBACK
+-----------------------------
+PASS  selected standard cards activate vfMetalEnergyOrbit on the masked border frame.
+PASS  selected Domain Power cards use the same border treatment.
+PASS  selected Path controls activate the matching metallic border treatment.
+PASS  selected card particle layers activate vfGoldParticleDrift.
+PASS  selection arrival state produces a short, one-time brightness/drop-shadow confirmation.
+PASS  particle and orbit layers do not change card dimensions or click targets.
+PASS  prefers-reduced-motion disables orbit, arrival and particle animation.
+PASS  no external runtime dependency, canvas, WebGL scene or timer loop was added.
+
+CONTROLLED BROWSER FIXTURE
+--------------------------
+PASS  desktop locked state: path=null, selectable Class targets=0, preview cards=9.
+PASS  desktop locked click: class remains null and validation remains hidden.
+PASS  desktop unlocked state after Awakened: selectable Class targets=9.
+PASS  selecting Diplomat activates selected Class and Subclass state.
+PASS  computed border animation name is vfMetalEnergyOrbit.
+PASS  computed particle animation name is vfGoldParticleDrift.
+PASS  mobile 390 x 844 render uses one column and a compact non-overlapping lock notice.
+PASS  desktop locked and selected screenshots visually inspected.
+PASS  mobile locked screenshot visually inspected.
+
+PRESERVATION
+------------
+PASS  download/downloads.json is byte-identical to v59.57.
+PASS  all five bundled PDF documents are byte-identical to v59.57.
+PASS  all 87 protected assets/3d-dice files are byte-identical to v59.57.
+PASS  canonical rules-data, Creator import normalization, Character Registry, Vault, Level Up, Player Tool, Keeper Tool, Netlify Functions and Firestore Rules were not edited.
+
+EXPECTED CHANGED RUNTIME FILES
+------------------------------
+creator.html
+creator-redesign.css
+package.json
+package-lock.json
+data/changelog.json
+
+LIVE ACCEPTANCE STILL REQUIRED
+------------------------------
+- Complete every Awakened and Sleeping Class/Subclass combination in Deploy Preview.
+- Verify keyboard and screen-reader behavior of the locked and unlocked catalogue.
+- Verify reduced-motion behavior in the user's real browsers.
+- Complete a full new-character flow and historical JSON import.
+- Confirm authenticated Vault registration and Charsheet transfer.
+- Confirm mobile/tablet behavior on physical devices.
+
+RELEASE ARTIFACT VALIDATION
+---------------------------
+To be completed after final packaging: ZIP CRC, extracted-archive revalidation, checksum and DOCX render inspection.

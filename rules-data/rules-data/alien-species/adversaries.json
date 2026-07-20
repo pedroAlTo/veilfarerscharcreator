@@ -1,0 +1,930 @@
+[
+  {
+    "id": "vf.alien-species.adversary.apex-stalker",
+    "type": "adversary",
+    "name": "APEX STALKER",
+    "slug": "apex-stalker",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6869,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 3 Solo, Kryxian Megafauna",
+      "difficulty": "16",
+      "evasion": "14",
+      "hp": "40",
+      "attack": "+7",
+      "damage": "2d10+4 Physical",
+      "thresholds": "Major 14 / Severe 28",
+      "features": [
+        {
+          "name": "Apex Predator",
+          "type": "Passive",
+          "text": "The Apex Stalker is immune to fear effects and cannot be intimidated. It has Advantage on attacks against Frightened targets."
+        },
+        {
+          "name": "Rending Claws",
+          "type": "Action",
+          "text": "Melee attack dealing 2d10+4 Physical damage. On hit, the target is Bleeding and must make a DC 15 Strength Reaction Roll or be knocked Prone."
+        },
+        {
+          "name": "Tail Sweep",
+          "type": "Reaction",
+          "text": "Trigger: A character moves within Close range. Effect: The Stalker makes a free attack dealing 1d8+4 damage. On hit, the target's movement ends."
+        },
+        {
+          "name": "Thick Hide",
+          "type": "Passive",
+          "text": "The Apex Stalker has Resistance to Physical damage from weapons Tier 2 or below."
+        },
+        {
+          "name": "Territorial Rage",
+          "type": "Passive",
+          "text": "When reduced below half HP, the Apex Stalker gains +2 to attack rolls and deals an additional die of damage."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.biomancer-abomination",
+    "type": "adversary",
+    "name": "BIOMANCER ABOMINATION",
+    "slug": "biomancer-abomination",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6993,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 4 Solo, Corrupted Scientist",
+      "difficulty": "18",
+      "evasion": "14",
+      "hp": "50",
+      "attack": "+9",
+      "damage": "Special (Multiple attacks)",
+      "thresholds": "Major 16 / Severe 32",
+      "features": [
+        {
+          "name": "Rapid Adaptation",
+          "type": "Reaction",
+          "text": "Trigger: The Biomancer takes damage. Effect: The Biomancer gains"
+        },
+        {
+          "name": "Multi-Limb Assault",
+          "type": "Action",
+          "text": "The Biomancer makes 3 attacks: Claw (2d8 Physical), Needle (1d6 + Poison), and Shock Tendril (1d8 Energy + Stun on failed DC 15 Strength Reaction Roll)."
+        },
+        {
+          "name": "Regeneration",
+          "type": "Passive",
+          "text": "The Biomancer heals 5 HP at the start of every turn unless they took Fire damage in the previous round."
+        },
+        {
+          "name": "Consume Trait",
+          "type": "Action",
+          "text": "The Biomancer grapples a target and attempts to absorb genetic material. On a successful grapple, the target takes 2d10 damage and the Biomancer gains a characteristic of their species for the rest of the combat."
+        },
+        {
+          "name": "Unstable Biology",
+          "type": "Passive",
+          "text": "When reduced to half HP or below, the Biomancer's form destabilizes. All creatures within Close range must make a DC 15 Agility Reaction Roll or take 2d6 Acid damage as the Biomancer's body sprays unstable compounds."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.cult-zealot",
+    "type": "adversary",
+    "name": "CULT ZEALOT",
+    "slug": "cult-zealot",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6666,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 2 Standard, Humanoid Fanatic",
+      "difficulty": "13",
+      "evasion": "12",
+      "hp": "10",
+      "attack": "+4",
+      "damage": "1d8+2 Physical or Energy",
+      "thresholds": "Major 8 / Severe 14",
+      "features": [
+        {
+          "name": "Fanatical Devotion",
+          "type": "Passive",
+          "text": "Zealots are immune to fear effects and cannot be intimidated. They fight until destroyed."
+        },
+        {
+          "name": "Willing Sacrifice",
+          "type": "Reaction",
+          "text": "Trigger: An ally within Close range would be hit by an attack. Effect: The Zealot intercepts the attack, taking the damage instead."
+        },
+        {
+          "name": "Suicide Strike",
+          "type": "Action",
+          "text": "The Zealot triggers an explosive device, dealing 3d6 damage to all targets within Close range. The Zealot is destroyed."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.elder-leviathan",
+    "type": "adversary",
+    "name": "ELDER LEVIATHAN",
+    "slug": "elder-leviathan",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7034,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 4 Solo, Hydros Apex Predator",
+      "difficulty": "18",
+      "evasion": "11",
+      "hp": "60",
+      "attack": "+10",
+      "damage": "3d10+5 Physical",
+      "thresholds": "Major 20 / Severe 40",
+      "features": [
+        {
+          "name": "Massive",
+          "type": "Passive",
+          "text": "The Elder Leviathan ignores difficult terrain and can move through structures, destroying anything smaller than itself. Melee attacks against it from Medium or closer range provoke free attacks."
+        },
+        {
+          "name": "Swallow Whole",
+          "type": "Action",
+          "text": "The Leviathan attempts to consume a target. DC 20 Agility Reaction Roll. Failure: The target is swallowed, taking 3d6 Acid damage at the start of each of their turns. They can attack from inside (dealing damage to the Leviathan) or attempt a DC 15 Strength check to escape."
+        },
+        {
+          "name": "Shield-Sense",
+          "type": "Passive",
+          "text": "The Leviathan automatically detects active energy shields within Far range and prioritizes attacking targets with active shields."
+        },
+        {
+          "name": "Quantum Surge",
+          "type": "Action",
+          "text": "The Leviathan channels Veil energy through its body, creating a shockwave. All targets within Close range must make a DC 15 Agility Reaction Roll or be thrown to Far range and take 2d8 damage."
+        },
+        {
+          "name": "Regenerative Metabolism",
+          "type": "Passive",
+          "text": "The Leviathan heals 3 HP at the start of each turn while submerged in Hydros's waters. This healing stops if exposed to air for more than 1 round."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.ferro-beast",
+    "type": "adversary",
+    "name": "FERRO-BEAST",
+    "slug": "ferro-beast",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6774,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 3 Bruiser, Biological Aberration",
+      "difficulty": "15",
+      "evasion": "10",
+      "hp": "30",
+      "attack": "+5",
+      "damage": "2d8+4 Physical (Acid)",
+      "thresholds": "Major 14 / Severe 25",
+      "features": [
+        {
+          "name": "Rust Aura",
+          "type": "Passive",
+          "text": "Any tech item or mechanical weapon used within Close range suffers a Glitch on a Fear Die result of 1-3 (normally 1)."
+        },
+        {
+          "name": "Acid Spray",
+          "type": "Action",
+          "text": "Ranged attack (Cone, Close range). Deal 2d8+4 Acid damage. On hit, the target's armor permanently loses 1 Armor Slot effectiveness until repaired."
+        },
+        {
+          "name": "Unstoppable Charge",
+          "type": "Action",
+          "text": "The Beast moves in a straight line up to Far range. Any character in the path must make a DC 15 Agility Reaction Roll or be knocked Prone and take 3d6 Physical damage."
+        },
+        {
+          "name": "Metal-Sense",
+          "type": "Passive",
+          "text": "The Ferro-Beast can sense refined metals within Far range. It prioritizes attacking the character wearing the most metal (heavy armor, cybernetics)."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.gloomfang",
+    "type": "adversary",
+    "name": "GLOOMFANG",
+    "slug": "gloomfang",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6564,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 2 Standard, Biological Predator",
+      "difficulty": "13",
+      "evasion": "13",
+      "hp": "12",
+      "attack": "+4",
+      "damage": "1d8+2 Physical",
+      "thresholds": "Major 8 / Severe 14",
+      "features": [
+        {
+          "name": "Chameleonic Skin",
+          "type": "Passive",
+          "text": "In dim light or darkness, Gloomfangs are invisible until they attack or take damage. Attacks against invisible Gloomfangs have Disadvantage."
+        },
+        {
+          "name": "Silence Aura",
+          "type": "Passive",
+          "text": "All sound within Close range of a Gloomfang is suppressed. Communication requires"
+        },
+        {
+          "name": "Pack Tactics",
+          "type": "Passive",
+          "text": "Gloomfangs gain +2 to attack rolls against targets within Close range of another Gloomfang."
+        },
+        {
+          "name": "Throat-Ripper",
+          "type": "Action",
+          "text": "The Gloomfang lunges for a vital area. On hit, deal 2d8+2 damage and the target is Silenced (cannot speak or use verbal abilities) until they receive medical attention."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.precursor-warden",
+    "type": "adversary",
+    "name": "PRECURSOR WARDEN",
+    "slug": "precursor-warden",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6841,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 3 Standard, Ancient Construct",
+      "difficulty": "16",
+      "evasion": "14",
+      "hp": "28",
+      "attack": "+7",
+      "damage": "2d6+3 Energy (Format)",
+      "thresholds": "Major 12 / Severe 22",
+      "features": [
+        {
+          "name": "Format Lance",
+          "type": "Action",
+          "text": "Ranged attack that bypasses shields entirely. On hit, deal 2d6+3 Format damage. Targets reduced to 0 HP by Format damage are crystallized into perfect geometric statues."
+        },
+        {
+          "name": "Perfect Tracking",
+          "type": "Passive",
+          "text": "Wardens cannot be evaded through conventional means. Stealth checks against active Wardens have Disadvantage."
+        },
+        {
+          "name": "Reconstruction",
+          "type": "Passive",
+          "text": "If destroyed, a Warden reforms after 1 hour unless destroyed with Void damage or removed from its patrol zone."
+        },
+        {
+          "name": "Designation Protocol",
+          "type": "Passive",
+          "text": "Wardens ignore targets that are not moving and not interacting with protected systems. Perfect stillness can avoid detection."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.rust-hulk",
+    "type": "adversary",
+    "name": "RUST HULK",
+    "slug": "rust-hulk",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6632,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 2 Bruiser, Corrupted Machine",
+      "difficulty": "14",
+      "evasion": "9",
+      "hp": "18",
+      "attack": "+5",
+      "damage": "2d6+3 Physical",
+      "thresholds": "Major 10 / Severe 16",
+      "features": [
+        {
+          "name": "Reality Corrosion",
+          "type": "Passive",
+          "text": "Technology that touches a Rust Hulk develops glitches. Any tech item used within Close range suffers a Glitch on a Fear Die result of 1-3 (normally 1)."
+        },
+        {
+          "name": "Integrate",
+          "type": "Action",
+          "text": "The Hulk grabs a piece of technology and crushes it into its body. The item is destroyed; the Hulk heals HP equal to the item's Tier × 4."
+        },
+        {
+          "name": "Corroded Slam",
+          "type": "Action",
+          "text": "A brutal melee attack that deals 2d6+3 Physical damage. On a hit, the target's armor loses 1 Armor Slot effectiveness until repaired."
+        },
+        {
+          "name": "Unstoppable",
+          "type": "Passive",
+          "text": "The Rust Hulk ignores the first Stun or Slow effect each scene."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.scrap-drone",
+    "type": "adversary",
+    "name": "SCRAP DRONE",
+    "slug": "scrap-drone",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6530,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 1 Minion, Technological Remnant",
+      "difficulty": "11",
+      "evasion": "10",
+      "hp": "1 (Minion)",
+      "attack": "+2",
+      "damage": "1d6 Physical",
+      "thresholds": ",",
+      "features": [
+        {
+          "name": "Repair Protocol",
+          "type": "Action",
+          "text": "The drone attempts to 'fix' a target within Close range using welding lasers and manipulator arms. On hit, deal 1d6 Physical and the target is Bleeding."
+        },
+        {
+          "name": "Networked Response",
+          "type": "Passive",
+          "text": "When a Scrap Drone is destroyed, all other Scrap Drones within Far range are alerted and converge on the location."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.seraph",
+    "type": "adversary",
+    "name": "SERAPH",
+    "slug": "seraph",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 7074,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 4 Controller, Precursor Pacification Unit",
+      "difficulty": "18",
+      "evasion": "16",
+      "hp": "35",
+      "attack": "+8",
+      "damage": "2d8+3 Void (Neural, Harmony)",
+      "thresholds": "Major 14 / Severe 26",
+      "features": [
+        {
+          "name": "Harmony Pulse",
+          "type": "Action",
+          "text": "The Seraph attacks a target's mind. Deal 2d8+3 Neural damage and the target must make a DC 15 Presence Reaction Roll or"
+        },
+        {
+          "name": "Mass Calm",
+          "type": "Action",
+          "text": "The Seraph broadcasts its pacification signal to all targets within Close range. Each target must make a DC 15 Presence Reaction Roll or be Docile until the end of their next turn."
+        },
+        {
+          "name": "Reformation",
+          "type": "Passive",
+          "text": "When damaged, the Seraph can split into 2 Lesser Seraphs (Tier 2, HP 12 each). This can only occur once per combat."
+        },
+        {
+          "name": "Perfect Serenity",
+          "type": "Passive",
+          "text": "The Seraph is immune to all mental effects, including intimidation, fear, and Neural damage."
+        },
+        {
+          "name": "Compliance Protocol",
+          "type": "Passive",
+          "text": "Docile targets near the Seraph can be given simple commands ('stop,' 'come here,' 'drop your weapons') that they must obey."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.skitter-rat-swarm",
+    "type": "adversary",
+    "name": "SKITTER-RAT SWARM",
+    "slug": "skitter-rat-swarm",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6478,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 1 Horde, Biological Pest",
+      "difficulty": "12",
+      "evasion": "11",
+      "hp": "6 (Horde)",
+      "attack": "+2",
+      "damage": "1d8 (Horde) / 1d4 (Depleted)",
+      "thresholds": "Major 6 / Severe 12",
+      "features": [
+        {
+          "name": "Swarm Tactics",
+          "type": "Passive",
+          "text": "While the Horde has 3+ HP, it can attack two targets within Close range simultaneously."
+        },
+        {
+          "name": "Wire-Chewer",
+          "type": "Reaction",
+          "text": "Trigger: A PC in Close range rolls a Failure with Fear. Effect: The swarm damages a piece of equipment, giving it the Glitchy condition until repaired."
+        },
+        {
+          "name": "Scatter",
+          "type": "Action",
+          "text": "The swarm separates and reforms in a different location within Far range, moving through vents or floor grates to bypass blockers."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.the-hollow-prophet",
+    "type": "adversary",
+    "name": "THE HOLLOW PROPHET",
+    "slug": "the-hollow-prophet",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6955,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 4 Leader, Possession Entity",
+      "difficulty": "17",
+      "evasion": "13",
+      "hp": "45",
+      "attack": "+9",
+      "damage": "2d10+4 Void (Neural)",
+      "thresholds": "Major 16 / Severe 30",
+      "features": [
+        {
+          "name": "Dominate Will",
+          "type": "Action",
+          "text": "Target one character within Close range. DC 15 Presence Reaction Roll. Failure: The target is Charmed and must use their next Action to attack an ally or defend the Prophet."
+        },
+        {
+          "name": "Void Shield",
+          "type": "Reaction",
+          "text": "Trigger: The Prophet is hit by an attack. Effect: Spend 1 Fear. The damage is reduced to 0. The attacker takes 1d6 Stress as the Void lashes back."
+        },
+        {
+          "name": "Reality Tear",
+          "type": "Action",
+          "text": "Ranged attack. Creates a permanent Void Zone (2m radius) on the battlefield. Entering or starting a turn in the zone deals 2d8 Void damage."
+        },
+        {
+          "name": "Hollow Whispers",
+          "type": "Passive",
+          "text": "At the start of each round, all characters within Far range hear whispers promising power, salvation, or their deepest desires. DC 15 Presence Reaction Roll or suffer Disadvantage on attacks against the Prophet until their next turn."
+        },
+        {
+          "name": "Destroy the Anchor",
+          "type": "Passive",
+          "text": "The Prophet can only be permanently killed by destroying its armor anchor. If reduced to 0 HP without destroying the armor, the Prophet reforms in 1d4 hours."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.veil-witch",
+    "type": "adversary",
+    "name": "VEIL WITCH",
+    "slug": "veil-witch",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6808,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 3 Leader, Veil-Touched Mystic",
+      "difficulty": "15",
+      "evasion": "13",
+      "hp": "22",
+      "attack": "+6",
+      "damage": "2d6+3 Void (Neural)",
+      "thresholds": "Major 10 / Severe 18",
+      "features": [
+        {
+          "name": "Gravity Well",
+          "type": "Action",
+          "text": "All characters within Far range are pulled 20 feet toward the Witch. Characters who collide with objects take 1d8 Impact damage."
+        },
+        {
+          "name": "Entropic Shield",
+          "type": "Passive",
+          "text": "The Witch has +2 Evasion against ranged attacks as projectiles curve around them."
+        },
+        {
+          "name": "Life Tap",
+          "type": "Reaction",
+          "text": "Trigger: The Witch takes damage. Effect: The Witch transfers the damage to a loyal Minion within Close range. The Minion dies instantly."
+        },
+        {
+          "name": "Void Bolt",
+          "type": "Action",
+          "text": "Ranged attack. Deal 2d6+3 Void damage and the target must make a DC 15 Presence Reaction Roll or mark 1 Stress."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.void-kraken",
+    "type": "adversary",
+    "name": "VOID KRAKEN",
+    "slug": "void-kraken",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6915,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 4 Solo, Veil Entity",
+      "difficulty": "17",
+      "evasion": "12",
+      "hp": "55",
+      "attack": "+8",
+      "damage": "3d8+4 Void",
+      "thresholds": "Major 18 / Severe 35",
+      "features": [
+        {
+          "name": "Multi-Limb",
+          "type": "Action",
+          "text": "The Kraken makes 3 separate Tentacle attacks. Each attack can target a different enemy within Far range."
+        },
+        {
+          "name": "Reality Warping",
+          "type": "Passive",
+          "text": "The area within Far range of the Kraken is Difficult Terrain. Gravity changes randomly each round (d6: 1-3 Normal, 4-6 Zero-G)."
+        },
+        {
+          "name": "Gaze of the Void",
+          "type": "Action",
+          "text": "One target must make a DC 20 Presence Reaction Roll. Failure: The target is Paralyzed with fear and takes 2d6 Stress."
+        },
+        {
+          "name": "Phase Through",
+          "type": "Action",
+          "text": "The Kraken phases partially into the Veil, becoming immune to physical damage until the start of its next turn. While phased, it can move through solid objects."
+        },
+        {
+          "name": "Ink Cloud",
+          "type": "Reaction",
+          "text": "Trigger: The Kraken takes 15+ damage from a single attack. Effect: The Kraken releases a cloud of void-stuff, heavily obscuring all areas within Close range until the end of its next turn."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.void-leech-swarm",
+    "type": "adversary",
+    "name": "VOID LEECH SWARM",
+    "slug": "void-leech-swarm",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6598,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 2 Horde, Veil Entity",
+      "difficulty": "13",
+      "evasion": "12",
+      "hp": "12 (Horde)",
+      "attack": "+4",
+      "damage": "1d8 Void",
+      "thresholds": "",
+      "features": [
+        {
+          "name": "Swarm",
+          "type": "Passive",
+          "text": "Void Leeches are treated as a swarm. Area attacks deal double damage; single-target attacks deal half damage. Each 2 HP lost represents one Leech destroyed."
+        },
+        {
+          "name": "Energy Drain",
+          "type": "Passive",
+          "text": "On a successful hit, the target loses 1 Hope in addition to taking damage."
+        },
+        {
+          "name": "Hope-Seeker",
+          "type": "Passive",
+          "text": "The swarm prioritizes targets who currently hold Hope, moving toward them and ignoring other targets if possible."
+        },
+        {
+          "name": "Scatter",
+          "type": "Reaction",
+          "text": "Trigger: The swarm takes 6+ damage from a single attack. Effect: The swarm disperses, reforming into two smaller swarms (half HP each) in different locations."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.void-mite-cluster",
+    "type": "adversary",
+    "name": "VOID MITE CLUSTER",
+    "slug": "void-mite-cluster",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6504,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 1 Horde, Veil Entity",
+      "difficulty": "12",
+      "evasion": "13",
+      "hp": "8 (Horde)",
+      "attack": "+3",
+      "damage": "1d6 Void",
+      "thresholds": "",
+      "features": [
+        {
+          "name": "Life Drain",
+          "type": "Passive",
+          "text": "Damage dealt by Void Mites cannot be reduced by armor. Characters reduced to 0 HP by Void Mites do not die but fall into a coma lasting 1d6 days."
+        },
+        {
+          "name": "Emotion Sense",
+          "type": "Passive",
+          "text": "The cluster moves toward the character with the highest current Stress or most recently marked Hope."
+        },
+        {
+          "name": "Phase Scatter",
+          "type": "Reaction",
+          "text": "Trigger: The cluster takes 4+ damage from a single attack. Effect: The cluster disperses into the Veil, reforming 1d4 rounds later in a different location within the same zone."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.void-stalker",
+    "type": "adversary",
+    "name": "VOID STALKER",
+    "slug": "void-stalker",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6739,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 3 Skulk, Devourer Entity",
+      "difficulty": "16",
+      "evasion": "15",
+      "hp": "35",
+      "attack": "+8",
+      "damage": "2d8+2 Void",
+      "thresholds": "Major 12 / Severe 20",
+      "features": [
+        {
+          "name": "Ambush Predator",
+          "type": "Passive",
+          "text": "If the Stalker attacks from hiding, it deals an additional 2d6 damage and the target must make a DC 15 Instinct check or be Frightened until the end of their next turn."
+        },
+        {
+          "name": "Shadow Step",
+          "type": "Action",
+          "text": "The Stalker teleports between shadows within Far range as a move action. This does not provoke reactions."
+        },
+        {
+          "name": "Terrifying Presence",
+          "type": "Passive",
+          "text": "All creatures within Close range must make a DC 15 Presence check at the start of their turn or mark 1 Stress."
+        },
+        {
+          "name": "Consume Fear",
+          "type": "Passive",
+          "text": "When a creature within Close range marks Stress, the Stalker heals 2 HP."
+        },
+        {
+          "name": "Unnatural Anatomy",
+          "type": "Passive",
+          "text": "Critical hits against the Stalker deal normal damage instead of double."
+        }
+      ],
+      "source": "alien-species"
+    }
+  },
+  {
+    "id": "vf.alien-species.adversary.wraith-touched",
+    "type": "adversary",
+    "name": "WRAITH-TOUCHED",
+    "slug": "wraith-touched",
+    "pack": "alien-species",
+    "status": "canonical-supplement",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "alien-species",
+        "book": "VeilFarers: The Alien Species",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Alien_Species_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 6697,
+        "collection": "adversaries"
+      }
+    ],
+    "rules": {
+      "role": "Tier 2 Skulk, Veil-Corrupted Sapient",
+      "difficulty": "14",
+      "evasion": "15",
+      "hp": "8",
+      "attack": "+5",
+      "damage": "1d6+2 Void",
+      "thresholds": "Major 6 / Severe 12",
+      "features": [
+        {
+          "name": "Phase Form",
+          "type": "Passive",
+          "text": "The Wraith-Touched exists partially in the Veil. They can move through solid objects at half speed and ignore difficult terrain."
+        },
+        {
+          "name": "Reality Theft",
+          "type": "Passive",
+          "text": "On a successful hit, the target must make a DC 15 Presence Reaction Roll or become Blurred (attacks against them have Advantage, their attacks have Disadvantage) until the end of their next turn."
+        },
+        {
+          "name": "Veil Step",
+          "type": "Action",
+          "text": "The Wraith-Touched vanishes into the Veil, reappearing at any point within Far range on their next turn. While in the Veil, they cannot be targeted."
+        },
+        {
+          "name": "Desperate Anchor",
+          "type": "Reaction",
+          "text": "Trigger: The Wraith-Touched is reduced to 2 HP or below. Effect: They grab a target within Close range, dealing 1d6 Void damage and healing the same amount."
+        }
+      ],
+      "source": "alien-species"
+    }
+  }
+]

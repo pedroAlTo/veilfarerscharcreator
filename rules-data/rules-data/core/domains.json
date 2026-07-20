@@ -1,0 +1,205 @@
+[
+  {
+    "id": "vf.core.domain.kinetic",
+    "type": "domain",
+    "name": "Kinetic",
+    "slug": "kinetic",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 333,
+        "collection": "domains"
+      }
+    ],
+    "rules": {
+      "label": "KINETIC",
+      "theme": "The Master of Motion",
+      "desc": "Force and movement: barriers, impacts, acceleration, precision, impossible speed, and concussive power.",
+      "l1": [
+        "Force Shield",
+        "Kinetic Blast",
+        "Tactical Overwatch"
+      ]
+    }
+  },
+  {
+    "id": "vf.core.domain.lux",
+    "type": "domain",
+    "name": "Lux",
+    "slug": "lux",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1246,
+        "collection": "domains"
+      }
+    ],
+    "rules": {
+      "label": "LIGHT",
+      "theme": "The Hope Frequency",
+      "desc": "Hope and light as measurable force: shielding, illumination, revelation, guidance, photonic energy, and anti-Void work.",
+      "l1": [
+        "Blinding Flash",
+        "Spark of Hope",
+        "Wayfinder's Pulse"
+      ]
+    }
+  },
+  {
+    "id": "vf.core.domain.neural",
+    "type": "domain",
+    "name": "Neural",
+    "slug": "neural",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1249,
+        "collection": "domains"
+      }
+    ],
+    "rules": {
+      "label": "MIND",
+      "theme": "The Mind's Unseen Ocean",
+      "desc": "Psionic energy and the mind made manifest: thought shields, telekinesis, consciousness, memory, and mental pressure.",
+      "l1": [
+        "Mind Shield",
+        "Telekinetic Grasp",
+        "Veil Sensitivity"
+      ]
+    }
+  },
+  {
+    "id": "vf.core.domain.social",
+    "type": "domain",
+    "name": "Social",
+    "slug": "social",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1246,
+        "collection": "domains"
+      }
+    ],
+    "rules": {
+      "label": "SOCIAL",
+      "theme": "The Heart and the Crowd",
+      "desc": "Influence, identity, leadership, deception, languages, reputation, and the web of alliances that holds the galaxy together.",
+      "l1": [
+        "Linguistic Patch",
+        "Perfect Facade",
+        "Silver Tongue"
+      ]
+    }
+  },
+  {
+    "id": "vf.core.domain.synthesis",
+    "type": "domain",
+    "name": "Synthesis",
+    "slug": "synthesis",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1247,
+        "collection": "domains"
+      }
+    ],
+    "rules": {
+      "label": "SYNTHESIS",
+      "theme": "The Forged and Found",
+      "desc": "Biological mastery: healing, adaptation, evolution, bodies, ecosystems, and survival in hostile environments.",
+      "l1": [
+        "Biological Scan",
+        "Environmental Adaptation",
+        "Rapid Regeneration"
+      ]
+    }
+  },
+  {
+    "id": "vf.core.domain.tech",
+    "type": "domain",
+    "name": "Tech",
+    "slug": "tech",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 809,
+        "collection": "domains"
+      }
+    ],
+    "rules": {
+      "label": "TECH",
+      "theme": "The Ghost in the Machine",
+      "desc": "Understanding, manipulating, repairing, and breaking technology; dead machines, security systems, scrap-built wonders.",
+      "l1": [
+        "Drone Whisper",
+        "Quantum Firewall",
+        "System Jackknife"
+      ]
+    }
+  },
+  {
+    "id": "vf.core.domain.void",
+    "type": "domain",
+    "name": "Void",
+    "slug": "void",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 803,
+        "collection": "domains"
+      }
+    ],
+    "rules": {
+      "label": "VOID",
+      "theme": "The Threads of Probability",
+      "desc": "Space, shadow, luck, displacement, probability, stealth, and impossible escapes.",
+      "l1": [
+        "Slipstream Jolt",
+        "Temporal Cloak",
+        "Vector Calculus"
+      ]
+    }
+  }
+]

@@ -1,0 +1,50 @@
+VEILFARERS PORTAL v59.63 — START HERE
+=====================================
+
+RELEASE PURPOSE
+---------------
+v59.63 fixes the remaining production 3D-dice failure by making the WebAssembly CSP
+part of the deployed publish directory, not only netlify.toml. The browser logs supplied
+for v59.62 prove that Netlify was still serving the old CSP without 'wasm-unsafe-eval'.
+
+DEPLOY
+------
+1. Extract the ZIP. Deploy the CONTENTS at its root; do not deploy a parent folder.
+2. Confirm the deployed file explorer contains both /_headers and /netlify.toml.
+3. Publish a fresh production deploy, not merely a cached preview alias.
+4. Open /data/deploy-version.json and confirm version is v59.63.
+5. Hard-refresh /player-tool.html.
+
+REQUIRED RESPONSE CHECK
+-----------------------
+In DevTools > Network, select player-tool.html and verify Response Headers include:
+
+  X-VeilFarers-Release: v59.63
+  X-VeilFarers-CSP-Profile: wasm-3d-dice-v2
+
+and Content-Security-Policy > script-src includes:
+
+  'wasm-unsafe-eval'
+
+If the response still shows the old policy, the active deploy/publish directory is not
+this package or another CSP layer is being injected. Do not troubleshoot Ammo until the
+response header itself is correct.
+
+DICE ACCEPTANCE
+---------------
+- Console prints: [VeilFarers v59.63] 3D dice loader active.
+- The WASM preflight succeeds.
+- ammo.wasm.wasm returns 200 and Content-Type application/wasm.
+- Duality and damage dice render in 3D.
+- No VF_WASM_CSP_BLOCKED, Ammo-not-found, setValue or initialization-timeout cascade.
+
+PRESERVED
+---------
+- v59.60 exact-case Dice.min.js compatibility file.
+- v59.61 narrow WebAssembly permission; general JavaScript unsafe-eval remains blocked.
+- v59.62 Keeper Tool/Vault decoupling and Firebase Admin diagnostics.
+
+DOCUMENTS
+---------
+Read GITHUB_DEPLOY_SUMMARY_v59.63.md, PORTAL_HANDOVER_v59.63.md and
+VALIDATION_v59.63.txt.
