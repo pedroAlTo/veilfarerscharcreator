@@ -1,0 +1,21 @@
+VEILFARERS PORTAL v59.60 — VALIDATION REPORT
+============================================
+
+RESULT
+------
+PASS  Root cause reproduced statically: world.onscreen.min.js and world.none.min.js import ./Dice.min.js.
+PASS  v59.59 lacked that exact-case filename on case-sensitive filesystems.
+PASS  assets/3d-dice/Dice.min.js added.
+PASS  Dice.min.js is byte-identical to the existing dice.min.js vendor module.
+PASS  Every relative JavaScript import in assets/3d-dice resolves to an existing file.
+PASS  Module syntax checks pass for vf-dice3d.js and Dice.min.js.
+PASS  package.json and package-lock.json report 59.60.0.
+PASS  data/changelog.json reports currentVersion v59.60.
+PASS  No roll logic, theme, physics, canonical rules, Firebase or Firestore code changed.
+
+LIVE ACCEPTANCE REQUIRED
+------------------------
+- Deploy to a Netlify preview.
+- Hard-refresh Player Tool.
+- Confirm assets/3d-dice/Dice.min.js returns HTTP 200.
+- Confirm Duality, Damage and all three visual styles render without console errors.
