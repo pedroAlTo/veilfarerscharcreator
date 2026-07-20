@@ -1,0 +1,52 @@
+VEILFARERS PORTAL v59.65 — START HERE
+=====================================
+
+RELEASE PURPOSE
+---------------
+v59.65 fixes the remaining 3D dice dismissal failure. In v59.64, closing the
+visual box while Ammo physics was active could leave DiceBox's internal Promise
+unresolved until the external 14-second timeout activated the standard fallback.
+
+v59.65 turns that close action into an explicit cancellation transaction:
+- the visual stage closes immediately;
+- pending DiceBox collection Promises are settled;
+- the active Ammo world is cleared;
+- the hidden game roll receives valid standard numerical dice values;
+- the Player Tool roll queue is released immediately;
+- the next 3D roll starts from a clean world.
+
+DEPLOY
+------
+1. Extract VeilFarers_Portal_v59.65.zip.
+2. Copy the extracted contents directly to the repository/publish root.
+3. Confirm _headers, netlify.toml, player-tool.html and assets/ are siblings.
+4. Commit and push to a test branch.
+5. Open the Netlify Deploy Preview and perform a hard refresh.
+
+PRIORITY ACCEPTANCE TEST
+------------------------
+1. Open Player Tool with 3D dice enabled.
+2. Start a Duality roll.
+3. Close the 3D HUD while the dice are still moving.
+4. Confirm the roll still resolves numerically and is logged.
+5. Roll again immediately; the next 3D animation must start normally.
+6. Repeat at least ten times, including Massive and critical damage pools.
+7. Confirm no 14-second timeout message appears after a user dismissal.
+8. Confirm genuine renderer failures still use the standard fallback safely.
+
+RETAINED FROM v59.64
+--------------------
+- Massive rolls twice the final damage-die count and keeps the highest half.
+- Keeper Notes use authenticated server polling and a sticky console composer.
+- Dice.min.js case compatibility and the WebAssembly CSP profile remain.
+
+CLOUD / RULES
+-------------
+No Firebase migration, environment-variable change or Firestore Rules deployment
+is required for v59.65.
+
+DOCUMENTATION
+-------------
+- GITHUB_DEPLOY_SUMMARY_v59.65.md
+- PORTAL_HANDOVER_v59.65.md
+- VALIDATION_v59.65.txt

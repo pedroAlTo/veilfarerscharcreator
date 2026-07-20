@@ -1,0 +1,103 @@
+VEILFARERS PORTAL v59.67 — VALIDATION REPORT
+============================================
+
+BASELINE
+--------
+Source package: VeilFarers_Portal_v59.66.zip
+Release type: portal-wide White Stone and WCAG 2.2 AA-target remediation
+Date: 2026-07-20
+
+RESULT
+------
+PASS  233 automated/static/controlled-browser checks completed with zero failures.
+PASS  All eleven HTML entry points load the new accessibility CSS and JS after the theme layer.
+PASS  The saved-draft banner no longer creates an implicit Level Up grid column.
+PASS  Controlled Chromium confirms Level Up and its banner retain full page width.
+PASS  Controlled Chromium confirms catalogue filter controls and metadata are light in White Stone.
+PASS  Controlled Chromium confirms primary custom control targets resolve to 44 CSS px minimum height.
+PASS  Controlled Chromium confirms a 320 CSS-pixel module fixture has no horizontal overflow.
+
+CONFORMANCE STATEMENT
+---------------------
+This release targets WCAG 2.2 Level AA and implements measurable remediation for
+contrast, focus visibility, keyboard operation, target size, status semantics,
+reduced motion and reflow. This report is not an independent third-party WCAG
+certification. Deploy Preview, assistive-technology and real-device acceptance
+remain required before making a formal public conformance claim.
+
+TESTED CONTRAST PAIRS
+---------------------
+PASS  White Stone body text:       12.96:1  (#24323b on #fffdf8)
+PASS  White Stone muted text:       6.69:1  (#4f5d66 on #fffdf8)
+PASS  White Stone heading:          8.34:1  (#684617 on #fffdf8)
+PASS  White Stone gold text:        5.82:1  (#8a5a0a on #fffdf8)
+PASS  White Stone control boundary: 4.34:1  (#8f7446 on #fffdf8)
+PASS  White Stone focus:            5.89:1  (#005fcc on #fffdf8)
+PASS  Active control text:          8.83:1  (#1b160b on #d6b15a)
+PASS  VeilFarers Blue body text:   14.35:1  (#efe3c1 on #0a1523)
+PASS  VeilFarers Blue muted text:   7.13:1  (#a8a18f on #0a1523)
+PASS  VeilFarers Blue focus:       10.82:1  (#72c7ff on #030811)
+
+IMPLEMENTATION CHECKS
+---------------------
+PASS  Skip-to-main-content implementation present.
+PASS  Consistent :focus-visible rule present.
+PASS  44px primary custom-control target token present.
+PASS  Creator non-native selection cards receive keyboard and ARIA state support.
+PASS  Legacy navigation and tab elements receive keyboard support.
+PASS  Custom catalogue filter triggers receive contextual accessible names.
+PASS  Error and status regions receive alert/live-region semantics.
+PASS  prefers-reduced-motion behavior present.
+PASS  forced-colors behavior present.
+PASS  Level Up one-column resume-banner correction present.
+PASS  Responsive single-column and containment rules present.
+
+WHITE STONE FIXTURE CHECKS
+--------------------------
+PASS  Level Up card background resolves to rgb(255, 253, 248).
+PASS  Level Up explanatory copy resolves to rgb(79, 93, 102).
+PASS  Resume banner width is greater than 90% of the application width.
+PASS  Level Up content width equals the application width in the controlled fixture.
+PASS  Catalogue custom filter background resolves to rgb(255, 253, 248).
+PASS  Catalogue custom filter text resolves to rgb(36, 50, 59).
+PASS  Catalogue metadata background resolves to rgb(232, 225, 213).
+PASS  Catalogue descriptive text resolves to rgb(79, 93, 102).
+
+PACKAGE AND PRESERVATION
+------------------------
+PASS  HTML parsed with no duplicate IDs across all eleven entry points.
+PASS  All local stylesheet/script references resolve to packaged files.
+PASS  veilfarers-accessibility.css parses with zero top-level CSS errors.
+PASS  Existing theme, Creator, module and Charsheet CSS still parse.
+PASS  veilfarers-accessibility.js passes Node syntax validation.
+PASS  package.json and package-lock.json report 59.67.0.
+PASS  data/changelog.json and data/deploy-version.json report v59.67.
+PASS  Feedback and homepage visible release labels no longer report stale builds.
+PASS  Existing canonical rules, cloud contracts, Charsheet bindings and PDFs were not changed.
+PASS  Existing v59.64 Massive/Keeper Notes and v59.65 3D cancellation behavior was retained.
+
+LIVE ACCEPTANCE STILL REQUIRED
+------------------------------
+- Screen-reader pass with NVDA/Firefox and VoiceOver/Safari where available.
+- Full keyboard-only pass through every route and modal.
+- 200% text resize and 400% zoom on the real Deploy Preview.
+- Physical mobile/tablet testing around 320 CSS px equivalent width.
+- Windows forced-colors/high-contrast testing.
+- White Stone and VeilFarers Blue review on Player Tool and Keeper Tool dynamic states.
+- Full Creator → Vault → Charsheet → Player Tool regression workflow.
+
+PRESERVATION DETAIL
+-------------------
+PASS  rules-data and all canonical Core catalogue JSON files are byte-identical to v59.66.
+PASS  download directory and all five bundled PDFs are byte-identical to v59.66.
+PASS  firestore.rules and all Netlify Functions are byte-identical to v59.66.
+PASS  player-tool.bundle.js is byte-identical to v59.66.
+PASS  The 88-file 3D dice tree is unchanged except for v59.67 release-marker text in vf-dice3d.js.
+PASS  No font files were added or redistributed; Aller is requested through a local-first CSS stack only.
+
+RELEASE ARCHIVE EXPECTATIONS
+----------------------------
+PASS  Staged package contains eleven HTML entry points.
+PASS  Staged package contains 88 3D dice files.
+PASS  Staged package contains five bundled PDF documents.
+PASS  GitHub summary, cumulative handover, START HERE and validation report are included in the package root.

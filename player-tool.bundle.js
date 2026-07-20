@@ -5235,11 +5235,15 @@ window.VeilFarersCanonical.ready.then(function (VF_CANON) {
         return /*#__PURE__*/React.createElement("button", {
           key: i,
           "data-token": tk + '-' + i,
+          "data-token-kind": tk,
+          "data-token-state": !active ? "unavailable" : filled ? "filled" : "empty",
+          "aria-pressed": filled ? "true" : "false",
+          "aria-label": `${label} slot ${i + 1} of ${total}: ${!active ? 'unavailable' : filled ? 'filled' : 'empty'}`,
           disabled: !active,
           onClick: () => {
             if (active) onChange(i + 1 === current ? i : i + 1);
           },
-          className: `w-3 h-4 shrink-0 rounded-[1px] border transition-all duration-100 ${!active ? "bg-transparent border border-dashed border-slate-600 cursor-not-allowed" : filled ? `bg-${color}-600 border-${color}-400` : `bg-slate-950 border-slate-800 hover:border-${color}-500/50`}`
+          className: `vf-resource-token w-3 h-4 shrink-0 rounded-[1px] border transition-all duration-100 ${!active ? "bg-transparent border border-dashed border-slate-600 cursor-not-allowed" : filled ? `bg-${color}-600 border-${color}-400` : `bg-slate-950 border-slate-800 hover:border-${color}-500/50`}`
         });
       }), " "), " ");
     };
@@ -7187,11 +7191,16 @@ window.VeilFarersCanonical.ready.then(function (VF_CANON) {
       length: Number(character.armorMax || 0)
     }).map((_, i) => /*#__PURE__*/React.createElement("button", {
       key: i,
+      "data-token": `drone-shields-${i}`,
+      "data-token-kind": "shields",
+      "data-token-state": i < (Number(character.shields) || 0) ? "filled" : "empty",
+      "aria-pressed": i < (Number(character.shields) || 0) ? "true" : "false",
+      "aria-label": `Drone shield token ${i + 1}: ${i < (Number(character.shields) || 0) ? 'filled' : 'empty'}`,
       onClick: () => updateCharacter({
         ...character,
         shields: i + 1 === (Number(character.shields) || 0) ? i : i + 1
       }),
-      className: `w-5 h-6 rounded-sm border ${i < (Number(character.shields) || 0) ? 'bg-cyan-500 border-cyan-300 shadow-[0_0_7px_rgba(34,211,238,.45)]' : 'bg-slate-950 border-slate-700'}`,
+      className: `vf-resource-token vf-token-shield w-5 h-6 rounded-sm border ${i < (Number(character.shields) || 0) ? 'bg-cyan-500 border-cyan-300 shadow-[0_0_7px_rgba(34,211,238,.45)]' : 'bg-slate-950 border-slate-700'}`,
       title: `Shield / Armor Slot ${i + 1}`
     })), !Number(character.armorMax || 0) && /*#__PURE__*/React.createElement("span", {
       className: "text-xs text-slate-600"
@@ -7551,12 +7560,16 @@ window.VeilFarersCanonical.ready.then(function (VF_CANON) {
       return /*#__PURE__*/React.createElement("button", {
         key: i,
         "data-token": "fear-" + i,
+        "data-token-kind": "fear",
+        "data-token-state": filled ? "filled" : "empty",
+        "aria-pressed": filled ? "true" : "false",
+        "aria-label": `Fear token ${i + 1} of 12: ${filled ? 'filled' : 'empty'}`,
         onClick: () => pushFear(i + 1 === fear ? i : i + 1),
         title: "Fear " + (i + 1),
         style: {
           clipPath: "polygon(0 0, 100% 0, 50% 100%)"
         },
-        className: "w-4 h-5 shrink-0 transition-all " + (filled ? "bg-red-600" : "bg-slate-700/40 hover:bg-red-900/50")
+        className: "vf-resource-token vf-token-fear w-4 h-5 shrink-0 transition-all " + (filled ? "bg-red-600" : "bg-slate-700/40 hover:bg-red-900/50")
       });
     }))), /*#__PURE__*/React.createElement("div", {
       className: "grid grid-cols-2 gap-2 h-24"
@@ -7592,6 +7605,10 @@ window.VeilFarersCanonical.ready.then(function (VF_CANON) {
       return /*#__PURE__*/React.createElement("button", {
         key: i,
         "data-token": "shields-" + i,
+        "data-token-kind": "shields",
+        "data-token-state": filled ? "filled" : "empty",
+        "aria-pressed": filled ? "true" : "false",
+        "aria-label": `Armor token ${i + 1}: ${filled ? 'filled' : 'empty'}`,
         onClick: () => updateCharacter({
           ...character,
           shields: i + 1 === (character.shields || 0) ? i : i + 1
@@ -7600,7 +7617,7 @@ window.VeilFarersCanonical.ready.then(function (VF_CANON) {
         style: {
           clipPath: "polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%)"
         },
-        className: "w-4 h-5 shrink-0 transition-all " + (filled ? "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)]" : "bg-slate-800 hover:bg-cyan-900/60")
+        className: "vf-resource-token vf-token-shield w-4 h-5 shrink-0 transition-all " + (filled ? "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)]" : "bg-slate-800 hover:bg-cyan-900/60")
       });
     }), !(Number(character.armorMax != null ? character.armorMax : activeArmor && activeArmor.armorSlots) > 0) && /*#__PURE__*/React.createElement("span", {
       className: "text-[9px] text-slate-600"

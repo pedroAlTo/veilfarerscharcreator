@@ -689,6 +689,8 @@ function spendFear(amount) {
 function updateFearDisplay() {
   const fearCount = $('#fearCount');
   fearCount.textContent = `${state.fearTokens}/12`;
+  fearCount.dataset.tokenState = state.fearTokens <= 0 ? 'empty' : (state.fearTokens >= 12 ? 'max' : 'active');
+  fearCount.setAttribute('aria-label', `Fear pool: ${state.fearTokens} of 12`);
   fearCount.classList.toggle('max', state.fearTokens >= 12);
   
   // Also update save tab
@@ -808,9 +810,11 @@ function renderArmorSlots(char, compact = false) {
   for (let i = 0; i < slots; i++) {
     const isMarked = marked.includes(i);
     const slotClass = compact ? 'dashboard-armor-slot' : 'armor-slot';
-    html += `<button class="${slotClass} ${isMarked ? 'used' : 'active'}" 
+    html += `<button class="${slotClass} ${isMarked ? 'used' : 'active'}"
+      data-token-kind="armor" data-token-state="${isMarked ? 'spent' : 'filled'}" aria-pressed="${isMarked ? 'true' : 'false'}"
+      aria-label="Armor slot ${i + 1}: ${isMarked ? 'damaged' : 'available'}"
       onclick="event.stopPropagation(); toggleArmorSlot('${char.id}', ${i}, '${char.type || 'player'}')"
-      title="Armor slot ${i + 1}${isMarked ? ' (damaged)' : ''}"></button>`;
+      title="Armor slot ${i + 1}${isMarked ? ' (damaged)' : ' (available)'}"></button>`;
   }
   return html;
 }

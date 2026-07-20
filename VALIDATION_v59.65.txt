@@ -1,0 +1,73 @@
+VEILFARERS PORTAL v59.65 — VALIDATION REPORT
+============================================
+
+BASELINE
+--------
+Source package: VeilFarers_Portal_v59.64.zip
+Release type: 3D dice manual-dismissal lifecycle hotfix
+
+RESULT
+------
+PASS  Package, lockfile, changelog and deploy metadata align at v59.65 / 59.65.0.
+PASS  All JavaScript files passed node --check.
+PASS  All JSON files parsed successfully.
+PASS  All root HTML entry points contain no duplicate IDs.
+PASS  CSP and release headers retain WebAssembly permission and v59.65 markers.
+PASS  Dice.min.js, dice.min.js and ammo.wasm.wasm remain packaged.
+
+ROOT CAUSE CONFIRMATION
+-----------------------
+PASS  v59.64 retained an external 14-second timeout but did not own a true
+      cancellation path for DiceBox collection Promises.
+PASS  DiceBox clear resets the world/registries but does not guarantee an
+      already-returned collection Promise settles.
+
+v59.65 CANCELLATION CONTRACT
+----------------------------
+PASS  Every visual roll/add operation creates an active controller and unique token.
+PASS  Renderer completion races an explicit cancellation Promise.
+PASS  Manual close invokes cancelActiveRoll('user-dismissed').
+PASS  Pending DiceBox rollCollectionData resolvers are settled before clear().
+PASS  Ammo/Babylon world clear is executed for the dismissed visual operation.
+PASS  Fallback values preserve requested quantity and die sides.
+PASS  Dismissed operations resolve with cancelled=true rather than throwing.
+PASS  finally releases activeRollController and rollPending.
+PASS  showResults respects userDismissed and does not reopen the closed HUD.
+PASS  The 14-second safety timeout remains for genuine renderer failures.
+
+DETERMINISTIC LIFECYCLE FIXTURE
+-------------------------------
+PASS  Ten renderer Promises intentionally left pending were dismissed in sequence.
+PASS  Every dismissed roll returned immediately with the requested value count.
+PASS  One pending appended-dice operation was dismissed and returned immediately.
+PASS  No dismissed operation waited for the external timeout.
+PASS  Every close event reported cancelled=true.
+PASS  DiceBox clear was invoked for every active dismissal.
+PASS  activeRollController returned to null after every operation.
+PASS  rollPending returned to false after every operation.
+PASS  A normal subsequent 3D roll completed and returned deterministic values 5,6.
+
+PRESERVATION
+------------
+PASS  Massive final-pool scaling remains in Player Tool production bundle.
+PASS  Authenticated Keeper Notes readSession/sendHandout paths remain present.
+PASS  player-tool.bundle.js is byte-identical to v59.64.
+PASS  player-tool.jsx is byte-identical to v59.64.
+PASS  Keeper Tool behavior is unchanged except release metadata.
+PASS  keeper-player.css is byte-identical to v59.64.
+PASS  table-api.mts is byte-identical to v59.64.
+PASS  firestore.rules is byte-identical to v59.64.
+PASS  All protected 3D renderer binaries, workers, Ammo and themes are
+      byte-identical to v59.64; only vf-dice3d.js changed functionally.
+
+LIVE ACCEPTANCE REQUIRED
+------------------------
+- Deploy Preview: start a Duality roll and close the HUD during visible motion.
+- Confirm numerical resolution and log entry occur immediately.
+- Roll again immediately and confirm a new 3D animation starts.
+- Repeat the sequence at least ten times.
+- Repeat with Massive, critical and appended-dice operations.
+- Confirm no dismissal causes the 14-second timeout warning.
+- Confirm genuine renderer failure still activates standard fallback.
+- Recheck Keeper Notes and Massive acceptance tests from v59.64.
+- Confirm actual Netlify CSP and v59.65 response headers.

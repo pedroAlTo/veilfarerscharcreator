@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <meta name="veilfarers-release" content="v59.64">
+  <meta name="veilfarers-release" content="v59.68">
   <script src="local-runtime.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +23,8 @@
   <script src="table-access.js"></script>
   <script src="veilfarers-theme.js"></script>
   <link rel="stylesheet" href="veilfarers-theme.css">
+  <link rel="stylesheet" href="veilfarers-accessibility.css">
+  <script defer src="veilfarers-accessibility.js"></script>
 </head>
 
 <body class="vf-keeper-page">
@@ -274,9 +276,9 @@
               <!-- Fear Tokens -->
               <div class="fear-tokens-container">
                 <span class="fear-label">Fear:</span>
-                <button id="fearMinus" class="btn-token">−</button>
-                <span id="fearCount" class="fear-count">0/12</span>
-                <button id="fearPlus" class="btn-token">+</button>
+                <button id="fearMinus" class="btn-token" type="button" aria-label="Remove one Fear">−</button>
+                <span id="fearCount" class="fear-count" data-token-state="empty" role="status" aria-live="polite" aria-label="Fear pool: 0 of 12">0/12</span>
+                <button id="fearPlus" class="btn-token" type="button" aria-label="Add one Fear">+</button>
               </div>
 
               <!-- Keeper Mode Toggle -->

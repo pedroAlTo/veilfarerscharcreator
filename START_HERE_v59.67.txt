@@ -1,0 +1,64 @@
+VEILFARERS PORTAL v59.67 — START HERE
+=====================================
+
+RELEASE PURPOSE
+---------------
+v59.67 performs a portal-wide White Stone and accessibility remediation pass.
+It removes residual black controls and panels, raises text/control contrast, adds
+shared keyboard/focus/reflow behavior, and fixes the saved-draft banner that was
+creating an implicit second column and narrowing Level Up.
+
+ACCESSIBILITY TARGET
+--------------------
+The implementation targets WCAG 2.2 Level AA. It includes automated/static and
+controlled-browser validation, but it is not an independent accessibility
+certification. Real-device and assistive-technology acceptance remains required.
+
+DEPLOY
+------
+1. Extract VeilFarers_Portal_v59.67.zip.
+2. Publish the extracted CONTENTS as the Netlify publish root.
+3. Use a test branch and Deploy Preview first.
+4. Open /data/deploy-version.json and confirm version v59.67.
+5. Confirm the HTML response contains X-VeilFarers-Release: v59.67.
+6. Hard-refresh after deployment so the new shared CSS/JS layer is loaded.
+
+PRIORITY ACCEPTANCE TESTS
+-------------------------
+1. White Stone — Creator:
+   - Traits instructions and values are readable;
+   - Path and Class cards have light reading surfaces;
+   - Equipment filters, cards and metadata are not black.
+2. White Stone — Level Up:
+   - create or retain a saved draft;
+   - open #level-up;
+   - the Resume Draft banner spans the page and does not push content left;
+   - advancement cards, locked reasons and controls are readable.
+3. White Stone — shared modules:
+   - Weapon & Armory filters and tags are light and readable;
+   - Item Inventory custom filters are light and readable;
+   - Feedback category controls are light and readable.
+4. Keyboard:
+   - use the Skip to main content link;
+   - Tab through custom controls and cards;
+   - verify the focus ring is always visible;
+   - activate legacy cards/tabs with Enter and Space.
+5. Reflow:
+   - test 200% text resize;
+   - test 400% browser zoom;
+   - test approximately 320 CSS px width.
+6. Motion and platform modes:
+   - enable reduced motion;
+   - test forced-colors/high-contrast mode when available.
+7. Verify VeilFarers Blue and all existing workflows remain functional.
+
+ROLLBACK
+--------
+Redeploy VeilFarers_Portal_v59.66.zip. No data rollback is required.
+
+DOCUMENTATION
+-------------
+- GITHUB_DEPLOY_SUMMARY_v59.67.md
+- PORTAL_HANDOVER_v59.67.md
+- VALIDATION_v59.67.txt
+- SHA256_v59.67.txt

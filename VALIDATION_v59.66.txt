@@ -1,0 +1,103 @@
+VEILFARERS PORTAL v59.66 — VALIDATION REPORT
+============================================
+
+BASELINE
+--------
+Source package: VeilFarers_Portal_v59.65.zip
+Release type: Character Sheet visual reconstruction and White Stone convergence
+Date: 2026-07-20
+
+RESULT
+------
+PASS  Charsheet redesign layer added and loaded after the portal theme layer.
+PASS  Sleeping visual fixture renders with a silver metallic frame and silver accents.
+PASS  Awakened visual fixture renders with a gold metallic frame and gold accents.
+PASS  White Stone fixture renders a light toolbar/stage with no inherited black paper inputs.
+PASS  VeilFarers Blue fixture renders deep navy application chrome with readable light sheet paper.
+PASS  Aller-first computed font stack is active; no font binaries are packaged.
+PASS  Static Chromium fixtures complete with zero page errors and no horizontal overflow.
+PASS  No canonical rules, server functions, Firestore Rules, bundled PDFs or protected renderer logic changed.
+
+CHROMIUM VISUAL/COMPUTED FIXTURES
+--------------------------------
+Sleeping + White Stone:
+- face accent: #6f7c86
+- frame: silver metallic gradient
+- identity field background: rgba(255, 255, 255, 0.44)
+- identity field text: dark charcoal
+- select appearance: none
+- font stack: Aller, Trebuchet MS, Segoe UI, Arial, sans-serif
+- toolbar: light mineral gradient
+- horizontal overflow: false
+- page errors: 0
+
+Awakened + VeilFarers Blue:
+- face accent: #a66f14
+- frame: gold metallic gradient
+- identity field background: rgba(255, 255, 255, 0.44)
+- identity field text: dark warm ink
+- select appearance: none
+- font stack: Aller, Trebuchet MS, Segoe UI, Arial, sans-serif
+- toolbar: deep navy gradient
+- horizontal overflow: false
+- page errors: 0
+
+STATIC CHECKS
+-------------
+PASS  charsheet-redesign.css: parsed with 127 top-level rules and zero parser errors.
+PASS  veilfarers-theme.css: parsed with zero parser errors.
+PASS  portal.css: parsed with zero parser errors.
+PASS  charsheet-redesign.js: Node syntax validation passed.
+PASS  assets/3d-dice/vf-dice3d.js: Node syntax validation passed.
+PASS  all root HTML files parsed with no duplicate IDs.
+PASS  all JSON files in root/data/rules-data parsed successfully.
+PASS  charsheet.html loads veilfarers-theme.css before charsheet-redesign.css.
+PASS  charsheet.html loads charsheet-redesign.js before sheet-bridge.js.
+PASS  generic portal form styling excludes body.vf-full-sheet.
+PASS  Sleeping palette is silver rather than blue.
+PASS  Awakened palette is gold.
+PASS  shared Equipment/Ship palettes remain neutral mineral/bronze.
+PASS  local Aller lookup is present.
+PASS  no .ttf, .otf, .woff, .woff2 or .eot files were added.
+PASS  native-looking select arrow is visually replaced with a controlled in-app chevron.
+PASS  full-value tooltip synchronization is present for sheet controls.
+PASS  body Path-state synchronization is present for Path changes and flip changes.
+
+PRESERVATION
+------------
+PASS  download/: 6 files, byte-identical to v59.65.
+PASS  rules-data/: 34 files, byte-identical to v59.65.
+PASS  netlify/functions/: 7 files, byte-identical to v59.65.
+PASS  assets/3d-dice/: 88 files retained; only vf-dice3d.js release text changed from v59.65 to v59.66.
+PASS  protected DiceBox/Babylon/world/Ammo/theme files are byte-identical to v59.65.
+PASS  no Firebase or Firestore data contract changed.
+PASS  no local-storage key or Charsheet data-f binding changed.
+PASS  Massive damage behavior from v59.64 retained.
+PASS  secured Keeper Notes behavior from v59.64 retained.
+PASS  explicit 3D close/cancel recovery from v59.65 retained.
+PASS  exact-case Dice.min.js and WebAssembly CSP requirements retained.
+
+FILES INTENTIONALLY CHANGED/ADDED
+---------------------------------
+- charsheet.html
+- charsheet-redesign.css (new)
+- charsheet-redesign.js (new)
+- veilfarers-theme.css
+- release/version markers and metadata
+- release documentation
+
+LIVE DEPLOY PREVIEW ACCEPTANCE STILL REQUIRED
+---------------------------------------------
+- Test Sleeping and Awakened with a fully populated real character at multiple zoom levels.
+- Test White Stone and VeilFarers Blue after reload and theme persistence.
+- Test desktop Chromium, Firefox and Safari where available.
+- Test mobile/tablet containment on physical devices.
+- Test long Ancestry, Community, Affiliation, Class and Subclass values.
+- Test every Charsheet field, Path switch, tracks and Level buttons.
+- Test JSON load/save and Player/Keeper transfers.
+- Test visual PDF, current-side PDF, editable PDF and flattened print PDF.
+- Confirm local Aller rendering on a device that has Aller installed; confirm fallback rendering elsewhere.
+
+ROLLBACK
+--------
+Redeploy VeilFarers_Portal_v59.65.zip. No character-data, Firebase or Firestore rollback is required.

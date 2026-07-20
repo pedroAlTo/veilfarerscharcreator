@@ -1,7 +1,31 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.64",
+  "currentVersion": "v59.68",
   "entries": [
+    {
+      "version": "v59.68",
+      "date": "2026-07-20",
+      "title": "State-aware Player and Keeper tokens in White Stone",
+      "summary": "Restores visible filled, empty, unavailable and spent states for Player Tool Health, Stress, Hope, Effort, Resolve, Fear and Armor tokens and Keeper Tool Armor/Fear controls; removes the broad White Stone button override from semantic tokens and adds accessible labels, pressed states, focus indicators and forced-colors behavior without changing VeilFarers Blue."
+    },
+    {
+      "version": "v59.67",
+      "date": "2026-07-20",
+      "title": "Portal-wide WCAG remediation and White Stone accessibility convergence",
+      "summary": "Removes residual black surfaces and low-contrast text from White Stone across Creator, Level Up, catalogues, Feedback and shared portal modules; restores full-width Level Up flow when the saved-draft banner appears; adds consistent keyboard focus, skip navigation, custom-control semantics, minimum target sizing, reduced-motion support and reflow safeguards against a WCAG 2.2 AA target."
+    },
+    {
+      "version": "v59.66",
+      "date": "2026-07-20",
+      "title": "Character Sheet visual reconstruction and White Stone coherence",
+      "summary": "Rebuilds the digital Charsheet presentation in the current VeilFarers application language, uses gold metal for Awakened and silver metal for Sleeping, replaces inherited dark/native-looking fields with editorial controls, applies Aller-first typography without redistributing font binaries, and adds a dedicated White Stone convergence layer for sheet chrome, overlays and printable pages."
+    },
+    {
+      "version": "v59.65",
+      "date": "2026-07-20",
+      "title": "Immediate 3D dismissal cancellation and clean reroll recovery",
+      "summary": "Closing the 3D dice HUD during motion now cancels the visual physics operation, settles DiceBox internal promises, preserves a valid hidden numerical result through the standard roller, and releases the roll queue immediately so the next 3D roll starts cleanly without waiting for the safety timeout."
+    },
     {
       "version": "v59.64",
       "date": "2026-07-20",
@@ -675,5 +699,5 @@
       ]
     }
   ],
-  "version": "v59.64"
+  "version": "v59.67"
 }

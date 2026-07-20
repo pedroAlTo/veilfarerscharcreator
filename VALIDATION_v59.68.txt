@@ -1,0 +1,192 @@
+VEILFARERS PORTAL v59.68 — VALIDATION REPORT
+=================================================
+
+BASELINE
+--------
+Source package: VeilFarers_Portal_v59.67.zip
+Release type: Player/Keeper semantic token-state and two-theme release-candidate fix
+
+RESULT
+------
+PASS  127 automated/static/controlled-Chromium checks completed with zero failures.
+PASS  White Stone Player resources expose distinct filled, empty and unavailable states.
+PASS  VeilFarers Blue Player resource colors no longer depend on dynamic Tailwind generation.
+PASS  Keeper Armor and Fear controls expose distinct states in both themes.
+PASS  Compact Player and Armor targets compute to 24 × 24 CSS pixels.
+
+CONTROLLED CHROMIUM RESULTS
+---------------------------
+player-stone:
+  hope-empty: bg=rgb(251, 250, 246); border=rgb(101, 114, 124) solid; size=24px×24px; opacity=1
+  hope-filled: bg=rgb(169, 111, 0); border=rgb(104, 69, 0) solid; size=24px×24px; opacity=1
+  stress-filled: bg=rgb(161, 59, 115); border=rgb(104, 37, 75) solid; size=24px×24px; opacity=1
+  resolve-filled: bg=rgb(0, 119, 139); border=rgb(0, 79, 93) solid; size=24px×24px; opacity=1
+  unavailable: bg=rgba(0, 0, 0, 0); border=rgb(137, 147, 154) dashed; size=24px×24px; opacity=0.58
+keeper-stone:
+  fear-empty: bg=rgb(255, 253, 248); border=rgb(134, 81, 127) solid; size=48px×auto; opacity=1
+  fear-active: bg=rgb(234, 214, 232); border=rgb(134, 81, 127) solid; size=48px×auto; opacity=1
+  fear-max: bg=rgb(156, 45, 59); border=rgb(101, 25, 35) solid; size=48px×auto; opacity=1
+  armor-filled: bg=rgb(0, 119, 139); border=rgb(0, 79, 93) solid; size=24px×24px; opacity=1
+  armor-spent: bg=rgb(244, 241, 233); border=rgb(124, 135, 142) dashed; size=24px×24px; opacity=0.72
+player-blue:
+  hope-empty: bg=rgb(2, 6, 23); border=rgb(100, 116, 139) solid; size=24px×24px; opacity=1
+  hope-filled: bg=rgb(216, 166, 59); border=rgb(253, 230, 138) solid; size=24px×24px; opacity=1
+  stress-filled: bg=rgb(190, 24, 93); border=rgb(244, 114, 182) solid; size=24px×24px; opacity=1
+  resolve-filled: bg=rgb(8, 145, 178); border=rgb(103, 232, 249) solid; size=24px×24px; opacity=1
+  unavailable: bg=rgba(0, 0, 0, 0); border=rgb(100, 116, 139) dashed; size=24px×24px; opacity=0.62
+keeper-blue:
+  fear-empty: bg=rgba(0, 0, 0, 0); border=rgb(229, 231, 235) solid; size=48px×auto; opacity=1
+  fear-active: bg=rgba(0, 0, 0, 0); border=rgb(229, 231, 235) solid; size=48px×auto; opacity=1
+  fear-max: bg=rgba(0, 0, 0, 0); border=rgb(229, 231, 235) solid; size=48px×auto; opacity=1
+  armor-filled: bg=rgb(8, 145, 178); border=rgb(103, 232, 249) solid; size=24px×24px; opacity=1
+  armor-spent: bg=rgb(31, 41, 55); border=rgb(100, 116, 139) dashed; size=24px×24px; opacity=0.66
+
+SEMANTIC CONTRACT
+-----------------
+Player tokens: data-token-kind + data-token-state + aria-pressed + aria-label.
+Keeper Armor: data-token-kind=armor with filled/spent state and descriptive label.
+Keeper Fear: live empty/active/max state with labelled increment/decrement controls.
+
+PRESERVATION
+------------
+PASS  Canonical rules-data and download manifests/PDFs are byte-identical to v59.67.
+PASS  Ammo WASM and both Dice.min.js compatibility modules are byte-identical to v59.67.
+PASS  Massive, Keeper Notes polling and 3D manual-dismiss cancellation signatures remain present.
+
+LIVE ACCEPTANCE STILL REQUIRED
+------------------------------
+- Test fully populated Awakened and Sleeping characters in Player Tool in both themes.
+- Test resource gain particles, including pending destination state.
+- Test Fear and Armor changes in a real connected Keeper/Player table.
+- Test keyboard and screen-reader announcements in the Deploy Preview.
+- Test physical mobile/tablet target comfort and wrapping.
+
+DETAILED CHECK LOG
+------------------
+PASS  player-tool.bundle.js: JavaScript syntax
+PASS  app.js: JavaScript syntax
+PASS  assets/3d-dice/vf-dice3d.js: JavaScript syntax
+PASS  veilfarers-theme.js: JavaScript syntax
+PASS  veilfarers-accessibility.js: JavaScript syntax
+PASS  package.json: JSON parsed
+PASS  package-lock.json: JSON parsed
+PASS  data/changelog.json: JSON parsed
+PASS  data/deploy-version.json: JSON parsed
+PASS  admin.html: no duplicate IDs
+PASS  admin.html: shared theme/accessibility layers loaded
+PASS  admin.html: v59.68 release marker
+PASS  armory.html: no duplicate IDs
+PASS  armory.html: shared theme/accessibility layers loaded
+PASS  armory.html: v59.68 release marker
+PASS  charsheet.html: no duplicate IDs
+PASS  charsheet.html: shared theme/accessibility layers loaded
+PASS  charsheet.html: v59.68 release marker
+PASS  creator.html: no duplicate IDs
+PASS  creator.html: shared theme/accessibility layers loaded
+PASS  creator.html: v59.68 release marker
+PASS  downloads.html: no duplicate IDs
+PASS  downloads.html: shared theme/accessibility layers loaded
+PASS  downloads.html: v59.68 release marker
+PASS  feedback.html: no duplicate IDs
+PASS  feedback.html: shared theme/accessibility layers loaded
+PASS  feedback.html: v59.68 release marker
+PASS  index.html: no duplicate IDs
+PASS  index.html: shared theme/accessibility layers loaded
+PASS  index.html: v59.68 release marker
+PASS  items.html: no duplicate IDs
+PASS  items.html: shared theme/accessibility layers loaded
+PASS  items.html: v59.68 release marker
+PASS  keeper-tool.html: no duplicate IDs
+PASS  keeper-tool.html: shared theme/accessibility layers loaded
+PASS  keeper-tool.html: v59.68 release marker
+PASS  login.html: no duplicate IDs
+PASS  login.html: shared theme/accessibility layers loaded
+PASS  login.html: v59.68 release marker
+PASS  player-tool.html: no duplicate IDs
+PASS  player-tool.html: shared theme/accessibility layers loaded
+PASS  player-tool.html: v59.68 release marker
+PASS  player-tool.jsx semantic token contract: data-token-kind={tk}
+PASS  player-tool.jsx semantic token contract: data-token-state={!active
+PASS  player-tool.jsx semantic token contract: data-token-kind="fear"
+PASS  player-tool.jsx semantic token contract: data-token-kind="shields"
+PASS  player-tool.jsx semantic token contract: aria-pressed={filled
+PASS  player-tool.bundle.js semantic token contract: "data-token-kind": tk
+PASS  player-tool.bundle.js semantic token contract: "data-token-state": !active
+PASS  player-tool.bundle.js semantic token contract: "data-token-kind": "fear"
+PASS  player-tool.bundle.js semantic token contract: "data-token-kind": "shields"
+PASS  player-tool.bundle.js semantic token contract: "aria-pressed": filled
+PASS  White Stone generic Player button rule excludes data-token
+PASS  CSS semantic palette includes health
+PASS  CSS semantic palette includes stress
+PASS  CSS semantic palette includes hope
+PASS  CSS semantic palette includes effort
+PASS  CSS semantic palette includes resolve
+PASS  CSS semantic palette includes shields
+PASS  CSS semantic palette includes fear
+PASS  Keeper armor semantic states
+PASS  Keeper Fear live semantic state
+PASS  Keeper Fear state updated at runtime
+PASS  Massive final pool logic preserved
+PASS  Keeper Notes/session polling preserved
+PASS  3D manual-dismiss cancellation preserved
+PASS  preserved rules-data/aliases.json
+PASS  preserved rules-data/downloads.json
+PASS  preserved rules-data/feature-aliases.json
+PASS  preserved rules-data/features-registry.json
+PASS  preserved rules-data/manifest.json
+PASS  preserved rules-data/migration-map.json
+PASS  preserved rules-data/rules.json
+PASS  preserved rules-data/search-index.json
+PASS  preserved rules-data/alien-species/adversaries.json
+PASS  preserved rules-data/alien-species/ancestry-lore.json
+PASS  preserved rules-data/core/affiliations.json
+PASS  preserved rules-data/core/ancestries.json
+PASS  preserved rules-data/core/armor.json
+PASS  preserved rules-data/core/augments.json
+PASS  preserved rules-data/core/classes.json
+PASS  preserved rules-data/core/communities.json
+PASS  preserved rules-data/core/domains.json
+PASS  preserved rules-data/core/drills.json
+PASS  preserved rules-data/core/drone-grades.json
+PASS  preserved rules-data/core/drone-modules.json
+PASS  preserved rules-data/core/features.json
+PASS  preserved rules-data/core/gear.json
+PASS  preserved rules-data/core/powers.json
+PASS  preserved rules-data/core/resolve-moves.json
+PASS  preserved rules-data/core/subclasses.json
+PASS  preserved rules-data/core/tech-tiers.json
+PASS  preserved rules-data/core/traits.json
+PASS  preserved rules-data/core/weapons.json
+PASS  preserved rules-data/rust-and-steel/armor.json
+PASS  preserved rules-data/rust-and-steel/augments.json
+PASS  preserved rules-data/rust-and-steel/drone-grades.json
+PASS  preserved rules-data/rust-and-steel/drone-modules.json
+PASS  preserved rules-data/rust-and-steel/gear.json
+PASS  preserved rules-data/rust-and-steel/weapons.json
+PASS  preserved download/VeilFarers_Alien_Species_11.3-PDF-Candidate.pdf
+PASS  preserved download/VeilFarers_Corebook_11.31-PDF-Candidate.pdf
+PASS  preserved download/VeilFarers_Keepers_Companion_11.3-PDF-Candidate.pdf
+PASS  preserved download/VeilFarers_Rust_and_Steel_11.3-PDF-Candidate.pdf
+PASS  preserved download/downloads.json
+PASS  preserved download/veilfarers_charsheet_fillable.pdf
+PASS  preserved assets/3d-dice/assets/ammo/ammo.wasm.wasm
+PASS  preserved assets/3d-dice/Dice.min.js
+PASS  preserved assets/3d-dice/dice.min.js
+PASS  Chromium Player stone: Hope empty differs from filled
+PASS  Chromium Player stone: resource fills remain distinct
+PASS  Chromium Player stone: unavailable is dashed
+PASS  Chromium Player stone: token targets are 24x24
+PASS  Chromium Keeper stone: Armor available differs from spent
+PASS  Chromium Keeper stone: spent Armor is dashed
+PASS  Chromium Keeper stone: Armor token target is 24x24
+PASS  Chromium Keeper stone: Fear empty/active/max differ
+PASS  Chromium Player blue: Hope empty differs from filled
+PASS  Chromium Player blue: resource fills remain distinct
+PASS  Chromium Player blue: unavailable is dashed
+PASS  Chromium Player blue: token targets are 24x24
+PASS  Chromium Keeper blue: Armor available differs from spent
+PASS  Chromium Keeper blue: spent Armor is dashed
+PASS  Chromium Keeper blue: Armor token target is 24x24
+PASS  package version 59.68.0
+PASS  changelog currentVersion v59.68
+PASS  deploy-version v59.68

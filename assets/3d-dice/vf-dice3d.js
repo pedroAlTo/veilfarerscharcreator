@@ -12,7 +12,7 @@ const PRELOAD_THEMES = [
 ];
 const ASSET_PATH = new URL('./assets/', import.meta.url).href;
 
-const VF_DICE_RELEASE = 'v59.64';
+const VF_DICE_RELEASE = 'v59.68';
 async function assertWebAssemblyExecutionAllowed(){
   if (typeof WebAssembly === 'undefined' || typeof WebAssembly.compile !== 'function') {
     const error=new Error('3D dice require WebAssembly, but this browser does not expose WebAssembly.compile().');
@@ -24,7 +24,7 @@ async function assertWebAssemblyExecutionAllowed(){
   const emptyModule=new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]);
   try { await WebAssembly.compile(emptyModule); }
   catch (cause) {
-    const error=new Error("3D dice WebAssembly is blocked by the effective Content Security Policy. Deploy v59.64 from the package root and verify the HTML response contains X-VeilFarers-Release: v59.64 and script-src 'wasm-unsafe-eval'.");
+    const error=new Error("3D dice WebAssembly is blocked by the effective Content Security Policy. Deploy v59.68 from the package root and verify the HTML response contains X-VeilFarers-Release: v59.68 and script-src 'wasm-unsafe-eval'.");
     error.code='VF_WASM_CSP_BLOCKED';
     error.cause=cause;
     window.dispatchEvent(new CustomEvent('veilfarers:dice3d-error',{detail:{code:error.code,release:VF_DICE_RELEASE,message:error.message}}));
@@ -61,6 +61,8 @@ let projectionWarningShown = false;
 let lastRendererVisuals = [];
 let rollPending = false;
 let userDismissed = false;
+let activeRollController = null;
+let rollSequence = 0;
 
 function normalizeStyle(value){ return value === 'overlay' ? 'overlay' : 'box'; }
 function valuesEqual(a,b){ return String(a) === String(b); }
@@ -215,17 +217,15 @@ function hide(options={}){
   if (!stage) return;
   const manual=options && options.reason==='user';
   if (manual) userDismissed=true;
+  const cancelled=manual && rollPending ? cancelActiveRoll('user-dismissed') : false;
   clearSettledCues();
   stage.classList.remove('is-visible');
   stage.classList.add('is-hidden');
-  // Clearing the Babylon world while DiceBox is still resolving can leave its
-  // roll Promise pending forever. A manual close now hides the HUD but lets the
-  // active physics result finish normally; completed/automatic closes still clear.
-  if (!rollPending) { try { box && box.clear(); } catch(_) {} }
+  if (!rollPending && !cancelled) { try { box && box.clear(); } catch(_) {} }
   if (outcomeNode) { outcomeNode.textContent=''; outcomeNode.className='vf-dice3d-outcome is-hidden'; }
   if (analysisNode) { analysisNode.className='vf-dice3d-analysis is-hidden'; analysisNode.replaceChildren(); }
   if (stage) delete stage.dataset.dualityWinner;
-  if (manual) window.dispatchEvent(new CustomEvent('veilfarers:dice3d-closed',{detail:{rollPending}}));
+  if (manual) window.dispatchEvent(new CustomEvent('veilfarers:dice3d-closed',{detail:{rollPending,cancelled}}));
 }
 function flattenResults(result){
   const flat=[];
@@ -377,6 +377,55 @@ function prepareGroups(groups){
     return {...group, theme, themeColor:group.themeColor || THEME_COLORS[theme] || '#ffffff'};
   });
 }
+function createFallbackResult(groups, reason='user-dismissed'){
+  const flat=[];
+  (groups || []).forEach((group,groupIndex)=>{
+    const qty=Math.max(1,Number(group.qty)||1);
+    const sides=Math.max(2,Number(group.sides)||20);
+    for(let dieIndex=0;dieIndex<qty;dieIndex++){
+      const value=Math.floor(Math.random()*sides)+1;
+      flat.push({
+        value,sides,groupIndex,rollIndex:dieIndex,theme:group.theme||'',
+        raw:{value,sides,groupId:groupIndex,rollId:`vf-cancel-${rollSequence}-${groupIndex}-${dieIndex}`,cancelled:true}
+      });
+    }
+  });
+  return {kind:'cancelled',cancelled:true,reason,flat,values:flat.map(item=>item.value)};
+}
+function settlePendingDiceBoxPromises(){
+  try {
+    const pending=box && box.rollCollectionData && typeof box.rollCollectionData==='object'
+      ? Object.values(box.rollCollectionData) : [];
+    pending.forEach(collection=>{
+      if (collection && typeof collection.resolve==='function') collection.resolve([]);
+    });
+  } catch(error) { console.warn('Could not settle dismissed DiceBox promises:',error); }
+}
+function cancelActiveRoll(reason='user-dismissed'){
+  const controller=activeRollController;
+  if (!controller || controller.cancelled) return false;
+  controller.cancelled=true;
+  const fallback=createFallbackResult(controller.groups,reason);
+  controller.fallback=fallback;
+  // DiceBox.clear() stops the current worker simulation but does not resolve its
+  // internal Promise. The wrapper-owned cancellation Promise resolves the game
+  // roll immediately, so closing the HUD can never leave Player Tool waiting.
+  settlePendingDiceBoxPromises();
+  try { box && box.clear(); } catch(error) { console.warn('Could not stop dismissed 3D dice physics:',error); }
+  controller.resolve(fallback);
+  return true;
+}
+function beginCancellableRoll(groups){
+  const token=++rollSequence;
+  let resolveCancel;
+  const cancellation=new Promise(resolve=>{ resolveCancel=resolve; });
+  activeRollController={token,groups,cancelled:false,fallback:null,resolve:resolveCancel};
+  return {token,cancellation};
+}
+function endCancellableRoll(token){
+  if (activeRollController && activeRollController.token===token) activeRollController=null;
+  rollPending=!!activeRollController;
+}
 async function roll(groups, options={}){
   const roller=await init();
   if (userDismissed) { try { box && box.clear(); } catch(_) {} }
@@ -384,11 +433,19 @@ async function roll(groups, options={}){
   applyCritical(false);
   show(options.label || 'Rolling…', options.style, {newRoll:true});
   const prepared=prepareGroups(groups);
+  const {token,cancellation}=beginCancellableRoll(prepared);
   rollPending=true;
   try {
-    const resultPromise=roller.roll(prepared);
+    const rendererPromise=Promise.resolve(roller.roll(prepared)).then(result=>({kind:'renderer',result}));
     startTracking(prepared);
-    const result=await resultPromise;
+    let outcome=await Promise.race([rendererPromise,cancellation]);
+    const controller=activeRollController && activeRollController.token===token ? activeRollController : null;
+    if (controller && controller.cancelled && controller.fallback) outcome=controller.fallback;
+    if (outcome && outcome.kind==='cancelled') {
+      lastFlat=outcome.flat.slice();
+      return {raw:null,flat:outcome.flat,values:outcome.values,cancelled:true,reason:outcome.reason};
+    }
+    const result=outcome.result;
     const flat=flattenResults(result);
     lastFlat=flat.slice();
     if (!flat.length) throw new Error('The 3D engine completed without readable die results.');
@@ -399,18 +456,26 @@ async function roll(groups, options={}){
     });
     closeTimer=setTimeout(hide,9800);
     return {raw:result, flat, values:flat.map(item=>item.value)};
-  } finally { rollPending=false; }
+  } finally { endCancellableRoll(token); }
 }
 async function add(groups, options={}){
   const roller=await init();
   if (!userDismissed) show(options.label || 'Additional dice', options.style, {newRoll:false});
   const prepared=prepareGroups(groups);
   const offset=lastFlat.length;
+  const {token,cancellation}=beginCancellableRoll(prepared);
   rollPending=true;
   try {
-    const resultPromise=roller.add(prepared);
+    const rendererPromise=Promise.resolve(roller.add(prepared)).then(result=>({kind:'renderer',result}));
     const newSpecs=startTracking(prepared,{append:true});
-    const result=await resultPromise;
+    let outcome=await Promise.race([rendererPromise,cancellation]);
+    const controller=activeRollController && activeRollController.token===token ? activeRollController : null;
+    if (controller && controller.cancelled && controller.fallback) outcome=controller.fallback;
+    if (outcome && outcome.kind==='cancelled') {
+      lastFlat=lastFlat.concat(outcome.flat);
+      return {raw:null,flat:outcome.flat,values:outcome.values,offset,cancelled:true,reason:outcome.reason};
+    }
+    const result=outcome.result;
     const flat=flattenResults(result);
     lastFlat=lastFlat.concat(flat);
     const indices=flat.map((_,index)=>offset+index);
@@ -421,7 +486,7 @@ async function add(groups, options={}){
     });
     closeTimer=setTimeout(hide,9800);
     return {raw:result, flat, values:flat.map(item=>item.value), offset};
-  } finally { rollPending=false; }
+  } finally { endCancellableRoll(token); }
 }
 function cueKey(spec){ return `${spec.type}:${spec.index}`; }
 function applyRendererCues(){
@@ -584,7 +649,7 @@ window.VFDice3D={
   init,roll,add,showResults,hide,setStyle:applyStyle,setCritical:applyCritical,
   status:()=>({
     ready:!!box,assetPath:ASSET_PATH,style:currentStyle,critical:currentCritical,
-    rendererVisuals:lastRendererVisuals.slice(),tracking:trackingSpecs.length,rollPending,userDismissed,error:lastError?String(lastError.message||lastError):null
+    rendererVisuals:lastRendererVisuals.slice(),tracking:trackingSpecs.length,rollPending,userDismissed,activeRoll:activeRollController?activeRollController.token:null,error:lastError?String(lastError.message||lastError):null
   }),
-  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.64'
+  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.68'
 };

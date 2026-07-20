@@ -1,0 +1,312 @@
+/* VeilFarers portal accessibility and White Stone convergence — v59.68
+   Target: WCAG 2.2 AA. This layer is deliberately loaded after every page stylesheet. */
+:root{
+  --vf-a11y-focus:#72c7ff;
+  --vf-a11y-focus-inner:#08131f;
+  --vf-a11y-target:44px;
+}
+:root[data-vf-theme="stone"]{
+  --vf-bg:#eeeae1;
+  --vf-panel:#fffdf8;
+  --vf-panel2:#f1ece2;
+  --vf-gold:#8a5a0a;
+  --vf-gold2:#684617;
+  --vf-gold-light:#b17a18;
+  --vf-text:#24323b;
+  --vf-muted:#4f5d66;
+  --vf-line:#8f7446;
+  --vf-danger:#9d2424;
+  --vf-ok:#28633e;
+  --vf-surface:linear-gradient(155deg,#fffdf8,#eee8dc);
+  --vf-surface-soft:linear-gradient(155deg,#faf7f0,#e9e2d6);
+  --vf-input:#fffdf8;
+  --vf-heading:#684617;
+  --vf-copy:#24323b;
+  --vf-copy-dim:#4f5d66;
+  --vf-a11y-focus:#005fcc;
+  --vf-a11y-focus-inner:#fffdf8;
+}
+
+/* Editorial body face. Brand and display titles retain their existing Cinzel face. */
+html,body,button,input,textarea,select{
+  font-family:Aller,"Aller Text",Inter,"Helvetica Neue",Arial,sans-serif;
+}
+
+/* Keyboard focus must remain visible in both portal themes. */
+:where(a,button,input,textarea,select,summary,[role="button"],[role="tab"],[tabindex]):focus-visible{
+  outline:3px solid var(--vf-a11y-focus)!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 2px var(--vf-a11y-focus-inner)!important;
+  text-decoration-thickness:2px;
+}
+:where(button,.btn,.vf-button,.vf-tab,.tab-btn,.mode-bar button,.array-chip,.equipment-filter-btn,[data-filter-toggle],.levelup-choice,.levelup-vault-character,.step-nav-item,.creator-top-step,.lib-tab){
+  min-height:var(--vf-a11y-target);
+}
+:where(button,.btn,.vf-button,.vf-tab,.tab-btn,[role="button"],[role="tab"]):disabled,
+:where(button,.btn,.vf-button,.vf-tab,.tab-btn,[role="button"],[role="tab"])[aria-disabled="true"]{
+  cursor:not-allowed!important;
+}
+.vf-skip-link{
+  position:fixed;left:12px;top:8px;z-index:200000;transform:translateY(-160%);
+  padding:11px 16px;border:3px solid var(--vf-a11y-focus);border-radius:4px;
+  background:#fffdf8;color:#17242d;font-weight:800;text-decoration:none;
+  transition:transform .12s ease;
+}
+.vf-skip-link:focus{transform:none;}
+
+/* Do not rely on motion for state feedback. */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
+}
+@media(forced-colors:active){
+  :where(a,button,input,textarea,select,[role="button"],[role="tab"]):focus-visible{outline:3px solid Highlight!important;}
+  .selected,.active,[aria-selected="true"],[aria-pressed="true"]{outline:2px solid Highlight!important;}
+}
+
+/* Resume-draft banner: never create an implicit grid column or narrow Level Up. */
+.resume-banner{
+  box-sizing:border-box;max-width:none!important;width:auto!important;min-width:0!important;
+}
+body[data-creator-route="level-up"] .resume-banner,
+body[data-creator-route="cards"] .resume-banner{
+  grid-column:1!important;grid-row:2!important;justify-self:stretch!important;
+  margin:14px clamp(14px,3vw,34px) 0!important;
+}
+body[data-creator-route="level-up"] #library-view,
+body[data-creator-route="cards"] #card-library-view{
+  width:100%!important;max-width:none!important;min-width:0!important;
+}
+.resume-actions{flex-wrap:wrap;}
+@media(max-width:640px){
+  .resume-banner{align-items:flex-start!important;padding:14px!important;}
+  .resume-actions{width:100%;display:grid!important;grid-template-columns:1fr 1fr;}
+  .resume-actions .btn{width:100%;justify-content:center;}
+}
+
+/* White Stone: shared semantic surfaces. No black application panels or controls. */
+html[data-vf-theme="stone"] :where(.vf-panel,.vf-card,.vf-download-card,.vf-sheet-block,.vf-release,.vf-status,.vf-questionnaire-card,.vf-inventory,.panel,.card,.modal-content,.dialog-content,.library-panel,.levelup-card){
+  background:var(--vf-surface)!important;
+  color:var(--vf-text)!important;
+  border-color:var(--vf-line)!important;
+  box-shadow:0 14px 34px rgba(43,50,55,.13)!important;
+}
+html[data-vf-theme="stone"] :where(.vf-lead,.vf-muted,.vf-description,.vf-content p,.vf-content li,.vf-table td,.vf-results-head,.vf-release,.vf-inventory-head p,.vf-cost,.vf-summary,.vf-character-row p,.vf-download-meta){
+  color:var(--vf-muted)!important;
+}
+html[data-vf-theme="stone"] :where(h1,h2,h3,h4,.vf-card h2,.vf-content h2,.vf-sheet-block h3,.vf-inventory-head h2,.vf-questionnaire-heading){
+  color:var(--vf-heading)!important;
+  -webkit-text-fill-color:initial!important;
+}
+html[data-vf-theme="stone"] :where(.vf-field input,.vf-field textarea,.vf-field select,.field-input,.exp-input,input:not([type="checkbox"]):not([type="radio"]),textarea,select){
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] :where(input,textarea)::placeholder{color:#596770!important;opacity:1!important;}
+html[data-vf-theme="stone"] :where(.vf-button,.vf-tab,.btn,.tab-btn,.mode-bar button,.equipment-filter-btn,.array-chip){
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] :where(.vf-button:hover,.vf-tab:hover,.btn:hover,.tab-btn:hover,.mode-bar button:hover,.equipment-filter-btn:hover,.array-chip:hover){
+  background:#eee7da!important;color:#17242d!important;border-color:#684617!important;
+}
+html[data-vf-theme="stone"] :where(.vf-button.primary,.vf-tab.active,.btn-primary,.mode-bar button.active,.equipment-filter-btn.active,.array-chip.active,[aria-pressed="true"],[aria-selected="true"]){
+  background:#d6b15a!important;color:#1b160b!important;border-color:#684617!important;
+}
+html[data-vf-theme="stone"] :where(.vf-badge,.vf-meta span,.power-tag,.feat-chip,.vl-stat){
+  background:#e8e1d5!important;color:#37454e!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] .vf-error{color:#9d2424!important;background:#fff5f3!important;border-color:#a84742!important;}
+html[data-vf-theme="stone"] .vf-status.bad{color:#8f2020!important;background:#fff5f3!important;}
+html[data-vf-theme="stone"] .vf-status.ok{color:#205d39!important;background:#f1faf3!important;}
+
+/* Custom catalogue and feedback controls. */
+html[data-vf-theme="stone"] .vf-toolbar{background:#f7f2e8!important;border-color:#8f7446!important;}
+html[data-vf-theme="stone"] .vf-filter-select>[data-filter-toggle],
+html[data-vf-theme="stone"] .vf-choice-grid span,
+html[data-vf-theme="stone"] .vf-feedback-switch,
+html[data-vf-theme="stone"] .vf-feedback-switch-btn,
+html[data-vf-theme="stone"] .vf-filter-menu,
+html[data-vf-theme="stone"] .vf-filter-option{
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] .vf-filter-menu{box-shadow:0 16px 34px rgba(43,50,55,.22)!important;}
+html[data-vf-theme="stone"] .vf-filter-option:hover,
+html[data-vf-theme="stone"] .vf-filter-option:focus-visible,
+html[data-vf-theme="stone"] .vf-filter-option.active,
+html[data-vf-theme="stone"] .vf-choice-grid input:checked+span,
+html[data-vf-theme="stone"] .vf-feedback-switch-btn.active{
+  background:#d6b15a!important;color:#1b160b!important;border-color:#684617!important;
+}
+html[data-vf-theme="stone"] .vf-filter-select>label,
+html[data-vf-theme="stone"] .vf-filter-reset-wrap>label,
+html[data-vf-theme="stone"] .vf-field label,
+html[data-vf-theme="stone"] .vf-choice-fieldset legend{
+  color:#4f5d66!important;
+}
+html[data-vf-theme="stone"] .vf-questionnaire-card strong{color:#684617!important;}
+html[data-vf-theme="stone"] .vf-questionnaire-card small{color:#4f5d66!important;}
+html[data-vf-theme="stone"] .vf-card-actions{border-color:#c0aa83!important;}
+html[data-vf-theme="stone"] .vf-inventory-row{border-color:#c0aa83!important;}
+html[data-vf-theme="stone"] .vf-qty button{background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;}
+
+/* White Stone Character Creator. */
+html[data-vf-theme="stone"] .resume-banner{
+  background:#fff8e7!important;color:#24323b!important;border-color:#8a5a0a!important;
+  box-shadow:0 10px 26px rgba(43,50,55,.14)!important;
+}
+html[data-vf-theme="stone"] :where(.step-sub,.subsection-note,.trait-instruction,.trait-progress,.array-pool-label,.equipment-filter-label,.equipment-result-count,.equipment-access-summary,.path-btn-desc,.trait-desc,.exp-hint){
+  color:#4f5d66!important;
+}
+html[data-vf-theme="stone"] :where(.path-btn,.trait-row,.experience-item,.substrain-box,.substrain-card,.domain-group,.equipment-scope,.power-skip-msg,.review-block){
+  background:linear-gradient(155deg,#fffdf8,#eee8dc)!important;color:#24323b!important;
+  border-color:#8f7446!important;box-shadow:0 12px 28px rgba(43,50,55,.12)!important;
+}
+html[data-vf-theme="stone"] :where(.path-btn-name,.trait-name,.substrain-name,.review-block h3){color:#24323b!important;}
+html[data-vf-theme="stone"] .path-btn.sel-awakened{border-color:#8a5a0a!important;box-shadow:0 0 0 2px rgba(138,90,10,.20)!important;}
+html[data-vf-theme="stone"] .path-btn.sel-sleeping{border-color:#647483!important;box-shadow:0 0 0 2px rgba(100,116,131,.22)!important;}
+html[data-vf-theme="stone"] .array-chip{background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;}
+html[data-vf-theme="stone"] .array-chip.positive{color:#28633e!important;border-color:#4d8060!important;}
+html[data-vf-theme="stone"] .array-chip.negative{color:#9d2424!important;border-color:#a84742!important;}
+html[data-vf-theme="stone"] .array-chip.used{opacity:.58!important;color:#4f5d66!important;}
+html[data-vf-theme="stone"] .trait-row.focused,
+html[data-vf-theme="stone"] .trait-row.drop-ready{border-color:#005fcc!important;box-shadow:0 0 0 2px rgba(0,95,204,.18)!important;}
+
+/* Creator cards keep artwork dark, but every reading surface becomes paper. */
+html[data-vf-theme="stone"] .vl-card,
+html[data-vf-theme="stone"] .power-card{
+  background:#fffdf8!important;border-color:#8f7446!important;box-shadow:0 15px 32px rgba(43,50,55,.15)!important;
+}
+html[data-vf-theme="stone"] .vl-body,
+html[data-vf-theme="stone"] .power-inner{
+  background:linear-gradient(155deg,#fffdf8,#eee8dc)!important;color:#24323b!important;border-color:#c0aa83!important;
+}
+html[data-vf-theme="stone"] .power-inner:has(.power-bg)::before{background:rgba(255,253,248,.88)!important;backdrop-filter:saturate(.75)!important;}
+html[data-vf-theme="stone"] :where(.vl-desc,.vl-feature-text,.power-desc,.vl-tag,.vl-feature-label,.power-name,.vl-feature-name){color:#24323b!important;}
+html[data-vf-theme="stone"] :where(.vl-feature,.vl-stats,.power-meta){background:transparent!important;border-color:#c0aa83!important;}
+html[data-vf-theme="stone"] :where(.equipment-query input,.equipment-query select){
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] .equipment-query select{
+  background-image:linear-gradient(45deg,transparent 50%,#684617 50%),linear-gradient(135deg,#684617 50%,transparent 50%)!important;
+}
+html[data-vf-theme="stone"] .equipment-filter-btn{background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;}
+html[data-vf-theme="stone"] .equipment-filter-btn.active{background:#d6b15a!important;color:#1b160b!important;}
+html[data-vf-theme="stone"] .power-empty{color:#4f5d66!important;border-color:#8f7446!important;background:#fffdf8!important;}
+
+/* Level Up: full-width flow, accessible cards and readable controls. */
+body[data-creator-route="level-up"] .app{width:100%!important;max-width:none!important;}
+body[data-creator-route="level-up"] #library-view{padding:28px clamp(14px,3vw,48px) 90px!important;}
+body[data-creator-route="level-up"] .levelup-shell{width:100%!important;max-width:1500px!important;margin-inline:auto!important;}
+html[data-vf-theme="stone"] :where(.levelup-vault-character,.levelup-card,.levelup-choice,.levelup-config,.levelup-note,.levelup-summary){
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] :where(.levelup-vault-character strong,.levelup-card h2,.levelup-card h3,.levelup-choice strong,.levelup-summary-row strong){color:#684617!important;}
+html[data-vf-theme="stone"] :where(.levelup-vault-character small,.levelup-note,.levelup-option-description,.levelup-choice span,.levelup-config label,.levelup-section-kicker,.levelup-summary-row){color:#4f5d66!important;}
+html[data-vf-theme="stone"] .levelup-card.option.locked{opacity:.72!important;}
+html[data-vf-theme="stone"] .levelup-card.option.selected,
+html[data-vf-theme="stone"] .levelup-choice.active,
+html[data-vf-theme="stone"] .levelup-vault-character.active{
+  background:#fff8e7!important;border-color:#684617!important;box-shadow:0 0 0 2px rgba(104,70,23,.18)!important;
+}
+html[data-vf-theme="stone"] :where(.levelup-config input,.levelup-config textarea){background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;}
+html[data-vf-theme="stone"] .option-cost{color:#684617!important;border-color:#8f7446!important;background:#f3ecdf!important;}
+html[data-vf-theme="stone"] .option-reason{color:#8f2020!important;border-color:#c0aa83!important;}
+html[data-vf-theme="stone"] .levelup-error{background:#fff5f3!important;color:#8f2020!important;border-color:#a84742!important;}
+html[data-vf-theme="stone"] .levelup-success{background:#f1faf3!important;color:#205d39!important;border-color:#4d8060!important;}
+
+/* White Stone portal navigation and theme dialog contrast. */
+html[data-vf-theme="stone"] .vf-portal-nav a,
+html[data-vf-theme="stone"] .vf-theme-trigger,
+html[data-vf-theme="stone"] .vf-theme-options>button,
+html[data-vf-theme="stone"] .vf-theme-close{
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] .vf-portal-nav a.active,
+html[data-vf-theme="stone"] .vf-portal-nav a:hover,
+html[data-vf-theme="stone"] .vf-theme-trigger:hover,
+html[data-vf-theme="stone"] .vf-theme-options>button.active{
+  background:#fff4d8!important;color:#684617!important;border-color:#684617!important;
+}
+
+/* Reflow and zoom containment. */
+img,svg,canvas{max-width:100%;}
+:where(.vf-shell,.app,#app,#library-view,#card-library-view,.levelup-shell,.vf-panel,.vf-grid-layout){min-width:0;}
+@media(max-width:760px){
+  .vf-grid-layout,.vf-toolbar,.vf-catalog-toolbar,.levelup-grid,.trait-grid,.fields-two{grid-template-columns:1fr!important;}
+  .vf-hero{grid-template-columns:1fr!important;}
+  .vf-release{justify-self:start;}
+  .vf-card-actions,.levelup-actions,.levelup-inline-actions{align-items:stretch!important;flex-direction:column!important;}
+  .vf-card-actions .vf-button,.levelup-actions .btn,.levelup-inline-actions .btn{width:100%;justify-content:center;}
+}
+
+/* High-specificity text and Level Up refinements retained against legacy !important rules. */
+html[data-vf-theme="stone"] body .vl-desc,
+html[data-vf-theme="stone"] body .vl-feature-text,
+html[data-vf-theme="stone"] body .power-desc,
+html[data-vf-theme="stone"] body .subsection-note{color:#4f5d66!important;}
+html[data-vf-theme="stone"] body .vl-feature-name,
+html[data-vf-theme="stone"] body .power-name{color:#24323b!important;}
+html[data-vf-theme="stone"] .levelup-badge{
+  background:#eee6d8!important;color:#684617!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] .levelup-stepper button{
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;min-width:44px!important;
+}
+html[data-vf-theme="stone"] .levelup-stepper .value,
+html[data-vf-theme="stone"] .levelup-milestone{
+  background:#f7f2e8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] .levelup-stepper .value strong,
+html[data-vf-theme="stone"] .levelup-milestone strong{color:#684617!important;}
+html[data-vf-theme="stone"] .levelup-stepper .value span,
+html[data-vf-theme="stone"] .levelup-card p,
+html[data-vf-theme="stone"] .levelup-card li{color:#4f5d66!important;}
+html[data-vf-theme="stone"] .levelup-textarea{background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;}
+
+/* Card Library and review surfaces. */
+html[data-vf-theme="stone"] :where(.lib-card,.lib-panel,.lib-pnl,.lib-filter-btn,.lib-tab){
+  background:#fffdf8!important;color:#24323b!important;border-color:#8f7446!important;
+}
+html[data-vf-theme="stone"] :where(.lib-pnl-title,.lib-card h3,.lib-card strong){color:#684617!important;}
+html[data-vf-theme="stone"] :where(.lib-pnl-body,.lib-pnl-sub,.lib-pnl-foot,.lib-empty){color:#4f5d66!important;}
+html[data-vf-theme="stone"] .lib-p{background:#e8e1d5!important;color:#37454e!important;border-color:#8f7446!important;}
+html[data-vf-theme="stone"] .lib-p.dc{background:#d6b15a!important;color:#1b160b!important;border-color:#684617!important;}
+
+/* v59.68 compact state controls: meet WCAG 2.2 AA 24px target minimum without expanding resource tracks to 44px. */
+body.vf-page-player-tool .vf-resource-token{
+  min-width:24px!important;min-height:24px!important;width:24px!important;height:24px!important;padding:0!important;
+}
+body.vf-keeper-page .armor-slot,
+body.vf-keeper-page .dashboard-armor-slot{
+  min-width:24px!important;min-height:24px!important;height:24px!important;
+}
+body.vf-keeper-page .btn-token{
+  min-width:32px!important;min-height:32px!important;width:32px!important;height:32px!important;padding:0!important;
+}
+
+/* v59.68 explicit Blue token palette; do not depend on dynamically generated Tailwind classes. */
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token{
+  appearance:none!important;-webkit-appearance:none!important;color:transparent!important;
+  background:#020617!important;border:2px solid #64748b!important;box-shadow:none!important;opacity:1!important;
+}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-state="empty"]{
+  background:#020617!important;border-color:#64748b!important;
+}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-state="unavailable"]{
+  background:transparent!important;border-color:#64748b!important;border-style:dashed!important;opacity:.62!important;
+}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-state="filled"]{
+  border-style:solid!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.20),0 0 6px rgba(114,199,255,.16)!important;
+}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="health"][data-token-state="filled"]{background:#dc2626!important;border-color:#f87171!important;}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="stress"][data-token-state="filled"]{background:#be185d!important;border-color:#f472b6!important;}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="hope"][data-token-state="filled"],
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="effort"][data-token-state="filled"]{background:#d8a63b!important;border-color:#fde68a!important;}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="resolve"][data-token-state="filled"],
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="shields"][data-token-state="filled"]{background:#0891b2!important;border-color:#67e8f9!important;}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token[data-token-kind="fear"][data-token-state="filled"]{background:#dc2626!important;border-color:#fb7185!important;}
+html[data-vf-theme="blue"] body.vf-page-player-tool .vf-resource-token:focus-visible{outline:3px solid #72c7ff!important;outline-offset:3px!important;}
+html[data-vf-theme="blue"] body.vf-keeper-page [data-token-kind="armor"][data-token-state="filled"]{
+  background:#0891b2!important;border:2px solid #67e8f9!important;opacity:1!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)!important;
+}
+html[data-vf-theme="blue"] body.vf-keeper-page [data-token-kind="armor"][data-token-state="spent"]{
+  background:#1f2937!important;border:2px dashed #64748b!important;opacity:.66!important;box-shadow:none!important;
+}

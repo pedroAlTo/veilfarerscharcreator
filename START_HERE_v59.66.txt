@@ -1,0 +1,55 @@
+VEILFARERS PORTAL v59.66 — START HERE
+=====================================
+
+RELEASE PURPOSE
+---------------
+v59.66 reconstructs the digital Character Sheet presentation to match the current
+VeilFarers portal interface. Awakened sheets use gold metal; Sleeping sheets use
+silver metal. White Stone receives a dedicated coherent treatment, and inherited
+legacy/browser-looking fields are removed from the sheet.
+
+TYPOGRAPHY
+----------
+The sheet uses Aller as the first-choice editorial font through CSS local() lookup.
+No font files are bundled or redistributed. Devices without Aller use Trebuchet MS,
+Segoe UI or Arial. The VeilFarers masthead keeps the established title face.
+
+DEPLOY
+------
+1. Extract VeilFarers_Portal_v59.66.zip.
+2. Place the extracted contents at the repository/Netlify publish root.
+3. Push to a test branch and wait for a Deploy Preview.
+4. Hard-refresh Charsheet.
+5. Open /data/deploy-version.json and confirm version v59.66.
+6. No Firestore Rules, environment-variable or data migration change is required.
+
+PRIORITY ACCEPTANCE
+-------------------
+1. Sleeping sheet:
+   - silver outer frame and silver section accents;
+   - no inherited black fields in the light paper;
+   - Effort/Resolve behavior unchanged.
+2. Awakened sheet:
+   - gold outer frame and gold section accents;
+   - Hope/Domain behavior unchanged.
+3. White Stone:
+   - light navigation, toolbar, overlays and stage;
+   - gold/silver Path identity remains visible;
+   - reload preserves the theme.
+4. VeilFarers Blue:
+   - dark navy application chrome;
+   - sheet remains readable and printable.
+5. Regress JSON load/save, Player/Keeper transfer, tracks, Path switching and all
+   visual/editable/print PDF exports.
+6. Test at high zoom and confirm long identity values expose their full value on hover.
+
+ROLLBACK
+--------
+Redeploy VeilFarers_Portal_v59.65.zip. No character-data rollback is required.
+
+RELEASE DOCUMENTS
+-----------------
+- GITHUB_DEPLOY_SUMMARY_v59.66.md
+- PORTAL_HANDOVER_v59.66.md
+- VALIDATION_v59.66.txt
+- SHA256_v59.66.txt

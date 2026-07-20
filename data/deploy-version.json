@@ -1,12 +1,13 @@
 {
   "schema": "veilfarers.deploy/1",
-  "version": "v59.64",
-  "packageVersion": "59.64.0",
+  "version": "v59.68",
+  "packageVersion": "59.68.0",
   "date": "2026-07-20",
   "cspProfile": "wasm-3d-dice-v2",
   "requiredScriptSource": "'wasm-unsafe-eval'",
   "expectedResponseHeaders": {
-    "X-VeilFarers-Release": "v59.64",
+    "X-VeilFarers-Release": "v59.68",
     "X-VeilFarers-CSP-Profile": "wasm-3d-dice-v2"
-  }
+  },
+  "accessibilityProfile": "WCAG-2.2-AA-target"
 }
