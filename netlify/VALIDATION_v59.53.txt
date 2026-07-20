@@ -1,0 +1,45 @@
+VEILFARERS PORTAL v59.53 - VALIDATION
+Date: 2026-07-19
+
+AUTOMATED / STATIC PASS
+-----------------------
+PASS - package.json and package-lock.json are version 59.53.0.
+PASS - npm registry is https://registry.npmjs.org/ and no internal OpenAI build gateway reference remains.
+PASS - npm ci completed against the public registry with zero reported vulnerabilities at validation time.
+PASS - All portal JSON files parsed; changelog currentVersion/version are v59.53.
+PASS - First-party standalone JavaScript passed node --check.
+PASS - player-tool.bundle.js passed node --check.
+PASS - 10 non-data inline HTML scripts were extracted and passed node --check.
+PASS - All Netlify Function .mts files compiled with TypeScript, Node types and project non-strict compatibility settings.
+PASS - Keeper Tool contains readSession polling and no onSnapshot browser session listener.
+PASS - table-api.mts contains authenticated owner/member readSession and a limited session projection.
+PASS - Character Vault exposes Import Character and routes JSON through the Creator pending-import key.
+PASS - Creator awaits registry sync for registered imports and opens step 9 after import.
+PASS - Catalogue pack, Tier, category, property, ownership and cost filters are multi-select arrays.
+PASS - Spectrum of Fate defaults enabled and uses the global browser/device storage key.
+PASS - Shake handler opens Duality and invokes the existing rollDuality action.
+PASS - Player Tool uses local React/ReactDOM, compiled Tailwind CSS and compiled JavaScript.
+PASS - No production Tailwind CDN, Babel standalone, text/babel, unpkg runtime or unsafe-eval requirement remains for Player Tool.
+PASS - Player Firebase initialization uses a shared single-flight promise.
+PASS - Exact assets/3d-dice comparison: all 87 files match v59.52 byte-for-byte.
+PASS - Third-party notices include locally bundled React/ReactDOM and build-time Tailwind/Babel use.
+PASS - Deploy ZIP has index.html at root and excludes node_modules, .git, environment files and private keys.
+PASS - Credential/internal-registry text scan passed.
+PASS - PORTAL_HANDOVER_v59.53.docx rendered to PNG pages and every page was visually inspected with no clipping, overlap, missing glyphs or broken tables/code blocks.
+
+NOT EXECUTED IN THIS BUILD ENVIRONMENT
+--------------------------------------
+PENDING - Real Netlify Deploy Preview Function/authentication execution.
+PENDING - Firebase Admin readSession against the configured project.
+PENDING - Open/protected/member Keeper table connection with real accounts.
+PENDING - Representative historical JSON fixtures from the user's archive.
+PENDING - Permanent ID allocation and Vault cloud insertion under live Identity.
+PENDING - Real iOS/Android motion permission and shake sensitivity.
+PENDING - First-use 3D dice initialization triggered by shake.
+PENDING - Browser visual/responsive pass for all multi-select catalogue menus.
+PENDING - Fresh-profile/cross-tab Spectrum behavior in deployed browsers.
+PENDING - Full regression of v59.52 note isolation and Keeper roll visibility.
+
+ACCEPTANCE CONDITION
+--------------------
+Do not describe v59.53 as production-accepted until the live Keeper connection, historical import, mobile Shake and production console/network tests pass in a Deploy Preview. Firestore Rules remain project-wide and must be deployed only through the coordinated security cutover.

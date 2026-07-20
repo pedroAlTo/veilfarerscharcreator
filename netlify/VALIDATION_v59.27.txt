@@ -1,0 +1,83 @@
+VeilFarers Portal v59.27 — Validation Report
+
+Passed: 64
+Failed: 0
+
+[PASS] required production file present: index.html
+[PASS] required production file present: welcome.css
+[PASS] required production file present: creator.html
+[PASS] required production file present: charsheet.html
+[PASS] required production file present: player-tool.html
+[PASS] required production file present: keeper-tool.html
+[PASS] required production file present: portal.js
+[PASS] required production file present: portal.css
+[PASS] required production file present: netlify.toml
+[PASS] required production file present: netlify/functions/firebase-config.mts
+[PASS] required production file present: local/start-local.mjs
+[PASS] required production file present: local-runtime.js
+[PASS] required production file present: data/changelog.json
+[PASS] changelog currentVersion is v59.27
+[PASS] v59.27 changelog entry is first
+[PASS] welcome page explains VeilFarers
+[PASS] welcome page links to Character Creator
+[PASS] welcome page release identifier updated
+[PASS] former homepage retained as creator.html
+[PASS] portal navigation includes Home
+[PASS] portal navigation points Card Library to creator.html
+[PASS] Admin navigation is permission-aware
+[PASS] dice tracking preference persists locally
+[PASS] settings expose dice tracking and lock-in control
+[PASS] tracking toggle reaches 3D renderer
+[PASS] settings use compact phone-only back control
+[PASS] legacy large Back to Player Tool action removed
+[PASS] exactly one physical roller.roll(prepared) call
+[PASS] no post-settle lifecycle call: box.add(
+[PASS] no post-settle lifecycle call: box.remove(
+[PASS] no post-settle lifecycle call: box.reroll(
+[PASS] no post-settle lifecycle call: roller.add(
+[PASS] no post-settle lifecycle call: roller.remove(
+[PASS] no post-settle lifecycle call: roller.reroll(
+[PASS] Keeper Tool displays under-construction status
+[PASS] construction banner has portal styling
+[PASS] Keeper avoids public table enumeration by default
+[PASS] Player explains private-by-default table access
+[PASS] production table directory is opt-in
+[PASS] local runtime mirrors table-directory flag
+[PASS] v59.27 sheet layout patch is present
+[PASS] level controls are a single horizontal minus/value/plus row
+[PASS] sheet toolbar is one horizontal control rail
+[PASS] sheet header stats use collision-resistant grid
+[PASS] compact numeric controls suppress oversized select decoration
+[PASS] Netlify defines Keeper/Admin role and fallback routes
+[PASS] Keeper route requires keeper/admin role at CDN edge
+[PASS] Admin route requires admin role at CDN edge
+[PASS] security header configured: Content-Security-Policy
+[PASS] security header configured: Strict-Transport-Security
+[PASS] security header configured: X-Content-Type-Options
+[PASS] security header configured: Referrer-Policy
+[PASS] security header configured: Permissions-Policy
+[PASS] no secrets-scanner suppression remains
+[PASS] Firebase runtime configuration is no-store
+[PASS] Firebase config comments distinguish identification from authorization
+[PASS] all 81 JSON files parse
+[PASS] all 11 root HTML files have html/head/body/title
+[PASS] all local HTML/script/stylesheet targets resolve
+[PASS] all 5 CSS files parse without top-level errors
+[PASS] all 21 standalone JavaScript files pass node --check
+[PASS] rules-data and downloadable canonical files match v59.26 byte-for-byte
+[PASS] canonical data files other than changelog match v59.26
+[PASS] no high-confidence credential patterns found
+
+Notes:
+- Player Tool inline JSX was parsed separately with @babel/parser 7.29.0.
+- Local HTTP smoke tests returned 200 for /, /creator.html, /charsheet.html, /player-tool.html and /keeper-tool.html.
+- The Firebase config endpoint correctly returned 503 without local credentials.
+- Automated visual screenshots were unavailable because the managed Chromium runtime blocks all URLs; manual Deploy Preview QA remains required.
+- This release hardens the static portal but does not make private campaign data production-secure until Firestore Rules, authenticated membership and App Check are completed.
+
+Final package re-check:
+- 87 additional structural, canonical-integrity and requested-feature checks passed; 0 failed.
+- All standalone JS/MJS files passed node --check after documentation finalization.
+- Player Tool text/babel JSX parsed with @babel/parser 7.29.0 after finalization.
+- Final local smoke test: Welcome, Creator, Charsheet, Player and Keeper returned HTTP 200.
+- Final local Firebase config test returned the expected HTTP 503 without credentials.

@@ -1,0 +1,37 @@
+VeilFarers Portal v59.15 Validation
+=======================================
+
+[PASS] Changelog current version v59.15
+[PASS] Changelog release version v59.15
+[PASS] v59.15 changelog entry
+[PASS] Start Here version v59.15
+[PASS] Feedback build reference v59.15
+[PASS] Technical handover exists
+[PASS] GitHub deploy summary exists
+[PASS] Previous root release docs removed
+[PASS] Recursive Firestore sanitizer present
+[PASS] Firestore SDK ignores undefined fields
+[PASS] Player setDoc wrapper sanitizes payloads
+[PASS] Player updateDoc wrapper sanitizes payloads
+[PASS] arrayUnion arguments sanitized
+[PASS] Object undefined values omitted
+[PASS] Array undefined values become null
+[PASS] Firestore transform sentinels preserved
+[PASS] Table names normalized
+[PASS] Initial metadata write awaited before connection
+[PASS] Autosave diagnostic present
+[PASS] Autosave clears stale save error
+[PASS] Player optional weapon burden normalized
+[PASS] Importer optional weapon burden normalized
+[PASS] Keeper undefined-property guard
+[PASS] JSON integrity
+[PASS] JavaScript syntax for root JS files
+[PASS] Player Tool inline JavaScript and JSX parse — {"jsxCount":1,"plainCount":2,"failures":[]}
+[PASS] Player Tool Babel block found — 1
+[PASS] Firestore sanitizer unit test — {"paths":["$.b","$.c[1]","$.c[2].d","$.sentinel.nested"],"clean":{"a":1,"c":[2,null,{"e":"ok"}],"sentinel":{"_methodName":"FieldValue.arrayUnion"}}}
+[PASS] Legacy/custom weapon burden unit test — {"id":"","canonicalId":"","name":"Custom Test Weapon","trait":"Strength · Melee","range":"Melee","damage":"d6 phys.","features":[],"feature":"","featureRefs":[],"tier":null,"pack":"","burden":null,"weaponFamily":"","proficiencyDie":""}
+[PASS] Local HTML dependencies
+[PASS] No embedded Firebase browser key
+
+Passed: 31
+Failed: 0

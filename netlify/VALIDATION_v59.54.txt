@@ -1,0 +1,40 @@
+VEILFARERS PORTAL v59.54 — VALIDATION
+
+STATUS: STATIC/LOCAL VALIDATION PASSED; LIVE DEPLOY PREVIEW ACCEPTANCE REQUIRED.
+
+PASS — Hotfix applied to the user-revised 59_53.zip rather than the earlier generated v59.53 artifact.
+PASS — package.json and package-lock.json use version 59.54.0.
+PASS — Player Tool source and production bundle no longer evaluate `character` in the early handout-effect dependency array.
+PASS — Modified JavaScript files pass `node --check`.
+PASS — Creator inline JavaScript passes `node --check`.
+PASS — Portal, rules and download JSON files parse successfully.
+PASS — Clean npm installation completes through https://registry.npmjs.org/.
+PASS — Registry fixture: existing active VF-000111 remains and new ID-less build is added as VF-000222.
+PASS — Ailuran Sheet fixture maps `ailuran_variant: Shroud-Strain` to ANC-AILURAN-SHROUD.
+PASS — Ailuran Player fixture maps legacy `subStrain: surge` to ANC-AILURAN-SURGE.
+PASS — Legacy `Ailurean`, current `Ailuran` and canonical-style ancestry references resolve to the current Ailuran identity.
+PASS — Registered imports use Step 9 with explicit validation bypass for migration review.
+PASS — Sync of an existing pending record preserves its own record ID instead of borrowing the active ID.
+PASS — Revised Downloads directory is byte-identical before and after code changes.
+PASS — No source file under assets/3d-dice was edited.
+PASS — Final ZIP excludes node_modules, .git, real .env files, private keys and service-account JSON.
+
+REVISED DOWNLOAD HASHES PRESERVED
+26aeb4e397b4c0033f9ef07cd1f30f37ca7943f89b0f1877347e144d39f21b49  VeilFarers_Rust_and_Steel_11.3-PDF-Candidate.pdf
+35d93825059584a9366f649c1bd4d6e9e891687f80904cf50fd6089c189921cd  veilfarers_charsheet_fillable.pdf
+3e51497a8ef7c9d896d8b3543b69c22fe075f8473cb79c7b18f171363ab7cc4a  downloads.json
+82daf7b656e1124b5d53e2b34e4ea8e69215867075dd1904b4a378a5f1eef801  VeilFarers_Keepers_Companion_11.3-PDF-Candidate.pdf
+db8559bf1846e1746cfe63b16703dc6a518a6fd9412aa659bfb93a6daeffbeea  VeilFarers_Alien_Species_11.3-PDF-Candidate.pdf
+ec78d3d008d66e506f33f92ed6474c9d065981695cbed7db07fcc81529fffae1  VeilFarers_Corebook_11.31-PDF-Candidate.pdf
+
+LIVE TESTS STILL REQUIRED
+- Netlify Identity and Firebase-backed ID allocation.
+- Two or more cloud Vault characters under one account.
+- Old JSON samples from every historical export family.
+- Ailuran imports for both Sub-Strains.
+- Existing permanent-ID update without duplicate creation.
+- Downloads page links in Deploy Preview.
+PASS — The 12-page Word handover was rendered and every page was visually inspected; no clipping, overlap or broken page layout was found.
+PASS — Deploy archive has index.html at its root and excludes node_modules, .git and real environment files.
+PASS — Final archive scan found no private-key material or internal npm gateway in runtime package configuration.
+PASS — Downloads extracted from the final archive match the user-revised package byte-for-byte.

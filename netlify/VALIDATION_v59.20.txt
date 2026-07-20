@@ -1,0 +1,42 @@
+VeilFarers Portal v59.20 - Validation Report
+Date: 2026-07-17
+Base: v59.19
+
+[PASS] Player Tool exists
+[PASS] Current changelog version is v59.20
+[PASS] Feedback build label updated
+[PASS] Options uses top application layer
+[PASS] Options uses dynamic mobile viewport
+[PASS] Options has bounded desktop height
+[PASS] Options has dedicated scrolling body
+[PASS] Options has mobile touch scrolling
+[PASS] Options header Close button exists
+[PASS] Options footer return action exists
+[PASS] Options has ARIA dialog semantics
+[PASS] Options includes top safe-area padding
+[PASS] Options includes bottom safe-area padding
+[PASS] Options Escape handler exists
+[PASS] Options locks body scrolling
+[PASS] Options restores body scrolling
+[PASS] Options locks overscroll
+[PASS] Options restores overscroll
+[PASS] Backdrop close remains available
+[PASS] Legacy bottom-only Done control removed
+[PASS] All JSON parsed (69)
+[PASS] Standalone JavaScript syntax (20 files)
+[PASS] Player Tool JSX syntax
+[PASS] Local HTML dependencies (50 refs)
+[PASS] PDF downloads unchanged (5)
+[PASS] Unchanged from v59.19: rules-data
+[PASS] Unchanged from v59.19: data/weapons.json
+[PASS] Unchanged from v59.19: rules-data/core/weapons.json
+[PASS] Unchanged from v59.19: assets/3d-dice
+[PASS] No embedded Firebase API key patterns
+
+Passed: 30
+Failed: 0
+
+Live-device checks still required:
+- iPhone Safari / Android Chrome close controls and safe areas.
+- Device rotation while Options is open.
+- Touch scrolling inside Options and restored page scrolling after close.

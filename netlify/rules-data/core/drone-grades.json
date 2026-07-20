@@ -1,0 +1,155 @@
+[
+  {
+    "id": "vf.core.drone-grade.common-drone",
+    "type": "drone-grade",
+    "profileType": "grade",
+    "name": "Common Drone",
+    "slug": "common-drone",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Tier 2",
+      "rank": 2,
+      "code": "T2",
+      "raw": "Tier 2"
+    },
+    "raw": {
+      "tier": "Tier 2",
+      "cost": "4 Cr",
+      "hp": 2,
+      "evasion": 10,
+      "thresholds": "5 / 11",
+      "armor": 0,
+      "modules": 2,
+      "availability": "Civilian, commercial, frontier markets",
+      "source": "core"
+    },
+    "cost": {
+      "credits": "4 Cr"
+    },
+    "statistics": {
+      "hp": 2,
+      "evasion": 10,
+      "thresholds": {
+        "major": 5,
+        "severe": 11,
+        "raw": "5 / 11"
+      },
+      "armorSlots": 0,
+      "moduleSlots": 2,
+      "availability": "Civilian, commercial, frontier markets"
+    },
+    "moduleAccessRank": 1
+  },
+  {
+    "id": "vf.core.drone-grade.military-drone",
+    "type": "drone-grade",
+    "profileType": "grade",
+    "name": "Military Drone",
+    "slug": "military-drone",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Tier 3",
+      "rank": 3,
+      "code": "T3",
+      "raw": "Tier 3"
+    },
+    "raw": {
+      "tier": "Tier 3",
+      "cost": "8 Cr",
+      "hp": 3,
+      "evasion": 11,
+      "thresholds": "7 / 14",
+      "armor": 1,
+      "modules": 3,
+      "availability": "Restricted, licensed, House security",
+      "source": "core"
+    },
+    "cost": {
+      "credits": "8 Cr"
+    },
+    "statistics": {
+      "hp": 3,
+      "evasion": 11,
+      "thresholds": {
+        "major": 7,
+        "severe": 14,
+        "raw": "7 / 14"
+      },
+      "armorSlots": 1,
+      "moduleSlots": 3,
+      "availability": "Restricted, licensed, House security"
+    },
+    "moduleAccessRank": 2
+  },
+  {
+    "id": "vf.core.drone-grade.experimental-drone",
+    "type": "drone-grade",
+    "profileType": "grade",
+    "name": "Experimental Drone",
+    "slug": "experimental-drone",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC3",
+        "collection": "drone-grades"
+      }
+    ],
+    "tier": {
+      "name": "Tier 4",
+      "rank": 4,
+      "code": "T4",
+      "raw": "Tier 4"
+    },
+    "raw": {
+      "tier": "Tier 4",
+      "cost": "16 Cr",
+      "hp": 5,
+      "evasion": 12,
+      "thresholds": "9 / 16",
+      "armor": 2,
+      "modules": 4,
+      "availability": "Rare, unstable, black-site, prototype",
+      "source": "core"
+    },
+    "cost": {
+      "credits": "16 Cr"
+    },
+    "statistics": {
+      "hp": 5,
+      "evasion": 12,
+      "thresholds": {
+        "major": 9,
+        "severe": 16,
+        "raw": "9 / 16"
+      },
+      "armorSlots": 2,
+      "moduleSlots": 4,
+      "availability": "Rare, unstable, black-site, prototype"
+    },
+    "moduleAccessRank": 3
+  }
+]

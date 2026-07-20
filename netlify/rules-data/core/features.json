@@ -1,0 +1,1178 @@
+[
+  {
+    "id": "vf.core.feature.accurate",
+    "type": "feature",
+    "name": "Accurate",
+    "slug": "accurate",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5168,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "+1 to attack rolls at Far or Very Far range."
+  },
+  {
+    "id": "vf.core.feature.adaptive",
+    "type": "feature",
+    "name": "Adaptive",
+    "slug": "adaptive",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 507,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Once per scene, as a free action, change the weapon's damage type."
+  },
+  {
+    "id": "vf.core.feature.arcing-shot",
+    "type": "feature",
+    "name": "Arcing Shot",
+    "slug": "arcing-shot",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5286,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Can be fired in a high arc to bypass cover (ignore cover if a clear vertical path exists)."
+  },
+  {
+    "id": "vf.core.feature.armor-piercing",
+    "type": "feature",
+    "name": "Armor Piercing",
+    "slug": "armor-piercing",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2011,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On damage, the target reduces its Armor Score by 1 until its next rest. Stacks — Armor Piercing (2) reduces by 2."
+  },
+  {
+    "id": "vf.core.feature.assault",
+    "type": "feature",
+    "name": "Assault",
+    "slug": "assault",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5166,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Designed for aggressive frontline combat. +1 to attack rolls with Automatic weapons."
+  },
+  {
+    "id": "vf.core.feature.automatic",
+    "type": "feature",
+    "name": "Automatic",
+    "slug": "automatic",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 3498,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "When attacking, mark 1 Stress to target a second creature within Very Close of the primary target with the same roll."
+  },
+  {
+    "id": "vf.core.feature.brittle",
+    "type": "feature",
+    "name": "Brittle",
+    "slug": "brittle",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5320,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "A target taking HP damage becomes Vulnerable to the next physical damage it takes (+1d6 on that hit)."
+  },
+  {
+    "id": "vf.core.feature.burst-fire",
+    "type": "feature",
+    "name": "Burst Fire",
+    "slug": "burst-fire",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5174,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "When you roll the maximum value on a damage die, roll that die again and add the result."
+  },
+  {
+    "id": "vf.core.feature.cleave",
+    "type": "feature",
+    "name": "Cleave",
+    "slug": "cleave",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5035,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On a successful melee hit, immediately make a second attack roll against a different target within melee reach."
+  },
+  {
+    "id": "vf.core.feature.cloaking",
+    "type": "feature",
+    "name": "Cloaking",
+    "slug": "cloaking",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5486,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "A light-bending field. As an action, mark 1 Stress to become invisible until the end of your next turn or until you attack or are hit."
+  },
+  {
+    "id": "vf.core.feature.concealable",
+    "type": "feature",
+    "name": "Concealable",
+    "slug": "concealable",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5089,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Does not count toward burden when concealed. Requires a DC 15+ Instinct check to find in a routine search."
+  },
+  {
+    "id": "vf.core.feature.configurable",
+    "type": "feature",
+    "name": "Configurable",
+    "slug": "configurable",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5964,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "During a short rest, reconfigure the weapon: change its range category and damage type (physical ↔ magic)."
+  },
+  {
+    "id": "vf.core.feature.continuous",
+    "type": "feature",
+    "name": "Continuous",
+    "slug": "continuous",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5241,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On a successful hit, the target marks 1 Stress at the start of its next turn as the effect continues."
+  },
+  {
+    "id": "vf.core.feature.cutting",
+    "type": "feature",
+    "name": "Cutting",
+    "slug": "cutting",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5010,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Ignores the first point of the target's Armor Score on damage."
+  },
+  {
+    "id": "vf.core.feature.devastating",
+    "type": "feature",
+    "name": "Devastating",
+    "slug": "devastating",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5083,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Severe Hits (damage exceeding the Major Threshold) inflict +1 HP on top of threshold/Overkill damage."
+  },
+  {
+    "id": "vf.core.feature.disintegrating",
+    "type": "feature",
+    "name": "Disintegrating",
+    "slug": "disintegrating",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5061,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On a maximum damage die roll, the target permanently loses an item (Keeper's choice)."
+  },
+  {
+    "id": "vf.core.feature.energy-tag",
+    "type": "feature",
+    "name": "Energy Tag",
+    "slug": "energy-tag",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2080,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "This weapon's damage is energy (magic), not kinetic."
+  },
+  {
+    "id": "vf.core.feature.entangling",
+    "type": "feature",
+    "name": "Entangling",
+    "slug": "entangling",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5308,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "A hit target is Restrained. It takes a DC 15 Strength check to break free."
+  },
+  {
+    "id": "vf.core.feature.environmental",
+    "type": "feature",
+    "name": "Environmental",
+    "slug": "environmental",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 617,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Fully sealed — complete immunity to vacuum, toxic atmospheres, and extreme temperatures."
+  },
+  {
+    "id": "vf.core.feature.explosive",
+    "type": "feature",
+    "name": "Explosive",
+    "slug": "explosive",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5235,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Affects all creatures within Very Close of the target. Each makes a DC 10 Agility reaction or takes d6 physical damage."
+  },
+  {
+    "id": "vf.core.feature.flexible",
+    "type": "feature",
+    "name": "Flexible",
+    "slug": "flexible",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5041,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Lightweight and non-restrictive. +1 Evasion while worn."
+  },
+  {
+    "id": "vf.core.feature.fortified",
+    "type": "feature",
+    "name": "Fortified",
+    "slug": "fortified",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5519,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Thick plating for kinetic absorption. When marking an Armor Slot, reduce the attack's severity by two thresholds instead of one."
+  },
+  {
+    "id": "vf.core.feature.heavy",
+    "type": "feature",
+    "name": "Heavy",
+    "slug": "heavy",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1776,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Bulky. −1 Evasion."
+  },
+  {
+    "id": "vf.core.feature.ignite",
+    "type": "feature",
+    "name": "Ignite",
+    "slug": "ignite",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5309,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "A target that takes HP damage is set On Fire. At the start of its turn it marks 1 Stress or takes 1d4 magic damage. An action extinguishes it."
+  },
+  {
+    "id": "vf.core.feature.jury-rigged",
+    "type": "feature",
+    "name": "Jury-rigged",
+    "slug": "jury-rigged",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5551,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Repairable with common materials (no workshop needed). When marking an Armor Slot, roll d6 — on a 1 a critical component fails and the Keeper introduces a malfunction."
+  },
+  {
+    "id": "vf.core.feature.life-support",
+    "type": "feature",
+    "name": "Life Support",
+    "slug": "life-support",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5480,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Self-contained atmosphere and thermal regulation. Up to 24 hours of vacuum protection on a full charge."
+  },
+  {
+    "id": "vf.core.feature.lightweight",
+    "type": "feature",
+    "name": "Lightweight",
+    "slug": "lightweight",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2080,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Never counts toward your burden."
+  },
+  {
+    "id": "vf.core.feature.messy",
+    "type": "feature",
+    "name": "Messy",
+    "slug": "messy",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5311,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "The residue is obvious — it leaves clear evidence that a confrontation took place."
+  },
+  {
+    "id": "vf.core.feature.overheating",
+    "type": "feature",
+    "name": "Overheating",
+    "slug": "overheating",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5037,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "After an attack, roll d6. On 1-2 the weapon overheats: mark 1 Stress to force cooling, or spend an action to cool it — otherwise it cannot fire again until cooled."
+  },
+  {
+    "id": "vf.core.feature.paired",
+    "type": "feature",
+    "name": "Paired",
+    "slug": "paired",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5006,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "When wielding two Paired weapons, add the Paired bonuses of both to damage. Combat Knife = +0; Shock Baton = +1; Plasma Cutter & Mono-Blade = +2."
+  },
+  {
+    "id": "vf.core.feature.phasing",
+    "type": "feature",
+    "name": "Phasing",
+    "slug": "phasing",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5057,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Attacks pass through solid matter, ignoring cover and physical armor."
+  },
+  {
+    "id": "vf.core.feature.piercing",
+    "type": "feature",
+    "name": "Piercing",
+    "slug": "piercing",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2011,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On damage, the target's Armor Score is reduced by 1 until it rests."
+  },
+  {
+    "id": "vf.core.feature.poison",
+    "type": "feature",
+    "name": "Poison",
+    "slug": "poison",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1913,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On damage, the target marks 1 Stress immediately."
+  },
+  {
+    "id": "vf.core.feature.powered",
+    "type": "feature",
+    "name": "Powered",
+    "slug": "powered",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5035,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Integrated power source and motorized servos. Negates Evasion penalties from Heavy or Very Heavy. If the armor loses power: −3 to Agility rolls until you exit it."
+  },
+  {
+    "id": "vf.core.feature.powerful",
+    "type": "feature",
+    "name": "Powerful",
+    "slug": "powerful",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5190,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Uses a larger damage die (d10 instead of d8)."
+  },
+  {
+    "id": "vf.core.feature.probability-shift",
+    "type": "feature",
+    "name": "Probability Shift",
+    "slug": "probability-shift",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5059,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Reroll the attack dice — but you must accept the new result."
+  },
+  {
+    "id": "vf.core.feature.quick",
+    "type": "feature",
+    "name": "Quick",
+    "slug": "quick",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2748,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "When attacking, mark 1 Stress to immediately make a second attack against the same creature."
+  },
+  {
+    "id": "vf.core.feature.reality-shift",
+    "type": "feature",
+    "name": "Reality Shift",
+    "slug": "reality-shift",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5134,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On damage, change the damage type to any other type."
+  },
+  {
+    "id": "vf.core.feature.reliable",
+    "type": "feature",
+    "name": "Reliable",
+    "slug": "reliable",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 4966,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "+1 to all attack rolls made with this weapon."
+  },
+  {
+    "id": "vf.core.feature.reload",
+    "type": "feature",
+    "name": "Reload",
+    "slug": "reload",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5334,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Must be reloaded after each shot. Reloading takes one action."
+  },
+  {
+    "id": "vf.core.feature.resilient",
+    "type": "feature",
+    "name": "Resilient",
+    "slug": "resilient",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5492,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "Exceptionally durable. Before marking your last Armor Slot, roll d6 — on a 6, ignore the hit and the slot is not marked."
+  },
+  {
+    "id": "vf.core.feature.salvo-fire",
+    "type": "feature",
+    "name": "Salvo Fire",
+    "slug": "salvo-fire",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5295,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On attack, mark 1 Stress to target a second creature within Close of the primary with the same roll."
+  },
+  {
+    "id": "vf.core.feature.self-repair",
+    "type": "feature",
+    "name": "Self-Repair",
+    "slug": "self-repair",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5482,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "A nanite network or self-sealing polymers. During any rest, automatically repairs one marked Armor Slot."
+  },
+  {
+    "id": "vf.core.feature.shield-piercing",
+    "type": "feature",
+    "name": "Shield Piercing",
+    "slug": "shield-piercing",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5113,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Bypasses 50% of the target's Shields."
+  },
+  {
+    "id": "vf.core.feature.shredding",
+    "type": "feature",
+    "name": "Shredding",
+    "slug": "shredding",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5310,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "On HP damage, the target's Armor Score is permanently reduced by 1. Repairs only during Downtime."
+  },
+  {
+    "id": "vf.core.feature.silent",
+    "type": "feature",
+    "name": "Silent",
+    "slug": "silent",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 979,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "No discernible sound or muzzle flash. Fully stealth-compatible."
+  },
+  {
+    "id": "vf.core.feature.smart-scope",
+    "type": "feature",
+    "name": "Smart Scope",
+    "slug": "smart-scope",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5192,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "+2 to attack rolls at Far or Very Far range."
+  },
+  {
+    "id": "vf.core.feature.stable",
+    "type": "feature",
+    "name": "Stable",
+    "slug": "stable",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5194,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Never suffers Overheating or sustained-use malfunctions."
+  },
+  {
+    "id": "vf.core.feature.stagger",
+    "type": "feature",
+    "name": "Stagger",
+    "slug": "stagger",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2002,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "The target takes damage and has Disadvantage on its next action."
+  },
+  {
+    "id": "vf.core.feature.stunning",
+    "type": "feature",
+    "name": "Stunning",
+    "slug": "stunning",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5021,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "A damaged target cannot take actions until the end of its next turn, unless it succeeds on a DC 10 Strength reaction."
+  },
+  {
+    "id": "vf.core.feature.suppressive",
+    "type": "feature",
+    "name": "Suppressive",
+    "slug": "suppressive",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5198,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "When attacking, mark 1 Stress to force all creatures within Close of the target to Disadvantage on attacks next round."
+  },
+  {
+    "id": "vf.core.feature.system-shock",
+    "type": "feature",
+    "name": "System Shock",
+    "slug": "system-shock",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5294,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Normal damage to Synthetics/machines. Organic targets take 1d4 Stress only. On a max die roll, a target electronic device malfunctions."
+  },
+  {
+    "id": "vf.core.feature.tactical",
+    "type": "feature",
+    "name": "Tactical",
+    "slug": "tactical",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 1752,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "An integrated command-and-control suite. +1 to Instinct rolls for perception and Spotlight contests."
+  },
+  {
+    "id": "vf.core.feature.taser-charge",
+    "type": "feature",
+    "name": "Taser Charge",
+    "slug": "taser-charge",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5333,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "A hit target makes a DC 10 Strength check or is Stunned until the end of its next turn."
+  },
+  {
+    "id": "vf.core.feature.very-heavy",
+    "type": "feature",
+    "name": "Very Heavy",
+    "slug": "very-heavy",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 2078,
+        "collection": "features"
+      }
+    ],
+    "category": "Armor Feature",
+    "definition": "A walking tank. −2 Evasion and −1 to all Agility rolls. Not negated by Powered (but Powered is required to move)."
+  },
+  {
+    "id": "vf.core.feature.vibration",
+    "type": "feature",
+    "name": "Vibration",
+    "slug": "vibration",
+    "pack": "core",
+    "status": "canonical",
+    "aliases": [],
+    "sourceRefs": [
+      {
+        "pack": "core",
+        "book": "VeilFarers Corebook",
+        "version": "11.1-RC2-draft6",
+        "sourceFile": "VeilFarers_Corebook_11.1-RC2-draft6_FULL_SOURCE.md",
+        "line": 5033,
+        "collection": "features"
+      }
+    ],
+    "category": "Weapon Feature",
+    "definition": "Ignores the first point of the target's Armor Score on damage."
+  }
+]

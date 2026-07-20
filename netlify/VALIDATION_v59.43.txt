@@ -1,0 +1,122 @@
+VeilFarers Portal v59.43 validation
+Date: 2026-07-18
+
+Release scope
+-------------
+Player Tool armor modifiers, resource-aware augmentations, first-class Drone tabs,
+drone Signal/Spotlight controls, Keeper signal synchronization, and OPEN/CLOSED
+shared-table password handling.
+
+Static validation
+-----------------
+1. Validated all 81 JSON files in the deploy.
+2. Extracted and parsed the Player Tool JSX with @babel/parser.
+3. Compiled the Player Tool JSX with Babel React preset.
+   Result: success; compiled output 344850 bytes.
+4. Checked every inline Keeper Tool JavaScript block with node -c.
+5. Checked veilfarers-import.js with node -c.
+6. Verified public table discovery configuration in:
+   - netlify/functions/firebase-config.mts
+   - local/start-local.mjs
+   - local/.env.local.example
+
+Functional browser validation
+-----------------------------
+The Player and Keeper flows were exercised in a local browser harness with mocked
+session/Firebase state. The following checks passed:
+
+1. New Character state
+   - HP starts full.
+   - Hope starts at 2.
+   - Effort starts at 2.
+   - Resolve starts full (2/2).
+
+2. New Drone state
+   - canonical Common Drone default resolves;
+   - HP starts full;
+   - Armor Slots start full;
+   - module-slot limit resolves;
+   - no Hope, Effort, Resolve or Stress tracks are rendered/stored as drone resources.
+
+3. Drone/operator workflow
+   - operator assignment works;
+   - compatible installation options load from canonical drone-module data;
+   - Compliance Taser can be installed and used;
+   - its operator marks the required 1 Stress;
+   - the drone does not receive its own Spotlight;
+   - the drone sheet displays and changes the current character Spotlight using the existing lantern component.
+
+4. Signal workflow
+   - Player Tool can manually set Stable, Unstable and Lost;
+   - signal state persists in the shared drone record;
+   - Keeper Tool renders connected drones and can update the same signal field;
+   - range/link controls remain separate from the manually overridable signal state.
+
+5. Armor workflow
+   - activating Mesh Armor applies Major/Severe thresholds 5/10;
+   - Armor Slot maximum/current becomes 4/4;
+   - active armor modifiers are included in effective Evasion/attack profiles where applicable;
+   - contextual armor modifiers are displayed rather than applied globally.
+
+6. Augmentation workflow
+   - Audio Dampeners activation marks 1 Stress;
+   - a Hope-cost augmentation spends Hope for Awakened characters;
+   - the same Hope-cost wording spends Effort for Sleeping characters;
+   - activation is blocked when the relevant resource cannot be paid;
+   - active/inactive augmentation state remains separate from inventory ownership.
+
+7. Responsive Drone layout
+   - checked at 390 px, 760 px and 1440 px;
+   - no horizontal overflow or browser page errors were observed.
+
+8. Keeper table UI
+   - OPEN and CLOSED labels render in the table directory;
+   - connected-table password controls render only after connection;
+   - the drone signal panel renders all three signal states.
+
+Password validation
+-------------------
+1. New password records use:
+   - PBKDF2-SHA256;
+   - random 16-byte salt;
+   - 150000 iterations;
+   - 256-bit derived value encoded as base64.
+2. Player and Keeper use the same password-record schema.
+3. Correct-password and wrong-password derivations were tested with WebCrypto.
+4. Legacy SHA-256 passHash records remain accepted.
+5. Changing a legacy password upgrades the table to passAuth.
+
+Frozen lock-on verification
+---------------------------
+Compared v59.43 against the clean v59.42 baseline:
+
+- assets/3d-dice/: 87 files; aggregate hash identical.
+- rollVisualDice: source-identical.
+- showResolvedDice: source-identical.
+- weaponDamagePlan: source-identical.
+- rollWeaponDamage: source-identical.
+- rollDuality: source-identical.
+
+Exact current aggregate tree hash used by this validation:
+89077fa01071b334c66404e6c3e4320d2a045a0633feca5ca302065d491abfdd
+
+Known production boundary
+-------------------------
+The live production Firebase project was not modified or exercised by this validation.
+Cloud/session testing used a local or mocked browser harness.
+
+PBKDF2 prevents plaintext password storage and creates a practical entry gate, but
+client-side verification is not server-enforced authorization. A publicly readable
+Firestore session document can expose its verifier to offline guessing. Production
+privacy still requires authenticated membership, Firestore Security Rules, Keeper-role
+write restrictions and preferably Firebase App Check.
+
+Final package checks
+--------------------
+- ZIP integrity test passed with no compressed-data errors.
+- index.html is present at archive root.
+- no nested vf_v59_* release directory is present.
+- no obsolete v59.30-v59.42 release handover/validation documents are present.
+- current v59.43 summary, handover, validation and security documents are present.
+- final ZIP size is approximately 40 MB.
+- SHA-256 was generated from the final archive.

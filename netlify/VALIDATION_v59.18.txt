@@ -1,0 +1,134 @@
+VeilFarers Portal v59.18 - Validation Report
+Date: 2026-07-17
+
+Passed: 117
+Failed: 0
+
+Automated and structural checks:
+PASS | JSON parses: data/affiliations.json
+PASS | JSON parses: data/ancestries.json
+PASS | JSON parses: data/armor.json
+PASS | JSON parses: data/changelog.json
+PASS | JSON parses: data/classes.json
+PASS | JSON parses: data/communities.json
+PASS | JSON parses: data/features.json
+PASS | JSON parses: data/powers.json
+PASS | JSON parses: data/rules.json
+PASS | JSON parses: data/traits.json
+PASS | JSON parses: data/weapons.json
+PASS | JSON parses: download/downloads.json
+PASS | JSON parses: rules-data/aliases.json
+PASS | JSON parses: rules-data/downloads.json
+PASS | JSON parses: rules-data/feature-aliases.json
+PASS | JSON parses: rules-data/features-registry.json
+PASS | JSON parses: rules-data/manifest.json
+PASS | JSON parses: rules-data/migration-map.json
+PASS | JSON parses: rules-data/rules.json
+PASS | JSON parses: rules-data/search-index.json
+PASS | JSON parses: rules-data/alien-species/adversaries.json
+PASS | JSON parses: rules-data/alien-species/ancestry-lore.json
+PASS | JSON parses: rules-data/core/affiliations.json
+PASS | JSON parses: rules-data/core/ancestries.json
+PASS | JSON parses: rules-data/core/armor.json
+PASS | JSON parses: rules-data/core/augments.json
+PASS | JSON parses: rules-data/core/classes.json
+PASS | JSON parses: rules-data/core/communities.json
+PASS | JSON parses: rules-data/core/domains.json
+PASS | JSON parses: rules-data/core/drills.json
+PASS | JSON parses: rules-data/core/drone-grades.json
+PASS | JSON parses: rules-data/core/drone-modules.json
+PASS | JSON parses: rules-data/core/features.json
+PASS | JSON parses: rules-data/core/gear.json
+PASS | JSON parses: rules-data/core/powers.json
+PASS | JSON parses: rules-data/core/resolve-moves.json
+PASS | JSON parses: rules-data/core/subclasses.json
+PASS | JSON parses: rules-data/core/tech-tiers.json
+PASS | JSON parses: rules-data/core/traits.json
+PASS | JSON parses: rules-data/core/weapons.json
+PASS | JSON parses: rules-data/rust-and-steel/armor.json
+PASS | JSON parses: rules-data/rust-and-steel/augments.json
+PASS | JSON parses: rules-data/rust-and-steel/drone-grades.json
+PASS | JSON parses: rules-data/rust-and-steel/gear.json
+PASS | JSON parses: rules-data/rust-and-steel/weapons.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfHope/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfHope/theme.config.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfFear/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfFear/theme.config.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfDamage/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfDamage/theme.config.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfNeutral/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfNeutral/theme.config.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfBioHope/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfBioHope/theme.config.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfBioFear/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfBioFear/theme.config.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfBioDamage/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfBioDamage/theme.config.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfDiscarded/default.json
+PASS | JSON parses: assets/3d-dice/assets/themes/vfDiscarded/theme.config.json
+PASS | Local dependencies: armory.html
+PASS | Local dependencies: charsheet.html
+PASS | Local dependencies: downloads.html
+PASS | Local dependencies: feedback.html
+PASS | Local dependencies: index.html
+PASS | Local dependencies: items.html
+PASS | Local dependencies: keeper-tool.html
+PASS | Local dependencies: login.html
+PASS | Local dependencies: player-tool.html
+PASS | Local dependencies: admin.html
+PASS | normalizeSessionKey declared before use
+PASS | 3D overlay style selectable
+PASS | Tech/Biolum texture selector
+PASS | Biolum themes mapped
+PASS | 3D stage is application top layer
+PASS | 3D HUD 80 percent transparent
+PASS | 3D results 80 percent transparent
+PASS | Callout simulated rolling animation
+PASS | Discard fade delayed after settle
+PASS | Discard gray cue and labels
+PASS | One active callout per actor
+PASS | No six-callout slice cap
+PASS | History Reset button
+PASS | History Close button
+PASS | History reset clears active callouts
+PASS | History reset clears Time Travel snapshots
+PASS | Railgun tool-only d8+3 override retained
+PASS | Weapon Trait applied to attack
+PASS | Reliable +1 retained
+PASS | Massive extra die and lowest discard retained
+PASS | Firestore undefined sanitizer retained
+PASS | vfBioHope theme assets | default.json, theme.config.json, crystal-normal.png, crystal-specular.jpg, diffuse-dark.png
+PASS | vfBioHope theme config name
+PASS | vfBioFear theme assets | default.json, theme.config.json, crystal-normal.png, crystal-specular.jpg, diffuse-dark.png
+PASS | vfBioFear theme config name
+PASS | vfBioDamage theme assets | default.json, theme.config.json, crystal-normal.png, crystal-specular.jpg, diffuse-light.png
+PASS | vfBioDamage theme config name
+PASS | vfDiscarded theme assets | default.json, theme.config.json, crystal-normal.png, crystal-specular.jpg, diffuse-light.png
+PASS | vfDiscarded theme config name
+PASS | Dice module preloads all new themes
+PASS | Dice module supports overlay and box
+PASS | Corebook page count | 234
+PASS | Corebook bookmark count | 797
+PASS | Corebook metadata version | VeilFarers Corebook 11.1 RC3.2 PDF Candidate
+PASS | PDF anchor count | 797
+PASS | All 18 class anchors present | 18
+PASS | Contents page matches chapter anchor pages
+PASS | DOCX contains 18 inserted banner drawings | 18
+PASS | Approved one-point-smaller typography styles preserved
+PASS | Source Markdown class-emblem directives | 18
+PASS | Source Markdown editorial version updated
+PASS | Unchanged PDF: VeilFarers_Alien_Species_11.1-RC3-PDF-Candidate.pdf
+PASS | Unchanged PDF: VeilFarers_Keepers_Companion_11.1-RC3-PDF-Candidate.pdf
+PASS | Unchanged PDF: VeilFarers_Rust_and_Steel_11.1-RC3-PDF-Candidate.pdf
+PASS | Unchanged PDF: veilfarers_charsheet_fillable.pdf
+PASS | No embedded Firebase API key patterns
+
+Manual/render review:
+- Corebook pages rendered and inspected through full-book contact sheets.
+- All 18 Awakened/Sleeping class opening pages visibly show their emblem-and-ribbon banner.
+- Player, Awakened and Sleeping background families are visible in their correct ranges.
+- Contents page numbers match the rendered chapter anchors.
+
+Browser limitation:
+- The bundled @3d-dice module loaded and returned structured Hope/Fear/Damage results in headless Chromium.
+- This container exposed no WebGL context, so Dice Box correctly used its random-number fallback. Physical WebGL rendering, GPU performance, Firebase multi-browser callouts and Netlify Identity still require a Netlify Deploy Preview.

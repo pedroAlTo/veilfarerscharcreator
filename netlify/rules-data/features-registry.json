@@ -1,0 +1,4640 @@
+[
+  {
+    "id": "vf.feature.personal.armor.ablative",
+    "name": "Ablative",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "soak",
+    "timing": "Reaction",
+    "actionType": "Reaction",
+    "trigger": "After damage is calculated",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "charges": {
+        "type": "integer",
+        "default": 1
+      },
+      "valuationPerCharge": 1.25
+    },
+    "effect": "Spend one Ablative charge to reduce an incoming hit by one additional severity tier, even if no normal Armor Slots remain. Charges return only through professional repair.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1.25,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.rs.armor.battle-plate"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.assault",
+    "name": "Assault",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "combat-support",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on attack rolls made with weapons that have Automatic.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.core.armor.assault-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.breaching-shield",
+    "name": "Breaching Shield",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "defense",
+    "timing": "Reaction",
+    "actionType": "Reaction",
+    "trigger": "The wearer is targeted from the front",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Once per round",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Once per round, impose Disadvantage on one attack originating from the wearer’s front arc.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1.5,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.rs.armor.breacher-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.cloaking",
+    "name": "Cloaking",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "concealment",
+    "timing": "Activated",
+    "actionType": "Action",
+    "trigger": null,
+    "cost": {
+      "type": "stress",
+      "amount": 1
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Mark 1 Stress to become invisible until the end of your next turn, or until you attack or are hit.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 1.75
+    },
+    "sources": [
+      "vf.core.armor.infiltrator-suit",
+      "vf.core.armor.stealth-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.comms",
+    "name": "Comms",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "communications",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Integrated encrypted communications function to 10 km under normal conditions, or farther through a relay.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.armor.patrol-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.environmental",
+    "name": "Environmental",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "environmental-protection",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "While sealed and powered, the armor protects against vacuum, toxic atmospheres, and extreme temperatures. Breathable-air duration is listed by the item; if none is listed, use 24 hours.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0.5,
+      "control": 0,
+      "utility": 1,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.armor.marine-armor",
+      "vf.rs.armor.combat-shell",
+      "vf.rs.armor.voidsuit-combat",
+      "vf.rs.armor.voidsuit-light"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.flexible",
+    "name": "Flexible",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "mobility",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 Evasion while wearing this armor.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1.25,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.armor.frontier-vest",
+      "vf.core.armor.homestead-rig",
+      "vf.rs.armor.exo-mesh",
+      "vf.rs.armor.flexible-mesh-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.fortified",
+    "name": "Fortified",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "soak",
+    "timing": "On armor use",
+    "actionType": "None",
+    "trigger": "When marking an Armor Slot",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When you mark an Armor Slot, reduce the hit by two severity tiers instead of one.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 2.5,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2.5
+    },
+    "sources": [
+      "vf.core.armor.battle-armor",
+      "vf.core.armor.colony-defense-armor",
+      "vf.core.armor.riot-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.hardened",
+    "name": "Hardened",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "resistance",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "damageType": {
+        "type": "enum",
+        "values": [
+          "Physical",
+          "Energy",
+          "Void",
+          "Neural",
+          "All"
+        ],
+        "default": "Physical"
+      },
+      "allTypesValue": 4
+    },
+    "effect": "Take half damage, rounded down, from the listed damage type before comparing the damage to thresholds. Hardened (All) applies to every damage type.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 2,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.rs.armor.fortress-armor",
+      "vf.rs.armor.siege-plate"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.hazard-sealed",
+    "name": "Hazard-Sealed",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "environmental-protection",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "While sealed, the wearer is immune to contact- or inhalation-based poisons, diseases, and radiation exposure.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0.75,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.rs.armor.hazard-suit"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.heavy",
+    "name": "Heavy",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "mobility-drawback",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Suffer -1 Evasion while wearing this armor.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -1,
+      "total": -1
+    },
+    "sources": [
+      "vf.core.armor.battle-armor",
+      "vf.core.armor.riot-armor",
+      "vf.core.armor.salvage-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.id-display",
+    "name": "ID Display",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "authority",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The armor carries configurable, authenticated identification panels. Ordinary credential checks by a recognized authority succeed automatically unless the credentials are forged, revoked, or challenged by superior access.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.25,
+      "drawback": 0,
+      "total": 0.25
+    },
+    "sources": [
+      "vf.rs.armor.patrol-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.intimidating",
+    "name": "Intimidating",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "social",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on Presence Rolls to threaten, coerce, or frighten while the armor is visibly worn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.armor.enforcer-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.jury-rigged",
+    "name": "Jury-rigged",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "repair-tradeoff",
+    "timing": "On armor use",
+    "actionType": "None",
+    "trigger": "When marking an Armor Slot",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This armor may be repaired without a workshop. Whenever you mark an Armor Slot, roll d6; on 1, the Keeper introduces a malfunction until repaired.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": -0.5,
+      "total": 0.0
+    },
+    "sources": [
+      "vf.core.armor.salvage-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.life-support",
+    "name": "Life Support",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "environmental-protection",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "A self-contained atmosphere and thermal system protects the wearer in vacuum or hostile air for up to 24 hours on a full charge.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0.5,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.armor.environmental-suit",
+      "vf.core.armor.pilot-s-jacket"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.low-profile",
+    "name": "Low-Profile",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "stealth",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on Finesse Rolls to avoid visual detection while wearing this armor.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.armor.scout-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.massive",
+    "name": "Massive",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "soak-mobility",
+    "timing": "On armor use",
+    "actionType": "None",
+    "trigger": "When marking an Armor Slot",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Suffer -2 Evasion. Whenever you mark an Armor Slot, roll d6; on 5–6 reduce the hit by one additional severity tier.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1.25,
+      "control": 0,
+      "utility": 0,
+      "drawback": -1.5,
+      "total": -0.25
+    },
+    "sources": [
+      "vf.core.armor.siege-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.modular",
+    "name": "Modular",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "load-bearing",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Attach up to 3 Burden of equipment to the armor’s external hardpoints. Attached equipment remains accessible and does not occupy the wearer’s hands, but still counts toward total Burden.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.armor.combat-shell",
+      "vf.rs.armor.plate-carrier"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.pocketed",
+    "name": "Pocketed",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "load-bearing",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Carry two additional small items without increasing Burden.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.armor.combat-jacket",
+      "vf.rs.armor.frontier-jacket"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.powered",
+    "name": "Powered",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "servo",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Integrated servos negate the Evasion penalty from Heavy or Very Heavy. If power is lost, the wearer suffers -3 on Agility Rolls until exiting or restoring power.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.armor.industrial-exosuit",
+      "vf.core.armor.power-armor",
+      "vf.core.armor.powered-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.resilient",
+    "name": "Resilient",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "soak",
+    "timing": "On armor use",
+    "actionType": "None",
+    "trigger": "Before marking the last Armor Slot",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Before marking your final available Armor Slot, roll d6. On 6, ignore the hit and do not mark the slot.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0.75,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.armor.combat-armor",
+      "vf.core.armor.composite-armor",
+      "vf.core.armor.marine-armor",
+      "vf.core.armor.security-armor",
+      "vf.core.armor.special-forces-suit"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.self-repair",
+    "name": "Self-Repair",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "repair",
+    "timing": "During rest",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Once per rest",
+    "resistance": null,
+    "parameters": {},
+    "effect": "During any Short or Long Rest, automatically restore one marked Armor Slot in addition to other repairs.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0.75,
+      "control": 0,
+      "utility": 0.25,
+      "drawback": 0,
+      "total": 1.0
+    },
+    "sources": [
+      "vf.core.armor.mesh-armor",
+      "vf.core.armor.smart-fabric-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.servo-assisted",
+    "name": "Servo-Assisted",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "servo",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on Strength Rolls involving physical exertion and for carrying capacity. Reduce the armor’s effective Burden by 1.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 1,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.rs.armor.exo-mesh"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.silent",
+    "name": "Silent",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "stealth",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +2 on Finesse Rolls to avoid detection by sound while wearing this armor.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.rs.armor.scout-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.social",
+    "name": "Social",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "concealment",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The armor appears to be appropriate formal or everyday clothing. It passes visual inspection as unarmored, though a pat-down or scanner can reveal it.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.armor.reinforced-clothing"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.tactical",
+    "name": "Tactical",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "sensors",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on Instinct Rolls for perception and Spotlight contests.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.armor.tactical-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.thermoptic-camouflage",
+    "name": "Thermoptic Camouflage",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "concealment",
+    "timing": "Activated",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "While stationary or moving at half speed, the wearer is effectively invisible to visual detection. At full speed or after a violent action, visual-detection Rolls against the wearer have Disadvantage instead. The system runs for 1 hour, then requires 10 minutes to recharge.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1,
+      "control": 0,
+      "utility": 1.5,
+      "drawback": 0,
+      "total": 2.5
+    },
+    "sources": [
+      "vf.rs.armor.stealth-suit"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.thruster",
+    "name": "Thruster",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "mobility",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Move normally in zero gravity and gain Advantage on Finesse (Pilot/Navigate) or Agility Rolls for zero-gravity maneuvering.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.rs.armor.voidsuit-combat"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.thruster-pack",
+    "name": "Thruster Pack",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "mobility",
+    "timing": "Activated",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Provides powered movement in zero gravity for up to 4 hours of maneuvering and limited atmospheric hover for up to 1 minute at a time, with 30 minutes of total continuous thrust.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 1.25,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.rs.armor.void-hardsuit"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.very-heavy",
+    "name": "Very Heavy",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "mobility-drawback",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Suffer -2 Evasion and -1 on all Agility Rolls. Powered servos are required to move normally and do not remove these penalties.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -1.5,
+      "total": -1.5
+    },
+    "sources": [
+      "vf.core.armor.industrial-exosuit",
+      "vf.core.armor.power-armor",
+      "vf.core.armor.siege-armor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.armor.weather-proof",
+    "name": "Weather-Proof",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "armor"
+    ],
+    "category": "environmental-protection",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Ignore ordinary and severe planetary weather hazards, including acid rain, sandstorms, and extreme heat or cold. This does not protect against vacuum.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0.5,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.rs.armor.frontier-jacket"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.accurate",
+    "name": "Accurate",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "accuracy",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": "When making an attack at Far or Very Far range",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on attack rolls made at Far or Very Far range.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.core.weapon.sniper-rifle",
+      "vf.rs.weapon.beam-sniper",
+      "vf.rs.weapon.combat-laser-pistol",
+      "vf.rs.weapon.designated-marksman",
+      "vf.rs.weapon.duelist-pistol",
+      "vf.rs.weapon.heavy-laser",
+      "vf.rs.weapon.heavy-sniper-rifle",
+      "vf.rs.weapon.hunting-rifle",
+      "vf.rs.weapon.laser-rifle",
+      "vf.rs.weapon.long-range-battle-rifle",
+      "vf.rs.weapon.marksman-rifle",
+      "vf.rs.weapon.phantom-rifle",
+      "vf.rs.weapon.photon-lance",
+      "vf.rs.weapon.quantum-laser",
+      "vf.rs.weapon.smart-rifle",
+      "vf.rs.weapon.sporting-rifle",
+      "vf.rs.weapon.sun-blade",
+      "vf.rs.weapon.sun-ray-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.adaptive",
+    "name": "Adaptive",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage-control",
+    "timing": "Activated",
+    "actionType": "Maneuver",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Once per scene",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Once per scene, change this weapon’s damage type to Physical, Energy, Void, or Neural until changed again.",
+    "interactions": [
+      "Changing damage type changes its standard Penetration but does not add tags such as Thermal or Poison."
+    ],
+    "balance": {
+      "offense": 0.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 1.0
+    },
+    "sources": [
+      "vf.core.weapon.nanite-gauntlet"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.anchoring",
+    "name": "Anchoring",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Strength",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "If the hit deals damage or applies a non-damage payload, the target cannot take a Move action on its next turn unless it passes the resistance roll.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.rs.weapon.compliance-prod",
+      "vf.rs.weapon.compliance-rifle",
+      "vf.rs.weapon.cryo-gun",
+      "vf.rs.weapon.graviton-pistol",
+      "vf.rs.weapon.graviton-snare",
+      "vf.rs.weapon.tangle-web"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.anti-psionic",
+    "name": "Anti-Psionic",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "specialist",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Deal +1d6 damage against psionic entities and creatures currently using Veil powers. While the weapon is drawn, psychic abilities targeting the wielder have Disadvantage.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0.5,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.rs.weapon.neural-disruptor",
+      "vf.rs.weapon.null-blade"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.arc",
+    "name": "Arc",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The attack arcs to a second target within Very Close of the first. The second target takes half the rolled damage, rounded down.",
+    "interactions": [
+      "The secondary target is not attacked separately; immunities and damage reduction apply normally."
+    ],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.rs.weapon.arc-whip",
+      "vf.rs.weapon.ion-storm-pistol",
+      "vf.rs.weapon.storm-rifle",
+      "vf.rs.weapon.tesla-coil-gun"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.arcing-shot",
+    "name": "Arcing Shot",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "indirect-fire",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Ignore cover when there is a clear vertical or indirect trajectory to the target.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.25,
+      "drawback": 0,
+      "total": 1.0
+    },
+    "sources": [
+      "vf.core.weapon.grenade-launcher"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.area",
+    "name": "Area",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area-tag",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "shape": "Defined by the item or its other features."
+    },
+    "effect": "The effect applies to every creature in its listed area, including allies, rather than to a single target.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.core.weapon.concussion-grenade-3"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.armor-piercing",
+    "name": "Armor Piercing",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "armor-pressure",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When the attack deals damage",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "rating": {
+        "type": "integer",
+        "default": 1,
+        "minimum": 1
+      },
+      "valuationPerRating": 1.0
+    },
+    "effect": "Reduce the target’s maximum Armor Slots by the listed rating until its next Long Rest. Multiple applications stack.",
+    "interactions": [
+      "This is temporary maximum-slot reduction, not direct damage and not the same as Shredding."
+    ],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.core.weapon.flechette-pistol",
+      "vf.core.weapon.gauss-rifle",
+      "vf.core.weapon.magnetic-accelerator",
+      "vf.core.weapon.mono-blade",
+      "vf.core.weapon.plasma-rapier",
+      "vf.rs.weapon.accelerator-rifle",
+      "vf.rs.weapon.acid-sprayer",
+      "vf.rs.weapon.boarding-axe",
+      "vf.rs.weapon.duel-rapier",
+      "vf.rs.weapon.flechette-storm",
+      "vf.rs.weapon.gauss-carbine",
+      "vf.rs.weapon.handheld-railgun",
+      "vf.rs.weapon.mass-driver-pistol",
+      "vf.rs.weapon.mining-pick",
+      "vf.rs.weapon.molecular-sword",
+      "vf.rs.weapon.personal-defense-weapon",
+      "vf.rs.weapon.siege-carbine",
+      "vf.rs.weapon.tactical-blade",
+      "vf.rs.weapon.trench-blade",
+      "vf.rs.weapon.vibroknife"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.automatic",
+    "name": "Automatic",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "multi-target",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": "After a successful attack",
+    "cost": {
+      "type": "stress",
+      "amount": 1
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After a successful attack, mark 1 Stress to apply the same attack result to a second valid target within range and Very Close of the primary target. Roll damage separately.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.assault-rifle",
+      "vf.core.weapon.chainglaive",
+      "vf.core.weapon.machine-gun",
+      "vf.rs.weapon.assault-laser",
+      "vf.rs.weapon.machine-pistol",
+      "vf.rs.weapon.pulse-carbine",
+      "vf.rs.weapon.storm-rifle",
+      "vf.rs.weapon.submachine-gun",
+      "vf.rs.weapon.tactical-assault-rifle",
+      "vf.rs.weapon.volkov-suppression-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.biometric",
+    "name": "Biometric",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "security",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The weapon functions only for registered users. Bypassing or rewriting the lock requires a Knowledge (Tech) Roll, DC 15.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.25,
+      "drawback": 0,
+      "total": 0.25
+    },
+    "sources": [
+      "vf.rs.weapon.interface-blade",
+      "vf.rs.weapon.smart-beam-rifle",
+      "vf.rs.weapon.smart-pistol",
+      "vf.rs.weapon.smart-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.blast",
+    "name": "Blast",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "radiusBand": {
+        "type": "rangeBand",
+        "default": "Very Close"
+      }
+    },
+    "effect": "The primary target takes normal damage. Every other creature in the listed radius takes the same damage; allies are affected. A creature behind Total Cover from the impact is unaffected.",
+    "interactions": [],
+    "balance": {
+      "offense": 2,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 1.75
+    },
+    "sources": [
+      "vf.rs.weapon.gravitic-breach-hammer",
+      "vf.rs.weapon.micro-missile-pistol",
+      "vf.rs.weapon.singularity-pistol",
+      "vf.rs.weapon.stellar-fragment",
+      "vf.rs.weapon.void-projector"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.bleeding",
+    "name": "Bleeding",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "persistent-damage",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When the attack causes HP loss",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "At the end of each of its turns, the target marks 1 HP directly until a creature spends an Action and succeeds on a Knowledge (Medicine) Roll, DC 10, or combat ends.",
+    "interactions": [
+      "Bleeding ignores thresholds and Armor Slots. Creatures without circulatory systems may be immune."
+    ],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.rs.weapon.flechette-storm",
+      "vf.rs.weapon.gut-ripper",
+      "vf.rs.weapon.monofilament-whip",
+      "vf.rs.weapon.scar-axe"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.brittle",
+    "name": "Brittle",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "setup",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When the attack causes HP loss",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "A target that loses HP becomes Vulnerable to the next instance of Physical damage it takes; that hit deals +1d6 damage, then Brittle ends.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.core.weapon.cryo-projector"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.brutal",
+    "name": "Brutal",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Reroll every damage die that shows 1 once and keep the new result.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.boarding-axe",
+      "vf.rs.weapon.bulwark-rifle",
+      "vf.rs.weapon.chain-glaive",
+      "vf.rs.weapon.combat-shotgun",
+      "vf.rs.weapon.gut-ripper",
+      "vf.rs.weapon.impact-gauntlets",
+      "vf.rs.weapon.scar-axe",
+      "vf.rs.weapon.trench-blade",
+      "vf.rs.weapon.trench-maul"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.burst-fire",
+    "name": "Burst Fire",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage",
+    "timing": "On damage roll",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Whenever a damage die rolls its maximum value, roll one additional die of the same size and add it. Additional dice do not explode again.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.pulse-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.charge-up",
+    "name": "Charge-Up",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "requirement",
+    "timing": "Activated",
+    "actionType": "Action",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Spend an Action charging the weapon. It can be fired on a later turn; the charge is lost if the wielder takes damage, is forcibly moved, or performs another Action before firing.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -1.5,
+      "total": -1.5
+    },
+    "sources": [
+      "vf.rs.weapon.accelerator-rifle",
+      "vf.rs.weapon.handheld-railgun"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.cleave",
+    "name": "Cleave",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "multi-target",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful Melee hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Once per attack",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After a successful Melee hit, immediately make one additional attack against a different target within this weapon’s reach.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.chainglaive"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.collapsible",
+    "name": "Collapsible",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "concealment",
+    "timing": "Activated",
+    "actionType": "Maneuver",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "While collapsed, the weapon is Concealable and cannot attack. Deploying or collapsing it is part of a weapon swap when the fiction permits; otherwise it is a Maneuver.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.phantom-rifle",
+      "vf.rs.weapon.retractable-blade",
+      "vf.rs.weapon.shadow-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.concealable",
+    "name": "Concealable",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "concealment",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "While concealed on the body, this weapon does not count toward Burden. A routine search finds it only on a successful Instinct Roll, DC 15.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.core.weapon.holdout-blaster",
+      "vf.rs.weapon.ghost-wire",
+      "vf.rs.weapon.hold-out-pistol",
+      "vf.rs.weapon.holdout-laser",
+      "vf.rs.weapon.microwave-projector",
+      "vf.rs.weapon.phantom-beam",
+      "vf.rs.weapon.retractable-blade",
+      "vf.rs.weapon.service-combat-knife",
+      "vf.rs.weapon.shadow-fang",
+      "vf.rs.weapon.shock-knuckles",
+      "vf.rs.weapon.tactical-blade",
+      "vf.rs.weapon.utility-knife",
+      "vf.rs.weapon.whisper-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.cone",
+    "name": "Cone",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": "When making the attack",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "rangeBand": {
+        "type": "rangeBand",
+        "default": "Very Close"
+      }
+    },
+    "effect": "Roll once and apply the attack to every creature in a Very Close, approximately 60-degree cone. Allies in the cone are affected.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.rs.weapon.sonic-disruptor"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.continuous",
+    "name": "Continuous",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "delayed-stress",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The target marks 1 Stress at the start of its next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.beam-cannon",
+      "vf.core.weapon.cryo-projector",
+      "vf.core.weapon.flamethrower"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.curse",
+    "name": "Curse",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "artifact-drawback",
+    "timing": "On use",
+    "actionType": "None",
+    "trigger": "When the weapon is used",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Every use",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Whenever the weapon is used, the Keeper gains 1 Fear. On a Fear-dominant roll involving the weapon, the Keeper may also manifest the item’s stated curse.",
+    "interactions": [
+      "Each cursed artifact must describe the fiction of its curse; this property supplies the common mechanical trigger."
+    ],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.75,
+      "total": -0.75
+    },
+    "sources": [
+      "vf.rs.weapon.paradox-edge",
+      "vf.rs.weapon.stellar-fragment",
+      "vf.rs.weapon.the-silence",
+      "vf.rs.weapon.void-shard-blade"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.cutting",
+    "name": "Cutting",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "armor-bypass",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When damage is dealt",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Armor Slots cannot be spent to reduce this instance of damage.",
+    "interactions": [],
+    "balance": {
+      "offense": 2,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.core.weapon.plasma-cutter"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.defensive",
+    "name": "Defensive",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "defense",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "bonus": {
+        "type": "integer",
+        "default": 1
+      },
+      "valuationPerPoint": 0.75
+    },
+    "effect": "Gain the listed Evasion bonus against Melee attacks while wielding this weapon.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.rs.weapon.breaching-shield",
+      "vf.rs.weapon.combat-sword",
+      "vf.rs.weapon.duel-rapier",
+      "vf.rs.weapon.line-breaker",
+      "vf.rs.weapon.main-gauche",
+      "vf.rs.weapon.quarterstaff",
+      "vf.rs.weapon.sun-blade"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.deployable-cover",
+    "name": "Deployable Cover",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "deployable",
+    "timing": "Activated",
+    "actionType": "Action",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Once deployed at a time",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Deploy a one-way energy wall approximately 5 m × 3 m. It grants Full Cover from one side and has 10 HP and 6 Armor Slots. It lasts for the scene or until destroyed.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1.5,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 2.0
+    },
+    "sources": [
+      "vf.core.weapon.barrier-emitter"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.devastating",
+    "name": "Devastating",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage",
+    "timing": "On severe hit",
+    "actionType": "None",
+    "trigger": "When a hit is Severe",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When damage equals or exceeds the target’s Severe Threshold, the hit marks 1 additional HP.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.core.weapon.fusion-cannon",
+      "vf.rs.weapon.gravitic-breach-hammer",
+      "vf.rs.weapon.handheld-railgun"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.disintegrating",
+    "name": "Disintegrating",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "destruction",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When a damage die rolls its maximum",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When any damage die rolls its maximum value, the target loses one carried item or one maximum Armor Slot until repaired, Keeper’s choice. A target reduced to 0 HP leaves no recoverable body unless protected by Precursor-grade material.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.singularity-rifle",
+      "vf.core.weapon.void-cleaver",
+      "vf.core.weapon.void-pistol",
+      "vf.rs.weapon.disintegrator-rifle",
+      "vf.rs.weapon.void-shard-blade"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.disorienting",
+    "name": "Disorienting",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On effect",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The affected creature is Dazed until the end of its next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0.75,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.resonance-disperser"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.dispersal-wave",
+    "name": "Dispersal Wave",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area-control",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Presence",
+      "dc": 15
+    },
+    "parameters": {},
+    "effect": "The effect fills a 5 m cone. Each creature in the cone makes a Presence Reaction Roll, DC 15; on a failure it suffers the weapon’s listed effect.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.5,
+      "defense": 0,
+      "control": 1,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.resonance-disperser"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.disruptor",
+    "name": "Disruptor",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "specialist",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Deal double damage to Shields and Synthetic targets, and half damage, rounded down, to organic HP.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.disruptor-maul",
+      "vf.rs.weapon.emp-pistol",
+      "vf.rs.weapon.interface-blade",
+      "vf.rs.weapon.ion-disruptor-rifle",
+      "vf.rs.weapon.ion-storm-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.emp",
+    "name": "EMP",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "system-control",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Knowledge (Tech)",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "Electronic devices within Very Close of the target, including augmentations, are disabled until the end of their operator’s next turn unless their operator passes a Knowledge (Tech) Reaction Roll against the weapon’s Feature DC. Allies are affected.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.rs.weapon.disruptor-maul",
+      "vf.rs.weapon.emp-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.energy",
+    "name": "Energy",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage-tag",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This is an Energy weapon. Energy damage treats the target’s Major and Severe Thresholds as 2 lower. The damage line remains the authoritative damage type.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0
+    },
+    "sources": [
+      "vf.core.weapon.energy-dagger",
+      "vf.rs.weapon.annihilation-beam",
+      "vf.rs.weapon.assault-laser",
+      "vf.rs.weapon.beam-sniper",
+      "vf.rs.weapon.bulwark-pistol",
+      "vf.rs.weapon.civilian-pulse-gun",
+      "vf.rs.weapon.combat-laser-pistol",
+      "vf.rs.weapon.disintegrator-rifle",
+      "vf.rs.weapon.graviton-pistol",
+      "vf.rs.weapon.heavy-laser",
+      "vf.rs.weapon.hellfire-pistol",
+      "vf.rs.weapon.holdout-laser",
+      "vf.rs.weapon.industrial-cutter",
+      "vf.rs.weapon.inferno-cannon",
+      "vf.rs.weapon.ion-disruptor-rifle",
+      "vf.rs.weapon.ion-storm-pistol",
+      "vf.rs.weapon.laser-carbine",
+      "vf.rs.weapon.laser-pistol",
+      "vf.rs.weapon.laser-rifle",
+      "vf.rs.weapon.neural-disruptor",
+      "vf.rs.weapon.pacification-beam",
+      "vf.rs.weapon.particle-beam-rifle",
+      "vf.rs.weapon.phantom-beam",
+      "vf.rs.weapon.photon-lance",
+      "vf.rs.weapon.plasma-edge",
+      "vf.rs.weapon.pulse-carbine",
+      "vf.rs.weapon.quantum-laser",
+      "vf.rs.weapon.shadow-rifle",
+      "vf.rs.weapon.siege-laser",
+      "vf.rs.weapon.singularity-pistol",
+      "vf.rs.weapon.smart-beam-rifle",
+      "vf.rs.weapon.stun-blaster",
+      "vf.rs.weapon.sun-ray-pistol",
+      "vf.rs.weapon.thermal-pistol",
+      "vf.rs.weapon.thermal-plasma-pistol",
+      "vf.rs.weapon.thermal-plasma-rifle",
+      "vf.rs.weapon.void-projector"
+    ],
+    "notes": "Descriptor/tag entry. It carries no additional value when the damage line already says Energy."
+  },
+  {
+    "id": "vf.feature.personal.weapon.energy-surge",
+    "name": "Energy Surge",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "critical",
+    "timing": "On critical hit",
+    "actionType": "None",
+    "trigger": "On a Critical Hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Deal +1d6 Energy damage and the target marks 1 Stress.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.plasma-infused-katana"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.entangling",
+    "name": "Entangling",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Strength",
+      "dc": "Feature DC",
+      "timing": "Action to escape"
+    },
+    "parameters": {},
+    "effect": "The target becomes Restrained. It or an adjacent creature may spend an Action and pass a Strength Roll against the item’s Feature DC to end the condition.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1.5,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.net-launcher",
+      "vf.core.weapon.tangle-field-grenade-3"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.entrapping",
+    "name": "Entrapping",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Strength or Knowledge (Tech)",
+      "dc": "Feature DC",
+      "timing": "External Action"
+    },
+    "parameters": {},
+    "effect": "The target becomes Incapacitated. Another creature must spend an Action and pass a Strength or Knowledge (Tech) Roll against the item’s Feature DC to free it.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 2,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.core.weapon.stasis-foam-projector"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.existence",
+    "name": "Existence",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "precursor",
+    "timing": "Special",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This Precursor effect alters the target’s state, identity, location, or continuity instead of dealing ordinary damage. The item’s own text and the Keeper define the exact alteration.",
+    "interactions": [],
+    "balance": {
+      "offense": 2,
+      "defense": 0,
+      "control": 0,
+      "utility": 1,
+      "drawback": 0,
+      "total": 3
+    },
+    "sources": [
+      "vf.core.weapon.precursor-beam-caster",
+      "vf.core.weapon.reality-shaper"
+    ],
+    "notes": "Story-gated. Never treat this as a generic permission to erase a player character without consent and established stakes."
+  },
+  {
+    "id": "vf.feature.personal.weapon.explosive",
+    "name": "Explosive",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Agility",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "Every creature within Very Close of the impact point makes an Agility Reaction Roll against the item’s Feature DC. On a failure, it takes 1d6 Physical damage; on a success, half damage. Total Cover blocks the blast.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 1.0
+    },
+    "sources": [
+      "vf.core.weapon.concussion-grenade-3",
+      "vf.core.weapon.frag-grenade-3",
+      "vf.core.weapon.grenade-launcher",
+      "vf.core.weapon.rocket-launcher",
+      "vf.core.weapon.static-pulse-grenade-2",
+      "vf.core.weapon.tangle-field-grenade-3",
+      "vf.core.weapon.void-grenade-1"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.finesse",
+    "name": "Finesse",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "trait-flexibility",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "You may use Finesse instead of the weapon’s listed attack Trait.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.arc-whip",
+      "vf.rs.weapon.duel-rapier",
+      "vf.rs.weapon.duelist-pistol",
+      "vf.rs.weapon.ghost-wire",
+      "vf.rs.weapon.interface-blade",
+      "vf.rs.weapon.main-gauche",
+      "vf.rs.weapon.marksman-rifle",
+      "vf.rs.weapon.molecular-sword",
+      "vf.rs.weapon.monofilament-whip",
+      "vf.rs.weapon.neuro-whip",
+      "vf.rs.weapon.null-blade",
+      "vf.rs.weapon.paradox-edge",
+      "vf.rs.weapon.phase-sabre",
+      "vf.rs.weapon.photon-lance",
+      "vf.rs.weapon.plasma-edge",
+      "vf.rs.weapon.sedation-blade",
+      "vf.rs.weapon.shadow-fang",
+      "vf.rs.weapon.sun-blade",
+      "vf.rs.weapon.sun-ray-pistol",
+      "vf.rs.weapon.void-shard-blade"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.fragile",
+    "name": "Fragile",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "condition-drawback",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Whenever this weapon would degrade one step, it degrades two steps instead.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.75,
+      "total": -0.75
+    },
+    "sources": [
+      "vf.rs.weapon.molecular-sword"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.garrote",
+    "name": "Garrote",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "ambush",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This weapon may attack only a Surprised or unaware target unless used as part of a grapple. Against a Surprised target, a hit is automatically a Critical Hit.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.rs.weapon.ghost-wire"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.guided",
+    "name": "Guided",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "tracking",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "You may attack a target you are aware of within range without direct line of sight. Guided attacks ignore cover except a completely sealed barrier or other Total Cover that leaves no viable path.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.micro-missile-launcher",
+      "vf.core.weapon.smart-launcher",
+      "vf.rs.weapon.micro-missile-pistol",
+      "vf.rs.weapon.seeker-sniper",
+      "vf.rs.weapon.smart-beam-rifle",
+      "vf.rs.weapon.smart-pistol",
+      "vf.rs.weapon.smart-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.heavy",
+    "name": "Heavy",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "requirement",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "A wielder with Strength 0 or lower has Disadvantage on attacks with this weapon. Its Burden still applies normally.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.75,
+      "total": -0.75
+    },
+    "sources": [
+      "vf.rs.weapon.annihilation-beam",
+      "vf.rs.weapon.beam-sniper",
+      "vf.rs.weapon.bulwark-rifle",
+      "vf.rs.weapon.gravitic-breach-hammer",
+      "vf.rs.weapon.handheld-railgun",
+      "vf.rs.weapon.heavy-sniper-rifle",
+      "vf.rs.weapon.power-fist",
+      "vf.rs.weapon.seeker-sniper",
+      "vf.rs.weapon.siege-laser",
+      "vf.rs.weapon.singularity-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.high-recoil",
+    "name": "High-Recoil",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "requirement",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": "After each attack",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After each attack with this weapon, a wielder with Strength 0 or lower marks 1 Stress.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.5,
+      "total": -0.5
+    },
+    "sources": [
+      "vf.rs.weapon.heavy-pistol",
+      "vf.rs.weapon.mass-driver-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.ignite",
+    "name": "Ignite",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "persistent-damage",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When the attack causes HP loss",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "A target that loses HP is On Fire. At the start of its turn it must mark 1 Stress or take 1d4 Energy damage. It or an adjacent creature may spend an Action to extinguish the fire.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.flamethrower"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.intimidating",
+    "name": "Intimidating",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "social",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on Presence Rolls to threaten, coerce, or frighten while the weapon is visibly wielded.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.scar-axe",
+      "vf.rs.weapon.scrap-cannon",
+      "vf.rs.weapon.volkov-suppression-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.knockdown",
+    "name": "Knockdown",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": "After a successful hit",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Agility or Strength",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "The target must pass an Agility or Strength Reaction Roll, its choice, against the weapon’s Feature DC or become Prone.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.rs.weapon.gravitic-breach-hammer",
+      "vf.rs.weapon.graviton-pistol",
+      "vf.rs.weapon.impact-gauntlets",
+      "vf.rs.weapon.line-breaker",
+      "vf.rs.weapon.mass-driver-pistol",
+      "vf.rs.weapon.power-fist",
+      "vf.rs.weapon.siege-hammer",
+      "vf.rs.weapon.trench-maul",
+      "vf.rs.weapon.war-hammer"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.lightweight",
+    "name": "Lightweight",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "burden",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This weapon does not count toward Burden. A one-handed Lightweight weapon may be used comfortably in the off hand, but does not grant an extra attack.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.energy-dagger",
+      "vf.rs.weapon.combat-laser-pistol",
+      "vf.rs.weapon.duel-rapier",
+      "vf.rs.weapon.emp-pistol",
+      "vf.rs.weapon.gut-ripper",
+      "vf.rs.weapon.hatchet",
+      "vf.rs.weapon.hellfire-pistol",
+      "vf.rs.weapon.hold-out-pistol",
+      "vf.rs.weapon.holdout-laser",
+      "vf.rs.weapon.impact-gauntlets",
+      "vf.rs.weapon.ion-storm-pistol",
+      "vf.rs.weapon.laser-pistol",
+      "vf.rs.weapon.light-pistol",
+      "vf.rs.weapon.machine-pistol",
+      "vf.rs.weapon.main-gauche",
+      "vf.rs.weapon.micro-missile-pistol",
+      "vf.rs.weapon.pacifier-pistol",
+      "vf.rs.weapon.phantom-beam",
+      "vf.rs.weapon.retractable-blade",
+      "vf.rs.weapon.sedation-blade",
+      "vf.rs.weapon.service-combat-knife",
+      "vf.rs.weapon.service-pistol",
+      "vf.rs.weapon.shadow-fang",
+      "vf.rs.weapon.shock-knuckles",
+      "vf.rs.weapon.smart-pistol",
+      "vf.rs.weapon.sun-ray-pistol",
+      "vf.rs.weapon.survival-tomahawk",
+      "vf.rs.weapon.tactical-blade",
+      "vf.rs.weapon.the-silence",
+      "vf.rs.weapon.thermal-pistol",
+      "vf.rs.weapon.utility-knife",
+      "vf.rs.weapon.vibroknife",
+      "vf.rs.weapon.whisper-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.loud",
+    "name": "Loud",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "stealth-drawback",
+    "timing": "On use",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Using this weapon alerts everyone in the Zone, and potentially farther at Keeper discretion. Its sound cannot be removed by a modification.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.5,
+      "total": -0.5
+    },
+    "sources": [
+      "vf.rs.weapon.chain-glaive",
+      "vf.rs.weapon.hellfire-pistol",
+      "vf.rs.weapon.scrap-cannon",
+      "vf.rs.weapon.sonic-disruptor",
+      "vf.rs.weapon.volkov-suppression-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.massive",
+    "name": "Massive",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage-requirement",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The wielder suffers -1 Evasion. On a hit, roll one additional normal damage die and discard the lowest normal damage die before totaling damage.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.75,
+      "total": 0.25
+    },
+    "sources": [
+      "vf.core.weapon.mass-driver-rifle",
+      "vf.core.weapon.railgun",
+      "vf.core.weapon.shrapnel-cannon"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.melting",
+    "name": "Melting",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "persistent-damage",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When the attack causes HP loss",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "A target that loses HP takes 1d6 damage of the weapon’s damage type at the start of each of its next two turns. An appropriate cooling, neutralizing, or decontamination Action ends the effect early.",
+    "interactions": [],
+    "balance": {
+      "offense": 2,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.rs.weapon.acid-sprayer",
+      "vf.rs.weapon.hellfire-pistol",
+      "vf.rs.weapon.industrial-cutter",
+      "vf.rs.weapon.microwave-projector",
+      "vf.rs.weapon.plasma-edge",
+      "vf.rs.weapon.thermal-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.messy",
+    "name": "Messy",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "evidence-tag",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This weapon leaves unmistakable residue, damage, or biological evidence. Concealing that a confrontation occurred is normally impossible without extensive cleanup.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": -0.25
+    },
+    "sources": [
+      "vf.core.weapon.stasis-foam-projector"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.mind-link",
+    "name": "Mind Link",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "targeting",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This Psionic weapon may target a creature the wielder is aware of within range even without line of sight.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.core.weapon.thought-caster"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.mind-lock",
+    "name": "Mind-Lock",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On stress",
+    "actionType": "None",
+    "trigger": "When the target marks Stress from this weapon",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Presence",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "When this weapon causes a target to mark Stress, that target makes a Presence Reaction Roll against the weapon’s Feature DC. On a failure, it may only Move on its next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1.25,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.neural-scrambler"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.non-lethal",
+    "name": "Non-Lethal",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage-mode",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "By default, this weapon cannot reduce a target below 1 HP. A target held at 1 HP is Incapacitated rather than Dying. The attacker may declare lethal use before rolling, losing this protection for that attack.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.club-baton",
+      "vf.rs.weapon.compliance-prod",
+      "vf.rs.weapon.compliance-rifle",
+      "vf.rs.weapon.cryo-gun",
+      "vf.rs.weapon.graviton-snare",
+      "vf.rs.weapon.nerve-agent-sprayer",
+      "vf.rs.weapon.neuro-whip",
+      "vf.rs.weapon.pacification-beam",
+      "vf.rs.weapon.pacifier-pistol",
+      "vf.rs.weapon.sedation-blade",
+      "vf.rs.weapon.stun-baton",
+      "vf.rs.weapon.stun-blaster",
+      "vf.rs.weapon.tangle-web"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.overheating",
+    "name": "Overheating",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "condition-drawback",
+    "timing": "After attack",
+    "actionType": "None",
+    "trigger": "After each attack",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After each attack, roll d6. On 1–2, either mark 1 Stress to force cooling or spend an Action cooling before the weapon can attack again.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.75,
+      "total": -0.75
+    },
+    "sources": [
+      "vf.core.weapon.plasma-cannon",
+      "vf.core.weapon.plasma-pistol",
+      "vf.core.weapon.plasma-rapier",
+      "vf.core.weapon.plasma-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.paired",
+    "name": "Paired",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "dual-wield",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "bonus": {
+        "type": "integer",
+        "default": 0
+      },
+      "valuationPerPoint": 0.5
+    },
+    "effect": "When wielding two weapons that both have Paired, add the listed Paired bonus from one of them to the damage of an attack made with either weapon. Only one Paired bonus applies per attack.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.25
+    },
+    "sources": [
+      "vf.core.weapon.combat-knife",
+      "vf.core.weapon.mono-blade",
+      "vf.core.weapon.plasma-cutter",
+      "vf.core.weapon.shock-baton"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.phasing",
+    "name": "Phasing",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "void-penetration",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The weapon deals Void damage, ignores cover on ranged attacks, and ignores one Armor Slot on a hit. Its Void damage also applies the normal -4 Threshold Penetration. A Void Ward cancels the Penetration but not the ignored Armor Slot unless it explicitly cancels the whole feature.",
+    "interactions": [],
+    "balance": {
+      "offense": 2.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2.25
+    },
+    "sources": [
+      "vf.core.weapon.phase-blade",
+      "vf.core.weapon.phase-pistol",
+      "vf.core.weapon.phase-rifle",
+      "vf.rs.weapon.particle-beam-rifle",
+      "vf.rs.weapon.phase-reaver",
+      "vf.rs.weapon.phase-sabre",
+      "vf.rs.weapon.quantum-laser",
+      "vf.rs.weapon.void-shard-blade"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.poison",
+    "name": "Poison",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "stress",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": "When the attack causes HP loss",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When the attack causes HP loss, the target marks 1 Stress. A Poison (Special) item replaces this effect with its own text.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.core.weapon.needle-gun",
+      "vf.rs.weapon.nerve-agent-sprayer",
+      "vf.rs.weapon.sedation-blade",
+      "vf.rs.weapon.shadow-fang",
+      "vf.rs.weapon.the-silence"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.powerful",
+    "name": "Powerful",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This weapon’s listed damage die is one size larger than the standard die for its chassis. The damage line already includes this increase.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0
+    },
+    "sources": [
+      "vf.core.weapon.battle-rifle"
+    ],
+    "notes": "Construction descriptor; no additional value beyond the printed damage."
+  },
+  {
+    "id": "vf.feature.personal.weapon.probability-shift",
+    "name": "Probability Shift",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "reroll",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Once per attack",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After rolling the attack, you may reroll both Duality Dice. You must use the new result.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.quantum-rapier",
+      "vf.core.weapon.quantum-sidearm"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.psionic",
+    "name": "Psionic",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage-mode",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Resolve attacks with this weapon against the target’s Presence rather than Evasion. Wards and effects that block Veil contact block the attack.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.core.weapon.neural-scrambler"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.quick",
+    "name": "Quick",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "extra-attack",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "stress",
+      "amount": 1
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After attacking, mark 1 Stress to immediately make a second attack against the same target.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.combat-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.range",
+    "name": "Range",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "range-extension",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "rangeBand": {
+        "type": "rangeBand",
+        "default": "Close"
+      }
+    },
+    "effect": "This weapon may make attacks at the listed range band despite otherwise being a Melee weapon.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.tangle-web"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.reach",
+    "name": "Reach",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "range-extension",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "rangeBand": {
+        "type": "rangeBand",
+        "default": "Very Close"
+      },
+      "distanceMeters": {
+        "type": "number",
+        "optional": true
+      }
+    },
+    "effect": "This Melee weapon may attack a target at the listed distance, normally Very Close, without entering Melee range.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.core.weapon.electro-whip",
+      "vf.rs.weapon.arc-whip",
+      "vf.rs.weapon.chain-glaive",
+      "vf.rs.weapon.chain-improvised",
+      "vf.rs.weapon.combat-glaive",
+      "vf.rs.weapon.combat-pike",
+      "vf.rs.weapon.compliance-prod",
+      "vf.rs.weapon.monofilament-whip",
+      "vf.rs.weapon.neuro-whip",
+      "vf.rs.weapon.quarterstaff",
+      "vf.rs.weapon.spear"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.reality-shift",
+    "name": "Reality Shift",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage-control",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After a hit, change that hit’s damage type to Physical, Energy, Void, or Neural before applying Threshold Penetration.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.veil-lance",
+      "vf.core.weapon.veil-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.reliable",
+    "name": "Reliable",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "accuracy",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +1 on all attack rolls made with this weapon.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.plasma-sidearm",
+      "vf.core.weapon.slug-pistol",
+      "vf.rs.weapon.bulwark-pistol",
+      "vf.rs.weapon.bulwark-rifle",
+      "vf.rs.weapon.frontier-revolver",
+      "vf.rs.weapon.line-breaker",
+      "vf.rs.weapon.siege-carbine",
+      "vf.rs.weapon.siege-hammer",
+      "vf.rs.weapon.siege-laser",
+      "vf.rs.weapon.trench-blade"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.reload",
+    "name": "Reload",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "requirement",
+    "timing": "After use",
+    "actionType": "Action",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After each shot, spend an Action reloading before the weapon can attack again.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -1,
+      "total": -1
+    },
+    "sources": [
+      "vf.core.weapon.net-launcher"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.salvo-fire",
+    "name": "Salvo Fire",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "multi-target",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "stress",
+      "amount": 1
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "After a successful attack, mark 1 Stress to apply the same attack result to a second target within Close of the primary target. Roll damage separately.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.micro-missile-launcher"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.scatter",
+    "name": "Scatter",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "range-profile",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "At Very Close range, gain +1 to the attack roll and +2 damage. At Close range or farther, suffer -1 to the attack roll.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.combat-shotgun",
+      "vf.rs.weapon.scrap-cannon",
+      "vf.rs.weapon.shotgun-civilian",
+      "vf.rs.weapon.tactical-shotgun"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.scope",
+    "name": "Scope",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "aiming",
+    "timing": "Activated",
+    "actionType": "Action",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When you spend an Action to Aim, gain +2 on the next attack with this weapon instead of the normal +1, and treat range penalties as one band closer.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.rs.weapon.beam-sniper",
+      "vf.rs.weapon.designated-marksman",
+      "vf.rs.weapon.heavy-sniper-rifle",
+      "vf.rs.weapon.marksman-rifle",
+      "vf.rs.weapon.seeker-sniper"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.set",
+    "name": "Set",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "reaction",
+    "timing": "Reaction",
+    "actionType": "Reaction",
+    "trigger": "An enemy enters the weapon’s reach",
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Once per round",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When an enemy enters this weapon’s reach during movement, make an immediate attack against it. On a hit, add +1d6 damage.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.rs.weapon.combat-pike"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.shield",
+    "name": "Shield",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "defense",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This item counts as a shield for features that reference shields. Choose a facing while wielding it; gain +2 Evasion against ranged attacks originating from that direction.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 1.5,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.rs.weapon.breaching-shield",
+      "vf.rs.weapon.line-breaker"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.shield-piercing",
+    "name": "Shield Piercing",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "armor-bypass",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Only half of the target’s available Armor Slots, rounded down, may be spent against this hit.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.disruptor-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.shredding",
+    "name": "Shredding",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "armor-destruction",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When the attack causes HP loss, reduce the target’s maximum Armor Slots by 1 until the armor is repaired during Downtime.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.shrapnel-cannon"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.silent",
+    "name": "Silent",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "stealth",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Using this weapon creates no report or muzzle flash and does not automatically break stealth or alert creatures beyond the immediate victim.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.gauss-pistol",
+      "vf.rs.weapon.gauss-carbine",
+      "vf.rs.weapon.ghost-wire",
+      "vf.rs.weapon.null-blade",
+      "vf.rs.weapon.phantom-beam",
+      "vf.rs.weapon.phantom-rifle",
+      "vf.rs.weapon.shadow-fang",
+      "vf.rs.weapon.shadow-rifle",
+      "vf.rs.weapon.the-silence",
+      "vf.rs.weapon.whisper-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.singularity",
+    "name": "Singularity",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area-control",
+    "timing": "Activated",
+    "actionType": "Action",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Strength",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "Choose a point at Far range. Creatures within Close of it make a Strength Reaction Roll against the item’s Feature DC; on a failure they are pulled toward the point and Restrained until the end of their next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 2,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.core.weapon.gravity-well-emitter"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.smart-scope",
+    "name": "Smart Scope",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "accuracy",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Gain +2 on attack rolls at Far or Very Far range.",
+    "interactions": [],
+    "balance": {
+      "offense": 2,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.core.weapon.sniper-system"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.spray",
+    "name": "Spray",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Instead of one target, roll once and apply the attack to every creature in a Very Close, approximately 60-degree cone. Allies in the cone are affected.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.rs.weapon.acid-sprayer",
+      "vf.rs.weapon.flechette-storm",
+      "vf.rs.weapon.inferno-cannon",
+      "vf.rs.weapon.nerve-agent-sprayer",
+      "vf.rs.weapon.pacification-beam"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.stable",
+    "name": "Stable",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "reliability",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "This weapon ignores Overheating and other sustained-use malfunctions unless a rule explicitly overrides Stable.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.core.weapon.plasma-carbine"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.stagger",
+    "name": "Stagger",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "A target damaged by this weapon has Disadvantage on its next action.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0.75,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.gravity-hammer",
+      "vf.core.weapon.sonic-cannon"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.stun",
+    "name": "Stun",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "damage-mode",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Before rolling damage, choose to deal Stress instead of HP damage. Use the same damage dice and apply Stress directly rather than comparing to damage thresholds.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.75,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.rs.weapon.arc-whip",
+      "vf.rs.weapon.compliance-prod",
+      "vf.rs.weapon.compliance-rifle",
+      "vf.rs.weapon.neural-disruptor",
+      "vf.rs.weapon.neuro-whip",
+      "vf.rs.weapon.pacification-beam",
+      "vf.rs.weapon.pacifier-pistol",
+      "vf.rs.weapon.shock-knuckles",
+      "vf.rs.weapon.sonic-disruptor",
+      "vf.rs.weapon.stun-baton",
+      "vf.rs.weapon.stun-blaster",
+      "vf.rs.weapon.tesla-coil-gun"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.stunning",
+    "name": "Stunning",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Strength",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "A damaged target makes a Strength Reaction Roll against the item’s Feature DC. On a failure it is Stunned until the end of its next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1.25,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.concussion-grenade-3",
+      "vf.core.weapon.shock-baton"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.stunning-on-crit",
+    "name": "Stunning on crit",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "critical-control",
+    "timing": "On critical hit",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "On a Critical Hit, the target is Stunned until the end of its next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0.5,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.core.weapon.electro-whip"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.sundering",
+    "name": "Sundering",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "armor-destruction",
+    "timing": "On critical hit",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Destroy the target’s held shield, or reduce its maximum Armor Slots by 2 until professionally repaired.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1
+    },
+    "sources": [
+      "vf.rs.weapon.siege-hammer"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.suppressive",
+    "name": "Suppressive",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area-control",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "stress",
+      "amount": 1
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Mark 1 Stress. Every creature within Close of the target has Disadvantage on attacks until the end of its next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1.25,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.heavy-machine-gun",
+      "vf.core.weapon.suppression-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.sustained-fire",
+    "name": "Sustained Fire",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "sustained-damage",
+    "timing": "On hit",
+    "actionType": "Action",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "On a later turn, if you have not moved, the target remains in range, and it lacks Total Cover, spend your Action to deal the original rolled damage again without a new attack roll. Repeat under the same conditions.",
+    "interactions": [
+      "The lock ends if the wielder moves, takes another Action, loses line of effect, or the target leaves range."
+    ],
+    "balance": {
+      "offense": 2,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.rs.weapon.annihilation-beam"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.system-shock",
+    "name": "System Shock",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "specialist",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Against Synthetics and machines, deal normal damage. Against organic targets, deal only 1d4 Stress. If any damage die rolls its maximum, one target electronic device malfunctions until repaired or reset.",
+    "interactions": [],
+    "balance": {
+      "offense": 0.75,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 0.75
+    },
+    "sources": [
+      "vf.core.weapon.static-pulse-grenade-2"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.taser-charge",
+    "name": "Taser Charge",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "control",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Strength",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "The target makes a Strength Reaction Roll against the item’s Feature DC. On a failure it is Stunned until the end of its next turn.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 1.25,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.taser-pistol"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.temporal",
+    "name": "Temporal",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "precursor-random",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Roll d6 after a hit: 1–2, deal double damage; 3–4, deal normal damage; 5–6, deal no damage to the target and instead a random enemy within range takes damage equal to one previous attack you made this combat. If none exists, deal normal damage.",
+    "interactions": [],
+    "balance": {
+      "offense": 1,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.5,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.paradox-edge"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.thermal",
+    "name": "Thermal",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "fire",
+    "timing": "On hit",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": {
+      "trait": "Strength",
+      "dc": "Feature DC"
+    },
+    "parameters": {},
+    "effect": "The target makes a Strength Reaction Roll against the weapon’s Feature DC. On a failure it catches fire and takes 1d4 Energy damage at the start of each turn until a creature spends an Action extinguishing it.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.25,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.rs.weapon.hellfire-pistol",
+      "vf.rs.weapon.inferno-cannon",
+      "vf.rs.weapon.microwave-projector",
+      "vf.rs.weapon.plasma-edge",
+      "vf.rs.weapon.stellar-fragment",
+      "vf.rs.weapon.thermal-pistol",
+      "vf.rs.weapon.thermal-plasma-pistol",
+      "vf.rs.weapon.thermal-plasma-rifle"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.thrown",
+    "name": "Thrown",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "range-mode",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {
+      "rangeBand": {
+        "type": "rangeBand",
+        "default": "Close"
+      }
+    },
+    "effect": "The weapon may be thrown to make an attack at the listed range band. Unless it has Returning, it must be recovered before it can be used again.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0.5,
+      "drawback": 0,
+      "total": 0.5
+    },
+    "sources": [
+      "vf.rs.weapon.hand-axe",
+      "vf.rs.weapon.hatchet",
+      "vf.rs.weapon.spear",
+      "vf.rs.weapon.survival-tomahawk"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.two-handed",
+    "name": "Two-Handed",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "requirement",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The weapon requires both hands to wield and cannot be used while holding another item.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.5,
+      "total": -0.5
+    },
+    "sources": [
+      "vf.rs.weapon.accelerator-rifle",
+      "vf.rs.weapon.annihilation-beam",
+      "vf.rs.weapon.assault-laser",
+      "vf.rs.weapon.beam-sniper",
+      "vf.rs.weapon.bulwark-rifle",
+      "vf.rs.weapon.chain-glaive",
+      "vf.rs.weapon.combat-glaive",
+      "vf.rs.weapon.combat-pike",
+      "vf.rs.weapon.combat-shotgun",
+      "vf.rs.weapon.compliance-rifle",
+      "vf.rs.weapon.designated-marksman",
+      "vf.rs.weapon.disintegrator-rifle",
+      "vf.rs.weapon.disruptor-maul",
+      "vf.rs.weapon.flechette-storm",
+      "vf.rs.weapon.gauss-carbine",
+      "vf.rs.weapon.gravitic-breach-hammer",
+      "vf.rs.weapon.handheld-railgun",
+      "vf.rs.weapon.heavy-laser",
+      "vf.rs.weapon.heavy-sniper-rifle",
+      "vf.rs.weapon.hunting-rifle",
+      "vf.rs.weapon.inferno-cannon",
+      "vf.rs.weapon.ion-disruptor-rifle",
+      "vf.rs.weapon.laser-rifle",
+      "vf.rs.weapon.long-range-battle-rifle",
+      "vf.rs.weapon.marksman-rifle",
+      "vf.rs.weapon.pacification-beam",
+      "vf.rs.weapon.particle-beam-rifle",
+      "vf.rs.weapon.phantom-rifle",
+      "vf.rs.weapon.photon-lance",
+      "vf.rs.weapon.pulse-carbine",
+      "vf.rs.weapon.quantum-laser",
+      "vf.rs.weapon.quarterstaff",
+      "vf.rs.weapon.scrap-cannon",
+      "vf.rs.weapon.seeker-sniper",
+      "vf.rs.weapon.shadow-rifle",
+      "vf.rs.weapon.shotgun-civilian",
+      "vf.rs.weapon.siege-carbine",
+      "vf.rs.weapon.siege-hammer",
+      "vf.rs.weapon.siege-laser",
+      "vf.rs.weapon.smart-beam-rifle",
+      "vf.rs.weapon.smart-rifle",
+      "vf.rs.weapon.spear",
+      "vf.rs.weapon.sporting-rifle",
+      "vf.rs.weapon.stellar-fragment",
+      "vf.rs.weapon.storm-rifle",
+      "vf.rs.weapon.tactical-assault-rifle",
+      "vf.rs.weapon.tactical-shotgun",
+      "vf.rs.weapon.thermal-plasma-rifle",
+      "vf.rs.weapon.trench-maul",
+      "vf.rs.weapon.varmint-rifle",
+      "vf.rs.weapon.void-projector",
+      "vf.rs.weapon.volkov-suppression-rifle",
+      "vf.rs.weapon.war-hammer"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.unraveling",
+    "name": "Unraveling",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "precursor-control",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When any damage die rolls its maximum, the target loses access to one class or ancestry feature, Keeper’s choice, until the end of the scene.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 1.5
+    },
+    "sources": [
+      "vf.core.weapon.void-grenade-1"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.unstable",
+    "name": "Unstable",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "condition-drawback",
+    "timing": "On roll",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "When the Fear Die shows 1–5 on an attack with this weapon, the wielder marks 1 Stress and the weapon degrades one step.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -1,
+      "total": -1
+    },
+    "sources": [
+      "vf.rs.weapon.disintegrator-rifle",
+      "vf.rs.weapon.phase-reaver",
+      "vf.rs.weapon.phase-sabre",
+      "vf.rs.weapon.void-projector"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.unwieldy",
+    "name": "Unwieldy",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "requirement",
+    "timing": "Passive",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Suffer -2 on attack rolls unless you did not move this turn or spent your previous turn setting up without attacking with this weapon.",
+    "interactions": [],
+    "balance": {
+      "offense": 0,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -1,
+      "total": -1
+    },
+    "sources": [
+      "vf.rs.weapon.mining-pick"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.vibration",
+    "name": "Vibration",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "armor-bypass",
+    "timing": "On damage",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "Armor Slots cannot be spent to reduce this instance of damage.",
+    "interactions": [],
+    "balance": {
+      "offense": 2,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": 0,
+      "total": 2
+    },
+    "sources": [
+      "vf.core.weapon.vibro-sword"
+    ]
+  },
+  {
+    "id": "vf.feature.personal.weapon.waveform",
+    "name": "Waveform",
+    "status": "canonical",
+    "scale": "personal",
+    "appliesTo": [
+      "weapon"
+    ],
+    "category": "area",
+    "timing": "On attack",
+    "actionType": "None",
+    "trigger": null,
+    "cost": {
+      "type": "none"
+    },
+    "frequency": "Unlimited",
+    "resistance": null,
+    "parameters": {},
+    "effect": "The attack affects every creature in a 5 m cone. Roll once and compare the result to each target.",
+    "interactions": [],
+    "balance": {
+      "offense": 1.5,
+      "defense": 0,
+      "control": 0,
+      "utility": 0,
+      "drawback": -0.25,
+      "total": 1.25
+    },
+    "sources": [
+      "vf.core.weapon.sonic-cannon"
+    ]
+  }
+]

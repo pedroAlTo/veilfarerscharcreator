@@ -1,0 +1,11 @@
+{
+  "name": "veilfarers-portal",
+  "private": true,
+  "version": "59.62.0",
+  "dependencies": {
+    "@netlify/identity": "^1.1.0"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^5.3.0"
+  }
+}
