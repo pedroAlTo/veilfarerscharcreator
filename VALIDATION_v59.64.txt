@@ -1,0 +1,67 @@
+VEILFARERS PORTAL v59.64 — VALIDATION REPORT
+============================================
+
+BASELINE
+--------
+Source package: VeilFarers_Portal_v59.63_Deploy_CSP_3D_Dice_Hotfix.zip
+Release type: Player/Keeper Tool behavioral hotfix
+
+RESULT
+------
+PASS  Package version, changelog and deploy metadata aligned at v59.64 / 59.64.0.
+PASS  All JavaScript files passed node --check.
+PASS  All JSON files parsed successfully.
+PASS  All eleven root HTML files contain no duplicate IDs.
+PASS  Existing WebAssembly CSP and release headers remain present.
+PASS  Dice.min.js and ammo.wasm.wasm remain packaged.
+
+MASSIVE FIXTURE
+---------------
+Input final damage: 2d8+3
+Candidate values: [2, 8, 4, 7]
+Expected KEEP: [8, 7]
+Expected DROP indices: [0, 2]
+Expected total: 18
+PASS  Deterministic fixture matched all expectations.
+PASS  Proficiency 2 normal plan produces 4 candidates and keeps 2.
+PASS  Proficiency 2 critical plan produces 8 candidates and keeps 4.
+PASS  Massive selection operates after Brutal replacement values.
+
+3D DICE LIFECYCLE
+-----------------
+PASS  Removed the uncaught "A dice roll is already resolving" throw path.
+PASS  Visual rolls are serialized through a Promise queue.
+PASS  DiceBox roll/add operations have a 14-second release timeout.
+PASS  Manual close does not clear Babylon while rollPending is true.
+PASS  Dismissed continuation dice do not reopen the HUD.
+PASS  A new independent roll clears the previously dismissed world.
+PASS  Unsupported visibility writes were removed from setDiceVisuals.
+PASS  Winner/discard overlay, outline and custom-color cues remain.
+
+KEEPER NOTES
+------------
+PASS  Player Tool production bundle polls authenticated table-api readSession.
+PASS  Source JSX contains the same secured handout polling path.
+PASS  Legacy empty session.handouts can no longer erase server notes.
+PASS  Keeper Console contains one unique sticky Player Notes dock.
+PASS  Composer remains table-owner only and now exposes that state clearly.
+PASS  Just-sent notes are protected from stale in-flight polling overwrite.
+PASS  Successful sends schedule an authoritative server refresh.
+PASS  Existing table-api subcollection and recipient filtering remain unchanged.
+
+PRESERVATION
+------------
+PASS  No Firestore Rules changed.
+PASS  No Firebase collection path changed.
+PASS  No canonical rules dataset changed.
+PASS  No PDF/download manifest changed.
+PASS  Ammo WASM and theme textures were not modified.
+PASS  v59.63 historical release documents remain unchanged.
+
+LIVE ACCEPTANCE REQUIRED
+------------------------
+- Deploy Preview: execute Massive normal and critical rolls with physical 3D dice.
+- Close the HUD during motion and after settlement, then repeat rolls.
+- Send all-player and private Keeper Notes across at least two authenticated clients.
+- Confirm actual Netlify response CSP and release headers.
+- Verify browser/mobile layouts for the sticky Keeper Notes dock.

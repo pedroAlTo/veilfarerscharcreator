@@ -58,3 +58,14 @@ body.vf-keeper-page #vf-live button{border-radius:7px!important}
 @media(max-width:720px){.vf-keeper-productbar{align-items:flex-start;flex-direction:column;gap:2px;padding:7px 10px}body.vf-keeper-page .header-container{padding:8px!important}body.vf-keeper-page .header-main{align-items:flex-start!important;flex-direction:column!important}body.vf-keeper-page .main-content{padding:10px 8px 88px!important}body.vf-keeper-page .two-column-grid{grid-template-columns:1fr!important}body.vf-keeper-page #vf-live{max-height:78vh!important}}
 #vf-note-modal{z-index:70000!important}
 body.vf-keeper-page input[type="radio"],body.vf-keeper-page input[type="checkbox"]{appearance:auto!important;-webkit-appearance:auto!important;width:auto!important;min-width:0!important;height:auto!important;background:initial!important;border:initial!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+
+/* v59.64 — Keeper Notes remain visible and usable while the console scrolls. */
+body.vf-keeper-page #vf-note-console-dock{position:sticky;top:-12px;z-index:8;margin:8px -4px 10px;padding:9px;border:1px solid #155e75;border-radius:10px;background:linear-gradient(145deg,rgba(8,47,73,.98),rgba(2,6,23,.98));box-shadow:0 8px 20px rgba(0,0,0,.34)}
+body.vf-keeper-page .vf-note-console-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+body.vf-keeper-page .vf-note-console-head>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+body.vf-keeper-page .vf-note-console-head span{font-size:9px;font-weight:900;letter-spacing:.14em;color:#67e8f9}
+body.vf-keeper-page .vf-note-console-head small{font-size:8px;line-height:1.35;color:#94a3b8;white-space:normal}
+body.vf-keeper-page #vf-send-note{flex:0 0 auto;padding:7px 10px!important;border:1px solid #b45309!important;background:#78350f!important;color:#fde68a!important;font-size:8px!important;font-weight:900!important;letter-spacing:.08em!important;text-transform:uppercase!important;cursor:pointer}
+body.vf-keeper-page #vf-sent-notes-wrap{margin-top:8px;padding-top:7px;border-top:1px solid rgba(103,232,249,.16)}
+body.vf-keeper-page .vf-note-console-subhead{font-size:8px;color:#94a3b8;text-transform:uppercase;font-weight:800;letter-spacing:.1em;margin-bottom:4px}
+body.vf-keeper-page #vf-sent-notes{max-height:112px;overflow-y:auto;padding-right:2px}

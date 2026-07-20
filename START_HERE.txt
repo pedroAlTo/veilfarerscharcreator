@@ -1,50 +1,48 @@
-VEILFARERS PORTAL v59.63 — START HERE
+VEILFARERS PORTAL v59.64 — START HERE
 =====================================
 
 RELEASE PURPOSE
 ---------------
-v59.63 fixes the remaining production 3D-dice failure by making the WebAssembly CSP
-part of the deployed publish directory, not only netlify.toml. The browser logs supplied
-for v59.62 prove that Netlify was still serving the old CSP without 'wasm-unsafe-eval'.
+v59.64 fixes Massive damage-pool scaling, the permanent 3D-roll lock caused by
+closing the dice box during resolution, and Keeper Notes delivery/visibility.
 
 DEPLOY
 ------
-1. Extract the ZIP. Deploy the CONTENTS at its root; do not deploy a parent folder.
-2. Confirm the deployed file explorer contains both /_headers and /netlify.toml.
-3. Publish a fresh production deploy, not merely a cached preview alias.
-4. Open /data/deploy-version.json and confirm version is v59.63.
-5. Hard-refresh /player-tool.html.
+1. Extract VeilFarers_Portal_v59.64.zip.
+2. Replace the repository/publish-root contents with the extracted contents.
+3. Confirm _headers, netlify.toml, player-tool.html and assets/ are at root.
+4. Commit and push to a test branch.
+5. Test the Netlify Deploy Preview and hard-refresh the tools.
 
-REQUIRED RESPONSE CHECK
------------------------
-In DevTools > Network, select player-tool.html and verify Response Headers include:
+PRIORITY TESTS
+--------------
+1. Massive final 2d8+3:
+   - four d8s roll;
+   - highest two are kept;
+   - +3 is applied once.
+2. Massive critical final 4d8+3:
+   - eight d8s roll;
+   - highest four are kept.
+3. Close the 3D dice box while dice are resolving, then roll again repeatedly.
+   No "A dice roll is already resolving" error may occur.
+4. Connect Keeper Tool as table owner and send an all-player note.
+   Confirm it opens in connected Player Tool within approximately 1.25 seconds.
+5. Scroll Keeper Console and confirm Player Notes remains visible.
+6. Send a private note and verify that only the intended player receives it.
+7. Verify /data/deploy-version.json reports v59.64 and the CSP still includes
+   'wasm-unsafe-eval'.
 
-  X-VeilFarers-Release: v59.63
-  X-VeilFarers-CSP-Profile: wasm-3d-dice-v2
-
-and Content-Security-Policy > script-src includes:
-
-  'wasm-unsafe-eval'
-
-If the response still shows the old policy, the active deploy/publish directory is not
-this package or another CSP layer is being injected. Do not troubleshoot Ammo until the
-response header itself is correct.
-
-DICE ACCEPTANCE
----------------
-- Console prints: [VeilFarers v59.63] 3D dice loader active.
-- The WASM preflight succeeds.
-- ammo.wasm.wasm returns 200 and Content-Type application/wasm.
-- Duality and damage dice render in 3D.
-- No VF_WASM_CSP_BLOCKED, Ammo-not-found, setValue or initialization-timeout cascade.
-
-PRESERVED
----------
-- v59.60 exact-case Dice.min.js compatibility file.
-- v59.61 narrow WebAssembly permission; general JavaScript unsafe-eval remains blocked.
-- v59.62 Keeper Tool/Vault decoupling and Firebase Admin diagnostics.
+NO MANUAL CLOUD CHANGE
+----------------------
+No Firebase migration, Firestore Rules deployment or environment-variable change
+is required for v59.64.
 
 DOCUMENTS
 ---------
-Read GITHUB_DEPLOY_SUMMARY_v59.63.md, PORTAL_HANDOVER_v59.63.md and
-VALIDATION_v59.63.txt.
+- GITHUB_DEPLOY_SUMMARY_v59.64.md
+- PORTAL_HANDOVER_v59.64.md
+- VALIDATION_v59.64.txt
+
+ROLLBACK
+--------
+Redeploy v59.63. No persistent-data rollback is required.

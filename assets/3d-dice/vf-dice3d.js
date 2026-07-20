@@ -12,7 +12,7 @@ const PRELOAD_THEMES = [
 ];
 const ASSET_PATH = new URL('./assets/', import.meta.url).href;
 
-const VF_DICE_RELEASE = 'v59.63';
+const VF_DICE_RELEASE = 'v59.64';
 async function assertWebAssemblyExecutionAllowed(){
   if (typeof WebAssembly === 'undefined' || typeof WebAssembly.compile !== 'function') {
     const error=new Error('3D dice require WebAssembly, but this browser does not expose WebAssembly.compile().');
@@ -24,7 +24,7 @@ async function assertWebAssemblyExecutionAllowed(){
   const emptyModule=new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]);
   try { await WebAssembly.compile(emptyModule); }
   catch (cause) {
-    const error=new Error("3D dice WebAssembly is blocked by the effective Content Security Policy. Deploy v59.63 from the package root and verify the HTML response contains X-VeilFarers-Release: v59.63 and script-src 'wasm-unsafe-eval'.");
+    const error=new Error("3D dice WebAssembly is blocked by the effective Content Security Policy. Deploy v59.64 from the package root and verify the HTML response contains X-VeilFarers-Release: v59.64 and script-src 'wasm-unsafe-eval'.");
     error.code='VF_WASM_CSP_BLOCKED';
     error.cause=cause;
     window.dispatchEvent(new CustomEvent('veilfarers:dice3d-error',{detail:{code:error.code,release:VF_DICE_RELEASE,message:error.message}}));
@@ -59,6 +59,8 @@ let trackingSpecs = [];
 let trackerNodes = new Map();
 let projectionWarningShown = false;
 let lastRendererVisuals = [];
+let rollPending = false;
+let userDismissed = false;
 
 function normalizeStyle(value){ return value === 'overlay' ? 'overlay' : 'box'; }
 function valuesEqual(a,b){ return String(a) === String(b); }
@@ -131,7 +133,7 @@ function ensureStage(){
   labelNode=stage.querySelector('#vf-dice3d-label');
   outcomeNode=stage.querySelector('#vf-dice3d-outcome');
   analysisNode=stage.querySelector('#vf-dice3d-analysis');
-  stage.querySelector('#vf-dice3d-close').addEventListener('click',hide);
+  stage.querySelector('#vf-dice3d-close').addEventListener('click',()=>hide({reason:'user'}));
   display=new DisplayResults('#vf-dice3d-box');
   cueLayer=document.createElement('div');
   cueLayer.className='vf-dice-cue-layer';
@@ -175,8 +177,9 @@ async function init(){
   });
   return initPromise;
 }
-function show(label, style){
+function show(label, style, options={}){
   ensureStage();
+  if (options.newRoll !== false) userDismissed=false;
   applyStyle(style || currentStyle);
   if (labelNode) labelNode.textContent=label || 'Rolling…';
   stage.classList.remove('is-hidden');
@@ -208,15 +211,21 @@ function clearSettledCues(){
   if (trackingLayer) trackingLayer.replaceChildren();
   if (stage) stage.classList.remove('is-acquiring','is-resolving');
 }
-function hide(){
+function hide(options={}){
   if (!stage) return;
+  const manual=options && options.reason==='user';
+  if (manual) userDismissed=true;
   clearSettledCues();
   stage.classList.remove('is-visible');
   stage.classList.add('is-hidden');
-  try { box && box.clear(); } catch(_) {}
+  // Clearing the Babylon world while DiceBox is still resolving can leave its
+  // roll Promise pending forever. A manual close now hides the HUD but lets the
+  // active physics result finish normally; completed/automatic closes still clear.
+  if (!rollPending) { try { box && box.clear(); } catch(_) {} }
   if (outcomeNode) { outcomeNode.textContent=''; outcomeNode.className='vf-dice3d-outcome is-hidden'; }
   if (analysisNode) { analysisNode.className='vf-dice3d-analysis is-hidden'; analysisNode.replaceChildren(); }
   if (stage) delete stage.dataset.dualityWinner;
+  if (manual) window.dispatchEvent(new CustomEvent('veilfarers:dice3d-closed',{detail:{rollPending}}));
 }
 function flattenResults(result){
   const flat=[];
@@ -370,42 +379,49 @@ function prepareGroups(groups){
 }
 async function roll(groups, options={}){
   const roller=await init();
+  if (userDismissed) { try { box && box.clear(); } catch(_) {} }
   clearSettledCues();
   applyCritical(false);
-  show(options.label || 'Rolling…', options.style);
+  show(options.label || 'Rolling…', options.style, {newRoll:true});
   const prepared=prepareGroups(groups);
-  const resultPromise=roller.roll(prepared);
-  startTracking(prepared);
-  const result=await resultPromise;
-  const flat=flattenResults(result);
-  lastFlat=flat.slice();
-  if (!flat.length) throw new Error('The 3D engine completed without readable die results.');
-  markTrackingSettled(flat.map((_,index)=>index));
-  if (!options.deferResults) display.showResults({
-    rolls:flat.map((item,index)=>({value:item.value,sides:item.sides,role:trackingSpecs[index] && trackingSpecs[index].role})),
-    value:flat.reduce((n,item)=>n+item.value,0), label:options.label || ''
-  });
-  closeTimer=setTimeout(hide,9800);
-  return {raw:result, flat, values:flat.map(item=>item.value)};
+  rollPending=true;
+  try {
+    const resultPromise=roller.roll(prepared);
+    startTracking(prepared);
+    const result=await resultPromise;
+    const flat=flattenResults(result);
+    lastFlat=flat.slice();
+    if (!flat.length) throw new Error('The 3D engine completed without readable die results.');
+    markTrackingSettled(flat.map((_,index)=>index));
+    if (!options.deferResults) display.showResults({
+      rolls:flat.map((item,index)=>({value:item.value,sides:item.sides,role:trackingSpecs[index] && trackingSpecs[index].role})),
+      value:flat.reduce((n,item)=>n+item.value,0), label:options.label || ''
+    });
+    closeTimer=setTimeout(hide,9800);
+    return {raw:result, flat, values:flat.map(item=>item.value)};
+  } finally { rollPending=false; }
 }
 async function add(groups, options={}){
   const roller=await init();
-  show(options.label || 'Additional dice', options.style);
+  if (!userDismissed) show(options.label || 'Additional dice', options.style, {newRoll:false});
   const prepared=prepareGroups(groups);
   const offset=lastFlat.length;
-  const resultPromise=roller.add(prepared);
-  const newSpecs=startTracking(prepared,{append:true});
-  const result=await resultPromise;
-  const flat=flattenResults(result);
-  lastFlat=lastFlat.concat(flat);
-  const indices=flat.map((_,index)=>offset+index);
-  markTrackingSettled(indices);
-  if (!options.deferResults) display.showResults({
-    rolls:flat.map((item,index)=>({value:item.value,sides:item.sides,role:newSpecs[index] && newSpecs[index].role})),
-    value:flat.reduce((n,item)=>n+item.value,0), label:options.label || ''
-  });
-  closeTimer=setTimeout(hide,9800);
-  return {raw:result, flat, values:flat.map(item=>item.value), offset};
+  rollPending=true;
+  try {
+    const resultPromise=roller.add(prepared);
+    const newSpecs=startTracking(prepared,{append:true});
+    const result=await resultPromise;
+    const flat=flattenResults(result);
+    lastFlat=lastFlat.concat(flat);
+    const indices=flat.map((_,index)=>offset+index);
+    markTrackingSettled(indices);
+    if (!options.deferResults) display.showResults({
+      rolls:flat.map((item,index)=>({value:item.value,sides:item.sides,role:newSpecs[index] && newSpecs[index].role})),
+      value:flat.reduce((n,item)=>n+item.value,0), label:options.label || ''
+    });
+    closeTimer=setTimeout(hide,9800);
+    return {raw:result, flat, values:flat.map(item=>item.value), offset};
+  } finally { rollPending=false; }
 }
 function cueKey(spec){ return `${spec.type}:${spec.index}`; }
 function applyRendererCues(){
@@ -546,7 +562,7 @@ function renderAnalysisPanel(data){
 }
 function showResults(data){
   ensureStage();
-  show(data && data.label, data && data.style);
+  if (!userDismissed) show(data && data.label, data && data.style, {newRoll:false});
   clearOutcomeCues();
   const outcome=String((data && data.outcome)||'');
   const winner=/WITH HOPE/i.test(outcome)?'hope':/WITH FEAR/i.test(outcome)?'fear':/CRITICAL/i.test(outcome)?'critical':'';
@@ -568,7 +584,7 @@ window.VFDice3D={
   init,roll,add,showResults,hide,setStyle:applyStyle,setCritical:applyCritical,
   status:()=>({
     ready:!!box,assetPath:ASSET_PATH,style:currentStyle,critical:currentCritical,
-    rendererVisuals:lastRendererVisuals.slice(),tracking:trackingSpecs.length,error:lastError?String(lastError.message||lastError):null
+    rendererVisuals:lastRendererVisuals.slice(),tracking:trackingSpecs.length,rollPending,userDismissed,error:lastError?String(lastError.message||lastError):null
   }),
-  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.63'
+  version:'@3d-dice/dice-box 1.1.4 + DisplayResults 0.5.2 + VeilFarers quantum HUD v59.64'
 };

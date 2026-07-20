@@ -1095,7 +1095,7 @@
           const [dice3DLoad, setDice3DLoad] = useState({open:false,stage:'Idle',progress:0,error:''});
           const dice3DInitRef = useRef(null);
           const dice3DReadyRef = useRef(false);
-          const rollInFlightRef = useRef(false);
+          const rollInFlightRef = useRef(null);
           const [shakeToRollEnabled, setShakeToRollEnabled] = useState(() => { try { return localStorage.getItem('veilfarers_shake_to_roll') === '1'; } catch (e) { return false; } });
           const [shakePermission, setShakePermission] = useState('unknown');
           const shakeStateRef = useRef({lastPeak:0,firstPeak:0,cooldownUntil:0});
@@ -1205,9 +1205,7 @@
             });
           };
           const rollVisualDice = async (groups, label, options) => {
-            if (rollInFlightRef.current) throw new Error('A dice roll is already resolving.');
-            rollInFlightRef.current = true;
-            try {
+            const executeRoll = async () => {
               const themedGroups = applyDiceTextureSet(groups);
               const count = themedGroups.reduce((n,g)=>n+(Number(g.qty)||1),0);
               playDiceSound(count || 2);
@@ -1215,7 +1213,11 @@
                 try {
                   const dice3D = await ensureDice3DReady({showProgress:true});
                   const method = options && options.append && typeof dice3D.add === 'function' ? 'add' : 'roll';
-                  const result = await dice3D[method](themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle });
+                  const result = await promiseWithTimeout(
+                    dice3D[method](themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle }),
+                    14000,
+                    'The 3D dice roll did not finish and was safely released.'
+                  );
                   if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
                   throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
                 } catch (error) {
@@ -1224,9 +1226,12 @@
                 }
               }
               return randomDiceValues(themedGroups);
-            } finally {
-              rollInFlightRef.current = false;
-            }
+            };
+            const previous = rollInFlightRef.current;
+            const queued = (previous ? Promise.resolve(previous).catch(() => {}) : Promise.resolve()).then(executeRoll);
+            rollInFlightRef.current = queued;
+            try { return await queued; }
+            finally { if (rollInFlightRef.current === queued) rollInFlightRef.current = null; }
           };
           const showResolvedDice = (data) => {
             if (diceMode === '3d' && window.VFDice3D && typeof window.VFDice3D.showResults === 'function') {
@@ -1660,15 +1665,15 @@
               const proficiency = Math.max(1, Math.min(6, Number(profile && profile.proficiency) || 1));
               const normalCount = baseCount * proficiency;
               const keptCount = normalCount * multiplier;
-              const massiveExtra = profile && profile.massive ? 1 : 0;
+              const massivePoolMultiplier = profile && profile.massive ? 2 : 1;
               return {
                 baseCount,
                 proficiency,
                 normalCount,
                 sides,
                 keptCount,
-                rolledCount: keptCount + massiveExtra,
-                initialRolledCount: normalCount + massiveExtra,
+                rolledCount: keptCount * massivePoolMultiplier,
+                initialRolledCount: normalCount * massivePoolMultiplier,
                 staticMod: match[3] ? parseInt(match[3].replace(/\s/g, ''), 10) : 0
               };
           };
@@ -1706,13 +1711,13 @@
                   });
                 }
               }
-              const keptRolls = rolls.slice();
+              let keptRolls = rolls.slice();
               const discardedIndices=[];
-              if (profile.massive && keptRolls.length > keptCount) {
-                let lowest=0;
-                for(let i=1;i<keptRolls.length;i++) if(keptRolls[i]<keptRolls[lowest]) lowest=i;
-                discardedIndices.push(lowest);
-                keptRolls.splice(lowest,1);
+              if (profile.massive && rolls.length > keptCount) {
+                const ranked=rolls.map((value,index)=>({value,index})).sort((a,b)=>b.value-a.value||a.index-b.index);
+                const keptIndices=new Set(ranked.slice(0,keptCount).map(item=>item.index));
+                rolls.forEach((value,index)=>{if(!keptIndices.has(index))discardedIndices.push(index);});
+                keptRolls=ranked.slice(0,keptCount).map(item=>item.value);
               }
               const rerollMap=new Map(rerolls.map(item=>[item.index,item]));
               const damageDiceResults=rolls.map((value,index)=>({
@@ -1736,7 +1741,7 @@
               const sum=keptRolls.reduce((total,value)=>total+value,0);
               const ruleParts=[];
               if(proficiency>1) ruleParts.push(`Proficiency ${proficiency}: ${baseCount}d${sides} becomes ${baseCount*proficiency}d${sides}`);
-              if(profile.massive) ruleParts.push(`Massive: rolled ${rolledCount}d${sides}, discarded lowest`);
+              if(profile.massive) ruleParts.push(`Massive: rolled ${rolledCount}d${sides}, kept highest ${keptCount}`);
               if(profile.brutal&&rerolls.length) ruleParts.push(`Brutal: rerolled ${rerolls.length} result${rerolls.length===1?'':'s'} of 1`);
               if(paired) ruleParts.push(`Paired +${paired}`);
               const total=sum+extra;
@@ -2340,6 +2345,23 @@
               if (savedSession) setSessionId(savedSession);
           }, []);
 
+          useEffect(() => {
+              if (!isConnected || !sessionId || !window.VFTableAccess) return;
+              let stopped=false, busy=false;
+              const pollHandouts=async()=>{
+                  if(stopped||busy)return;busy=true;
+                  try{
+                      const out=await window.VFTableAccess.api('readSession',{tableId:normalizeSessionKey(sessionId)});
+                      const notes=out&&out.session&&Array.isArray(out.session.handouts)?out.session.handouts:[];
+                      if(!stopped)setHandouts(notes.filter(n=>!n||!n.tableId||normalizeSessionKey(n.tableId)===normalizeSessionKey(sessionId)));
+                  }catch(error){if(!stopped)console.warn('Keeper Notes polling unavailable:',error.message||error);}
+                  finally{busy=false;}
+              };
+              pollHandouts();
+              const timer=setInterval(pollHandouts,1250);
+              return()=>{stopped=true;clearInterval(timer);};
+          }, [isConnected, sessionId]);
+
           const startListening = (services, session) => {
               loadSeenNotes(session);
               connectedAtRef.current = Date.now();
@@ -2360,7 +2382,7 @@
                       }
                       if (typeof data.fearTokens === 'number' && (Date.now() - lastFearEditRef.current > 2500)) { setFear(data.fearTokens); }
                       if (typeof data.spotlight === 'string') { setSpotlight(data.spotlight); }
-                      setHandouts((Array.isArray(data.handouts) ? data.handouts : []).filter(n => !n || !n.tableId || normalizeSessionKey(n.tableId) === normalizeSessionKey(session)));
+                      if (Array.isArray(data.handouts) && data.handouts.length) setHandouts(data.handouts.filter(n => !n || !n.tableId || normalizeSessionKey(n.tableId) === normalizeSessionKey(session)));
                       if (data.rollHistory && Array.isArray(data.rollHistory)) {
                           const sortedHistory = data.rollHistory.filter(r => !r || !r.visibility || r.visibility === 'public').sort((a, b) => rollTimeMs(b.timestamp) - rollTimeMs(a.timestamp));
                           setRollHistory(sortedHistory);

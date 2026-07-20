@@ -1,12 +1,12 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.63",
+  "currentVersion": "v59.64",
   "entries": [
     {
-      "version": "v59.63",
+      "version": "v59.64",
       "date": "2026-07-20",
-      "title": "Deploy-authoritative CSP and WebAssembly preflight for 3D dice",
-      "summary": "Adds a publish-directory _headers file so manual and repository deploys receive the WebAssembly-enabled CSP, adds release/CSP response markers and a fast WebAssembly preflight that reports stale or overridden headers before the Ammo timeout."
+      "title": "Massive damage pools, recoverable 3D rolls and reliable Keeper Notes",
+      "summary": "Massive now rolls twice the final damage-die count and keeps the highest half; closing the 3D dice box no longer leaves the roller permanently busy; Keeper Notes use authenticated session polling and an always-visible console composer so secured handouts reach players reliably."
     },
     {
       "version": "v59.62",
@@ -675,5 +675,5 @@
       ]
     }
   ],
-  "version": "v59.63"
+  "version": "v59.64"
 }
