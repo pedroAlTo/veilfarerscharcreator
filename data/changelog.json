@@ -1,7 +1,13 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.59",
+  "currentVersion": "v59.60",
   "entries": [
+    {
+      "version": "v59.60",
+      "date": "2026-07-20",
+      "title": "Netlify 3D dice module case-sensitivity hotfix",
+      "summary": "Restores the Player Tool 3D dice renderer on Netlify by adding the exact Dice.min.js compatibility module required by the bundled world renderer imports; dice logic, themes, physics settings and roll outcomes remain unchanged."
+    },
     {
       "version": "v59.59",
       "date": "2026-07-20",
