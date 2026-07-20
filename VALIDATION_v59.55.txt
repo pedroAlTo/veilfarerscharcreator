@@ -1,0 +1,27 @@
+VEILFARERS PORTAL v59.55 — VALIDATION
+
+PASS — package.json and package-lock.json use version 59.55.0.
+PASS — data/changelog.json parses and identifies v59.55 as current.
+PASS — table-api.mts imports successfully with Node TypeScript stripping.
+PASS — pasted note tables normalize to Firestore-safe row maps.
+PASS — API response conversion restores browser-compatible row arrays.
+PASS — private note target can receive the note.
+PASS — unrelated table member cannot receive the private note.
+PASS — table owner can review sent private notes.
+PASS — broadcast note is visible to table members.
+PASS — table-access.js syntax.
+PASS — Keeper Tool inline-script syntax.
+PASS — Send button duplicate-submit lock is present.
+PASS — notes use a table-scoped handouts subcollection.
+PASS — legacy session.handouts remain readable/removable.
+PASS — npm ci uses registry.npmjs.org.
+PASS — revised Downloads directory preserved byte-for-byte from v59.54.
+PASS — protected 3D dice assets preserved byte-for-byte from v59.54.
+PASS — ZIP contains index.html at root and excludes node_modules, .git, .env and private keys.
+
+LIVE VALIDATION REQUIRED
+- Netlify Identity and Firebase Admin runtime.
+- Plain note, private note, broadcast note and pasted-table note.
+- Two-player privacy test in the same table.
+- Cross-table isolation test.
+- Note deletion and reconnect persistence.

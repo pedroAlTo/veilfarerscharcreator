@@ -1,8 +1,12 @@
 (function(){
   'use strict';
   const CREATOR_KEY='veilfarers-character';
-  const FIELDS_KEY='veilfarers_sheet_fields_v2_41';
-  const TRACKS_KEY='veilfarers_sheet_tracks_v2_41';
+  const FALLBACK_FIELDS_KEY='veilfarers_sheet_fields_v2_40';
+  const FALLBACK_TRACKS_KEY='veilfarers_sheet_tracks_v2_40';
+  const TRANSFER_KEY='veilfarers.character.transfer.v1';
+  const LATEST_SHEET_KEY='veilfarers.sheet.latestPayload.v1';
+  function fieldsKey(){ try{ return (typeof LS_FIELDS!=='undefined'&&LS_FIELDS)||FALLBACK_FIELDS_KEY; }catch(_){ return FALLBACK_FIELDS_KEY; } }
+  function tracksKey(){ try{ return (typeof LS_TRACKS!=='undefined'&&LS_TRACKS)||FALLBACK_TRACKS_KEY; }catch(_){ return FALLBACK_TRACKS_KEY; } }
   const LAST_SYNC_KEY='veilfarers.sheet.lastCreatorDraft.v2';
   const FORCE_SYNC_KEY='veilfarers.sheet.syncCreatorOnOpen.v1';
   const RELEASE_KEY='veilfarers.sheet.creatorRelease.v1';
@@ -40,6 +44,7 @@
   function currentDraft(){try{return JSON.parse(localStorage.getItem(CREATOR_KEY)||'null');}catch(_){return null;}}
   function proficiencyFloor(level){level=Math.max(1,Math.min(10,Number(level)||1));return level>=8?4:level>=5?3:level>=2?2:1;}
   function featureText(feature){return feature?text(feature.name,feature.text||feature.desc):'';}
+  const compactRule=(value,label)=>window.VFCompactRules?window.VFCompactRules.compactBundle(value,label):clean(value);
   function selectedByName(list,names){return (names||[]).map(name=>byIdentity(list,name)).filter(Boolean);}
   function powerFromValue(list,value){
     const bits=clean(value).split('::');
@@ -52,6 +57,25 @@
     if(path==='sleeping')return compat.sleepingSubclasses||compat.sleepingRules?.subclasses||[];
     return compat.awakenedSubclasses||compat.subclasses||[];
   }
+  function rankValue(value){
+    const key=clean(value).toLowerCase();
+    return key==='mastery'?3:key==='specialization'?2:1;
+  }
+  function pathSubclassRules(item,path){
+    if(!item)return {};
+    if(path==='sleeping'&&item.sleepingRules)return item.sleepingRules;
+    return item.rules||item;
+  }
+  function acquiredSubclassFeatures(subclassRules,rank){
+    const steps=[['Foundation',subclassRules.foundation],['Specialization',subclassRules.specialization],['Mastery',subclassRules.mastery]];
+    const limit=rankValue(rank);
+    return steps.slice(0,limit).filter(([,feature])=>feature&&feature.name).map(([label,feature])=>`${label} — ${featureText(feature)}`);
+  }
+  function multiclassSummary(value){
+    if(!value||typeof value!=='object')return '';
+    const parts=[value.className&&`Class — ${value.className}`,value.domain&&`Domain — ${value.domain}`,value.classFeature&&featureText(value.classFeature),value.backgroundQuestion&&value.backgroundAnswer&&`${value.backgroundQuestion} — ${value.backgroundAnswer}`].filter(Boolean);
+    return parts.length?`Multiclass — ${parts.join(' · ')}`:'';
+  }
   function techSummary(compat,level){
     const tiers=compat?.technologyAccess?.tiers||[];
     const available=tiers.filter(t=>(Number(t.level)||1)<=level).sort((a,b)=>(Number(a.level)||1)-(Number(b.level)||1));
@@ -59,9 +83,25 @@
     if(!current)return '';
     return [`${current.name||'Access'} access`,current.summary].filter(Boolean).join(' · ');
   }
+  function unwrapInput(raw){
+    let value=raw;
+    const seen=new Set();
+    for(let i=0;i<8&&value&&typeof value==='object'&&!seen.has(value);i++){
+      seen.add(value);
+      if(value.creatorState&&typeof value.creatorState==='object'){value=value.creatorState;continue;}
+      if(value.payload&&value.payload.creatorState&&typeof value.payload.creatorState==='object'){value=value.payload.creatorState;continue;}
+      if(value.fields&&typeof value.fields==='object')return {kind:'sheet',value:{fields:value.fields,tracks:value.tracks||{}}};
+      if(value.payload&&value.payload.fields&&typeof value.payload.fields==='object')return {kind:'sheet',value:{fields:value.payload.fields,tracks:value.payload.tracks||{}}};
+      if(value.state&&typeof value.state==='object'&&(value.state.name||value.state.ancestry||value.state.cls)){value=value.state;continue;}
+      break;
+    }
+    return {kind:'creator',value};
+  }
   async function convert(raw){
-    if(raw&&raw.fields)return {fields:raw.fields,tracks:raw.tracks||{}};
-    if(!raw||(!raw.name&&!raw.ancestry&&!raw.cls))throw new Error('No Character Creator draft is stored in this browser.');
+    const unwrapped=unwrapInput(raw);
+    if(unwrapped.kind==='sheet')return unwrapped.value;
+    raw=unwrapped.value;
+    if(!raw||(!raw.name&&!raw.ancestry&&!raw.cls))throw new Error('No compatible Character Creator or Charsheet character data was found.');
     const c=await canonical();
     const path=pathKey(raw);
     const pathLabel=path==='sleeping'?'Sleeping':'Awakened';
@@ -69,10 +109,15 @@
     const compat=byIdentity(c.classCompat,raw.cls)||byName(c.classCompat,cls&&cls.name)||{};
     const classRules=pathClassData(compat,path);
     const subclass=byIdentity(pathSubclasses(compat,path),raw.subclass);
+    const canonicalSubclass=(c.subclasses||[]).find(item=>{
+      const sameName=clean(item&&item.name).toLowerCase()===clean(raw.subclass).toLowerCase()||clean(item&&item.id).toLowerCase()===clean(raw.subclass).toLowerCase()||clean(item&&item.slug).toLowerCase()===clean(raw.subclass).toLowerCase();
+      const sameClass=!cls||!item.className||clean(item.className).toLowerCase()===clean(cls.name).toLowerCase();
+      return sameName&&sameClass;
+    })||null;
     const anc=byIdentity(c.ancestries,raw.ancestry);
     const com=byIdentity(c.communities,raw.community);
     const aff=byIdentity(c.affiliations,raw.affiliation);
-    const ar=rules(anc), cr=rules(com), sr=rules(subclass), afr=rules(aff);
+    const ar=rules(anc), cr=rules(com), sr=pathSubclassRules(canonicalSubclass||subclass,path), afr=rules(aff);
     const strain=(ar.subStrains||[]).find(x=>[x.id,x.name].some(v=>clean(v).toLowerCase()===clean(raw.subStrain).toLowerCase()));
     const ancestryParts=(ar.gifts||[]).map(featureText).filter(Boolean);
     if(ar.extra)ancestryParts.push(featureText(ar.extra));
@@ -81,6 +126,7 @@
     const classFeature=featureText(classRules.classFeature);
     const pathFeature=path==='sleeping'?(classRules.effortFeature||{}):(classRules.hopeFeature||{});
     const foundation=sr.foundation||{};
+    const subclassRank=clean(raw.subclassRank||'Foundation');
     const level=Math.max(1,Math.min(10,Number(raw.level)||1));
     const proficiency=Math.max(proficiencyFloor(level),Math.min(6,Number(raw.proficiency)||proficiencyFloor(level)));
     const selectedWeapons=selectedByName(c.weapons,raw.weapons).slice(0,2);
@@ -88,35 +134,43 @@
     const selectedPowers=path==='awakened'?(raw.powers||[]).map(v=>powerFromValue(c.powers,v)).filter(Boolean).slice(0,5):[];
     const selectedGear=[];
     if(raw.kit){const exact=byIdentity(c.gear,raw.kit);if(exact)selectedGear.push(exact);}
-    const experiences=(Array.isArray(raw.experiences)?raw.experiences:[]).slice(0,3);
+    const experiences=(Array.isArray(raw.experiences)?raw.experiences:[]).slice(0,5);
+    const experienceBonuses=Array.isArray(raw.experienceBonuses)?raw.experienceBonuses:[];
     while(experiences.length<3)experiences.push('');
     const baseHp=Number(classRules.hp||classRules.statistics?.hitPoints||cls?.statistics?.hitPoints)||6;
     const baseEvasion=Number(classRules.evasion||classRules.statistics?.evasion||cls?.statistics?.evasion)||10;
+    const finalHp=baseHp+Number(raw.hpMaxBonus||0),finalStress=6+Number(raw.stressMaxBonus||0),finalEvasion=baseEvasion+Number(raw.evasionBonus||0);
+    const resolveBase=level>=8?6:(level>=5?4:2),resolveMax=Math.min(10,resolveBase+Number(raw.resolveMaxBonus||0));
     const affiliationNotes=[afr.tag,afr.benefit&&`Benefit: ${afr.benefit}`,afr.obligation&&`Obligation: ${afr.obligation}`].filter(Boolean).join('\n');
     const appearanceNotes=[raw.appearance&&`Appearance: ${raw.appearance}`,raw.voice&&`Voice: ${raw.voice}`].filter(Boolean).join('\n');
-    const foundationSummary=foundation.name?`Subclass Foundation — ${featureText(foundation)}`:'';
-    const generalFeatures=[classFeature,foundationSummary].filter(Boolean).join('\n\n');
+    const subclassFeatureSummaries=acquiredSubclassFeatures(sr,subclassRank);
+    const sleepingDomainSummary=path==='sleeping'&&Array.isArray(raw.sleepingMysticDomains)&&raw.sleepingMysticDomains.length
+      ? `Studied Domains — ${raw.sleepingMysticDomains.join(' + ')}` : '';
+    const generalFeatures=[classFeature,...subclassFeatureSummaries,multiclassSummary(raw.multiclass),sleepingDomainSummary].filter(Boolean).join('\n\n');
+    const selectedPowerSummary=selectedPowers.length?`Selected Level 1 Powers — ${selectedPowers.map(power=>`${power.domain}: ${power.name}`).join(' · ')}`:'';
+    const awakenedDomainSummary=path==='awakened'?[raw.veilAlignment&&`Veil Alignment — ${raw.veilAlignment}`,selectedPowerSummary].filter(Boolean).join('\n'):'';
     const signatureTrait=sr.trait||classRules.spellcastTrait||classRules.trait||compat.spellcastTrait||compat.trait||'';
     const f={
-      name:clean(raw.name),pron:clean(raw.pronouns),level:String(level),prof:String(proficiency),chosen_path:pathLabel,
-      ancestry:(anc&&anc.name)||clean(raw.ancestry),ancestry_gift:ancestryParts.join('\n\n'),ancestry_note:ancestryParts.join('\n\n'),ailuran_variant:strain?strain.name:'',
-      community:(com&&com.name)||clean(raw.community),community_note:communityFeature,community_gift:communityFeature,community_advantages:communityFeature,
+      character_id:clean(raw.characterId),name:clean(raw.name),pron:clean(raw.pronouns),level:String(level),prof:String(proficiency),chosen_path:pathLabel,
+      ancestry:(anc&&anc.name)||clean(raw.ancestry),ancestry_gift:compactRule(ancestryParts.join('\n\n'),'Ancestry Gift'),ancestry_note:compactRule(ancestryParts.join('\n\n'),'Ancestry Gift'),ailuran_variant:strain?strain.name:'',
+      community:(com&&com.name)||clean(raw.community),community_note:compactRule(communityFeature,'Community'),community_gift:compactRule(communityFeature,'Community'),community_advantages:compactRule(communityFeature,'Community'),
       affiliation:(aff&&aff.name)||clean(raw.affiliation),aff_standing:'+1 Good Standing',aff_reputation:'Unknown (0)',aff_notes:[affiliationNotes,appearanceNotes].filter(Boolean).join('\n\n'),aff_faction_notes:affiliationNotes,
       class:(cls&&cls.name)||compat.name||clean(raw.cls),subclass:(subclass&&subclass.name)||clean(raw.subclass),signature_trait:signatureTrait,
-      features:generalFeatures,
-      a_featname:path==='awakened'?clean(pathFeature.name):'',a_feattext:path==='awakened'?clean(pathFeature.text||pathFeature.desc):'',
-      s_featname:path==='sleeping'?clean(pathFeature.name):'',s_feattext:path==='sleeping'?clean(pathFeature.text||pathFeature.desc):'',
+      features:compactRule(generalFeatures,'Class Feature'),
+      a_featname:path==='awakened'?clean(pathFeature.name):'',a_feattext:path==='awakened'?compactRule(clean(pathFeature.text||pathFeature.desc),clean(pathFeature.name)||'Feature'):'',
+      s_featname:path==='sleeping'?clean(pathFeature.name):'',s_feattext:path==='sleeping'?compactRule(clean(pathFeature.text||pathFeature.desc),clean(pathFeature.name)||'Feature'):'',
       s_honed:path==='sleeping'?'HONED EDGE':'',s_active_move:'',s_active_move_text:'',
-      class_proficiencies:techSummary(compat,level),tech_access:techSummary(compat,level),
-      base_hp_max:String(baseHp),base_stress_max:'6',base_evasion:String(baseEvasion),evasion:String(baseEvasion),
+      class_proficiencies:techSummary(compat,level),tech_access:techSummary(compat,level),tech_access_level:String(Math.max(1,Number(raw.technologyAccessLevel||1))),
+      base_hp_max:String(finalHp),base_stress_max:String(finalStress),base_evasion:String(finalEvasion),evasion:String(finalEvasion),
       wealth:String(raw.wealth||1),kit_class:(classRules.items||compat.items||[]).join(' · '),kit_personal:clean(raw.kit),
+      a_domain_ref:awakenedDomainSummary,a_vault:(raw.vaultPowers||[]).join('\n'),s_resolve_die:clean(raw.resolveDie||'d4'),s_learned_moves:JSON.stringify(raw.resolveMoves||[]),subclass_rank:subclassRank,multiclass:clean(raw.multiclass&&raw.multiclass.className),multiclass_details:raw.multiclass?JSON.stringify(raw.multiclass):'',
       tr_agility:signed(raw.traits&&raw.traits.agility),tr_strength:signed(raw.traits&&raw.traits.strength),tr_finesse:signed(raw.traits&&raw.traits.finesse),tr_knowledge:signed(raw.traits&&raw.traits.knowledge),tr_instinct:signed(raw.traits&&raw.traits.instinct),tr_presence:signed(raw.traits&&raw.traits.presence),
       base_tr_agility:signed(raw.traits&&raw.traits.agility),base_tr_strength:signed(raw.traits&&raw.traits.strength),base_tr_finesse:signed(raw.traits&&raw.traits.finesse),base_tr_knowledge:signed(raw.traits&&raw.traits.knowledge),base_tr_instinct:signed(raw.traits&&raw.traits.instinct),base_tr_presence:signed(raw.traits&&raw.traits.presence),
       seed_motive:clean(raw.bgAnswer),s_anchor:clean(raw.anchor),equipment_notes:clean(raw.wound),a_quick_notes:clean(raw.levelNotes)
     };
     experiences.forEach((value,i)=>{
       f[`s_exp_${i}`]=clean(value);f[`a_exp_${i}`]=clean(value);
-      f[`s_exp_${i}_bonus`]='+2';f[`a_exp_${i}_bonus`]='+2';
+      const bonus=Math.max(2,Math.min(5,Number(experienceBonuses[i]||2)));f[`s_exp_${i}_bonus`]=`+${bonus}`;f[`a_exp_${i}_bonus`]=`+${bonus}`;
     });
     selectedWeapons.forEach((w,i)=>{
       const p=i===0?'wpri':'wsec';
@@ -139,16 +193,37 @@
     selectedGear.slice(0,8).forEach((item,i)=>{f[`eq_${i}_name`]=item.name;f[`eq_${i}_tier`]=tierLabel(item);f[`eq_${i}_use`]=clean(item.use);f[`eq_${i}_qty`]='1';});
     if(raw.kit&&!selectedGear.length){f.eq_0_name=clean(raw.kit);f.eq_0_qty='1';}
     const tracks={
-      max:{hp:baseHp,armor_slots:selectedArmor?Number(selectedArmor.armorSlots||0):0,stress:6,s_resolve:2,a_hope:6,s_effort:6},
-      current:{hp:baseHp,armor_slots:selectedArmor?Number(selectedArmor.armorSlots||0):0,stress:0,s_resolve:path==='sleeping'?2:0,a_hope:path==='awakened'?2:0,s_effort:path==='sleeping'?2:0}
+      max:{hp:finalHp,armor_slots:selectedArmor?Number(selectedArmor.armorSlots||0):0,stress:finalStress,s_resolve:resolveMax,a_hope:6,s_effort:6},
+      current:{hp:finalHp,armor_slots:selectedArmor?Number(selectedArmor.armorSlots||0):0,stress:0,s_resolve:path==='sleeping'?resolveMax:0,a_hope:path==='awakened'?2:0,s_effort:path==='sleeping'?2:0}
     };
-    return {fields:f,tracks};
+    return {fields:f,tracks,characterId:clean(raw.characterId),advancementHistory:raw.advancementHistory||[]};
+  }
+  function sheetPayload(out){
+    return {app:'Veilfarers Character Sheet',version:'2.83-RC3.2',schema:'veilfarers.character/2',characterId:clean(out.characterId||out.fields?.character_id),exportedAt:new Date().toISOString(),fields:out.fields||{},tracks:out.tracks||{},advancementHistory:out.advancementHistory||[]};
+  }
+  function makeEnvelope(out,raw,source='creator',target='charsheet'){
+    return {schema:'veilfarers.character-transfer/1',source,target,createdAt:new Date().toISOString(),creatorState:raw&&raw.fields?null:raw,payload:sheetPayload(out)};
   }
   function saveOutput(out,raw){
-    localStorage.setItem(FIELDS_KEY,JSON.stringify(out.fields));
-    localStorage.setItem(TRACKS_KEY,JSON.stringify(out.tracks));
+    localStorage.setItem(fieldsKey(),JSON.stringify(out.fields));
+    localStorage.setItem(tracksKey(),JSON.stringify(out.tracks));
+    localStorage.setItem(LATEST_SHEET_KEY,JSON.stringify(sheetPayload(out)));
     localStorage.setItem(LAST_SYNC_KEY,JSON.stringify(raw));
     localStorage.setItem(RELEASE_KEY,'11.1-RC3.2');
+  }
+  function queueTransfer(target,out,raw,source='charsheet'){
+    const envelope=makeEnvelope(out,raw,source,target);
+    localStorage.setItem(TRANSFER_KEY,JSON.stringify(envelope));
+    localStorage.setItem(LATEST_SHEET_KEY,JSON.stringify(envelope.payload));
+    return envelope;
+  }
+  function currentSheetPayload(){
+    try{
+      const fields=JSON.parse(localStorage.getItem(fieldsKey())||'null');
+      if(!fields||typeof fields!=='object')return null;
+      const tracks=JSON.parse(localStorage.getItem(tracksKey())||'{}');
+      return sheetPayload({fields,tracks});
+    }catch(_){return null;}
   }
   async function sync({replaceUrl=false}={}){
     const button=q('#vf-sync-creator');const previous=button&&button.textContent;
@@ -167,11 +242,11 @@
   function automaticSync(){
     const params=new URLSearchParams(location.search);const forced=params.get('sync')==='1'||localStorage.getItem(FORCE_SYNC_KEY)==='1';
     if(forced){sync({replaceUrl:true});return;}
-    if(localStorage.getItem(FIELDS_KEY))return;
+    if(localStorage.getItem(fieldsKey()))return;
     const raw=currentDraft();if(!raw)return;
     convert(raw).then(out=>{saveOutput(out,raw);location.reload();}).catch(()=>{});
   }
-  window.VeilFarersSheetBridge=Object.freeze({convert,sync});
-  const start=()=>{addButton();automaticSync();};
+  window.VeilFarersSheetBridge=Object.freeze({convert,unwrapInput,sync,saveOutput,makeEnvelope,queueTransfer,currentSheetPayload,fieldsKey,tracksKey,TRANSFER_KEY,LATEST_SHEET_KEY});
+  const start=()=>{if(!q('#sheet')||!q('#sheetWrap'))return;addButton();automaticSync();};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();

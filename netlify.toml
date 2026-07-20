@@ -17,13 +17,14 @@ functions = "netlify/functions"
 [functions]
   [functions."*"]
 
-# Role checks happen at Netlify's CDN edge. The browser-side gates remain as UX fallbacks.
+# Every authenticated VeilFarers account receives the member role through netlify/functions/identity.mts.
+# Role checks happen at Netlify's CDN edge. The browser-side gate remains as a UX fallback.
 [[redirects]]
 from = "/keeper-tool"
 to = "/keeper-tool.html"
 status = 200
 force = true
-conditions = {Role = ["keeper", "admin"]}
+conditions = {Role = ["member", "keeper", "admin"]}
 
 [[redirects]]
 from = "/keeper-tool"
@@ -36,7 +37,7 @@ from = "/keeper-tool.html"
 to = "/keeper-tool.html"
 status = 200
 force = true
-conditions = {Role = ["keeper", "admin"]}
+conditions = {Role = ["member", "keeper", "admin"]}
 
 [[redirects]]
 from = "/keeper-tool.html"
@@ -71,17 +72,17 @@ status = 302
 force = true
 
 # Baseline public-site hardening. Inline/eval remain temporarily necessary for the current
-# single-file React/Babel tools and should be removed when dependencies are bundled.
+# inline application scripts; Player Tool JSX and Tailwind are precompiled for production.
 [[headers]]
 for = "/*"
   [headers.values]
   X-Content-Type-Options = "nosniff"
   X-Frame-Options = "DENY"
   Referrer-Policy = "strict-origin-when-cross-origin"
-  Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+  Permissions-Policy = "accelerometer=(self), gyroscope=(self), camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
   Strict-Transport-Security = "max-age=31536000; includeSubDomains"
   Cross-Origin-Opener-Policy = "same-origin-allow-popups"
-  Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://docs.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://www.gstatic.com https://identity.netlify.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identity.netlify.com https://api.netlify.com https://*.netlify.com; frame-src https://identity.netlify.com https://docs.google.com; worker-src 'self' blob:; media-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+  Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://docs.google.com; script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://www.gstatic.com https://identity.netlify.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com https://identity.netlify.com https://api.netlify.com https://*.netlify.com; frame-src 'self' https://identity.netlify.com https://app.netlify.com https://docs.google.com; worker-src 'self' blob:; media-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
 
 [[headers]]
 for = "/*.html"

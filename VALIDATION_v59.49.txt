@@ -1,0 +1,61 @@
+VEILFARERS PORTAL v59.49 — VALIDATION
+Date: 2026-07-18
+
+AUTOMATED PASS
+--------------
+PASS — Clean `npm ci --ignore-scripts --no-audit --no-fund` completed from the public npm registry.
+PASS — `.npmrc` pins `https://registry.npmjs.org/`.
+PASS — `package-lock.json` contains no `applied-caas` or `internal.api.openai.org` URL.
+PASS — 90 JSON files parse successfully.
+PASS — All first-party root JavaScript files pass `node --check`.
+PASS — Ten plain inline HTML script blocks parse successfully.
+PASS — Player Tool JSX/Babel block parses with the TypeScript TSX parser.
+PASS — All seven Netlify Function `.mts` files parse with the TypeScript parser.
+PASS — `character-vault.mts` exists at `/api/character-vault` and requires a verified Netlify user.
+PASS — Character Vault server query filters by authenticated `ownerId` and server upsert forces owner/schema/status/timestamps.
+PASS — Character registry waits for Netlify Identity and sends a bearer token to authenticated cloud endpoints.
+PASS — Table access waits for Netlify Identity and sends the bearer token before requesting Firebase/table access.
+PASS — CSP permits the current Netlify Identity frame at `https://app.netlify.com`.
+PASS — CSP permits `https://www.gstatic.com` diagnostic connections used by Firebase source maps.
+PASS — 3D loader includes a 20-second hard timeout, readiness tracking, Retry, Use 2D and Close controls.
+PASS — Player Tool connection alert uses an explicit opaque `#450a0a` background.
+PASS — Player Tool connection alert begins below `--vf-portal-height` and navigation remains above it.
+PASS — All 87 protected `assets/3d-dice` files exactly match v59.48 by SHA-256.
+PASS — No private key, service-account JSON or `.env` secret was found in first-party deploy text files.
+PASS — Final ZIP extracts with `index.html` at root and includes `/api/character-vault`, `.npmrc` and current v59.49 documentation.
+PASS — Final ZIP contains no `node_modules`, active `.env`/`.env.local`, private key or service-account credential. The placeholder `local/.env.local.example` is retained for local testing.
+
+RETAINED REGRESSION COVERAGE
+----------------------------
+PASS — v59.48 Character ID/Vault/Level Up/Charsheet/Player Tool code remains present.
+PASS — Equipment Mods, drone synchronization and compact-rule code remain present.
+PASS — Keeper Tool shared navigation and authenticated gate remain present.
+PASS — Table ownership, invitation and password server API remains present.
+PASS — VeilFarers remains the active branding.
+
+NOT EXECUTED IN THIS BUILD ENVIRONMENT
+--------------------------------------
+PENDING — Real Netlify Deploy Preview build and Function bundling.
+PENDING — Netlify Identity modal login and callback flow.
+PENDING — Verification that `getUser()` accepts the deployed bearer JWT in this site context.
+PENDING — Live `/api/character-vault` reads/writes against the configured Firebase project.
+PENDING — Cross-account Vault isolation in two real browser sessions.
+PENDING — Firebase custom-token table connection and active Firestore membership Rules.
+PENDING — Real slow/failed 3D WebGL initialization and mobile-device behavior.
+PENDING — Responsive visual inspection of the opaque warning below navigation.
+
+MANDATORY DEPLOY-PREVIEW TEST
+-----------------------------
+1. Hard-refresh after the v59.49 deploy publishes.
+2. Open Log-in. Confirm no CSP error for framing `https://app.netlify.com/`.
+3. Sign in and confirm `/api/character-vault` returns 200, not 401.
+4. Complete a disposable character; confirm cloud sync and cross-browser retrieval for the same account.
+5. Sign in with a second account and confirm the first account's character is absent.
+6. Connect to a disposable table; confirm `/api/firebase-auth-token` returns 200 and does not repeat 401 responses.
+7. Test normal 3D readiness, Close during load, Use 2D during load and the timeout/error state.
+8. Trigger a connection error and confirm the alert is opaque and directly below the nav bar.
+9. Regress ordinary Player Tool rolls and confirm numerical outcomes remain unchanged.
+
+SECURITY ACCEPTANCE CONDITION
+-----------------------------
+Character Vault is server-authorized in v59.49 and does not require direct client Firestore Rules. Real-time table data must not be described as fully membership-secured until the project-wide Firestore Rules are deployed and denial tests pass.

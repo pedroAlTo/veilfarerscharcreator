@@ -35,3 +35,19 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-construction-banner strong{text-transform:uppercase;letter-spacing:.11em;color:#fff2c8}.vf-construction-banner span{color:rgba(248,231,168,.68)}
 [hidden]{display:none!important}
 @media(max-width:700px){.vf-construction-banner{align-items:flex-start;flex-direction:column;gap:2px;padding:8px 12px;text-align:left}}
+
+/* v59.49: portal navigation remains below global Player Tool connection errors and outside authenticated Keeper content. */
+.vf-portal-nav{z-index:60000}
+.vf-construction-banner{z-index:59999}
+
+/* v59.50: the persistent Character ID is shown in the shared navigation rather than as a floating callout. */
+.vf-portal-nav .vf-nav-character-id{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid rgba(233,192,104,.45);background:rgba(38,31,19,.86);border-radius:999px;padding:6px 10px;color:#f5e8bd;line-height:1}
+.vf-portal-nav .vf-nav-character-id[hidden]{display:none!important}
+.vf-portal-nav .vf-nav-character-id span{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#a99566}
+.vf-portal-nav .vf-nav-character-id strong{font-size:10px;letter-spacing:.07em;color:#fff1c9}
+@media(max-width:700px){.vf-portal-nav .vf-nav-character-id span{display:none}.vf-portal-nav .vf-nav-character-id{padding:7px 9px}}
+
+
+/* v59.52: a Vault may contain many characters, but exactly one is the active cross-tool character. */
+.vf-active-character{display:inline-flex;align-items:center;margin-left:7px;padding:2px 7px;border:1px solid rgba(34,211,238,.55);border-radius:999px;background:rgba(8,145,178,.16);color:#67e8f9;font:800 8px/1 Arial,sans-serif;letter-spacing:.12em;vertical-align:middle}
+.vf-button.active-character{border-color:rgba(34,211,238,.55)!important;background:rgba(8,145,178,.16)!important;color:#67e8f9!important;cursor:default!important;opacity:1!important}

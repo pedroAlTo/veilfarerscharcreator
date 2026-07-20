@@ -1,0 +1,69 @@
+VEILFARERS PORTAL v59.51 — VALIDATION
+Date: 2026-07-19
+
+AUTOMATED PASS
+--------------
+PASS — npm ci completed with registry.npmjs.org dependencies only.
+PASS — package.json and package-lock.json version 59.51.0.
+PASS — all portal JSON parsed; changelog currentVersion/version are v59.51.
+PASS — all first-party standalone JavaScript passed node --check.
+PASS — every inline HTML script parsed, including Player Tool JSX.
+PASS — seven Netlify Function .mts files parsed as TypeScript.
+PASS — fresh PBKDF2 v2 verifier fixture.
+PASS — browser legacy PBKDF2 decoded-salt fixture.
+PASS — v59.47-v59.50 Base64-text-salt verifier fixture.
+PASS — Proficiency 3 converts 1d8+2 to 3d8+2.
+PASS — critical Proficiency damage and Massive extra-die plan.
+PASS — permanent Character ID Player deduplication with current HP/Stress runtime preservation.
+PASS — exact legacy no-ID fingerprint recognition.
+PASS — empty optional Augments/Drones expression cannot render numeric 0.
+PASS — weapon, gear and augment category/property/cost filter fixtures.
+PASS — latest-invitation local persistence and invitation owner action markers.
+PASS — Keeper live patches, notes, session name, handouts and roll broadcasts use table API actions.
+PASS — registry refresh coalescing/retry/local-fallback markers.
+PASS — Creator, Level Up and Player Tool legacy import/Vault registration markers.
+PASS — no registry-driven location.reload() path.
+PASS — public npm registry scan; no applied-caas/internal.api.openai URL in deploy source.
+PASS — protected assets/3d-dice tree hashes match v59.50.
+PASS — deploy ZIP root/credential/node_modules/.git scan.
+
+IMPLEMENTED / STATICALLY VERIFIED
+---------------------------------
+PASS — invitation details/edit/revoke/reactivate/delete interface.
+PASS — latest raw passkey remains visible until replacement/deletion on the same owner device.
+PASS — Proficiency visible in Player header and weapon cards.
+PASS — Player Log rendered through body portal with Close and server reset.
+PASS — Keeper Firestore initialization remains singleton with no host override.
+PASS — custom in-app catalogue dropdowns replace catalogue native selects.
+
+NOT EXECUTED IN THIS BUILD ENVIRONMENT
+--------------------------------------
+PENDING — live Netlify Identity and Function invocation.
+PENDING — live Firebase custom-token and Firestore listener behavior.
+PENDING — real historical production-table password migration.
+PENDING — two-account invitation/membership denial tests.
+PENDING — Keeper-to-Player cross-browser notes/state/handout/roll delivery.
+PENDING — real legacy JSON samples from every historical portal generation.
+PENDING — mobile/responsive/keyboard/accessibility visual QA.
+PENDING — iOS/Android Shake to Roll and slow/failing 3D initialization.
+PENDING — Charsheet print-to-PDF inspection.
+
+MANDATORY DEPLOY-PREVIEW ACCEPTANCE
+-----------------------------------
+1. Sign out/in and connect a disposable owner table.
+2. Create an invitation; close/reopen Table Admin and confirm the passkey remains.
+3. Edit, revoke, reactivate and delete invitations.
+4. Join from a second account with invitation + password.
+5. Test one historical password and confirm subsequent joins use the migrated record.
+6. Change Keeper HP/Fear/Spotlight/notes/session name and verify Player updates.
+7. Broadcast Keeper Duality/d20/damage/ability rolls and reset the Player Log.
+8. Import old Creator/Charsheet/Player JSON through all three import surfaces.
+9. Open/import the same character repeatedly; verify one Vault ID and one Player record.
+10. Verify Proficiency-scaled normal/critical/Massive damage.
+11. Verify Player Log Close/Reset and no stray numeric zero.
+12. Exercise source/tier/category/property/ownership/cost/sort filters on all four catalogues.
+13. Regress Mods, drones, Level Up, Shake and 2D/3D rolls.
+
+SECURITY ACCEPTANCE CONDITION
+-----------------------------
+Do not describe table membership as fully Rules-enforced until the coordinated production Rules deployment and denial tests pass. Firestore Rules are project-wide.

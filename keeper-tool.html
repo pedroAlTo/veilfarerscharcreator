@@ -8,7 +8,10 @@
   <title>Veilfarers - Keeper's Companion</title>
   <link rel="stylesheet" href="portal.css">
   <link rel="stylesheet" href="styles.css">
-  <style>.vf-spotlight{position:relative;border:1px solid rgba(250,204,21,0.85) !important;} .vf-spotlight::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(150% 150% at 23px 22px, rgba(250,204,21,0.30) 0%, rgba(250,204,21,0.13) 32%, rgba(250,204,21,0.04) 60%, transparent 82%);-webkit-mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);} .vf-spotlight > *{position:relative;z-index:1;} @keyframes vf-wash-flicker{0%{opacity:1;}2%{opacity:0.12;}5%{opacity:0.85;}8%{opacity:0.06;}11%{opacity:0.55;}14%{opacity:0;}60%{opacity:0;}64%{opacity:0.1;}68%{opacity:0.02;}73%{opacity:0.5;}77%{opacity:0.1;}83%{opacity:0.82;}88%{opacity:0.35;}94%{opacity:0.95;}100%{opacity:1;}} .vf-spotlight.flicker::before{animation:vf-wash-flicker 1.6s steps(1,end) 1;} .vf-spotlight .character-name, .vf-spotlight .stat-label, .vf-spotlight span, .vf-spotlight .text-gray{ text-shadow: 0 1px 2px rgba(0,0,0,0.85); } .vf-spot-toggle:hover{opacity:1 !important;}</style>
+  <link rel="stylesheet" href="keeper-player.css">
+  <style>body.vf-keeper-page .header{top:var(--vf-portal-height,49px)} body.vf-keeper-page .campaign-select-screen{min-height:calc(100vh - var(--vf-portal-height,49px))} .vf-spotlight{position:relative;border:1px solid rgba(250,204,21,0.85) !important;} .vf-spotlight::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(150% 150% at 23px 22px, rgba(250,204,21,0.30) 0%, rgba(250,204,21,0.13) 32%, rgba(250,204,21,0.04) 60%, transparent 82%);-webkit-mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);mask:conic-gradient(from 0deg at 23px 22px, transparent 30deg, #000 52deg, #000 132deg, transparent 154deg);} .vf-spotlight > *{position:relative;z-index:1;} @keyframes vf-wash-flicker{0%{opacity:1;}2%{opacity:0.12;}5%{opacity:0.85;}8%{opacity:0.06;}11%{opacity:0.55;}14%{opacity:0;}60%{opacity:0;}64%{opacity:0.1;}68%{opacity:0.02;}73%{opacity:0.5;}77%{opacity:0.1;}83%{opacity:0.82;}88%{opacity:0.35;}94%{opacity:0.95;}100%{opacity:1;}} .vf-spotlight.flicker::before{animation:vf-wash-flicker 1.6s steps(1,end) 1;} .vf-spotlight .character-name, .vf-spotlight .stat-label, .vf-spotlight span, .vf-spotlight .text-gray{ text-shadow: 0 1px 2px rgba(0,0,0,0.85); } .vf-spot-toggle:hover{opacity:1 !important;}</style>
+  <script src="equipment-mods.js"></script>
+  <script src="compact-rules.js"></script>
   <script src="shared-data.js"></script>
   <script src="canonical-runtime.js"></script>
   <script src="veilfarers-import.js"></script>
@@ -16,11 +19,17 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="table-access.js"></script>
+<script src="/character-registry.js"></script>
+<script src="/character-sync-adapter.js"></script>
+  <script src="veilfarers-theme.js"></script>
+  <link rel="stylesheet" href="veilfarers-theme.css">
 </head>
 
-<body>
+<body class="vf-keeper-page">
+  <script src="portal.js"></script>
 
-  <div class="vf-construction-banner" role="status"><strong>Keeper Tool · Under construction</strong><span>Navigation and campaign workflows are being rebuilt inside the unified VeilFarers portal.</span></div>
+  <div class="vf-keeper-productbar" role="status"><strong>KEEPER TOOL</strong><span>LIVE TABLE CONTROL · PRIVATE PREP · TARGETED PLAYER COMMUNICATION</span></div>
 
   <div id="vf-gate" style="position:fixed;inset:0;z-index:100000;background:#0b1220;display:flex;flex-direction:column;
      align-items:center;justify-content:center;font-family:ui-sans-serif,system-ui,sans-serif;color:#e2e8f0;padding:24px;text-align:center;">
@@ -39,25 +48,29 @@
       var message = document.getElementById('vf-gate-msg');
       var login = document.getElementById('vf-gate-login');
       var logout = document.getElementById('vf-gate-logout');
-      if (window.VF_IS_LOCAL_TEST === true) { if (gate) gate.remove(); return; }
-      function rolesOf(user) { return user && user.app_metadata && Array.isArray(user.app_metadata.roles) ? user.app_metadata.roles : []; }
+      if (window.VF_IS_LOCAL_TEST === true) { window.VF_KEEPER_USER={id:'local-test',email:'local@test',name:'Local Test'}; if (gate) gate.remove(); return; }
       function render(user) {
         if (!user) {
-          userLabel.textContent = 'Sign in with a Netlify Identity account assigned the keeper or admin role.';
+          window.VF_KEEPER_USER = null;
+          userLabel.textContent = 'Sign in to use Keeper Tool or create and manage tables.';
           message.textContent = '';
           login.style.display = '';
           logout.style.display = 'none';
           return;
         }
-        var roles = rolesOf(user);
+        window.VF_KEEPER_USER = {
+          id: user.id,
+          email: user.email || '',
+          name: user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : (user.email || 'VeilFarer')
+        };
+        window.dispatchEvent(new CustomEvent('veilfarers:keeper-user',{detail:{user:window.VF_KEEPER_USER}}));
+        var badge=document.getElementById('vf-keeper-account');
+        if(badge){var text=badge.querySelector('span:last-child');if(text)text.textContent=window.VF_KEEPER_USER.name+' · '+window.VF_KEEPER_USER.email;}
         userLabel.textContent = user.email || user.id || 'Signed-in user';
         login.style.display = 'none';
         logout.style.display = '';
-        if (roles.indexOf('keeper') !== -1 || roles.indexOf('admin') !== -1) {
-          if (gate) gate.remove();
-        } else {
-          message.textContent = 'Access denied. Assign the keeper or admin role to this account in Netlify Identity.';
-        }
+        message.textContent = '';
+        if (gate) gate.remove();
       }
       if (!identity) {
         userLabel.textContent = 'Netlify Identity is unavailable. Open this page from the deployed Netlify site.';
@@ -72,6 +85,11 @@
       identity.on('logout', function () { render(null); });
       identity.on('error', function (error) { message.textContent = error && error.message ? error.message : String(error); });
       identity.init();
+      document.addEventListener('DOMContentLoaded', function(){
+        var badge=document.getElementById('vf-keeper-account');
+        var user=window.VF_KEEPER_USER;
+        if(badge&&user){var text=badge.querySelector('span:last-child');if(text)text.textContent=user.name+' · '+user.email;}
+      });
     })();
   </script>
 
@@ -233,6 +251,7 @@
             </div>
 
             <div class="header-controls">
+              <div id="vf-keeper-account" style="display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid rgba(52,211,153,.35);border-radius:999px;background:rgba(6,78,59,.28);font-size:10px;color:#d1fae5;white-space:nowrap;"><span style="width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.8)"></span><span>Authenticated Keeper</span></div>
               <!-- Save/Load Controls -->
               <div class="save-load-controls">
                 <button id="saveBtn" class="btn btn-save btn-small" title="Save campaign to JSON file">
@@ -382,7 +401,10 @@
         <div id="playersTab" class="tab-content">
           <div class="tab-header">
             <h2>Player Characters</h2>
-            <button id="addPlayerBtn" class="btn btn-blue keeper-only">+ Add Player</button>
+            <div class="tab-header-actions keeper-only">
+              <button id="importSheetPlayerBtn" class="btn btn-cyan" title="Import the latest filled Charsheet from this browser">⇢ Import Charsheet</button>
+              <button id="addPlayerBtn" class="btn btn-blue">+ Add Player</button>
+            </div>
           </div>
           <div id="playersGrid" class="character-cards-grid"></div>
         </div>
@@ -934,7 +956,7 @@
 
 <div id="vf-live" style="position:fixed;bottom:12px;right:12px;z-index:9000;width:290px;background:#0b1220;border:1px solid #1e293b;border-radius:10px;padding:12px;font-family:ui-sans-serif,system-ui,sans-serif;color:#e2e8f0;font-size:12px;box-shadow:0 6px 24px rgba(0,0,0,0.55);">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-    <span style="font-weight:800;color:#e2b45a;letter-spacing:1px;">LIVE SESSION</span>
+    <span class="vf-live-title">KEEPER CONSOLE</span>
     <button id="vf-live-min" title="Minimize" style="background:none;border:0;color:#64748b;cursor:pointer;font-size:14px;">_</button>
   </div>
   <div id="vf-live-body">
@@ -947,8 +969,9 @@
       <input id="vf-session-id" placeholder="Join or create a table" value="Table" style="flex:1;min-width:0;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
       <button id="vf-connect-btn" style="padding:6px 12px;border:0;border-radius:6px;background:#e2b45a;color:#111;font-weight:700;cursor:pointer;">Connect</button>
     </div>
-    <input id="vf-session-pass" type="password" placeholder="Password strongly recommended (unlock or protect new table)" style="width:100%;box-sizing:border-box;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
-    <div style="margin-top:4px;font-size:9px;color:#f59e0b;line-height:1.35;">Open tables are visible and joinable. Protect campaign tables with a password.</div>
+    <input id="vf-session-pass" type="password" placeholder="Password (also required with an invitation when protected)" style="width:100%;box-sizing:border-box;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
+    <input id="vf-session-invite" placeholder="Invitation passkey (new members)" style="width:100%;box-sizing:border-box;margin-top:5px;padding:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
+    <div style="margin-top:4px;font-size:9px;color:#67e8f9;line-height:1.35;">Tables are visible to logged-in users. Joining requires membership or an owner invitation; protected tables also require the password.</div>
     <div id="vf-password-change" style="display:none;margin-top:8px;padding:8px;border:1px solid #78350f;border-radius:7px;background:#1c1308;">
       <div style="display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:5px;"><span style="font-size:10px;color:#fbbf24;font-weight:800;">TABLE PASSWORD</span><span id="vf-password-state" style="font-size:9px;color:#94a3b8;">OPEN</span></div>
       <input id="vf-new-pass" type="password" placeholder="New password (minimum 4 characters)" style="width:100%;box-sizing:border-box;padding:5px;border-radius:5px;border:1px solid #475569;background:#111827;color:#fff;" />
@@ -968,13 +991,19 @@
       <div id="vf-drone-signals" style="display:flex;flex-direction:column;gap:5px;"><span style="font-size:10px;color:#64748b;font-style:italic;">No drones connected.</span></div>
     </div>
     <div style="margin-top:8px;border-top:1px solid #1e293b;padding-top:8px;">
-      <div style="font-size:10px;color:#e2b45a;font-weight:700;letter-spacing:1px;margin-bottom:4px;">SEND TO PLAYERS</div>
+      <div class="vf-console-section-title">KEEPER ROLL</div>
+      <div class="vf-roll-visibility" role="group" aria-label="Keeper roll visibility">
+        <button type="button" data-roll-visibility="hidden" class="active">Keeper only</button>
+        <button type="button" data-roll-visibility="broadcast">Broadcast</button>
+        <input type="hidden" id="vf-roll-visibility" value="hidden" />
+      </div>
       <input id="vf-send-label" placeholder="Label (e.g. Weaver Swarm attack)" style="width:100%;padding:5px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;margin-bottom:4px;" />
       <div style="display:flex;gap:4px;">
         <input id="vf-send-dmg" placeholder="Dmg (e.g. 2d8+3)" style="flex:1;min-width:0;padding:5px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;" />
-        <button id="vf-send-roll" style="padding:5px 8px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:700;cursor:pointer;">Roll+Send</button>
+        <button id="vf-send-roll" style="padding:5px 8px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:700;cursor:pointer;">Roll</button>
       </div>
-      <button id="vf-send-note" style="width:100%;margin-top:4px;padding:5px;border:0;border-radius:6px;background:#334155;color:#e2e8f0;font-weight:600;cursor:pointer;">New Handout / Note</button>
+      <div id="vf-roll-visibility-help" class="vf-console-help">Hidden rolls stay only in this Keeper browser.</div>
+      <button id="vf-send-note" style="width:100%;margin-top:4px;padding:5px;border:0;border-radius:6px;background:#334155;color:#e2e8f0;font-weight:600;cursor:pointer;">Send Player Note</button>
       <div id="vf-sent-notes-wrap" style="margin-top:8px;display:none;">
         <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:3px;">Sent Handouts</div>
         <div id="vf-sent-notes" style="max-height:130px;overflow-y:auto;"></div>
@@ -985,7 +1014,7 @@
 
 <div id="vf-note-modal" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.78);align-items:center;justify-content:center;font-family:ui-sans-serif,system-ui,sans-serif;">
   <div style="background:#0b1220;border:1px solid #334155;border-radius:12px;padding:16px;width:440px;max-width:94vw;max-height:90vh;overflow-y:auto;color:#e2e8f0;box-shadow:0 10px 40px rgba(0,0,0,0.6);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><b style="color:#e2b45a;letter-spacing:1px;">NEW HANDOUT</b><button id="vf-note-cancel" style="background:none;border:0;color:#94a3b8;cursor:pointer;font-size:16px;">✕</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><b style="color:#e2b45a;letter-spacing:1px;">SEND PLAYER NOTE</b><button id="vf-note-cancel" style="background:none;border:0;color:#94a3b8;cursor:pointer;font-size:16px;">✕</button></div>
     <input id="vf-note-title" placeholder="Title (header)" style="width:100%;box-sizing:border-box;padding:7px;margin-bottom:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#fff;font-weight:700;" />
     <input id="vf-note-subtitle" placeholder="Subtitle (optional)" style="width:100%;box-sizing:border-box;padding:7px;margin-bottom:6px;border-radius:6px;border:1px solid #334155;background:#111827;color:#e2e8f0;" />
     <textarea id="vf-note-body" placeholder="Body text (optional)" style="width:100%;box-sizing:border-box;padding:7px;height:80px;margin-bottom:8px;border-radius:6px;border:1px solid #334155;background:#111827;color:#e2e8f0;resize:vertical;"></textarea>
@@ -994,8 +1023,10 @@
     <label style="display:block;font-size:11px;margin-bottom:10px;"><input type="checkbox" id="vf-note-tablehdr" checked /> First row is a header</label>
     <div style="border-top:1px solid #1e293b;padding-top:8px;margin-bottom:8px;">
       <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Send to</div>
-      <label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;"><input type="checkbox" id="vf-note-all" checked /> All players</label>
-      <div id="vf-note-targets-list" style="opacity:0.4;pointer-events:none;padding-left:6px;"></div>
+      <label class="vf-note-target-choice"><input type="radio" name="vf-note-target-mode" id="vf-note-all" value="all" checked /> All players in this table</label>
+      <label class="vf-note-target-choice"><input type="radio" name="vf-note-target-mode" id="vf-note-one" value="one" /> One player only</label>
+      <select id="vf-note-target-one" disabled aria-label="Player receiving this note"><option value="">Select a connected player</option></select>
+      <div id="vf-note-targets-list" hidden></div>
     </div>
     <div style="display:flex;gap:14px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
       <label style="font-size:11px;"><input type="checkbox" id="vf-note-volatile" /> Volatile (can't be saved)</label>
@@ -1010,18 +1041,19 @@
 </div>
 <script>
 (function () {
-  var db = null, unsub = null, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false;
+  var db = null, firebaseInitPromise = null, unsub = null, sessionPollTimer = null, sessionPollBusy = false, SESSION = null, firebaseRuntimeConfig = null, currentSessionId = '', currentSessionLocked = false;
+  window.__publicKeeperRolls=window.__publicKeeperRolls||[]; window.__privateKeeperRolls=window.__privateKeeperRolls||[];
   function $id(id) { return document.getElementById(id); }
   function setStatus(m) { var e = $id('vf-live-status'); if (e) e.textContent = m; }
   function toPlayer(c, idx) {
     c = c || {}; var hp = c.hp || {}, st = c.stress || {}, thr = c.thresholds || {};
     var isSleeper = c.path === 'sleeping';
     return {
-      id: 90000 + idx, _syncIndex: idx, syncId: c.id || null, name: c.name || ('Player ' + (idx + 1)),
+      id: 90000 + idx, _syncIndex: idx, syncId: c.characterId || c.id || null, memberUid: c.memberUid || c.ownerUid || null, name: c.name || ('Player ' + (idx + 1)),
       subtitle: ((c.heritage || '') + ' ' + (c.class || '')).trim() || 'Adventurer',
       hp: (hp.current) || 0, maxHp: (hp.max) || 6, stress: (st.current) || 0, maxStress: (st.max) || 6,
       hope: isSleeper ? ((c.effort && c.effort.current) || 0) : ((c.hope && c.hope.current) || 0),
-      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.shields)||0, armorMarked: [],
+      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.armorMax != null ? c.armorMax : c.shields)||0, armorMarked: [],
       effort: (c.effort && c.effort.current) || 0, maxEffort: (c.effort && c.effort.max) || 6,
       resolve: (c.resolve && c.resolve.current) || 0, maxResolve: (c.resolve && c.resolve.max) || 6, path: c.path || 'awakened',
       armorMinor: (thr.major) || 0, armorSevere: (thr.severe) || 0, evasion: c.evasion || 0,
@@ -1032,7 +1064,11 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]; }); }
   function renderRolls(rolls) {
     var el = $id('vf-live-rolls'); if (!el) return;
-    el.innerHTML = (rolls || []).slice(0, 12).map(function (r) {
+    if(Array.isArray(rolls))window.__publicKeeperRolls=rolls;
+    var privateRolls=(window.__privateKeeperRolls||[]).filter(function(r){return !currentSessionId||!r.tableId||String(r.tableId)===String(currentSessionId);});
+    var publicRolls=(window.__publicKeeperRolls||[]).filter(function(r){return !currentSessionId||!r.tableId||String(r.tableId)===String(currentSessionId);});
+    var combined=publicRolls.concat(privateRolls).sort(function(a,b){return Number(b.timestamp||0)-Number(a.timestamp||0);});
+    el.innerHTML = combined.slice(0, 18).map(function (r) {
       var damageText = '';
       if (r.damage != null) {
         var expr = r.damageDice || r.damageBase || 'damage';
@@ -1050,8 +1086,9 @@
       } else {
         body = esc(r.label);
       }
-      return '<div style="border-bottom:1px solid #1e293b;padding:4px 0;">'
-        + '<div style="color:#cbd5e1;">' + esc(r.playerName || '?') + ' <span style="color:#64748b;">' + esc(r.label || '') + '</span></div>'
+      var visibilityBadge=r.visibility==='hidden'?'<span class="vf-roll-private">KEEPER ONLY</span>':'<span class="vf-roll-public">BROADCAST</span>';
+      return '<div class="vf-console-roll">'
+        + '<div style="color:#cbd5e1;">' + visibilityBadge + ' ' + esc(r.playerName || '?') + ' <span style="color:#64748b;">' + esc(r.label || '') + '</span></div>'
         + '<div style="font-size:11px;">' + body + '</div></div>';
     }).join('') || '<div style="color:#64748b;">No rolls yet.</div>';
   }
@@ -1069,11 +1106,13 @@
       return '<button data-spot="' + esc(key) + '" style="padding:3px 6px;border-radius:5px;border:1px solid ' + (on ? '#facc15' : '#334155') + ';background:' + (on ? '#3b2f0b' : '#111827') + ';color:' + (on ? '#facc15' : '#cbd5e1') + ';font-size:10px;cursor:pointer;">' + esc(label) + '</button>';
     }).join('') + '<button data-spot="" style="padding:3px 6px;border-radius:5px;border:1px solid #334155;background:#111827;color:#94a3b8;font-size:10px;cursor:pointer;">Clear</button>';
   }
-  function setSpotlight(name) { if (typeof state !== 'undefined') state.spotlight = name || ''; if (SESSION) { SESSION.set({ spotlight: name || '' }, { merge: true }).catch(function (e) { console.error(e); }); } if (typeof renderAll === 'function') { try { renderAll(); } catch(e){} } renderSpotlight(name || ''); }
+  async function tableWrite(action, payload) { if(!currentSessionId) throw new Error('Connect to the table first.'); return window.VFTableAccess.api(action, Object.assign({tableId:currentSessionId}, payload||{})); }
+  function patchLive(changes) { if(!currentSessionId)return Promise.resolve(null); return tableWrite('patchSession',{changes:changes}).catch(function(e){console.error('keeper live update',e);setStatus('Table update failed: '+e.message);throw e;}); }
+  function setSpotlight(name) { if (typeof state !== 'undefined') state.spotlight = name || ''; patchLive({spotlight:name||''}).catch(function(){}); if (typeof renderAll === 'function') { try { renderAll(); } catch(e){} } renderSpotlight(name || ''); }
   function toggleSpotlight(name) { var cur = (typeof state !== 'undefined' ? state.spotlight : ''); setSpotlight(cur === name ? '' : name); }
   function rollDmg(str) { if (!str) return null; var m = String(str).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i); if (!m) return null; var count = parseInt(m[1] || '1', 10) || 1; var sides = parseInt(m[2], 10); var mod = m[3] ? parseInt(m[3].replace(/\s/g, ''), 10) : 0; var sum = 0, rolls = []; for (var k = 0; k < count; k++) { var r = Math.floor(Math.random() * sides) + 1; rolls.push(r); sum += r; } return { total: sum + mod, detail: rolls.join('+') + (mod ? (mod > 0 ? '+' + mod : mod) : ''), dice: count + 'd' + sides, rolls: rolls, modifier: mod, base: String(str) }; }
   function rollBroadcastId() { return 'roll-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9); }
-  function sendRoll(withDice) {
+  async function sendRoll(withDice) {
     if (!SESSION) { setStatus('Connect first.'); return; }
     var label = (($id('vf-send-label') || {}).value || 'Keeper').trim();
     var dmgStr = (($id('vf-send-dmg') || {}).value || '').trim();
@@ -1086,8 +1125,8 @@
       var d = rollDmg(dmgStr); if (d) { roll.damage = d.total; roll.damageDetail = d.detail; roll.damageDice = d.dice; roll.damageRolls = d.rolls; roll.damageModifier = d.modifier; roll.damageBase = d.base; }
     } else { roll.type = 'note'; }
     try {
-      publishKeeperRoll(roll);
-      setStatus('Sent to players: ' + label);
+      var published=await publishKeeperRoll(roll);
+      setStatus(published&&published.visibility==='public'?'Broadcast to this table: '+label:'Keeper-only roll: '+label);
     } catch (e) { setStatus('Send error: ' + e.message); }
   }
   function renderTables(tables) {
@@ -1098,33 +1137,25 @@
     }).join('');
   }
   async function listTables() {
-    var box = document.getElementById('vf-tables');
-    if (box && !box.innerHTML) box.innerHTML = '<span style="font-size:10px;color:#64748b;font-style:italic;">Loading tables\u2026</span>';
-    try {
-      if (!db) await initFb();
-      if (!firebaseRuntimeConfig || firebaseRuntimeConfig.publicTableDirectory !== true) {
-        renderTables([]);
-        if (box) box.innerHTML = '<span style="font-size:10px;color:#64748b;font-style:italic;">For privacy, public table discovery is disabled. Enter the exact table name.</span>';
-        return;
-      }
-      var appId = 'default-app-id';
-      var snap = await db.collection('artifacts/' + appId + '/public/data/sessions').get();
-      var tables = [];
-      snap.forEach(function (d) { var dd = d.data() || {}; tables.push({ id: d.id, name: dd.name || d.id, players: (dd.characters || []).length, locked: !!(dd.passAuth || dd.passHash) }); });
-      tables.sort(function (a, b) { return a.name.localeCompare(b.name); });
-      renderTables(tables);
-    } catch (e) { console.error('listTables', e); setStatus('Cannot list tables: ' + (e.code || e.message)); if (box) box.innerHTML = ''; }
+    var box=document.getElementById('vf-tables');if(box&&!box.innerHTML)box.innerHTML='<span style="font-size:10px;color:#64748b;font-style:italic;">Loading tables…</span>';
+    try{var tables=await window.VFTableAccess.list();renderTables(tables.map(function(tb){return {id:tb.id,name:tb.name,players:tb.members||0,locked:tb.locked};}));}
+    catch(e){console.error('listTables',e);setStatus('Cannot list tables: '+e.message);if(box)box.innerHTML='';}
   }
   async function initFb() {
-    var response = await fetch('/api/firebase-config', { cache: 'no-store' });
-    if (!response.ok) throw new Error('Firebase configuration unavailable (' + response.status + ').');
-    var cfg = await response.json();
-    firebaseRuntimeConfig = cfg;
-    if (!firebase.apps.length) firebase.initializeApp(cfg);
-    await firebase.auth().signInAnonymously();
-    db = firebase.firestore();
-    try { db.settings({ ignoreUndefinedProperties: true }); }
-    catch (settingsErr) { console.warn('Firestore settings already active.', settingsErr); }
+    if (db) return db;
+    if (firebaseInitPromise) return firebaseInitPromise;
+    firebaseInitPromise = (async function(){
+      var response = await fetch('/api/firebase-config', { cache: 'no-store' });
+      if (!response.ok) throw new Error('Firebase configuration unavailable (' + response.status + ').');
+      var cfg = await response.json();
+      firebaseRuntimeConfig = cfg;
+      if (!firebase.apps.length) firebase.initializeApp(cfg);
+      await window.VFTableAccess.ensureFirebaseAuth(firebase.auth());
+      var instance = firebase.firestore();
+      db = instance;
+      return db;
+    })().catch(function(error){ firebaseInitPromise = null; throw error; });
+    return firebaseInitPromise;
   }
   function bytesBase64(bytes) { var binary=''; Array.prototype.forEach.call(bytes,function(b){binary+=String.fromCharCode(b);}); return btoa(binary); }
   function base64Bytes(value) { return Uint8Array.from(atob(String(value||'')),function(ch){return ch.charCodeAt(0);}); }
@@ -1148,52 +1179,47 @@
     if(existing&&existing.passHash){var cachedLegacy=localStorage.getItem('veilfarers_tablepass_'+sid);var candidateLegacy=supplied?await legacyHashPass(supplied):cachedLegacy;if(candidateLegacy===existing.passHash){localStorage.setItem('veilfarers_tablepass_'+sid,existing.passHash);return true;}return false;}
     return true;
   }
-  async function connect() {
-    var sid = (($id('vf-session-id') || {}).value || 'Table').trim() || 'Table';
-    setStatus('Connecting...');
-    try {
-      if (!db) await initFb();
-      var appId = 'default-app-id';
-      SESSION = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('sessions').doc(sid);
-      window.__keeperSession = SESSION;
-      window.__handouts = [];
-      // Password gate: check before joining/creating.
-      var pass = (($id('vf-session-pass') || {}).value || '').trim();
-      var pre = await SESSION.get();
-      var existing = (pre && pre.exists) ? (pre.data() || {}) : null;
-      var extra = { name: sid, lastActive: Date.now() };
-      var protectedTable = !!(existing && (existing.passAuth || existing.passHash));
-      if (protectedTable) {
-        var allowed = await verifyTablePassword(existing, pass, sid);
-        if (!allowed) { SESSION = null; window.__keeperSession = null; currentSessionId=''; setPasswordUi(false); setStatus('This table is closed. Type its password and press Connect.'); return; }
-      } else if (!existing && pass) {
-        extra.passAuth = await makePasswordRecord(pass); extra.passHash = null; extra.isOpen = false;
-        localStorage.setItem('veilfarers_tableauth_' + sid, passwordRecordToken(extra.passAuth)); protectedTable=true;
-      } else if (!existing) { extra.isOpen = true; }
-      currentSessionId=sid; setPasswordUi(protectedTable);
-      if ($id('vf-session-pass')) $id('vf-session-pass').value = '';
-      try { SESSION.set(extra, { merge: true }); } catch (e) { console.error(e); }
-      if (unsub) unsub();
-      unsub = SESSION.onSnapshot(function (snap) {
-        if (!snap.exists) { setStatus('Session "' + sid + '" is empty (waiting for players).'); return; }
-        var data = snap.data();
-        try {
-          if (data.characters && typeof state !== 'undefined') { window.__sessionCharsRaw = JSON.parse(JSON.stringify(data.characters)); if (!(window.__keeperLastEdit && (Date.now() - window.__keeperLastEdit < 2500))) { state.players = data.characters.reduce(function(list, entity, originalIndex){ if(entity && entity.entityType !== 'drone') list.push(toPlayer(entity, originalIndex)); return list; }, []); } }
-          if (typeof data.fearTokens === 'number' && typeof state !== 'undefined') { state.fearTokens = data.fearTokens; }
-          if (typeof state !== 'undefined') { state.spotlight = data.spotlight || ''; }
-        if (typeof renderAll === 'function') { renderAll(); }
-        renderSpotlight(data.spotlight || '');
-        renderDroneSignals(data.characters || []);
-        } catch (e) { console.error('keeper sync render error', e); }
-        var rolls = (data.rollHistory || []).slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
-        window.__handouts = Array.isArray(data.handouts) ? data.handouts : [];
-        renderSentNotes();
-        renderRolls(rolls);
-        setStatus('Connected to "' + sid + '" \u00b7 ' + ((data.characters || []).length) + ' players');
-      }, function (err) { setStatus('Error: ' + (err.code || err.message)); });
-    } catch (e) { setStatus('Error: ' + e.message); }
+  function applySessionData(data,sid){
+    data=data||{};
+    try{
+      if(data.characters&&typeof state!=='undefined'){
+        window.__sessionCharsRaw=JSON.parse(JSON.stringify(data.characters));
+        if(!(window.__keeperLastEdit&&(Date.now()-window.__keeperLastEdit<2500))){state.players=data.characters.reduce(function(list,entity,originalIndex){if(entity&&entity.entityType!=='drone')list.push(toPlayer(entity,originalIndex));return list;},[]);}
+      }
+      if(typeof data.fearTokens==='number'&&typeof state!=='undefined')state.fearTokens=data.fearTokens;
+      if(typeof state!=='undefined'){state.spotlight=data.spotlight||'';state.notes=data.keeperNotes||data.notes||'';if(data.sessionName)state.sessionName=data.sessionName;}
+      if(typeof renderAll==='function')renderAll();
+      var noteEl=$id('notesTextarea');if(noteEl&&document.activeElement!==noteEl)noteEl.value=(data.keeperNotes||data.notes||'');
+      var sessionEl=$id('sessionNameInput');if(sessionEl&&document.activeElement!==sessionEl&&data.sessionName)sessionEl.value=data.sessionName;
+      renderSpotlight(data.spotlight||'');renderDroneSignals(data.characters||[]);
+    }catch(e){console.error('keeper sync render error',e);}
+    var rolls=(data.rollHistory||[]).filter(function(r){return !r.visibility||r.visibility==='public';}).slice().sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0);});
+    window.__handouts=Array.isArray(data.handouts)?data.handouts.filter(function(n){return !n.tableId||n.tableId===sid;}):[];
+    renderSentNotes();renderRolls(rolls);setStatus('Connected to "'+sid+'" · '+((data.characters||[]).length)+' entities');
   }
-  window.keeperPushFear = function () { if (SESSION && typeof state !== 'undefined') { SESSION.set({ fearTokens: state.fearTokens }, { merge: true }).catch(function (e) { console.error(e); }); } };
+  async function readCurrentSession(){
+    if(!currentSessionId||sessionPollBusy)return;
+    sessionPollBusy=true;
+    try{var out=await window.VFTableAccess.api('readSession',{tableId:currentSessionId});if(out&&out.session)applySessionData(out.session,currentSessionId);}
+    catch(error){setStatus('Table sync error: '+(error.message||error));}
+    finally{sessionPollBusy=false;}
+  }
+  function startSessionPolling(){if(sessionPollTimer)clearInterval(sessionPollTimer);readCurrentSession();sessionPollTimer=setInterval(readCurrentSession,1250);}
+  async function connect() {
+    var sid=(($id('vf-session-id')||{}).value||'Table').trim()||'Table';setStatus('Authorizing table…');
+    try{
+      var pass=(($id('vf-session-pass')||{}).value||'').trim(),invite=(($id('vf-session-invite')||{}).value||'').trim();
+      var access=await window.VFTableAccess.authorize({tableId:sid,password:pass,invite:invite,createIfMissing:true});
+      SESSION={tableId:sid};window.__keeperSession=SESSION;window.__handouts=[];currentSessionId=sid;setPasswordUi(!!access.locked);
+      if($id('vf-session-pass'))$id('vf-session-pass').value='';if($id('vf-session-invite'))$id('vf-session-invite').value='';window.VFTableAccess.mountAdmin(sid,access.role);
+      startSessionPolling();
+      var cleanUrl=window.location.pathname+window.location.hash;window.history.replaceState({},'',cleanUrl);
+    }catch(e){setStatus('Error: '+e.message);}
+  }
+  window.keeperPushFear = function () { if (currentSessionId && typeof state !== 'undefined') patchLive({fearTokens:state.fearTokens}).catch(function(){}); };
+  var keeperNotesTimer=null;
+  window.keeperPushNotes=function(value){if(typeof state!=='undefined')state.notes=String(value||'');if(!currentSessionId)return;clearTimeout(keeperNotesTimer);keeperNotesTimer=setTimeout(function(){patchLive({keeperNotes:String(value||'')}).catch(function(){});},350);};
+  window.keeperPushSessionName=function(value){if(typeof state!=='undefined')state.sessionName=String(value||'');if(currentSessionId)patchLive({sessionName:String(value||'')}).catch(function(){});};
   window.keeperWriteCharStat = function (syncIndex, stat, value) {
     if (!SESSION || !window.__sessionCharsRaw) return;
     var chars = window.__sessionCharsRaw; var c = chars[syncIndex]; if (!c) return;
@@ -1203,26 +1229,33 @@
     else if (stat === 'effort') { c.effort = c.effort || {}; c.effort.current = value; }
     else if (stat === 'resolve') { c.resolve = c.resolve || {}; c.resolve.current = value; }
     else if (stat === 'shields') { c.shields = value; }
-    SESSION.set({ characters: chars }, { merge: true }).catch(function (e) { console.error(e); });
+    patchLive({characters:chars}).catch(function(){});
   };
   function renderDroneSignals(chars) {
     var box=$id('vf-drone-signals'); if(!box)return; var drones=(chars||[]).map(function(c,i){return {c:c,i:i};}).filter(function(entry){return entry.c&&entry.c.entityType==='drone';});
     if(!drones.length){box.innerHTML='<span style="font-size:10px;color:#64748b;font-style:italic;">No drones connected.</span>';return;}
     box.innerHTML=drones.map(function(entry){var c=entry.c,stateId=c.signalState||'stable';return '<div style="padding:6px;border:1px solid #1e3a5f;border-radius:6px;background:#07111f;"><div style="display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:4px;"><b style="font-size:10px;color:#e2e8f0;">'+esc(c.name||('Drone '+(entry.i+1)))+'</b><span style="font-size:9px;color:#64748b;">'+esc(c.signalRange||'Close')+' · '+esc(c.linkMode||'Direct RF Link')+'</span></div><div style="display:flex;gap:3px;">'+['stable','unstable','lost'].map(function(sig){var active=sig===stateId;var color=sig==='stable'?'#22c55e':sig==='unstable'?'#f59e0b':'#ef4444';return '<button data-drone-signal="'+entry.i+'" data-signal="'+sig+'" style="flex:1;padding:3px;border-radius:4px;border:1px solid '+(active?color:'#334155')+';background:'+(active?'#111827':'#0b1220')+';color:'+(active?color:'#64748b')+';font-size:8px;font-weight:800;text-transform:uppercase;cursor:pointer;">'+sig+'</button>';}).join('')+'</div></div>';}).join('');
   }
-  function setDroneSignal(index, signal) { if(!SESSION||!window.__sessionCharsRaw)return; var chars=window.__sessionCharsRaw; if(!chars[index]||chars[index].entityType!=='drone')return; chars[index].signalState=signal; SESSION.set({characters:chars},{merge:true}).catch(function(e){console.error(e);}); renderDroneSignals(chars); }
+  function setDroneSignal(index, signal) { if(!currentSessionId||!window.__sessionCharsRaw)return; var chars=window.__sessionCharsRaw; if(!chars[index]||chars[index].entityType!=='drone')return; chars[index].signalState=signal; patchLive({characters:chars}).catch(function(){}); renderDroneSignals(chars); }
   async function changeTablePassword() {
-    if(!SESSION||!currentSessionId){setStatus('Connect to the table before changing its password.');return;}
-    var password=(($id('vf-new-pass')||{}).value||'').trim(), confirmPass=(($id('vf-confirm-pass')||{}).value||'').trim();
-    if(password.length<4){setStatus('Password must contain at least 4 characters.');return;} if(password!==confirmPass){setStatus('Password confirmation does not match.');return;}
-    try{var passAuth=await makePasswordRecord(password);await SESSION.set({passAuth:passAuth,passHash:null,isOpen:false,passwordUpdatedAt:Date.now()},{merge:true});localStorage.setItem('veilfarers_tableauth_'+currentSessionId,passwordRecordToken(passAuth));if($id('vf-new-pass'))$id('vf-new-pass').value='';if($id('vf-confirm-pass'))$id('vf-confirm-pass').value='';setPasswordUi(true);setStatus('Table password updated. The table is now closed.');listTables();}catch(e){setStatus('Password update failed: '+e.message);}
+    if(!SESSION||!currentSessionId){setStatus('Connect to the table first.');return;}
+    var password=(($id('vf-new-pass')||{}).value||'').trim(),confirmPass=(($id('vf-confirm-pass')||{}).value||'').trim();
+    if(password.length<4){setStatus('Use at least 4 characters. To remove the password, use Table Admin.');return;}if(password!==confirmPass){setStatus('Password confirmation does not match.');return;}
+    try{var out=await window.VFTableAccess.api('setPassword',{tableId:currentSessionId,password:password});if($id('vf-new-pass'))$id('vf-new-pass').value='';if($id('vf-confirm-pass'))$id('vf-confirm-pass').value='';setPasswordUi(!!out.locked);setStatus('Table password updated.');listTables();}catch(e){setStatus('Password update failed: '+e.message);}
   }
-  function publishKeeperRoll(roll) {
-    if (!SESSION || !roll) return;
+  function keeperRollVisibility(){var input=$id('vf-roll-visibility');return input&&input.value==='broadcast'?'broadcast':'hidden';}
+  async function publishKeeperRoll(roll) {
+    if (!currentSessionId || !roll) throw new Error('Connect to the table first.');
     roll.timestamp = Date.now();
     roll.broadcastId = roll.broadcastId || rollBroadcastId();
-    SESSION.set({ lastRoll: roll, rollHistory: firebase.firestore.FieldValue.arrayUnion(roll), lastRollUpdatedAt: roll.timestamp }, { merge: true })
-      .catch(function (e) { console.error('keeper roll broadcast', e); setStatus('Roll broadcast failed: ' + (e.code || e.message)); });
+    if(keeperRollVisibility()==='hidden'){
+      var local={...roll,visibility:'hidden',tableId:currentSessionId};
+      window.__privateKeeperRolls=[local].concat(window.__privateKeeperRolls||[]).slice(0,100);
+      renderRolls();
+      return local;
+    }
+    try{var out=await tableWrite('broadcastRoll',{roll:{...roll,visibility:'public'}});var published=(out&&out.roll)||{...roll,visibility:'public'};return published;}
+    catch(e){console.error('keeper roll broadcast',e);setStatus('Roll broadcast failed: '+(e.message||e));throw e;}
   }
   window.keeperBroadcastAbility = function (monsterName, abilityName, desc, fearCost) {
     publishKeeperRoll({ type: 'note', playerName: monsterName || 'Keeper', label: (abilityName || 'Ability') + (fearCost ? ' (' + fearCost + ' Fear)' : '') + (desc ? ': ' + desc : '') });
@@ -1255,12 +1288,11 @@
     return rows.length ? { headers: headers, rows: rows } : null;
   }
   function populateTargets() {
-    var box = document.getElementById('vf-note-targets-list'); if (!box) return;
-    var players = (typeof state !== 'undefined' && state.players) ? state.players : [];
-    box.innerHTML = players.length ? players.map(function (p, i) {
-      var key = p.syncId || p.name;
-      return '<label style="display:block;font-size:12px;margin:3px 0;"><input type="checkbox" data-target="' + esc(key) + '"/> ' + esc(p.name || ('Player ' + (i + 1))) + '</label>';
-    }).join('') : '<span style="font-size:11px;color:#64748b;">No players connected yet.</span>';
+    var select=$id('vf-note-target-one'); if(!select)return;
+    var players=(typeof state!=='undefined'&&state.players)?state.players:[];
+    var current=select.value;
+    var seen={};var options=players.map(function(p,i){var key=p.memberUid||p.syncId||p.characterId||p.name;if(!key||seen[key])return '';seen[key]=true;return '<option value="'+esc(key)+'">'+esc(p.name||('Player '+(i+1)))+'</option>';}).join('');select.innerHTML='<option value="">Select a connected player</option>'+options;
+    if(Array.prototype.some.call(select.options,function(option){return option.value===current;}))select.value=current;
   }
   function openNoteModal() {
     if (!SESSION) { setStatus('Connect first.'); return; }
@@ -1276,7 +1308,7 @@
     box.innerHTML = arr.map(function (n) {
       var d = new Date(n.sentAt || 0);
       var when = d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      var tgt = n.targets === 'all' ? 'All' : ((n.targets || []).length + ' player' + (((n.targets || []).length) === 1 ? '' : 's'));
+      var targetId=n.target||(Array.isArray(n.targets)?n.targets[0]:'');var targetPlayer=((typeof state!=='undefined'&&state.players)||[]).find(function(p){return [p.memberUid,p.syncId,p.characterId,p.name].indexOf(targetId)!==-1;});var tgt=(n.target==='all'||n.targets==='all')?'All players in this table':('One player · '+esc((targetPlayer&&targetPlayer.name)||targetId));
       var flags = (n.volatile ? ' \u00b7 volatile' : '') + (n.expires > 0 ? (' \u00b7 \u23f1' + Math.round(n.expires / 1000) + 's') : '');
       return '<div style="display:flex;align-items:center;gap:6px;background:#111827;border:1px solid #1e293b;border-radius:6px;padding:4px 6px;margin-bottom:3px;">'
         + '<div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(n.title || '(untitled)') + '</div>'
@@ -1284,15 +1316,14 @@
         + '<button data-remove-note="' + esc(n.id) + '" title="Remove handout" style="background:none;border:0;color:#64748b;cursor:pointer;font-size:14px;line-height:1;padding:2px;">\u00d7</button></div>';
     }).join('');
   }
-  function removeHandout(id) {
-    if (!SESSION) return;
-    var arr = (window.__handouts || []).filter(function (n) { return n && n.id !== id; });
-    window.__handouts = arr;
-    SESSION.set({ handouts: arr }, { merge: true }).catch(function (e) { console.error(e); });
-    renderSentNotes();
+  async function removeHandout(id) {
+    if (!currentSessionId) return;
+    try{await tableWrite('deleteHandout',{noteId:id});window.__handouts=(window.__handouts||[]).filter(function(n){return n&&n.id!==id;});renderSentNotes();}catch(e){setStatus('Player note removal failed: '+e.message);}
   }
-  function sendHandout() {
+  var noteSendBusy=false;
+  async function sendHandout() {
     if (!SESSION) { setStatus('Connect first.'); return; }
+    if(noteSendBusy)return;
     var warn = $id('vf-note-warn'); if (warn) warn.textContent = '';
     var v = function (id) { var el = $id(id); return el ? el.value.trim() : ''; };
     var ck = function (id) { var el = $id(id); return el ? el.checked : false; };
@@ -1300,21 +1331,19 @@
     var table = parseTable(v('vf-note-table'), ck('vf-note-tablehdr'));
     var timer = parseInt(v('vf-note-timer')) || 0;
     var volatile = ck('vf-note-volatile') || timer > 0;
-    var targets;
-    if (ck('vf-note-all')) targets = 'all';
-    else { targets = Array.prototype.slice.call(document.querySelectorAll('#vf-note-targets-list input[data-target]:checked')).map(function (cb) { return cb.getAttribute('data-target'); }); }
+    var target=ck('vf-note-all')?'all':v('vf-note-target-one');
     if (!title && !body && !table) { if (warn) warn.textContent = 'Add a title, body, or table.'; return; }
-    if (targets !== 'all' && (!targets || !targets.length)) { if (warn) warn.textContent = 'Pick at least one player, or All.'; return; }
-    var note = { id: 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: title, subtitle: subtitle, body: body, table: table, targets: targets, volatile: volatile, expires: timer > 0 ? timer * 1000 : 0, sentAt: Date.now(), from: 'Keeper' };
-    var arr = (window.__handouts || []).slice(); arr.push(note); arr = arr.slice(-25);
-    SESSION.set({ handouts: arr }, { merge: true }).catch(function (e) { console.error(e); });
-    window.__handouts = arr;
+    if(target!=='all'&&!target){if(warn)warn.textContent='Choose one connected player, or All players.';return;}
+    var note={id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:title,subtitle:subtitle,body:body,table:table,target:target,targets:target==='all'?'all':[target],volatile:volatile,expires:timer>0?timer*1000:0};
+    var sendBtn=$id('vf-note-send'),oldLabel=sendBtn?sendBtn.textContent:'Send';noteSendBusy=true;if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='Sending…';sendBtn.style.opacity='.65';}
+    var out;try{out=await tableWrite('sendHandout',{note:note});}catch(e){if(warn)warn.textContent='Send failed: '+e.message;return;}finally{noteSendBusy=false;if(sendBtn){sendBtn.disabled=false;sendBtn.textContent=oldLabel;sendBtn.style.opacity='';}}
+    var saved=(out&&out.note)||note;window.__handouts=(window.__handouts||[]).filter(function(item){return item&&item.id!==saved.id;}).concat([saved]).slice(-50);
     renderSentNotes();
     ['vf-note-title', 'vf-note-subtitle', 'vf-note-body', 'vf-note-table'].forEach(function (id) { var el = $id(id); if (el) el.value = ''; });
     if ($id('vf-note-timer')) $id('vf-note-timer').value = '0';
     if ($id('vf-note-volatile')) $id('vf-note-volatile').checked = false;
     closeNoteModal();
-    setStatus('Handout sent' + (targets === 'all' ? ' to all players.' : '.'));
+    setStatus(target==='all'?'Note sent to all players in this table.':'Private note sent to one player.');
   }
   document.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'vf-connect-btn') connect();
@@ -1326,6 +1355,7 @@
     if (e.target && e.target.id === 'vf-live-min') { var b = $id('vf-live-body'); if (b) b.style.display = (b.style.display === 'none' ? 'block' : 'none'); }
     if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-spot')) { setSpotlight(e.target.getAttribute('data-spot')); }
     var st = e.target && e.target.closest ? e.target.closest('.vf-spot-toggle') : null; if (st && st.getAttribute('data-spot-id') != null) { e.stopPropagation(); toggleSpotlight(st.getAttribute('data-spot-id')); }
+    var visibilityButton=e.target&&e.target.closest?e.target.closest('[data-roll-visibility]'):null;if(visibilityButton){document.querySelectorAll('[data-roll-visibility]').forEach(function(btn){btn.classList.toggle('active',btn===visibilityButton);});var value=visibilityButton.getAttribute('data-roll-visibility');if($id('vf-roll-visibility'))$id('vf-roll-visibility').value=value;localStorage.setItem('veilfarers.keeper.rollVisibility.v1',value);var help=$id('vf-roll-visibility-help');if(help)help.textContent=value==='broadcast'?'Rolls will be sent only to players connected to this table.':'Hidden rolls stay only in this Keeper browser.';}
     if (e.target && e.target.id === 'vf-send-roll') { sendRoll(true); }
     if (e.target && e.target.id === 'vf-send-note') { openNoteModal(); }
     if (e.target && (e.target.id === 'vf-note-cancel' || e.target.id === 'vf-note-cancel2')) { closeNoteModal(); }
@@ -1335,9 +1365,8 @@
   });
   // "All players" toggles the individual target list on/off
   document.addEventListener('change', function (e) {
-    if (e.target && e.target.id === 'vf-note-all') {
-      var list = document.getElementById('vf-note-targets-list');
-      if (list) { list.style.opacity = e.target.checked ? '0.4' : '1'; list.style.pointerEvents = e.target.checked ? 'none' : 'auto'; }
+    if(e.target&&e.target.name==='vf-note-target-mode'){
+      var one=$id('vf-note-target-one'),all=$id('vf-note-all');if(one)one.disabled=!!(all&&all.checked);
     }
     if (e.target && e.target.id === 'vf-note-timer') {
       var vol = document.getElementById('vf-note-volatile');
@@ -1345,12 +1374,83 @@
     }
   });
   // Check whether table discovery is enabled; it is enabled unless explicitly disabled by environment configuration.
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { listTables(); });
-  else listTables();
+  var savedVisibility=localStorage.getItem('veilfarers.keeper.rollVisibility.v1')||'hidden';if($id('vf-roll-visibility'))$id('vf-roll-visibility').value=savedVisibility;document.querySelectorAll('[data-roll-visibility]').forEach(function(btn){btn.classList.toggle('active',btn.getAttribute('data-roll-visibility')===savedVisibility);});var visibilityHelp=$id('vf-roll-visibility-help');if(visibilityHelp)visibilityHelp.textContent=savedVisibility==='broadcast'?'Rolls will be sent only to players connected to this table.':'Hidden rolls stay only in this Keeper browser.';
+  var inviteDefaults=window.VFTableAccess?window.VFTableAccess.inviteFromUrl():{table:'',invite:''};
+  if(inviteDefaults.table&&$id('vf-session-id'))$id('vf-session-id').value=inviteDefaults.table;
+  if(inviteDefaults.invite&&$id('vf-session-invite'))$id('vf-session-invite').value=inviteDefaults.invite;
+  var vfKeeperTablesStarted=false;
+  function startKeeperTables(){if(vfKeeperTablesStarted)return;vfKeeperTablesStarted=true;listTables();}
+  window.addEventListener('veilfarers:keeper-user',startKeeperTables,{once:true});
+  if(window.VF_KEEPER_USER)startKeeperTables();
 })();
 </script>
 
-  <script src="portal.js"></script>
+  <script>
+(function(){
+  'use strict';
+  const TRANSFER_KEY='veilfarers.character.transfer.v1';
+  const LATEST_SHEET_KEY='veilfarers.sheet.latestPayload.v1';
+  function readSheetPayload(){
+    try{const queued=JSON.parse(localStorage.getItem(TRANSFER_KEY)||'null');if(queued&&queued.payload&&queued.payload.fields)return queued.payload;}catch(_){}
+    try{const latest=JSON.parse(localStorage.getItem(LATEST_SHEET_KEY)||'null');if(latest&&latest.fields)return latest;}catch(_){}
+    try{
+      const fields=JSON.parse(localStorage.getItem('veilfarers_sheet_fields_v2_40')||localStorage.getItem('veilfarers_sheet_fields_v2_41')||'null');
+      if(!fields)return null;
+      const tracks=JSON.parse(localStorage.getItem('veilfarers_sheet_tracks_v2_40')||localStorage.getItem('veilfarers_sheet_tracks_v2_41')||'{}');
+      return {app:'Veilfarers Character Sheet',version:'2.80-RC3.2',fields,tracks};
+    }catch(_){return null;}
+  }
+  function keeperPlayerFromSheet(payload){
+    const c=window.veilfarersImportSheet&&window.veilfarersImportSheet(payload);
+    if(!c)return null;
+    const path=String(c.path||'awakened').toLowerCase();
+    const resource=path==='sleeping'?(c.effort||{}):(c.hope||{});
+    const abilities=[];
+    (c.experiences||[]).forEach(exp=>{if(exp&&exp.description)abilities.push({name:exp.description,type:'Experience',cost:0,desc:'Experience bonus +'+(exp.bonus||2)});});
+    (c.moves||[]).forEach(move=>{if(move&&move.name)abilities.push({name:move.name,type:'Resolve Move',cost:0,desc:move.text||''});});
+    (c.domainCards||[]).forEach(power=>{if(power&&power.name)abilities.push({name:power.name,type:power.type||'Power',cost:power.cost||0,desc:power.text||power.costText||''});});
+    const equipment=[...(c.inventory||[]).filter(Boolean),...(c.weapons||[]).map(w=>w&&w.name).filter(Boolean),c.armor&&c.armor.name].filter(Boolean).join(', ');
+    return {
+      id:Date.now()+Math.floor(Math.random()*1000),name:c.name||'Unnamed Veilfarer',
+      subtitle:[c.heritage,c.class,c.subclass].filter(Boolean).join(' · '),
+      hp:Number(c.hp&&c.hp.current)||0,maxHp:Number(c.hp&&c.hp.max)||6,
+      stress:Number(c.stress&&c.stress.current)||0,maxStress:Number(c.stress&&c.stress.max)||6,
+      hope:Number(resource.current)||0,maxHope:Number(resource.max)||6,
+      effort:Number(c.effort&&c.effort.current)||0,maxEffort:Number(c.effort&&c.effort.max)||6,
+      resolve:Number(c.resolve&&c.resolve.current)||0,maxResolve:Number(c.resolve&&c.resolve.max)||2,
+      path,armor:Number(c.shields)||0,armorSlots:Number(c.armorMax != null ? c.armorMax : c.shields)||0,armorMarked:[],
+      armorMinor:Number(c.thresholds&&c.thresholds.major)||0,armorSevere:Number(c.thresholds&&c.thresholds.severe)||0,
+      evasion:Number(c.evasion)||0,description:[c.features,c.classFeature,c.ancestryGift,c.communityGift].filter(Boolean).join('\n\n'),
+      abilities,equipment,hidden:false,sheetCharacter:c,transferSource:'charsheet'
+    };
+  }
+  function importSheetToKeeper({automatic=false}={}){
+    try{
+      const payload=readSheetPayload();
+      const player=payload&&keeperPlayerFromSheet(payload);
+      if(!player)throw new Error('No compatible Charsheet character is available.');
+      if(typeof state==='undefined'||!Array.isArray(state.players))throw new Error('Keeper Tool player registry is not ready.');
+      state.players.push(player);
+      if(state.dashboardPins&&Array.isArray(state.dashboardPins.players))state.dashboardPins.players.push(player.id);
+      if(typeof renderAll==='function')renderAll();
+      document.querySelector('[data-tab="players"]')?.click();
+      if(automatic)localStorage.removeItem(TRANSFER_KEY);
+      alert('Charsheet transferred to Keeper Tool: '+player.name);
+      return true;
+    }catch(error){alert('Could not import the Charsheet into Keeper Tool: '+error.message);return false;}
+  }
+  function start(){
+    document.getElementById('importSheetPlayerBtn')?.addEventListener('click',()=>importSheetToKeeper());
+    const params=new URLSearchParams(location.search);
+    if(params.get('from')==='sheet'&&params.get('import')==='1'){
+      importSheetToKeeper({automatic:true});
+      history.replaceState({},'',location.pathname+location.hash);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+  </script>
+
 </body>
 
 </html>

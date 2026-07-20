@@ -37,13 +37,13 @@ sh local/start-local-lan.sh
 - Character Sheet, PDF generation and JSON import/export.
 - Player Tool and Keeper Tool.
 - Shared Firebase tables when `local/.env.local` is configured. Table discovery is enabled unless `FIREBASE_PUBLIC_TABLE_DIRECTORY=false` is set explicitly.
-- 2D/3D dice, sounds, callouts, history and Time Travel.
+- 2D/3D dice, first-load progress, sounds, callouts, history and Time Travel. Shake to Roll may work on localhost, but phone/LAN HTTP motion permission varies by browser and must be validated on the HTTPS Deploy Preview.
 - Armory, items, downloads and feedback preview behavior.
 - Admin diagnostics in a clearly marked local-only bypass.
 
 ## Intentional local limitations
 
-- Netlify Identity login, roles and the online character vault remain online-only.
+- Netlify Identity login, member roles and cloud Vault ownership remain online-only. Local drafts and the local Registry still work, but cross-device Vault isolation must be tested on Netlify.
 - Netlify Forms submissions are simulated locally and are only stored by the deployed Netlify site.
 - The local server is for development and testing, not public hosting.
 

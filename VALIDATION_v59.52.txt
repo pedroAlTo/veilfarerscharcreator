@@ -1,0 +1,67 @@
+VEILFARERS PORTAL v59.52 — VALIDATION
+Date: 2026-07-19
+
+AUTOMATED PASS
+--------------
+PASS — npm ci completed with 0 vulnerabilities.
+PASS — package.json and package-lock.json are version 59.52.0.
+PASS — package-lock resolved URLs use https://registry.npmjs.org/; no internal applied-caas/OpenAI registry URL remains.
+PASS — 85 portal JSON files parsed; changelog currentVersion/version are v59.52.
+PASS — 20 first-party root JavaScript files passed node --check.
+PASS — 10 non-JSX inline HTML scripts passed node --check.
+PASS — Player Tool JSX parsed with @babel/parser.
+PASS — 7 Netlify Function .mts files transformed as TypeScript with esbuild.
+PASS — table-api targeted-note fixtures: all players accepted, one current-table member accepted, unknown/cross-table target rejected.
+PASS — Character Registry fixture retained two Vault records while exactly one Character ID was active; explicit active change selected the second record without deleting the first.
+PASS — Player Tool session-save path stamps non-drone characters with authenticated memberUid.
+PASS — Player Tool filters notes by current table and target identity.
+PASS — Player Tool filters roll history/last roll to public or legacy-public records.
+PASS — Keeper-only rolls use a local-only history path; Broadcast rolls call the current-table API.
+PASS — note modal computed z-index is 70000, above shared navigation and Keeper Console.
+PASS — registry-triggered location.reload loops remain absent from Player Tool and Keeper Tool.
+PASS — exact 87-file assets/3d-dice hash tree matches v59.51.
+
+STATIC VISUAL QA PASS
+---------------------
+PASS — Keeper campaign selector static render inspected at 1600x1000.
+PASS — Keeper main application static render inspected at 1600x1000.
+PASS — Player-style navy/cyan/amber hierarchy, compact tabs/panels and fixed Keeper Console are visually coherent.
+PASS — Player Note modal inspected above navigation/console; native radio/checkbox semantics remain visible and readable.
+PASS — mobile Keeper layout inspected at 390x844; the console becomes a floating responsive panel with minimization control.
+PASS — PORTAL_HANDOVER_v59.52.docx rendered to 14 PNG pages; every page inspected at 100% with no clipping, overlap, missing glyphs or broken code blocks.
+
+IMPLEMENTED / STATICALLY VERIFIED
+---------------------------------
+PASS — Character Vault supports many completed characters per account and one server-synchronized activeCharacterId.
+PASS — first record becomes active when needed; setActive rejects non-owned/trashed records server-side.
+PASS — Account displays all characters and exactly one ACTIVE badge with Set Active controls.
+PASS — Charsheet, Player Tool and Level Up selection paths set the shared active Character ID.
+PASS — Keeper note UI offers only All players in this table or One player only.
+PASS — Keeper one-player list deduplicates table characters by authenticated member UID, with Character ID fallback for historical records.
+PASS — sendHandout/deleteHandout are owner-only and current-table scoped.
+PASS — client-supplied note table/sender identity is replaced server-side.
+PASS — private Keeper rolls never enter Firestore; public Keeper rolls are normalized with tableId, senderUid and visibility=public.
+PASS — Keeper private history is filtered by current table.
+PASS — keeper-player.css visually converges Keeper Tool with Player Tool without changing protected dice assets.
+
+ZIP / DELIVERY PASS
+-------------------
+PASS — ZIP extracts with index.html at root.
+PASS — node_modules, .git, environment files, private keys and build caches are excluded.
+PASS — deploy artifact contains v59.52 START HERE, validation, GitHub summary, security notes, rules and complete Markdown/DOCX handover.
+PASS — credential/internal-registry text scan passed.
+
+NOT EXECUTED IN THIS BUILD ENVIRONMENT
+--------------------------------------
+PENDING — real Netlify Deploy Preview build and Function bundling.
+PENDING — live Netlify Identity and Firebase Admin Character Vault active-selection sync across two browser sessions.
+PENDING — real Firestore real-time behavior with two Player accounts in Table A and a separate account/table B.
+PENDING — proof that one-player notes reach only the selected account and All reaches only the current table.
+PENDING — proof that Keeper Only creates no Firestore roll record and Broadcast reaches only current-table Players.
+PENDING — responsive/keyboard/accessibility QA in actual supported browsers.
+PENDING — full regression of v59.51 invitation/password/import/deduplication/Proficiency/Log/catalogue behavior.
+PENDING — real Charsheet print/PDF and complete human canon-text review.
+
+ACCEPTANCE CONDITION
+--------------------
+Do not publish v59.52 as production-accepted until the multi-account, two-table note isolation and Keeper roll visibility tests pass in a real Deploy Preview. Firestore Rules are project-wide; deploy the included rules only as part of the coordinated table-security cutover.

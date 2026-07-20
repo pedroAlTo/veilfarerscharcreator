@@ -1,0 +1,75 @@
+VEILFARERS PORTAL v59.48 — VALIDATION
+Date: 2026-07-18
+
+AUTOMATED PASS
+--------------
+PASS — npm ci completes with zero reported vulnerabilities.
+PASS — all portal JSON files parse successfully.
+PASS — all first-party JavaScript files pass node --check.
+PASS — Player Tool JSX and every inline script parse with the TypeScript parser.
+PASS — Creator, Charsheet, Keeper Tool, Login and other HTML inline scripts parse.
+PASS — all Netlify .mts Functions transpile/parse, including the typed identity userSignup/userLogin event function.
+PASS — Identity fixture preserves existing roles and adds member.
+PASS — account-owned Vault fixture hides incomplete, trashed and other-owner records.
+PASS — stable Character ID importer fixture preserves VF-######.
+PASS — Character Creator completion/Level Up registry paths retain the same ID.
+PASS — Level 1→2 fixture applies Tier Achievement and two single-slot advancements.
+PASS — Level 4→5 fixture applies Tier Achievement plus Multiclass.
+PASS — Sleeping Cultural Attaché fixture selects the exact RC3.2 Specialization feature.
+PASS — sheet bridge writes upgraded Subclass, Multiclass, Resolve Move, Vault Power and advancement metadata.
+PASS — Charsheet/Creator importer restores upgraded level, bonuses, acquired Subclass feature, learned Resolve Move and Power Vault.
+PASS — Player sync fixture updates the same character and preserves current runtime resources and conditions.
+PASS — Player Tool Power Vault recall/return code parses and retains the canonical five-card Loadout limit.
+PASS — drone synchronization fixture updates one stable drone without duplicates.
+PASS — equipment-mod and compact-rules fixtures from v59.47 remain passing.
+PASS — protected assets/3d-dice tree has no Git diff.
+PASS — no .env, service-account JSON, private keys or node_modules are included in the release ZIP.
+PASS — release ZIP extracts successfully and contains index.html at its root.
+
+STATICALLY VERIFIED
+-------------------
+PASS — completed characters auto-save to the account Vault when Creator finishes.
+PASS — Vault selection is shared by Account, Level Up and Player Tool.
+PASS — Trash and restore use custom in-app confirmation, not native browser dialogs.
+PASS — all eleven Corebook RC3.2 Level Up options remain visible with lock reasons and exact option configuration.
+PASS — Level Up source is VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf, Chapter 12: The Long Climb (PDF pages 125–128), plus canonical class/subclass/power/Resolve Move datasets.
+PASS — new Awakened Powers enter Power Vault and can be recalled into Player Tool Loadout.
+PASS — optional Shake to Roll calls the existing roll functions and does not modify dice result logic.
+PASS — first 3D load has milestone progress, automatic continuation, Retry and Use 2D fallback.
+PASS — connection errors use a body portal and z-index 2147483647.
+PASS — Keeper Tool includes shared navigation and an Identity gate.
+PASS — Netlify role redirects accept member, keeper or admin; Admin remains admin-only.
+PASS — VeilFarers branding remains unchanged.
+
+NOT EXECUTED IN THIS BUILD ENVIRONMENT
+--------------------------------------
+PENDING — real Netlify Deploy Preview build and Function logs.
+PENDING — real Identity signup/login event execution and role persistence.
+PENDING — role-gated redirect tests at Netlify CDN edge.
+PENDING — Firebase custom-token sign-in and cross-device Vault sync.
+PENDING — two-account ownership/isolation tests against live Firestore Rules.
+PENDING — real iOS DeviceMotion permission and Android shake sensitivity QA.
+PENDING — real 3D renderer/network failure and slow-load progress QA.
+PENDING — responsive, keyboard and screen-reader pass.
+PENDING — Print/PDF visual inspection after all Level Up combinations.
+PENDING — complete human canon review of every compact Gift/Feature.
+
+BROWSER ENVIRONMENT NOTE
+------------------------
+The managed Chromium environment blocked local-page navigation with ERR_BLOCKED_BY_ADMINISTRATOR. HTTP serving and static validation succeeded, but this environment cannot substitute for the mandatory real Deploy Preview visual pass.
+
+MANDATORY PREVIEW MATRIX
+------------------------
+1. New account and existing account: log out/in; confirm member role and Keeper access.
+2. Account A completes a character; Account B must not see it.
+3. Trash/restore/delete-state behavior and offline/cloud recovery.
+4. Same VF-###### through Creator → Vault → Level Up → Charsheet → Player Tool.
+5. Level 2, 5 and 8 Tier Achievements; all eleven advancement options and lock reasons.
+6. Awakened new Power enters Vault; recall/return to Loadout.
+7. Sleeping Resolve Move and Subclass Specialization/Mastery appear in Charsheet and Player Tool.
+8. Player runtime resources and Conditions survive Level Up.
+9. Shake opt-in, permissions, cooldown and accidental-roll prevention on real phones.
+10. 3D initial-load popup under normal, slow and failed asset loading.
+11. Connection errors above every layer.
+12. Keeper signed-out denial, signed-in navigation and authenticated table ownership/invitations.
+13. v59.47 drone, equipment-mod, print and table-security regression tests.

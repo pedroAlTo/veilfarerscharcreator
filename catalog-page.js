@@ -4,20 +4,27 @@
   const I = window.VeilFarersInventory;
   const pageType = document.body.dataset.catalog;
   const config = pageType === 'items'
-    ? { tabs:[['gear','Gear'],['augments','Augments']], intro:'General gear and augmentations from the canonical 11.1 RC3 datasets.' }
+    ? { tabs:[['gear','Gear'],['augments','Augments']], intro:'General gear and augmentations from the canonical RC3 datasets.' }
     : { tabs:[['weapons','Weapons'],['armor','Armor']], intro:'Weapons and armor from Core and Rust & Steel, using stable canonical IDs.' };
   let active = config.tabs[0][0];
   let data = {};
   let visibleItems = [];
+  const filterState = { pack:[], tier:[], category:[], property:[], owned:[], cost:[], sort:'name' };
+  const multiFilterNames = new Set(['pack','tier','category','property','owned','cost']);
+  const filterNames = Object.keys(filterState);
   const els = {
     tabs: document.querySelector('#catalog-tabs'), cards:document.querySelector('#catalog-cards'), count:document.querySelector('#catalog-count'),
-    search:document.querySelector('#catalog-search'), pack:document.querySelector('#catalog-pack'), tier:document.querySelector('#catalog-tier'), sort:document.querySelector('#catalog-sort'),
+    search:document.querySelector('#catalog-search'), filters:[...document.querySelectorAll('[data-filter-name]')], reset:document.querySelector('#catalog-reset'),
     inventory:document.querySelector('#inventory-list'), invCount:document.querySelector('#inventory-count'), invCredits:document.querySelector('#inventory-credits'), release:document.querySelector('#canonical-release'),
     exportBtn:document.querySelector('#inventory-export'), importInput:document.querySelector('#inventory-import'), clearBtn:document.querySelector('#inventory-clear')
   };
 
   const esc = D.escapeHtml;
   const featureText = item => Array.isArray(item.features) ? item.features.join(', ') : '';
+  const clean = value => String(value || '').trim();
+  const uniq = values => [...new Set(values.map(clean).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true,sensitivity:'base'}));
+  const titleCase = value => clean(value).replace(/[-_]+/g,' ').replace(/\b\w/g,ch=>ch.toUpperCase());
+
   function primaryDescription(item){
     if(item.type === 'weapon') return featureText(item) || `${item.damage || '—'} at ${item.range || '—'} range.`;
     if(item.type === 'armor') return featureText(item) || `Major ${item.thresholds?.major ?? '—'} / Severe ${item.thresholds?.severe ?? '—'}.`;
@@ -27,83 +34,244 @@
   }
   function meta(item){
     const parts = [D.tierName(item), D.packLabel(item.pack)];
-    if(item.type === 'weapon') parts.push(item.weaponFamily || item.trait || '', item.range || '', item.damage || '');
-    if(item.type === 'armor') parts.push(item.weightClass || '', `${item.armorSlots ?? '—'} slots`, `${item.thresholds?.major ?? '—'} / ${item.thresholds?.severe ?? '—'}`);
-    if(item.type === 'augment' && item.complexity) parts.push(`Complexity ${item.complexity}`);
+    if(item.type === 'weapon') parts.push(item.category || titleCase(item.weaponFamily), item.trait || '', item.range || '', item.damage || '');
+    if(item.type === 'armor') parts.push(item.category || titleCase(item.weightClass), `${item.armorSlots ?? '—'} slots`, `${item.thresholds?.major ?? '—'} / ${item.thresholds?.severe ?? '—'}`);
+    if(item.type === 'gear') parts.push(gearCategory(item));
+    if(item.type === 'augment') {
+      parts.push(augmentCategory(item));
+      if(item.complexity) parts.push(`Complexity ${item.complexity}`);
+      if(item.capacityCost) parts.push(`Capacity ${item.capacityCost}`);
+      if(item.activationStress) parts.push(`${item.activationStress} Stress`);
+    }
     return parts.filter(Boolean);
   }
   function inventoryQty(id){ return Number(I.read().entries[id]?.quantity || 0); }
   function renderTabs(){
     els.tabs.innerHTML = config.tabs.map(([id,label]) => `<button class="vf-tab ${id===active?'active':''}" data-tab="${id}">${esc(label)} <span>${data[id]?.length ?? '…'}</span></button>`).join('');
   }
-  function filterItems(){
-    const q = els.search.value.trim().toLowerCase();
-    const pack = els.pack.value;
-    const tier = els.tier.value;
-    let items = [...(data[active] || [])];
-    items = items.filter(item => {
-      const haystack = [item.name, item.pack, item.type, item.trait, item.range, item.damage, item.weaponFamily, item.weightClass, item.use, item.benefit, item.drawback, featureText(item)].join(' ').toLowerCase();
-      return (!q || haystack.includes(q)) && (!pack || item.pack===pack) && (!tier || D.tierName(item)===tier);
+
+  function textBlob(item){
+    return [item.name,item.use,item.benefit,item.drawback,item.category,item.weaponFamily,item.weightClass,item.trait,item.range,item.damage,featureText(item),...(item.aliases||[])].join(' ').toLowerCase();
+  }
+  function gearCategory(item){
+    const text=textBlob(item);
+    if(/med|medical|surgery|heal|first aid|hospital|pharma|antitoxin|recovery/.test(text)) return 'Medical & Recovery';
+    if(/tool|repair|maintenance|diagnostic|fabricat|salvage|engineering|omni-tool/.test(text)) return 'Tools & Repair';
+    if(/comm|data|computer|datapad|signal|beacon|translator|network|scanner/.test(text)) return 'Communications & Data';
+    if(/survival|environment|vacuum|climb|camp|ration|water|weather|hazard|life support/.test(text)) return 'Survival & Environment';
+    if(/security|lock|detect|sensor|surveillance|stealth|disguise|countermeasure|alarm/.test(text)) return 'Security & Detection';
+    if(/vehicle|travel|navigation|mobility|jet|grapple|transport|flight|exploration/.test(text)) return 'Mobility & Exploration';
+    if(/ammo|ammunition|charge|battery|fuel|consum|supply|grenade/.test(text)) return 'Consumables & Supplies';
+    if(/care|service|installation|rent|lodging|permit|license|treatment/.test(text)) return 'Services';
+    return 'General Equipment';
+  }
+  function augmentCategory(item){
+    const text=textBlob(item);
+    if(/neural|memory|brain|mind|cognitive|data-jack|interface|processor/.test(text)) return 'Neural & Interface';
+    if(/eye|vision|audio|hearing|sensor|olfactory|sensory/.test(text)) return 'Sensory';
+    if(/muscle|limb|arm|leg|bone|strength|agility|speed|reflex/.test(text)) return 'Physical Enhancement';
+    if(/armor|skin|shield|resist|toxin|immune|medical|repair|regener/.test(text)) return 'Defense & Medical';
+    if(/communication|tool|storage|utility|grapple|compartment/.test(text)) return 'Utility';
+    return 'General Augment';
+  }
+  function itemCategories(item){
+    if(item.type==='weapon') return [clean(item.category) || titleCase(item.weaponFamily) || 'Unclassified Weapon'];
+    if(item.type==='armor') return [clean(item.category) || titleCase(item.weightClass) || 'Unclassified Armor'];
+    if(item.type==='gear') return [gearCategory(item)];
+    if(item.type==='augment') return [augmentCategory(item)];
+    return ['Unclassified'];
+  }
+  function itemProperties(item){
+    const out=[];
+    if(item.type==='weapon'){
+      if(item.trait) out.push(`Trait · ${item.trait}`);
+      if(item.range) out.push(`Range · ${item.range}`);
+      (item.features||[]).forEach(value=>out.push(`Feature · ${value}`));
+      if(Number(item.burden)>=2) out.push('Burden · Heavy');
+      else if(item.burden!==undefined && item.burden!==null) out.push('Burden · Light');
+    } else if(item.type==='armor'){
+      const slots=Number(item.armorSlots);
+      if(Number.isFinite(slots)) out.push(slots<=3?'Armor Slots · 1–3':slots<=6?'Armor Slots · 4–6':'Armor Slots · 7+');
+      (item.features||[]).forEach(value=>out.push(`Feature · ${value}`));
+    } else if(item.type==='gear'){
+      const text=textBlob(item);
+      if(/advantage/.test(text)) out.push('Effect · Grants Advantage');
+      if(/heal|medical|recovery|first aid|hp/.test(text)) out.push('Effect · Medical / Healing');
+      if(/repair|tool|tech|engineering|fabricat/.test(text)) out.push('Effect · Repair / Technology');
+      if(/comm|signal|data|computer|translate/.test(text)) out.push('Effect · Communication / Data');
+      if(/environment|vacuum|survival|weather|hazard/.test(text)) out.push('Effect · Environmental Protection');
+      if(/security|detect|sensor|stealth|disguise/.test(text)) out.push('Effect · Security / Detection');
+      if(/vehicle|travel|mobility|navigation|flight/.test(text)) out.push('Effect · Travel / Mobility');
+      if(!out.length) out.push('Effect · General Utility');
+    } else if(item.type==='augment'){
+      out.push(item.activationStress ? 'Activation · Costs Stress' : 'Activation · Passive');
+      if(item.drawback) out.push('Profile · Has Drawback');
+      const capacity=Number(item.capacityCost || item.complexity);
+      if(Number.isFinite(capacity)) out.push(capacity<=1?'Capacity · 1':capacity===2?'Capacity · 2':'Capacity · 3+');
+      const text=textBlob(item);
+      if(/advantage/.test(text)) out.push('Effect · Grants Advantage');
+      if(/\+1|increase|enhanc/.test(text)) out.push('Effect · Improves Trait / Roll');
+      if(/resist|immune|armor|protect/.test(text)) out.push('Effect · Protection');
+    }
+    return uniq(out);
+  }
+  function costBand(item){
+    const value=D.creditValue(item);
+    if(value===null) return 'Unpriced';
+    if(value<=0) return 'Free / 0 Cr';
+    if(value===1) return '1 Cr';
+    if(value<=4) return '2–4 Cr';
+    if(value<=9) return '5–9 Cr';
+    if(value<=16) return '10–16 Cr';
+    return '17+ Cr';
+  }
+
+  const defaultLabels={pack:'All sources',tier:'All tiers',category:'All categories',property:'All properties',owned:'Any ownership',cost:'Any cost',sort:'Name'};
+  function filterOptions(name){
+    const items=data[active]||[];
+    if(name==='pack') return uniq(items.map(item=>item.pack)).map(value=>({value,label:D.packLabel(value)}));
+    if(name==='tier') return uniq(items.map(D.tierName)).map(value=>({value,label:value}));
+    if(name==='category') return uniq(items.flatMap(itemCategories)).map(value=>({value,label:value}));
+    if(name==='property') return uniq(items.flatMap(itemProperties)).map(value=>({value,label:value}));
+    if(name==='owned') return [{value:'owned',label:'Owned only'},{value:'not-owned',label:'Not owned'}];
+    if(name==='cost') return ['Free / 0 Cr','1 Cr','2–4 Cr','5–9 Cr','10–16 Cr','17+ Cr','Unpriced'].map(value=>({value,label:value}));
+    if(name==='sort') return [{value:'name',label:'Name'},{value:'tier',label:'Tier'},{value:'cost',label:'Cost'},{value:'owned',label:'Owned quantity'}];
+    return [];
+  }
+  function closeFilters(except=null){
+    els.filters.forEach(root=>{
+      if(root===except)return;
+      root.classList.remove('open');
+      root.querySelector('[data-filter-toggle]')?.setAttribute('aria-expanded','false');
     });
-    const sort = els.sort.value;
-    if(sort === 'tier') items.sort((a,b)=>D.tierRank(a)-D.tierRank(b) || String(a.name).localeCompare(String(b.name)));
-    else if(sort === 'cost') items.sort((a,b)=>Number(a.cost?.credits ?? 999)-Number(b.cost?.credits ?? 999) || String(a.name).localeCompare(String(b.name)));
+  }
+  function renderFilter(name){
+    const root=els.filters.find(node=>node.dataset.filterName===name);
+    if(!root)return;
+    const options=filterOptions(name);
+    if(multiFilterNames.has(name)){
+      const valid=new Set(options.map(option=>option.value));
+      filterState[name]=(Array.isArray(filterState[name])?filterState[name]:[]).filter(value=>valid.has(value));
+      const selected=filterState[name];
+      const label=selected.length===0?defaultLabels[name]:(selected.length===1?(options.find(option=>option.value===selected[0])?.label||selected[0]):`${selected.length} selected`);
+      root.querySelector('[data-filter-label]').textContent=label;
+      root.querySelector('[data-filter-menu]').innerHTML=[{value:'',label:`Clear · ${defaultLabels[name]}`},...options]
+        .map(option=>{const active=option.value?selected.includes(option.value):selected.length===0;return `<button type="button" role="option" aria-selected="${active}" class="vf-filter-option ${active?'active':''}" data-filter-value="${esc(option.value)}"><span aria-hidden="true">${option.value?(active?'✓':'○'):'×'}</span> ${esc(option.label)}</button>`;}).join('');
+      return;
+    }
+    const current=filterState[name];
+    if(current && !options.some(option=>option.value===current)) filterState[name]='name';
+    const finalValue=filterState[name];
+    const label=options.find(option=>option.value===finalValue)?.label || defaultLabels[name];
+    root.querySelector('[data-filter-label]').textContent=label;
+    root.querySelector('[data-filter-menu]').innerHTML=options.map(option=>`<button type="button" role="option" aria-selected="${option.value===finalValue}" class="vf-filter-option ${option.value===finalValue?'active':''}" data-filter-value="${esc(option.value)}">${esc(option.label)}</button>`).join('');
+  }
+  function renderFilters(){ filterNames.forEach(renderFilter); }
+
+  function filterItems(){
+    const q=els.search.value.trim().toLowerCase();
+    let items=[...(data[active]||[])];
+    items=items.filter(item=>{
+      const qty=inventoryQty(item.id);
+      const matchAny=(selected,values)=>!selected.length||selected.some(value=>values.includes(value));
+      return (!q || textBlob(item).includes(q))
+        && matchAny(filterState.pack,[item.pack])
+        && matchAny(filterState.tier,[D.tierName(item)])
+        && matchAny(filterState.category,itemCategories(item))
+        && matchAny(filterState.property,itemProperties(item))
+        && matchAny(filterState.owned,[qty>0?'owned':'not-owned'])
+        && matchAny(filterState.cost,[costBand(item)]);
+    });
+    const sort=filterState.sort;
+    if(sort==='tier') items.sort((a,b)=>D.tierRank(a)-D.tierRank(b)||String(a.name).localeCompare(String(b.name)));
+    else if(sort==='cost') items.sort((a,b)=>(D.creditValue(a)??9999)-(D.creditValue(b)??9999)||String(a.name).localeCompare(String(b.name)));
+    else if(sort==='owned') items.sort((a,b)=>inventoryQty(b.id)-inventoryQty(a.id)||String(a.name).localeCompare(String(b.name)));
     else items.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
-    visibleItems = items;
+    visibleItems=items;
     renderCards();
   }
   function renderCards(){
-    els.count.textContent = `${visibleItems.length} of ${(data[active] || []).length} entries`;
-    if(!visibleItems.length){ els.cards.innerHTML='<div class="vf-empty">No canonical entries match these filters.</div>'; return; }
-    els.cards.innerHTML = visibleItems.map(item => {
-      const qty = inventoryQty(item.id);
+    els.count.textContent=`${visibleItems.length} of ${(data[active]||[]).length} entries`;
+    if(!visibleItems.length){els.cards.innerHTML='<div class="vf-empty">No canonical entries match these filters.</div>';return;}
+    els.cards.innerHTML=visibleItems.map(item=>{
+      const qty=inventoryQty(item.id);
       return `<article class="vf-card" data-id="${esc(item.id)}">
         <div class="vf-card-top"><h2>${esc(item.name)}</h2><span class="vf-badge">${esc(D.tierName(item))}</span></div>
-        <div class="vf-meta">${meta(item).map(x=>`<span>${esc(x)}</span>`).join('')}</div>
+        <div class="vf-meta">${meta(item).map(value=>`<span>${esc(value)}</span>`).join('')}</div>
         <p class="vf-description">${esc(primaryDescription(item))}</p>
         <div class="vf-card-actions"><span class="vf-cost">Cost <strong>${esc(D.costLabel(item))}</strong></span><button class="vf-button ${qty?'':'primary'}" data-add="${esc(item.id)}">${qty?`Add another · ${qty} owned`:'Add to inventory'}</button></div>
       </article>`;
     }).join('');
   }
-  function allLoaded(){ return Object.values(data).flat(); }
+  function allLoaded(){return Object.values(data).flat();}
   function renderInventory(){
-    const state = I.read();
-    const entries = Object.values(state.entries).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
-    els.invCount.textContent = entries.reduce((n,e)=>n+Number(e.quantity||0),0);
+    const state=I.read();
+    const entries=Object.values(state.entries).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+    els.invCount.textContent=entries.reduce((n,e)=>n+Number(e.quantity||0),0);
     let totalCredits=0;
-    for(const e of entries){
-      const item = allLoaded().find(x=>x.id===e.id);
-      const value = Number(e.credits ?? item?.cost?.credits);
-      if(Number.isFinite(value)) totalCredits += value * Number(e.quantity||0);
+    for(const entry of entries){
+      const item=allLoaded().find(x=>x.id===entry.id);
+      const value=Number(entry.credits??item?.cost?.credits);
+      if(Number.isFinite(value))totalCredits+=value*Number(entry.quantity||0);
     }
-    els.invCredits.textContent = totalCredits ? `${totalCredits} Cr` : '0 Cr';
-    if(!entries.length){ els.inventory.innerHTML='<div class="vf-empty">Your local inventory is empty.</div>'; return; }
-    els.inventory.innerHTML = entries.map(e=>`<div class="vf-inventory-row" data-inventory-id="${esc(e.id)}">
-      <div><strong>${esc(e.name)}</strong><small>${esc(D.packLabel(e.pack))} · ${esc(e.type)} · ${esc(D.costLabel({cost:{credits:e.credits}}))}</small></div>
-      <div class="vf-qty"><button data-dec="${esc(e.id)}" aria-label="Remove one">−</button><span>${Number(e.quantity||0)}</span><button data-inc="${esc(e.id)}" aria-label="Add one">+</button></div>
+    els.invCredits.textContent=totalCredits?`${totalCredits} Cr`:'0 Cr';
+    if(!entries.length){els.inventory.innerHTML='<div class="vf-empty">Your local inventory is empty.</div>';return;}
+    els.inventory.innerHTML=entries.map(entry=>`<div class="vf-inventory-row" data-inventory-id="${esc(entry.id)}">
+      <div><strong>${esc(entry.name)}</strong><small>${esc(D.packLabel(entry.pack))} · ${esc(entry.type)} · ${esc(D.costLabel({cost:{credits:entry.credits}}))}</small></div>
+      <div class="vf-qty"><button data-dec="${esc(entry.id)}" aria-label="Remove one">−</button><span>${Number(entry.quantity||0)}</span><button data-inc="${esc(entry.id)}" aria-label="Add one">+</button></div>
     </div>`).join('');
   }
   async function init(){
     try{
-      const [manifest, ...groups] = await Promise.all([D.manifest(), ...config.tabs.map(([name])=>D.loadCollection(name))]);
-      config.tabs.forEach(([name],i)=>data[name]=groups[i]);
-      els.release.textContent = manifest.release || manifest.version || '11.1 RC3';
-      renderTabs(); filterItems(); renderInventory();
-    }catch(err){
-      els.cards.innerHTML=`<div class="vf-error">Canonical data could not be loaded: ${esc(err.message)}</div>`;
-    }
+      const [manifest,...groups]=await Promise.all([D.manifest(),...config.tabs.map(([name])=>D.loadCollection(name))]);
+      config.tabs.forEach(([name],index)=>data[name]=groups[index]);
+      els.release.textContent=manifest.release||manifest.version||'11.1 RC3';
+      renderTabs();renderFilters();filterItems();renderInventory();
+    }catch(error){els.cards.innerHTML=`<div class="vf-error">Canonical data could not be loaded: ${esc(error.message)}</div>`;}
   }
-  els.tabs.addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(!b)return; active=b.dataset.tab; renderTabs(); filterItems(); });
-  [els.search,els.pack,els.tier,els.sort].forEach(el=>el.addEventListener(el.tagName==='INPUT'?'input':'change',filterItems));
-  els.cards.addEventListener('click',e=>{ const b=e.target.closest('[data-add]'); if(!b)return; const item=allLoaded().find(x=>x.id===b.dataset.add); if(item) I.add(item,1); });
-  els.inventory.addEventListener('click',e=>{
-    const inc=e.target.closest('[data-inc]'), dec=e.target.closest('[data-dec]');
-    if(inc){ const item=allLoaded().find(x=>x.id===inc.dataset.inc); if(item)I.add(item,1); }
-    if(dec){ const state=I.read(); const id=dec.dataset.dec; I.setQuantity(id,Number(state.entries[id]?.quantity||0)-1); }
+
+  els.tabs.addEventListener('click',event=>{
+    const button=event.target.closest('[data-tab]');if(!button)return;
+    active=button.dataset.tab;
+    filterState.category=[];filterState.property=[];
+    renderTabs();renderFilters();filterItems();
+  });
+  els.search.addEventListener('input',filterItems);
+  els.filters.forEach(root=>{
+    const toggle=root.querySelector('[data-filter-toggle]');
+    toggle.addEventListener('click',event=>{
+      event.stopPropagation();
+      const opening=!root.classList.contains('open');
+      closeFilters(root);root.classList.toggle('open',opening);toggle.setAttribute('aria-expanded',String(opening));
+    });
+    root.querySelector('[data-filter-menu]').addEventListener('click',event=>{
+      event.stopPropagation();const option=event.target.closest('[data-filter-value]');if(!option)return;
+      const name=root.dataset.filterName,value=option.dataset.filterValue;
+      if(multiFilterNames.has(name)){
+        const selected=Array.isArray(filterState[name])?filterState[name].slice():[];
+        if(!value)filterState[name]=[];
+        else filterState[name]=selected.includes(value)?selected.filter(item=>item!==value):selected.concat(value);
+        renderFilter(name);filterItems();
+      }else{
+        filterState[name]=value;renderFilter(name);closeFilters();filterItems();
+      }
+    });
+  });
+  document.addEventListener('click',()=>closeFilters());
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')closeFilters();});
+  els.reset.addEventListener('click',()=>{
+    els.search.value='';Object.assign(filterState,{pack:[],tier:[],category:[],property:[],owned:[],cost:[],sort:'name'});
+    renderFilters();filterItems();
+  });
+  els.cards.addEventListener('click',event=>{const button=event.target.closest('[data-add]');if(!button)return;const item=allLoaded().find(x=>x.id===button.dataset.add);if(item)I.add(item,1);});
+  els.inventory.addEventListener('click',event=>{
+    const inc=event.target.closest('[data-inc]'),dec=event.target.closest('[data-dec]');
+    if(inc){const item=allLoaded().find(x=>x.id===inc.dataset.inc);if(item)I.add(item,1);}
+    if(dec){const state=I.read();const id=dec.dataset.dec;I.setQuantity(id,Number(state.entries[id]?.quantity||0)-1);}
   });
   els.exportBtn.addEventListener('click',I.exportFile);
-  els.importInput.addEventListener('change',async e=>{ try{ if(e.target.files[0]) await I.importFile(e.target.files[0]); }catch(err){ alert(err.message); } e.target.value=''; });
-  els.clearBtn.addEventListener('click',()=>{ if(confirm('Clear the local VeilFarers inventory?')) I.clear(); });
-  I.subscribe(()=>{ renderInventory(); renderCards(); });
+  els.importInput.addEventListener('change',async event=>{try{if(event.target.files[0])await I.importFile(event.target.files[0]);}catch(error){alert(error.message);}event.target.value='';});
+  els.clearBtn.addEventListener('click',()=>{if(confirm('Clear the local VeilFarers inventory?'))I.clear();});
+  I.subscribe(()=>{renderInventory();renderFilters();filterItems();});
   init();
 })();
