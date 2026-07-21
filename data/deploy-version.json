@@ -1,16 +1,16 @@
 {
   "schema": "veilfarers.deploy/1",
-  "version": "v59.72",
-  "packageVersion": "59.72.0",
-  "date": "2026-07-20",
+  "version": "v59.76",
+  "packageVersion": "59.76.0",
+  "date": "2026-07-21",
   "cspProfile": "wasm-3d-dice-v2",
   "requiredScriptSource": "'wasm-unsafe-eval'",
   "expectedResponseHeaders": {
-    "X-VeilFarers-Release": "v59.72",
+    "X-VeilFarers-Release": "v59.76",
     "X-VeilFarers-CSP-Profile": "wasm-3d-dice-v2"
   },
   "accessibilityProfile": "WCAG-2.2-AA-target",
-  "generatedAt": "2026-07-20",
-  "release": "v59.72",
-  "notes": "Restored sheet token geometry, masthead Armor placement, true Creator card flip, and simple Player Tool Shield/Fear tokens."
+  "generatedAt": "2026-07-21",
+  "release": "v59.76",
+  "notes": "Creator selected-front and flipped-back states now share the same interior 48-particle field and animated gold frame. Particle clipping and v59.74 dice interruption are retained."
 }

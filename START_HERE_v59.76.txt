@@ -1,0 +1,41 @@
+VEILFARERS PORTAL v59.76 — START HERE
+
+1. DEPLOY
+   Deploy the complete contents of VeilFarers_Portal_v59.76.zip from the ZIP root.
+   Do not deploy a parent folder containing the portal.
+
+2. VERIFY RELEASE AUTHORITY
+   - Open /data/deploy-version.json and confirm v59.76.
+   - Inspect an HTML response and confirm X-VeilFarers-Release: v59.76.
+   - Confirm X-VeilFarers-CSP-Profile: wasm-3d-dice-v2.
+
+3. CREATOR CARD ACCEPTANCE
+   - Select a card in Ancestry, Community, Class and Affiliation.
+   - Confirm 48 particles and the animated gold frame are visible on the selected front.
+   - Press [+] and confirm the same particles and frame remain visible around the blue reverse.
+   - Confirm particles remain clipped inside the rounded card border.
+   - Press [-] or click outside and confirm the card returns to neutral with no residual field.
+   - Confirm only one card can remain expanded.
+
+4. DICE REGRESSION CHECK
+   - Start a 3D roll and press anywhere on the full overlay before settlement.
+   - Confirm physical dice disappear and the identical roll resolves in 2D.
+   - Let another 3D roll settle, then click the overlay and confirm its result is preserved.
+
+5. SERVICE CHECK
+   - Sign in with Netlify Identity.
+   - Connect one Keeper Tool and one Player Tool to the same table.
+   - Confirm no repeated 401 polling loop appears.
+   - Confirm live table updates flow in both directions.
+
+6. INCLUDED RELEASE DOCUMENTS
+   - GITHUB_DEPLOY_SUMMARY_v59.76.md
+   - PORTAL_HANDOVER_v59.76.md
+   - VALIDATION_v59.76.txt
+   - START_HERE_v59.76.txt
+   - CARD_FEEDBACK_STATES_v59.76.png
+
+7. KNOWN RELEASE POSITION
+   - VeilFarers Blue is the only exposed theme.
+   - White Stone remains disabled pending a separate reconstruction.
+   - Live Netlify/Firebase, production card transforms and real DiceBox acceptance remain required before public release.

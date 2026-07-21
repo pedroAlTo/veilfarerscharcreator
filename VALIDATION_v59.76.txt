@@ -1,0 +1,26 @@
+VEILFARERS PORTAL v59.76 — VALIDATION REPORT
+Date: 2026-07-21
+Overall: PASS
+
+PASS  35 JavaScript files pass node --check.
+PASS  86 JSON files parse successfully.
+PASS  11 root HTML pages have no duplicate IDs.
+PASS  10 inline JavaScript blocks pass node --check.
+PASS  Card feedback layers excluded from the rotating face
+PASS  Feedback layer matcher includes frame, sheen and particle field
+PASS  Existing rotors hoist feedback layers to the card shell
+PASS  Particle field remains fixed at 48 particles
+PASS  Particle density remains fixed at 100%
+PASS  Selected front enables direct-child particle field
+PASS  Flipped reverse enables direct-child particle field
+PASS  Selected front enables direct-child animated frame
+PASS  Flipped reverse enables direct-child animated frame
+PASS  Particle field remains clipped to card interior
+PASS  Deploy authority reports v59.76 / 59.76.0.
+PASS  81 protected DiceBox/Babylon/Ammo/theme assets are byte-identical to v59.75.
+PASS  5 editorial PDF files are byte-identical to v59.75.
+PASS  Controlled Chromium fixture shows 48 particles and one animated frame on selected front and flipped reverse.
+
+PASS  Release archive CRC extraction completed without errors.
+
+Deploy Preview acceptance remains required for the production Creator transforms, Netlify Identity, Firebase table synchronization and the real DiceBox renderer.

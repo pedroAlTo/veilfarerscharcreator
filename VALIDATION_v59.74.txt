@@ -1,0 +1,144 @@
+VEILFARERS PORTAL v59.74 — VALIDATION REPORT
+Date: 2026-07-21
+Baseline: v59.73
+
+RESULT
+------
+Static validation: PASS
+Controlled isolated-Chromium validation: PASS
+Failures: 0
+Live Netlify/Firebase/Identity/real-DiceBox acceptance: NOT PERFORMED IN THIS ENVIRONMENT
+
+STATIC INTEGRITY
+----------------
+JSON parsed: 86
+JavaScript checked with node --check: 35
+Root HTML files checked: 11
+Inline scripts checked with node --check: 10
+CSS files checked for balanced braces: 11
+Duplicate root-HTML IDs outside script/template content: none
+Release marker: v59.74
+Package marker: 59.74.0
+Response header marker: X-VeilFarers-Release: v59.74
+
+3D DICE INPUT ROOT CAUSE
+------------------------
+v59.73 left `.vf-dice3d-stage` at `pointer-events: none` while visible.
+The full-stage handler could therefore not receive the requested arbitrary click/tap.
+
+v59.74 correction:
+- `.vf-dice3d-stage.is-visible` has `pointer-events: auto`.
+- The visible stage has `touch-action: none`.
+- Stage dismissal is handled on capture-phase `pointerdown`.
+- `preventDefault`, `stopPropagation` and `stopImmediatePropagation` are applied.
+- The close button owns its own capture-phase pointerdown and does not double-trigger the stage.
+
+CONTROLLED DICE WRAPPER TEST
+----------------------------
+Test method:
+- evaluated the exact v59.74 `vf-dice3d.js` wrapper in Chromium;
+- replaced only imported DiceBox/DisplayResults classes with deterministic test doubles;
+- used the actual v59.74 stage markup, event handlers, cancellation controller and CSS.
+
+Pending roll:
+- visible-stage computed pointer-events: auto
+- input: pointerdown anywhere on stage
+- roll pending before input: true
+- wrapper cancellation: true
+- reason: user-fallback-2d
+- fallback die count: 2
+- original sides retained: d12
+- close event fallback2D: true
+- close event resultPreserved: false
+- pending DiceBox resolver released: true
+- DiceBox clear invoked: true
+- active controller after completion: none
+- rollPending after completion: false
+- stage hidden: true
+
+Resolved roll:
+- deterministic renderer result: [5]
+- stage visible before input: true
+- input: pointerdown anywhere on stage
+- resultPreserved: true
+- fallback2D: false
+- stage hidden: true
+
+Player Tool fallback ownership:
+- standard 2D values generated from the same `themedGroups`: present
+- quantities/sides/roles retained through group object: present
+- `vfFallbackGroups=themedGroups`: present
+- Duality/generic fallback-mode selection: retained
+- persistent 3D/2D preference mutation: none
+
+CREATOR PARTICLE TUNER
+----------------------
+Controls:
+- exact particle count range: 0–48
+- density range: 40–180%
+- Reset control: present
+- fresh default count: 19
+- fresh default density: 100%
+
+Default rationale:
+- previous fixed field contained 16 pseudo-particles;
+- 16 × 1.20 = 19.2;
+- 19 is the closest whole-number default;
+- vertical travel is not increased by a fixed 20% rule.
+
+Controlled exact-function test:
+- fresh local state: 19 generated particles
+- fresh density CSS value: 1.00
+- inactive-card particle field: absent
+- live count changed to 31: exactly 31 particle nodes
+- live density changed to 145%: density CSS value 1.45
+- count output: 31
+- density output: 145%
+- saved count key: 31
+- saved density key: 145
+- active class removed: particle field removed
+
+Fresh-storage defect found during validation:
+- `Number(null)` originally reduced a fresh profile to 0 particles / 40% density.
+- `vfClampParticle` now treats null, undefined and empty string as missing values and applies the defined 19/100 defaults.
+
+Visual fixture:
+- CREATOR_PARTICLE_TUNER_v59.74.png
+- fixture demonstrates a live tuned state of 31 particles / 145%.
+
+PROTECTED ASSETS
+----------------
+Protected DiceBox/Babylon/Ammo/theme files compared with v59.73: 86/86 byte-identical
+Intentional wrapper changes only:
+- assets/3d-dice/vf-dice3d.js
+- assets/3d-dice/vf-dice3d.css
+
+Editorial PDFs compared with v59.73: 5/5 byte-identical
+
+PRESERVED RELEASE STATE
+-----------------------
+White Stone disabled: retained
+VeilFarers Blue only: retained
+v59.73 Creator card parity/flip and Level Up reward flow: retained
+Human The Tool / The Stubborn Relic: retained
+v59.70 authentication-expiry polling stop: retained
+Keeper/Player table API contracts: unchanged
+Character/Vault/import/export contracts: unchanged
+
+LIMITATIONS / REQUIRED DEPLOY PREVIEW ACCEPTANCE
+------------------------------------------------
+- Real DiceBox physics must be tested in Netlify Deploy Preview; deterministic test doubles do not replace renderer acceptance.
+- Test pointer interruption in full-screen overlay and boxed modes, with mouse, touch and pen where available.
+- Test Duality, generic dice and appended attack/damage fallback.
+- Confirm a settled physical result is retained after dismissal.
+- Tune Creator particles on real desktop and mobile hardware and provide final count and density values.
+- Re-test Keeper ↔ Player communication with valid and expired Identity sessions.
+- Full local-page navigation was blocked by the controlled Chromium environment policy; component functions and wrapper were tested in isolated same-document fixtures instead.
+
+ARCHIVE INTEGRITY
+-----------------
+Files packaged: 464
+ZIP entries: 464
+Outer wrapper folder: none
+CRC test: PASS
+Test-only files: absent

@@ -1,0 +1,61 @@
+VEILFARERS PORTAL v59.74 — START HERE
+
+1. DEPLOY
+   Deploy the complete contents of VeilFarers_Portal_v59.74.zip.
+   Do not copy selected files over an older deploy.
+
+2. VERIFY THE DEPLOY
+   - Open /data/deploy-version.json and confirm v59.74.
+   - Inspect the HTML response header and confirm X-VeilFarers-Release: v59.74.
+   - Hard-refresh the browser.
+
+3. THEME
+   VeilFarers Blue is the only active theme.
+   White Stone remains deliberately disabled.
+
+4. DICE INTERRUPTION — PRIMARY ACCEPTANCE
+   - Set Dice Display to 3D.
+   - Start a Duality roll and click/tap anywhere immediately.
+   - The 3D physics must stop immediately.
+   - The same quantity and die sizes must roll automatically in 2D.
+   - Repeat with a generic pool and attack plus appended damage.
+   - Let a 3D roll settle, then click/tap anywhere.
+   - The overlay must close while preserving the settled result.
+   - Start another roll and confirm the saved 3D preference remains 3D.
+
+5. CREATOR PARTICLE TUNER
+   The tuner is temporary and appears in Creator.
+   - Particles controls the exact count: 0–48.
+   - Density controls concentration/intensity: 40–180%.
+   - Fresh default: 19 particles, 100% density.
+   - Values update live and persist in this browser.
+   - Reset restores 19 / 100%.
+   Test several cards in every deck and record the preferred count and density separately.
+
+6. CREATOR REGRESSION
+   - Cards in one deck remain the same height.
+   - Selected card lifts/glows; previous selection returns neutral.
+   - [+] opens the blue full-text reverse.
+   - [-] or outside click returns to the front and neutral state.
+   - Human The Graft/The Tool selection remains in Equipment.
+
+7. LEVEL UP / CHARSHEET REGRESSION
+   - Verify Level Up card selection/flip and Apply Level reward sequence.
+   - Verify Charsheet HP purchased/marked/locked states.
+   - Verify Level/Evasion/Armor/Proficiency do not overlap.
+   - Verify Hope, Effort, Resolve and Armor token geometry.
+
+8. TABLE COMMUNICATION
+   Sign out and back in before testing.
+   Connect Keeper and Player to the same table.
+   Confirm two-way updates and no repeating 401 loop.
+   Sign out/expire one client and confirm polling stops with one login-required state.
+
+9. DOCUMENTS
+   - GITHUB_DEPLOY_SUMMARY_v59.74.md
+   - PORTAL_HANDOVER_v59.74.md
+   - VALIDATION_v59.74.txt
+
+10. RELEASE LIMIT
+   Static and isolated controlled-browser checks passed.
+   Real Netlify Identity, Firebase, table communication, DiceBox physics and real-device animation still require Deploy Preview acceptance.

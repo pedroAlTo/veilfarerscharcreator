@@ -1,0 +1,59 @@
+VEILFARERS PORTAL v59.75 — VALIDATION REPORT
+Date: 2026-07-21
+Baseline: v59.74
+Scope: fixed Creator particle values, interior clipping, and removal of the temporary tuner.
+
+RESULT: PASS — static, structural and archive checks completed without failures.
+LIVE ACCEPTANCE STILL REQUIRED: Netlify Deploy Preview visual inspection and real DiceBox interaction.
+
+1. RELEASE AUTHORITY
+PASS  data/deploy-version.json reports v59.75 / 59.75.0.
+PASS  _headers and netlify.toml advertise X-VeilFarers-Release: v59.75.
+PASS  Root HTML release metadata and visible portal labels were updated.
+PASS  package.json and package-lock.json report 59.75.0.
+
+2. CREATOR PARTICLE SETTINGS
+PASS  VF_CARD_PARTICLE_COUNT is fixed at 48.
+PASS  VF_CARD_PARTICLE_DENSITY is fixed at 1 (100%).
+PASS  The temporary particle slider, density slider and reset button are absent.
+PASS  No particle tuning local-storage keys or tuner initialization functions remain.
+PASS  Neutral cards remove their generated particle field.
+PASS  Selected and flipped cards generate exactly 48 particle nodes.
+
+3. INTERIOR CONTAINMENT
+PASS  Particle side positions use an inner edge inset of 1.8%–7.0%.
+PASS  Longitudinal positions remain within 4%–96%.
+PASS  .vf-card-particle-field uses inset: 1px.
+PASS  .vf-card-particle-field uses overflow: hidden.
+PASS  .vf-card-particle-field inherits the card border radius.
+PASS  Pointer input remains disabled on particles, so card controls are unaffected.
+
+4. CODE AND DATA INTEGRITY
+PASS  35 JavaScript files pass node --check.
+PASS  86 JSON files parse successfully.
+PASS  11 root HTML pages contain no duplicate IDs.
+PASS  10 inline scripts pass node --check.
+
+5. PROTECTED ASSETS
+PASS  Five editorial PDFs are byte-identical to v59.74.
+PASS  79 protected DiceBox/Babylon/Ammo/theme files are byte-identical to v59.74.
+PASS  Total protected files compared: 84; differences: 0.
+NOTE  assets/3d-dice/vf-dice3d.js changed only in its release/version marker.
+
+6. REGRESSION BOUNDARY
+PASS  Dice interruption and 2D fallback implementation were not modified.
+PASS  Player/Keeper authentication and table access files were not modified.
+PASS  Canonical JSON and PDF content were not modified.
+PASS  White Stone remains disabled.
+
+7. ARCHIVE
+PASS  Package contains portal contents at ZIP root; no outer release directory.
+PASS  Full ZIP CRC test completed successfully.
+
+LIVE DEPLOY PREVIEW CHECKLIST
+- Select and deselect cards in every Creator deck.
+- Confirm particles stay within the card silhouette during lift and tilt.
+- Flip a card and confirm the reverse remains readable and contained.
+- Confirm no tuner controls remain in the header on desktop or mobile.
+- Interrupt an unresolved 3D roll by pressing the overlay and confirm 2D fallback.
+- Dismiss a resolved 3D roll and confirm the physical result is preserved.

@@ -327,7 +327,7 @@
         "book": "VeilFarers Corebook",
         "version": "11.35",
         "sourceFile": "VeilFarers_Corebook_11.35-PDF-Candidate_FULL_SOURCE.md",
-        "section": "Human · Ancestry Gifts · Made for the Graft / Inheritance of the Builders",
+        "section": "Human · Ancestry Gifts · Made for the Graft / The Tool",
         "collection": "ancestries"
       }
     ],
@@ -352,8 +352,8 @@
           "text": "Augmentation is overwhelmingly human work, built by human engineers around human anatomy, and human physiology accepts grafted hardware with a readiness no other ancestry quite matches. You gain +2 Augment Capacity (Chapter 13). Where another ancestry leans on an innate gift, a human as often leans on a better arm."
         },
         {
-          "name": "Inheritance of the Builders",
-          "text": "Human civilization built most of what the galaxy buys, flies, and grafts, and a human character starts play already holding a piece of that inheritance. Choose one at character creation: The Graft — one free Common (TT1) or Military (TT2) augmentation; a Common graft consumes no Augment Slot, a Military graft consumes 1 slot, and either has no drawback. The Tool — one Experimental (TT3), 9 Cr (WT3) item from any equipment catalogue in play."
+          "name": "The Tool",
+          "text": "Choose one Experimental (TT3) item worth 9 Cr (WT3) from any equipment catalogue in play. The chosen item gains The Stubborn Relic: it is stubbornly—almost cosmically—yours. If it is lost, stolen, confiscated, abandoned, cast into the depths of a gas giant, or even destroyed, it inevitably returns to you restored and functional at the next narratively appropriate opportunity. It does not return immediately and cannot bypass the obstacle caused by its absence. The bond only ends if you willingly sell or trade it for its appropriate market value or greater. Permanently removing the bonded item by any other means is equivalent to removing an Ancestry Gift and should occur only as a major story event agreed by the player and Keeper."
         }
       ],
       "extra": null,
@@ -401,7 +401,7 @@
           "id": "tool",
           "name": "The Tool",
           "tag": "A piece of the civilization that built the lanes",
-          "text": "Choose one Experimental (TT3) item worth 9 Cr (WT3) from any equipment catalogue in play. It is yours, paid for, and nobody asks how."
+          "text": "Choose one Experimental (TT3) item worth 9 Cr (WT3) from any equipment catalogue in play. It gains The Stubborn Relic: when lost, stolen, confiscated, abandoned, cast away, or destroyed, it returns restored at the next narratively appropriate opportunity. It cannot bypass the immediate obstacle caused by its absence. The bond ends only if you willingly sell or trade it for its appropriate market value or greater."
         }
       ],
       "augmentCapacityBonus": 2

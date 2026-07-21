@@ -28,7 +28,9 @@ function freshPlan(){
     details:{},
     tier:{mode:'existing',a:0,b:1,existing:0,newName:''},
     message:'',
-    applied:false
+    applied:false,
+    appliedLevel:null,
+    appliedSummary:[]
   };
 }
 
@@ -49,6 +51,21 @@ function injectStyles(){
     .levelup-config{margin-top:12px;padding-top:12px;border-top:1px solid rgba(233,192,104,.16)}.levelup-config label{display:block;margin:8px 0;color:var(--text-dim);font:700 9px/1.4 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}.levelup-config input,.levelup-config textarea{box-sizing:border-box;width:100%;margin-top:6px;border:1px solid rgba(233,192,104,.26);border-radius:10px;background:rgba(0,0,0,.26);color:#fff6d8;padding:10px 11px;outline:none}.levelup-config textarea{min-height:82px;resize:vertical}.levelup-config input:focus,.levelup-config textarea:focus{border-color:rgba(233,192,104,.72)}
     .levelup-summary{display:grid;gap:7px;margin-top:12px}.levelup-summary-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;font-size:11px}.levelup-summary-row strong{color:#fff6d8}.levelup-delta{color:#9fdb8c;font-family:'JetBrains Mono',monospace}.levelup-error{border:1px solid rgba(248,113,113,.5);border-radius:10px;background:rgba(127,29,29,.22);color:#fecaca;padding:10px 12px;font-size:11px}.levelup-success{border:1px solid rgba(132,204,22,.45);border-radius:10px;background:rgba(54,83,20,.2);color:#d9f99d;padding:10px 12px;font-size:11px}
     .levelup-inline-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.levelup-mini{padding:7px 9px;font-size:9px}.levelup-option-description{min-height:62px}.levelup-section-kicker{font:700 9px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px}
+    .levelup-grid{align-items:stretch;grid-auto-rows:1fr}.levelup-card.option{height:100%;overflow:visible;isolation:isolate;transition:transform .34s cubic-bezier(.16,.78,.22,1),box-shadow .34s ease,filter .24s ease}.levelup-card.option.selected{transform:translateY(-10px) scale(1.012);z-index:20;border-color:#f6d878;box-shadow:0 34px 66px rgba(0,0,0,.62),0 0 0 2px rgba(255,224,135,.56),0 0 38px rgba(242,202,100,.30)}
+    .levelup-card.option .vf-card-front{box-sizing:border-box;padding:18px}.levelup-card.option{padding:0}.levelup-card.option .vf-card-back{min-height:100%}.levelup-card.option .sheen,.levelup-card.option .frame{position:absolute;inset:0;pointer-events:none}.levelup-card.option .frame{inset:-1px;border:2px solid rgba(233,192,104,.55);opacity:0;transition:opacity .3s}.levelup-card.option.selected .frame{opacity:1;box-shadow:0 0 18px rgba(255,220,120,.40),inset 0 0 18px rgba(255,220,120,.08)}
+    .levelup-apply-summary{position:relative;overflow:hidden}.levelup-apply-summary.vf-reward-active{border-color:#fff1ae;box-shadow:0 0 0 1px rgba(255,239,165,.58),0 0 50px rgba(248,208,88,.30)}
+    .levelup-reward-flash{position:absolute;inset:-30%;z-index:20;pointer-events:none;opacity:0;background:radial-gradient(circle,#fff 0 8%,#fff7c2 18%,rgba(255,211,75,.82) 31%,rgba(255,211,75,0) 63%);mix-blend-mode:screen}.vf-reward-active .levelup-reward-flash{animation:vfLevelRewardFlash 1.45s cubic-bezier(.12,.72,.2,1) both}
+    .levelup-reward-particles{position:absolute;inset:0;z-index:19;pointer-events:none;overflow:hidden}.levelup-reward-particles i{--x:50%;--y:50%;--dx:0px;--dy:-80px;position:absolute;left:var(--x);top:var(--y);width:4px;height:4px;border-radius:50%;background:#fff8c9;box-shadow:0 0 9px #ffe36d,0 0 18px rgba(255,188,35,.9);opacity:0}.vf-reward-active .levelup-reward-particles i{animation:vfLevelRewardParticle 1.9s .55s cubic-bezier(.12,.64,.2,1) both}
+    .vf-reward-active .levelup-summary-row{opacity:0;transform:translateY(12px);animation:vfLevelRewardReveal .55s calc(1.0s + var(--row,0)*.09s) ease forwards}
+    @keyframes vfLevelRewardFlash{0%{opacity:0;transform:scale(.35)}25%{opacity:1;transform:scale(.85)}48%{opacity:.92;transform:scale(1.15)}100%{opacity:0;transform:scale(1.65)}}
+    @keyframes vfLevelRewardParticle{0%{opacity:0;transform:translate(0,0) scale(.4)}18%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.1)}}
+    @keyframes vfLevelRewardReveal{to{opacity:1;transform:none}}
+    .levelup-apply-summary.vf-reward-active::before,.levelup-apply-summary.vf-reward-active::after{content:'';position:absolute;left:50%;top:50%;z-index:18;width:42px;height:42px;border:2px solid rgba(255,246,190,.96);border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.2);animation:vfLevelRewardRing 1.5s .26s cubic-bezier(.12,.66,.18,1) both}
+    .levelup-apply-summary.vf-reward-active::after{animation-delay:.48s;border-color:rgba(255,194,45,.72)}
+    .vf-reward-active h3{animation:vfLevelRewardTitle 1.85s .60s ease both}
+    @keyframes vfLevelRewardRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(16)}}
+    @keyframes vfLevelRewardTitle{0%,22%{opacity:0;filter:blur(7px);transform:translateY(8px) scale(.96)}52%{opacity:1;filter:blur(0) drop-shadow(0 0 18px rgba(255,225,116,.92));transform:none}100%{filter:none}}
+    @media(prefers-reduced-motion:reduce){.levelup-card.option.selected{transform:none}.vf-reward-active .levelup-reward-flash,.vf-reward-active .levelup-reward-particles i,.vf-reward-active .levelup-summary-row{animation:none!important;opacity:1;transform:none}}
   `;
   document.head.appendChild(style);
 }
@@ -398,6 +415,7 @@ async function apply(){
   try{
     saveInputs();ensureState();
     const target=state.level+1;validate(target);
+    const appliedSummary=previewRows(target);
     const before=copy(state);const entries=[];const traits=[];
     if(TIER_LEVELS.has(target)){
       state.proficiency=Math.min(6,state.proficiency+1);
@@ -446,7 +464,7 @@ async function apply(){
     const registry=window.VeilFarersCharacterRegistry;
     const record=registry.saveLocalData(id,{creatorState:copy(state),sheetPayload:payload,advancementHistory:copy(state.advancementHistory)},{source:'level-up-v59.51',status:'active',completedAt:registry.get(id)?.completedAt||new Date().toISOString()});
     const synced=await registry.sync(record,{source:'level-up-v59.51'});
-    plan=freshPlan();plan.applied=true;plan.message=`Level ${target} applied to ${id}${synced?.cloudState==='deferred'?' locally; cloud sync is pending.':'. Vault, Charsheet and Player Tool payloads were updated.'}`;
+    plan=freshPlan();plan.applied=true;plan.appliedLevel=target;plan.appliedSummary=appliedSummary;plan.message=`Level ${target} applied to ${id}${synced?.cloudState==='deferred'?' locally; cloud sync is pending.':'. Vault, Charsheet and Player Tool payloads were updated.'}`;
     selectedVaultId=id;render();
   }catch(error){plan.message=error.message||String(error);plan.applied=false;render();}
 }
@@ -456,12 +474,50 @@ function renderHistory(){
   return `<section class="levelup-card"><h3>Advancement History</h3>${history.map(entry=>`<div class="levelup-summary-row"><span><strong>Level ${safe(entry.level)}</strong><br>${safe((entry.options||[]).join(' · '))}</span><span>${safe(String(entry.at||'').slice(0,10))}</span></div>`).join('')||'<p>No Level Ups recorded.</p>'}</section>`;
 }
 
+
+function levelOptionCard(def,target){
+  const selected=plan.choices.includes(def.id);
+  const front=`<div class="option-head"><h3>${safe(def.title)}</h3><span class="option-cost">${def.cost} slot${def.cost===1?'':'s'}</span></div><p class="levelup-option-description">${safe(def.text)}</p>${def.disabled?`<div class="option-reason">${safe(def.reason||'Unavailable')}</div>`:`<button class="btn ${selected?'btn-primary':'btn-secondary'}" onclick="VFLevelUp.toggle('${def.id}')">${selected?'Selected · remove':'Select'}</button>`}${selected?configFor(def.id,target):''}`;
+  const back=`<h3>${safe(def.title)}</h3><div class="vf-card-back-meta"><span>${def.cost} slot${def.cost===1?'':'s'}</span><span>${def.disabled?'Unavailable':'Available'}</span></div><h4>Advancement</h4><p>${safe(def.text)}</p>${def.reason?`<h4>Restriction</h4><p>${safe(def.reason)}</p>`:''}`;
+  return `<article class="levelup-card option ${def.disabled?'locked':''} ${selected?'selected vf-selection-active':''}" data-card-truncated="1"><template class="vf-card-back-template">${back}</template><div class="option-content-source">${front}</div><div class="sheen"></div><div class="frame"></div></article>`;
+}
+function rewardParticles(){
+  const points=[
+    [7,70,-95,-88],[12,28,-74,-116],[18,52,-82,-38],[24,82,-54,-124],[29,18,-42,-92],[34,64,-38,-114],
+    [39,35,-24,-136],[44,88,-15,-108],[49,12,-4,-122],[53,58,8,-142],[57,82,18,-112],[61,26,30,-128],
+    [66,68,42,-120],[71,16,48,-88],[75,48,64,-138],[80,86,68,-104],[85,30,82,-114],[91,62,98,-92],
+    [15,92,-74,-42],[31,44,-52,-58],[47,74,-12,-72],[63,46,44,-68],[78,72,78,-52],[94,20,72,-64]
+  ];
+  return `<div class="levelup-reward-particles" aria-hidden="true">${points.map((p,i)=>`<i style="--x:${p[0]}%;--y:${p[1]}%;--dx:${p[2]}px;--dy:${p[3]}px;animation-delay:${.40+i*.022}s"></i>`).join('')}</div>`;
+}
+function activateLevelUpCards(root){
+  root.querySelectorAll('.levelup-card.option').forEach(card=>{
+    const source=card.querySelector(':scope > .option-content-source');
+    const template=card.querySelector(':scope > .vf-card-back-template');
+    if(!source||!template)return;
+    const rotor=document.createElement('div');rotor.className='vf-card-rotor';
+    const front=document.createElement('div');front.className='vf-card-front';
+    while(source.firstChild)front.appendChild(source.firstChild);source.remove();
+    const plus=document.createElement('button');plus.type='button';plus.className='vf-card-expand';plus.textContent='[+]';plus.setAttribute('aria-label','Show full advancement information');front.appendChild(plus);
+    const back=document.createElement('div');back.className='vf-card-back custom-scrollbar';back.innerHTML=template.innerHTML;template.remove();back.insertAdjacentHTML('afterbegin','<button type="button" class="vf-card-back-close" aria-label="Return to advancement front">[−]</button>');
+    card.querySelectorAll(':scope > .sheen,:scope > .frame').forEach(node=>front.appendChild(node));
+    rotor.append(front,back);card.appendChild(rotor);
+    plus.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.toggleFullInfoCard?window.toggleFullInfoCard(card):card.classList.add('vf-card-flipped');});
+    back.querySelector('.vf-card-back-close').addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.closeFullInfoCard?window.closeFullInfoCard(card):card.classList.remove('vf-card-flipped');});
+    back.addEventListener('click',event=>event.stopPropagation());
+  });
+  const optionGrid=root.querySelector('.levelup-card.option')?.parentElement;
+  if(window.VFNormalizeCardDeck&&optionGrid)window.VFNormalizeCardDeck(optionGrid);
+}
+
 function render(){
   injectStyles();ensureState();
   const root=document.getElementById('levelup-root');if(!root)return;
   const target=Math.min(10,state.level+1);const used=state.level<10?slotsUsed(target):0;
   const current=window.VeilFarersCharacterRegistry?.get(state.characterId);const summary=current?recordSummary(current):{name:state.name||'Current draft',characterId:state.characterId||'No saved ID',level:state.level,path:state.path,className:className(),subclass:state.subclass};
-  root.innerHTML=`<div class="levelup-shell">${renderVault()}<section class="levelup-card"><div class="levelup-section-kicker">Selected build</div><h3>${safe(summary.name)}</h3><div class="levelup-badges"><span class="levelup-badge">${safe(summary.characterId||'No saved ID')}</span><span class="levelup-badge">Level ${state.level}</span><span class="levelup-badge">Tier ${tierFor(state.level)}</span><span class="levelup-badge">${safe([state.path,className(),state.subclass].filter(Boolean).join(' · '))}</span></div>${!state.characterId?'<div class="levelup-error" style="margin-top:12px">Choose a completed character from Character Vault. Level Up will not create a second copy.</div>':''}</section>${state.level>=10?'<section class="levelup-card"><h3>Maximum Level</h3><p>The Core rules stop at Level 10.</p></section>':`${tierConfig(target)}<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Advancement menu</div><h3>Level ${state.level} → ${target}</h3></div><span class="levelup-badge">${used}/2 slots selected</span></div><p>All Corebook options remain visible. Unavailable options explain why they are locked.</p><div class="levelup-grid">${definitions(target).map(def=>`<article class="levelup-card option ${def.disabled?'locked':''} ${plan.choices.includes(def.id)?'selected':''}"><div class="option-head"><h3>${safe(def.title)}</h3><span class="option-cost">${def.cost} slot${def.cost===1?'':'s'}</span></div><p class="levelup-option-description">${safe(def.text)}</p>${def.disabled?`<div class="option-reason">${safe(def.reason||'Unavailable')}</div>`:`<button class="btn ${plan.choices.includes(def.id)?'btn-primary':'btn-secondary'}" onclick="VFLevelUp.toggle('${def.id}')">${plan.choices.includes(def.id)?'Selected · remove':'Select'}</button>`}${plan.choices.includes(def.id)?configFor(def.id,target):''}</article>`).join('')}</div></section><section class="levelup-card"><div class="levelup-section-kicker">Review before applying</div><h3>Build changes</h3><div class="levelup-summary">${previewRows(target).map(row=>`<div class="levelup-summary-row"><strong>${safe(row[0])}</strong><span><span>${safe(row[1])}</span> <span class="levelup-delta">→ ${safe(row[2])}</span></span></div>`).join('')}</div>${plan.message?`<div class="${plan.applied?'levelup-success':'levelup-error'}" style="margin-top:12px">${safe(plan.message)}</div>`:''}<div class="levelup-actions"><button class="btn btn-primary" onclick="VFLevelUp.apply()" ${!state.characterId||used===0?'disabled':''}>Apply Level ${target}</button><a class="btn btn-secondary" href="/charsheet.html">Open Charsheet</a><a class="btn btn-secondary" href="/player-tool.html">Open Player Tool</a><a class="btn btn-secondary" href="#creator">Return to Creator</a></div><p class="levelup-note">Level Up changes the character build. Current HP, Stress, Hope/Effort, Resolve, Armor marks and Conditions in Player Tool are preserved when the same Character ID is updated.</p></section>`}${renderHistory()}</div>`;
+  root.innerHTML=`<div class="levelup-shell">${renderVault()}<section class="levelup-card"><div class="levelup-section-kicker">Selected build</div><h3>${safe(summary.name)}</h3><div class="levelup-badges"><span class="levelup-badge">${safe(summary.characterId||'No saved ID')}</span><span class="levelup-badge">Level ${state.level}</span><span class="levelup-badge">Tier ${tierFor(state.level)}</span><span class="levelup-badge">${safe([state.path,className(),state.subclass].filter(Boolean).join(' · '))}</span></div>${!state.characterId?'<div class="levelup-error" style="margin-top:12px">Choose a completed character from Character Vault. Level Up will not create a second copy.</div>':''}</section>${state.level>=10?'<section class="levelup-card"><h3>Maximum Level</h3><p>The Core rules stop at Level 10.</p></section>':`${tierConfig(target)}<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Advancement menu</div><h3>Level ${state.level} → ${target}</h3></div><span class="levelup-badge">${used}/2 slots selected</span></div><p>All Corebook options remain visible. Unavailable options explain why they are locked.</p><div class="levelup-grid">${definitions(target).map(def=>levelOptionCard(def,target)).join('')}</div></section><section id="levelup-apply-summary" class="levelup-card levelup-apply-summary ${plan.applied?'vf-reward-active':''}">${plan.applied?'<div class="levelup-reward-flash" aria-hidden="true"></div>'+rewardParticles():''}<div class="levelup-section-kicker">${plan.applied?`Reward secured · Level ${plan.appliedLevel}`:'Review before applying'}</div><h3>${plan.applied?'Changes applied':'Build changes'}</h3><div class="levelup-summary">${(plan.applied&&plan.appliedSummary.length?plan.appliedSummary:previewRows(target)).map((row,index)=>`<div class="levelup-summary-row" style="--row:${index}"><strong>${safe(row[0])}</strong><span><span>${safe(row[1])}</span> <span class="levelup-delta">→ ${safe(row[2])}</span></span></div>`).join('')}</div>${plan.message?`<div class="${plan.applied?'levelup-success':'levelup-error'}" style="margin-top:12px">${safe(plan.message)}</div>`:''}<div class="levelup-actions"><button class="btn btn-primary" onclick="VFLevelUp.apply()" ${!state.characterId||used===0?'disabled':''}>Apply Level ${target}</button><a class="btn btn-secondary" href="/charsheet.html">Open Charsheet</a><a class="btn btn-secondary" href="/player-tool.html">Open Player Tool</a><a class="btn btn-secondary" href="#creator">Return to Creator</a></div><p class="levelup-note">Level Up changes the character build. Current HP, Stress, Hope/Effort, Resolve, Armor marks and Conditions in Player Tool are preserved when the same Character ID is updated.</p></section>`}${renderHistory()}</div>`;
+  activateLevelUpCards(root);
+  if(plan.applied){requestAnimationFrame(()=>document.getElementById('levelup-apply-summary')?.scrollIntoView({behavior:'smooth',block:'center'}));}
   if(!vaultLoaded&&!vaultLoading&&window.VeilFarersCharacterRegistry){vaultLoaded=true;setTimeout(()=>refreshVault(),0);}
 }
 

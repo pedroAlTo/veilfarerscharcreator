@@ -755,3 +755,30 @@ body.vf-full-sheet .trait .tmod select{color:#f4efe1!important}
   body.vf-full-sheet .head{grid-template-columns:44px minmax(0,1fr)!important;grid-template-areas:'sigil stats' 'id id'!important}
   body.vf-full-sheet .head .stats{grid-template-columns:repeat(4,minmax(70px,1fr))!important;min-width:0!important}
 }
+
+
+/* v59.74 — HP capacity parity: unlocked, filled, and not-yet-purchased are distinct. */
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex.locked{
+  background:rgba(116,132,145,.38)!important;opacity:.72!important;filter:none!important;
+}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex.locked::after{
+  inset:3px!important;background:transparent!important;opacity:1!important;
+  outline:1px dashed rgba(116,132,145,.54);outline-offset:-2px;
+}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex:not(.locked):not(.marked)::after{background:var(--paper)!important;opacity:1!important;}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex.marked::after{background:var(--track-rim)!important;opacity:.28!important;}
+
+
+/* v59.74 release authority — HP slots not yet purchased remain clearly visible. */
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex.locked{
+  opacity:.82!important;
+  background:repeating-conic-gradient(from -8deg,rgba(119,137,151,.78) 0deg 10deg,transparent 10deg 19deg)!important;
+  filter:none!important;
+}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex.locked::after{
+  inset:3px!important;
+  background:var(--paper)!important;
+  opacity:1!important;
+  outline:0!important;
+}
+body.vf-full-sheet .health-block [data-track="hp"] .pip.hex.locked.marked::after{background:var(--paper)!important;opacity:1!important;}

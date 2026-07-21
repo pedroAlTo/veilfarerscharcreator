@@ -1170,6 +1170,7 @@
           const dice3DInitRef = useRef(null);
           const dice3DReadyRef = useRef(false);
           const rollInFlightRef = useRef(null);
+          const diceFallback2DRef = useRef(false);
           const [shakeToRollEnabled, setShakeToRollEnabled] = useState(() => { try { return localStorage.getItem('veilfarers_shake_to_roll') === '1'; } catch (e) { return false; } });
           const [shakePermission, setShakePermission] = useState('unknown');
           const shakeStateRef = useRef({lastPeak:0,firstPeak:0,cooldownUntil:0});
@@ -1292,6 +1293,18 @@
                     14000,
                     'The 3D dice roll did not finish and was safely released.'
                   );
+                  if (result && result.cancelled && result.reason === 'user-fallback-2d') {
+                    const fallbackValues=randomDiceValues(themedGroups);
+                    fallbackValues.vfFallback2D=true;
+                    diceFallback2DRef.current=true;
+                    fallbackValues.vfFallbackLabel=label || 'VeilFarers Roll';
+                    fallbackValues.vfFallbackGroups=themedGroups;
+                    setShowRoller(true);
+                    setMinimized(current=>({...current,player:false}));
+                    setPlayerRollerMode((options&&options.fallbackMode)||((themedGroups.some(group=>String(group.role||'').toLowerCase()==='hope')&&themedGroups.some(group=>String(group.role||'').toLowerCase()==='fear'))?'duality':'standard'));
+                    setDice3DLoad(current=>({...current,open:false,error:'',stage:'2D fallback',progress:100}));
+                    return fallbackValues;
+                  }
                   if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
                   throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
                 } catch (error) {
@@ -1832,6 +1845,7 @@
           };
           const traitModForWeapon = (traitStr) => { if (!traitStr) return 0; var tt=String(traitStr).toLowerCase(); var ks=['agility','strength','finesse','instinct','presence','knowledge']; for (var n=0;n<ks.length;n++){ if (tt.indexOf(ks[n])!==-1) return (parseInt(character.stats && character.stats[ks[n]], 10) || 0); } return 0; };
           const rollDuality = async (opts) => {
+              diceFallback2DRef.current=false;
               const o = (opts && typeof opts === 'object' && !opts.nativeEvent) ? opts : {};
               const profile = o.weapon ? weaponAttackProfile(o.weapon, character, character.weapons) : null;
               const traitBonus = profile ? profile.traitMod : 0;
@@ -1859,7 +1873,8 @@
               if (effectiveRollType !== 'normal') dualGroups.push({qty:1,sides:6,theme:'vfNeutral',role:effectiveRollType});
               if (initialDamagePlan) dualGroups.push({qty:initialDamagePlan.initialRolledCount,sides:initialDamagePlan.sides,theme:'vfDamage',role:'Damage'});
 
-              const dualValues=dualGroups.length ? await rollVisualDice(dualGroups,lbl,{deferResults:true}) : [];
+              const dualValues=dualGroups.length ? await rollVisualDice(dualGroups,lbl,{deferResults:true,fallbackMode:'duality'}) : [];
+              let used2DFallback=!!dualValues.vfFallback2D;
               let cursor=0;
               const physicalCueRolls=[];
               if(hopeWasRolled) {
@@ -1907,6 +1922,7 @@
                   dmgInfo = await rollWeaponDamage(weaponDamage, isCrit ? 2 : 1, honed, profile || {}, preRolledDamage);
               }
 
+              used2DFallback=used2DFallback||diceFallback2DRef.current;
               const cueRolls=physicalCueRolls.slice(0, physicalCueRolls.length - (preRolledDamage ? preRolledDamage.length : 0));
               if (dmgInfo && Array.isArray(dmgInfo.cueDiceResults)) {
                 dmgInfo.cueDiceResults.forEach(die=>cueRolls.push({
@@ -1919,7 +1935,7 @@
               } else if (preRolledDamage) {
                 preRolledDamage.forEach(value=>cueRolls.push({value,sides:initialDamagePlan.sides,role:'Damage'}));
               }
-              showResolvedDice({
+              if(!used2DFallback) showResolvedDice({
                   label: lbl || 'Duality Roll', outcome, crit:isCrit, value:total,
                   modifier:total-hopeDie-fearDie,
                   hope:hopeDie,fear:fearDie,
@@ -1967,13 +1983,13 @@
                   weaponEffects: profile && profile.effects, attackBreakdown,
                   playerName: character.name || character.playerName || 'Unknown',
                   resourceCost: o.spend || null,
-                  type: 'duality', timestamp: Date.now()
+                  type: 'duality', fallback2D:used2DFallback, timestamp: Date.now()
               };
               setRollResult(resultObj);
               setRollModifier(0);
               logRoll(resultObj);
               setPlayerRollType('normal');
-              if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
+              if (!pinned.player && !used2DFallback) setTimeout(() => setShowRoller(false), 150);
           };
           const canPayFeatureCost = (cost) => {
               if (!cost || !cost.resource || !cost.amount) return true;
@@ -2038,6 +2054,7 @@
 
           // --- LOGICA GENERIC ---
           const rollGenericLogic = async (dieType, count, modifier, setResultFn, broadcast) => {
+              diceFallback2DRef.current=false;
               const c = Math.max(1, Math.min(99, parseInt(count) || 1));
               const sides = parseInt(dieType) || 20;
               const rolls = await rollVisualDice([{qty:c,sides,theme:'vfNeutral',role:'Standard'}], `${c}d${sides}`);
@@ -2047,13 +2064,14 @@
               const total = sum + mod;
 
               const resultObj = {
-                  type: 'generic', rolls: rolls, die: sides, count: c, modifier: mod,
+                  type: 'generic', rolls: rolls, die: sides, count: c, modifier: mod, fallback2D:!!rolls.vfFallback2D,
                   total: total, sum: sum, label: "Standard Roll",
                   playerName: character.name || character.playerName || "Unknown",
                   timestamp: Date.now()
               };
               setResultFn(resultObj);
               if (broadcast) logRoll(resultObj);
+              return resultObj;
           };
 
           const rollGenericGM = () => {
@@ -2061,9 +2079,11 @@
               if (!pinned.gm) setTimeout(() => setShowDiceTray(false), 150);
           };
           
-          const rollGenericPlayer = () => {
-              rollGenericLogic(genDieType, genCount, genModifier, setGenResult, true).catch(error => setErrorMsg('Dice roll failed: ' + (error.message || error)));
-              if (!pinned.player) setTimeout(() => setShowRoller(false), 150);
+          const rollGenericPlayer = async () => {
+              try {
+                const result=await rollGenericLogic(genDieType, genCount, genModifier, setGenResult, true);
+                if (!pinned.player && !(result&&result.fallback2D)) setTimeout(() => setShowRoller(false), 150);
+              } catch(error) { setErrorMsg('Dice roll failed: ' + (error.message || error)); }
           };
           const setShakeToRoll = async (enabled) => {
               if (!enabled) { setShakeToRollEnabled(false); setShakePermission('disabled'); return; }

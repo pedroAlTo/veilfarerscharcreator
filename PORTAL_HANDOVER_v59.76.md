@@ -1,0 +1,2886 @@
+# VeilFarers Portal — Complete Handover v59.76
+
+## v59.76 authoritative release delta
+
+**Baseline:** v59.75  
+**Date:** 2026-07-21  
+**Active theme:** VeilFarers Blue only  
+**Release purpose:** make the selected front and full-text reverse share the same persistent visual feedback shell.
+
+### 1. Root cause
+
+In v59.75, `attach3D()` created the particle field before `activateCardDetails()` built the two-face rotor. The activation routine then moved every card child into `.vf-card-front`, including:
+
+- `.vf-card-particle-field`;
+- `.frame`;
+- `.sheen`.
+
+This produced asymmetric states:
+
+- the original frame rotated with the front and disappeared on the reverse;
+- the nested particle field no longer matched the direct-child active selector;
+- opening the reverse created a second direct particle field, so particles appeared only there.
+
+### 2. Corrected architecture
+
+The card now has two independent layers:
+
+1. **Persistent feedback shell** — direct children of the card:
+   - animated frame;
+   - selection sheen;
+   - contained 48-particle field.
+2. **Rotating content rotor**:
+   - illustrated front;
+   - blue, image-free full-text reverse.
+
+The shell does not rotate. It surrounds whichever face is currently visible.
+
+### 3. Runtime repair
+
+If a dynamically initialized card already contains a rotor, the initializer hoists any nested feedback layers back to the card shell and rebuilds only the single direct particle field. This prevents duplicate fields during rerenders or repeated initialization.
+
+### 4. State behavior
+
+- **Neutral:** no particle field; frame inactive.
+- **Selected front:** 48 contained particles, animated gold frame, lift and glow.
+- **Flipped reverse:** the same 48 contained particles and animated frame remain visible around the reverse.
+- **Close/deselect:** particle field is removed and the card returns to neutral.
+
+### 5. Preserved systems
+
+No functional changes were made to:
+
+- card dimensions or deck parity;
+- Human Gifts or Equipment inheritance;
+- Player Tool / Keeper Tool;
+- Netlify Identity and table polling recovery;
+- dice interruption and 2D fallback;
+- canonical rule data;
+- editorial PDFs;
+- DiceBox/Babylon/Ammo assets.
+
+### 6. Acceptance criteria
+
+The Deploy Preview is accepted when:
+
+1. A selected card shows particles and the animated frame on its front.
+2. Opening `[+]` keeps both effects visible around the reverse.
+3. Only one particle field exists per active card.
+4. Particles remain inside the rounded border during lift and rotation.
+5. Closing with `[−]` or outside click returns the card to neutral without residual effects.
+
+---
+
+## Previous cumulative handover
+
+The complete v59.75 handover follows unchanged for editorial, strategic and technical continuity.
+
+# VeilFarers Portal — Complete Handover v59.75
+
+## v59.75 authoritative release delta
+
+**Baseline:** v59.74  
+**Date:** 2026-07-21  
+**Active theme:** VeilFarers Blue only  
+**Release purpose:** finalize the Creator particle values chosen by the user and return the effect to the interior of each card.
+
+### 1. User-approved visual values
+
+The temporary v59.74 tuning controls established the final values:
+
+- **Particle count:** 48
+- **Density:** 100%
+
+These values are now fixed release behavior. The public slider and its local persistence have been removed.
+
+### 2. Particle containment
+
+The v59.74 generated field positioned particles beyond the card perimeter to create an exterior halo. This was rejected. v59.75 places each particle on the **inner perimeter** and clips the field independently from the card transform:
+
+```css
+.vf-card-particle-field {
+  inset: 1px;
+  overflow: hidden;
+  border-radius: inherit;
+}
+```
+
+Particles therefore remain inside the illustration/text card silhouette even when the card is selected, elevated, tilted or flipped. The surrounding selection glow remains outside and continues to provide the lift feedback.
+
+### 3. Runtime behavior
+
+- Particle nodes exist only while a card is selected or flipped.
+- Returning a card to neutral removes its particle field.
+- The fixed field uses 48 deterministic particles per card identity.
+- Density remains 1.0/100%; no local-storage preference overrides it.
+- Reduced-motion support remains active.
+
+### 4. Removed temporary UI and code
+
+Removed from `creator.html` and `creator-redesign.css`:
+
+- Particles slider.
+- Density slider.
+- Reset button.
+- Output counters.
+- Particle preference local-storage keys.
+- Load/save/update tuner functions.
+- Responsive tuner styling.
+
+### 5. Preserved systems
+
+No changes were made to:
+
+- v59.74 click-to-interrupt 3D roll behavior or 2D fallback.
+- Player Tool and Keeper Tool table/authentication behavior.
+- Charsheet resource geometry.
+- Human Gifts and Equipment inheritance flow.
+- Canonical rule data.
+- Editorial PDFs.
+- DiceBox, Babylon, Ammo and theme assets.
+
+### 6. Acceptance criteria
+
+The release is accepted when the Deploy Preview confirms:
+
+1. The Creator header has no particle tuner.
+2. Selection creates a strong but contained 48-particle field.
+3. No particle crosses the visible card border.
+4. Only the selected/flipped card shows particles.
+5. Selection, deselection, tilt and card rotation remain smooth.
+6. v59.74 dice interruption still works with the real DiceBox renderer.
+
+---
+
+## Previous cumulative handover
+
+The complete v59.74 handover follows unchanged for historical and technical continuity.
+
+# VeilFarers Portal — Complete Handover v59.74
+
+
+## v59.74 authoritative release delta
+
+**Baseline:** v59.73  
+**Date:** 2026-07-21  
+**Active theme:** VeilFarers Blue only  
+**Release purpose:** correct full-stage 3D dice interruption and expose temporary Creator particle tuning.
+
+### 1. User correction that defines this release
+
+Two v59.73 assumptions were rejected:
+
+1. The requested “20% more particles” meant **increase particle count**, not move the particles 20% higher.
+2. Clicking the full-screen dice overlay still did not interrupt the physical animation, despite the intended fallback path existing in Player Tool.
+
+v59.74 treats both as release-blocking defects and does not reinterpret them.
+
+### 2. 3D dice interruption — actual root cause
+
+The wrapper had a stage-level handler, but the CSS kept the full-screen stage at:
+
+```css
+pointer-events: none;
+```
+
+The DiceBox canvas and shell also use non-interactive layers, while the close button and result panel own isolated pointer targets. Therefore a click on the transparent/full-screen area never reached the stage handler. The fallback logic in `player-tool.jsx` could not run because the wrapper never emitted the cancellation result.
+
+The authoritative v59.74 fix is:
+
+```css
+.vf-dice3d-stage.is-visible {
+  pointer-events: auto;
+  touch-action: none;
+}
+```
+
+The wrapper now captures `pointerdown` on the visible stage in the capture phase. It applies `preventDefault`, `stopPropagation` and, when available, `stopImmediatePropagation` before calling the existing safe `hide()` path. `pointerdown` is intentional: it interrupts as soon as the user presses, without waiting for release or allowing the physical animation to continue underneath another handler.
+
+The X button owns a separate capture-phase `pointerdown` handler and is excluded from the stage handler to prevent duplicate cancellation.
+
+### 3. Dice result contract — locked
+
+When the user presses anywhere on the visible 3D stage:
+
+#### Before a readable result exists
+
+- the wrapper marks the roll as manually dismissed;
+- the active wrapper controller is cancelled with reason `user-fallback-2d`;
+- pending DiceBox collection resolvers are settled;
+- `box.clear()` stops the Ammo/Babylon world;
+- the wrapper Promise resolves immediately and the roll queue is released;
+- Player Tool receives the same prepared `themedGroups`;
+- Player Tool uses its standard `randomDiceValues(themedGroups)` 2D generator;
+- count, sides, role, theme and fallback mode are retained;
+- the 2D roller is opened/unminimized;
+- the persistent Dice Display preference remains unchanged.
+
+The fallback is a new numerical roll because the physical simulation was deliberately terminated before it produced a readable result. The random values created internally by the wrapper only settle the renderer lifecycle; Player Tool owns the actual visible 2D fallback values.
+
+#### After a readable result exists
+
+- no cancellation/reroll occurs;
+- the 3D result remains authoritative;
+- the stage closes;
+- the close event reports `resultPreserved: true` and `fallback2D: false`.
+
+#### Genuine renderer failure
+
+The 14-second external timeout remains a safety fuse for a renderer that neither resolves nor receives user interruption. It is not the normal dismissal mechanism.
+
+### 4. Creator particle system — corrected interpretation
+
+The fixed pseudo-particles in `.sheen::before` and `.sheen::after` are disabled. A generated particle field is created only for a card that is:
+
+- `.vf-selection-active`; or
+- `.vf-card-flipped`.
+
+When the card returns to neutral, the generated field is removed. This prevents hundreds or thousands of inactive particle nodes across the large Equipment catalogues.
+
+The temporary tuning panel exposes:
+
+- **Particles:** exact count, range `0–48`, step `1`.
+- **Density:** visual concentration/intensity, range `40–180%`, step `5%`.
+- **Reset:** returns to the release defaults.
+
+The release defaults are:
+
+- **19 particles** — the closest whole number to 20% more than the previous 16-particle fixed set (`16 × 1.20 = 19.2`);
+- **100% density** — baseline concentration, movement and intensity; no automatic 20% height increase.
+
+Particle positions are deterministic per card identity so changing count or density does not randomly reshuffle the entire visual field every time. Count changes the exact number of generated points. Density changes their border concentration, size, brightness and movement intensity without pretending to be a second count control.
+
+### 5. Temporary tuner persistence and future removal
+
+The tuning values are browser-local and use:
+
+```text
+veilfarers_creator_particle_count
+veilfarers_creator_particle_density
+```
+
+They update live and persist through reloads. Reset restores `19 / 100%`.
+
+A fresh-profile bug was discovered during controlled validation: `Number(null)` evaluated to zero, which would have produced `0 particles / 40% density` instead of the defined defaults. `vfClampParticle` now treats `null`, `undefined` and an empty string as missing values and applies the fallback defaults.
+
+The panel is explicitly a temporary design-calibration surface. Once Pedro provides the accepted count and density, future work should:
+
+1. lock those values as constants;
+2. remove the public tuner controls;
+3. decide whether persistence keys should be cleared or ignored;
+4. retain generated active-card-only particles unless a new direction is approved.
+
+### 6. Controlled validation evidence
+
+The exact v59.74 wrapper was evaluated in Chromium with deterministic test doubles replacing only the imported DiceBox and DisplayResults classes.
+
+Pending-roll test:
+
+- computed stage pointer events: `auto`;
+- capture-phase stage pointerdown received;
+- cancellation reason: `user-fallback-2d`;
+- pending collection resolver settled;
+- DiceBox `clear()` called;
+- active controller released;
+- stage hidden.
+
+Resolved-roll test:
+
+- deterministic renderer value: `5`;
+- stage visible before click;
+- dismissal reports `resultPreserved: true`;
+- no 2D fallback requested;
+- stage hidden.
+
+The exact Creator particle functions were tested in a controlled Chromium fixture:
+
+- fresh default: 19 particles / 100%;
+- inactive card: no particle field;
+- tuning to 31 / 145%: exactly 31 nodes and density value `1.45`;
+- values persisted to the dedicated keys;
+- removing the active class removed the field.
+
+The visual calibration fixture is `CREATOR_PARTICLE_TUNER_v59.74.png`; it intentionally shows an experimental setting of 31 particles / 145%, not the release default.
+
+### 7. Files intentionally changed from v59.73
+
+Functional changes:
+
+- `assets/3d-dice/vf-dice3d.js`
+- `assets/3d-dice/vf-dice3d.css`
+- `creator.html`
+- `creator-redesign.css`
+
+Release/version/document markers were updated in the root HTML files, `_headers`, `netlify.toml`, `data/deploy-version.json`, `data/changelog.json`, `START_HERE.txt` and release documents.
+
+`charsheet-redesign.css` only received a release-comment marker update; its functional v59.73 Charsheet rules are unchanged.
+
+### 8. Systems that must remain unchanged
+
+- White Stone stays disabled.
+- VeilFarers Blue remains the sole selectable theme.
+- v59.73 card parity, real card rotor, Level Up reward sequence, Human **The Tool / The Stubborn Relic** and HP locked-state design remain.
+- v59.56 remains the approved compact Player Tool visual reference.
+- v59.70 authentication refresh, `AUTH_EXPIRED` local lock and polling stop remain.
+- v59.65 explicit renderer cancellation remains the lifecycle foundation.
+- v59.64 Massive digital damage and Keeper Notes remain.
+- Keeper/Player Table API payloads and Firebase paths do not change.
+- Vault, permanent character IDs, import/export and runtime-state separation do not change.
+- Five editorial PDFs remain byte-identical to v59.73.
+- 86 protected DiceBox/Babylon/Ammo/theme assets remain byte-identical to v59.73.
+
+### 9. Required live acceptance before public release
+
+1. Deploy the complete ZIP and verify the v59.74 marker/header.
+2. Test an immediate mouse click on boxed and full-screen 3D rolls.
+3. Test touch interruption on a real mobile device.
+4. Test Duality, generic pools and attack plus appended damage.
+5. Confirm a settled result is preserved when dismissed.
+6. Confirm the next roll still follows the saved 3D preference.
+7. Tune particles on real desktop and mobile screens and record count and density separately.
+8. Confirm large Equipment lists do not retain inactive particle DOM.
+9. Re-test Keeper ↔ Player communication with valid and expired Netlify Identity sessions.
+
+No live Netlify/Firebase/real-DiceBox acceptance claim is made by the controlled isolated-browser tests.
+
+## v59.73 authoritative release delta
+
+**Baseline:** v59.72  
+**Date:** 2026-07-21  
+**Active theme:** VeilFarers Blue only
+
+### 1. Locked visual direction
+
+Card parity is mandatory. All selectable cards within the same Creator or Level Up deck must render at the same size regardless of title or body-text length. Unequal cards imply unequal option weight and are not acceptable.
+
+Selected-card feedback belongs to the card, not the cursor:
+
+- direct selection: slight smooth lift, brighter gold glow, stronger border and restrained floating light particles;
+- selection of another card or outside click: previous card returns to neutral;
+- `[+]`: larger lift and real 3D rotation of an inner rotor;
+- reverse: separate image-free blue surface with complete, correctly oriented text;
+- `[−]` or outside click: rotate to front and return neutral;
+- only one full-information card may be open at a time.
+
+Historical note: v59.73 interpreted “20% more particles” as greater vertical travel. That interpretation was rejected. v59.74 supersedes the fixed pseudo-particle treatment with independently tunable count and density; vertical travel is no longer increased by a fixed 20% rule.
+
+### 2. Creator implementation
+
+`creator-redesign.css` and `creator.html` now provide:
+
+- equal-height deck normalization through `normalizeCardDeckHeights` / `window.VFNormalizeCardDeck`;
+- outer selection/lift layer separated from the inner `.vf-card-rotor`;
+- `.vf-card-front` and `.vf-card-back` as independent faces;
+- gold `[+]` and `[−]` controls;
+- outside-click close and active-selection clearing;
+- stronger selected border/glow and elevated particles;
+- Human gift presentation in two columns.
+
+Controlled Chromium rendered all nine Ancestry cards at exactly 324 px in the validation viewport. Do not hard-code 324 px as a product requirement; the invariant is equal height within the current deck and responsive layout.
+
+### 3. Human ancestry canon used by the application
+
+Human gifts in the active Creator/data presentation are:
+
+1. Adaptive Spirit
+2. Cultural Bridge
+3. Made for the Graft
+4. The Tool
+
+The former `Inheritance/Gift of the Builders` branch label is now **The Tool**.
+
+The full inheritance decision remains in Equipment:
+
+- **The Graft:** choose the eligible inherited augmentation.
+- **The Tool:** choose the eligible Experimental TT3 item.
+
+The chosen Tool gains **The Stubborn Relic**. Its locked intent is:
+
+- it cannot be permanently removed through ordinary loss, theft, confiscation, abandonment or destruction;
+- it returns restored and functional at the next narratively appropriate opportunity;
+- the return is not immediate and cannot negate the current obstacle caused by absence;
+- voluntarily selling or trading it for its appropriate market value or greater breaks the bond;
+- permanent removal by another means is equivalent to removing an Ancestry Gift and requires a major story event agreed by both player and Keeper.
+
+This text is synchronized across `data/ancestries.json`, `rules-data/core/ancestries.json`, Creator embedded ancestry literals and `veilfarers-data.js`.
+
+### 4. Charsheet HP capacity
+
+HP now distinguishes three states:
+
+- purchased/available;
+- marked;
+- not yet purchased/locked.
+
+Locked HP uses a segmented ring treatment so it reads as future capacity rather than available Health. Preserve the v59.72 Charsheet geometry and shapes: Armor shields beside Evasion, visible Hope, clean Effort, true-square Resolve diamonds and separate Level/Evasion/Armor/Proficiency cells.
+
+### 5. Level Up interaction and reward sequence
+
+Level Up now shares the Creator card model:
+
+- equal-height option cards;
+- selected lift/glow;
+- full-text front/back rotor;
+- outside-click close.
+
+Before applying a level, the exact change rows are captured. After successful Apply Level X, the Build Changes panel performs a reward sequence:
+
+1. intense radial light flash;
+2. expanding rings;
+3. light particles dispersing from the panel;
+4. title shimmer;
+5. staggered reveal of the exact changes actually applied.
+
+The sequence must feel like an earned reward but cannot hide the final information. A reduced-motion path is mandatory.
+
+### 6. Dice interruption contract — intended in v59.73, implemented correctly in v59.74
+
+The 3D overlay/stage itself is the close/interruption target. The small X is not the primary affordance. v59.73 described this contract but the visible stage still had `pointer-events: none`, so arbitrary clicks did not reach its handler. The v59.74 authoritative delta above contains the actual implementation.
+
+When the user clicks anywhere on the 3D stage:
+
+- **result already available:** hide the HUD and preserve that result;
+- **result not yet available:** safely cancel the current simulation, remove the 3D dice and automatically run the same groups/quantities/sides in the 2D roller.
+
+For an interrupted roll:
+
+- Duality remains Duality in 2D;
+- appended attack/damage flows keep the appropriate 2D mode;
+- generic pools remain generic;
+- the persistent user preference is not changed, so the next roll may use 3D normally.
+
+The wrapper cancellation reason is `user-fallback-2d`. `player-tool.jsx` owns the standard random fallback generation and opens/unminimizes the 2D roller.
+
+### 7. Preserved technical systems
+
+- White Stone remains disabled.
+- v59.56 is still the approved compact Player Tool visual reference.
+- v59.70 Identity token refresh, local auth lock and polling stop remain.
+- v59.65 explicit dice cancellation lifecycle remains the foundation.
+- v59.64 Massive digital behavior and Keeper Notes remain.
+- Current Table API payloads, Firebase paths, character IDs, Vault contracts, import/export formats and Player runtime separation remain unchanged.
+- The five editorial PDFs remain byte-identical to v59.72.
+- Protected DiceBox/Babylon/Ammo/theme assets remain byte-identical to v59.72; only the VeilFarers wrapper/integration changed.
+
+### 8. Validation and honest limits
+
+v59.73 passed the static validation suite with zero failures:
+
+- 86 JSON files;
+- 35 JavaScript files;
+- 11 root HTML files and 10 inline scripts;
+- 11 CSS files;
+- synchronized Human data;
+- deterministic Player Tool bundle;
+- protected-asset and PDF comparisons.
+
+Controlled Chromium verified card parity, selection transfer, flip and outside close. A controlled dice lifecycle verified both pre-result 2D fallback and post-result preservation.
+
+A complete Deploy Preview is still required for Netlify Identity, Firebase, Keeper ↔ Player communication, real DiceBox physics, full saved-character Level Up application, mobile behavior and physical-device performance.
+
+### 9. Immediate continuation prompt
+
+Continue VeilFarers Portal from v59.73 and treat `PORTAL_HANDOVER_v59.73.md` as the complete project state. Preserve VeilFarers Blue as the only active theme. Preserve equal card parity, card-owned selection lift/glow, the true blue full-text reverse, Human The Tool and its indestructible Stubborn Relic, locked HP capacity, the Level Up reward reveal and click-anywhere 3D interruption with same-parameter 2D fallback. Do not reintroduce unequal card heights, cursor-based hover as selection feedback, mirrored text, ornamental resource bezels, White Stone, uncapped 401 polling, or interruption that loses the current roll. The immediate task is Deploy Preview acceptance of Creator, Level Up, Charsheet, real 3D/2D fallback and Keeper ↔ Player communication.
+
+---
+
+# VeilFarers Portal — Complete Handover v59.72
+
+## v59.72 release delta
+
+### User-approved visual direction
+
+The release candidate returns to the established VeilFarers visual language rather than introducing new resource containers.
+
+- Player Tool Shield/Armor tokens: simple cyan shield silhouettes, without decorative bevels.
+- Fear: aggressive red triangles, without purple ornamental containers.
+- Charsheet tokens retain distinct shapes and must never be stretched by global button rules.
+- White Stone remains disabled until it can be rebuilt independently without destabilizing Blue.
+
+### Charsheet
+
+The character masthead now contains Level, Evasion, Armor and Proficiency as four independent cells. Armor Slot tokens are beside Evasion; the duplicate Armor track was removed from Active Armor.
+
+Token contracts:
+
+- HP: shield/hex silhouette.
+- Stress: true circle.
+- Hope: visible six-sided token.
+- Effort: clean diamond, no permanent divider. Half-Effort remains supported using a half-fill state.
+- Resolve: exact square rotated 45 degrees.
+- Armor: simple shield silhouette.
+
+Do not reapply broad accessibility rules that force minimum button dimensions directly onto `.pip` or `.vf-resource-token`; accessible hit areas must be solved without distorting the visible token.
+
+### Creator card interaction
+
+Cards use an outer selection/lift layer and an inner two-face rotor.
+
+- On direct selection: add `vf-selection-active`; the outer card lifts slightly and glows.
+- On `[+]`: add `vf-card-flipped`; the outer card lifts further while `.vf-card-rotor` rotates 180 degrees.
+- The front and reverse each use backface visibility; only the rotor rotates, so text is never mirrored.
+- Reverse: blue, image-free, complete text.
+- On `[−]`, outside click or opening another card: close the reverse, remove the active lift and return neutral.
+- Only one reverse may be active.
+
+### Preserved technical behavior
+
+- Human inheritance selection remains entirely in Equipment.
+- Player Tool schematic feature summaries remain presentation-only; canonical source text is unchanged.
+- Netlify Identity auth refresh/expiry logic and polling stop from v59.70 remain.
+- 3D dice cancellation logic from v59.65 remains.
+- Table API, Keeper Notes, Firebase paths, local storage schemas and import/export contracts remain unchanged.
+- Editorial PDFs remain the approved 11.35/11.33 files.
+
+### Validation
+
+v59.72 passed 161 automated/static checks. Actual Charsheet masthead, Damage & Health and Sleeping Engine were rendered in controlled Chromium. A controlled fixture verified correctly oriented card faces and the simple resource silhouettes.
+
+### Live acceptance still required
+
+Netlify/Firebase/Identity workflows cannot be certified from static validation. Deploy Preview must test table login, Keeper-to-Player updates, expired sessions, completed rolls and interrupted rolls.
+
+---
+
+# VeilFarers Portal v59.71 — Complete Technical, Product, Editorial and Application Handover
+
+**Authoritative continuation release:** v59.71  
+**Baseline:** v59.70  
+**Date:** 2026-07-20
+
+## 1. Continue from v59.71
+
+v59.71 is the authoritative continuation package for the portal. It keeps the functional repairs from v59.70 but supersedes v59.70's Player Tool presentation.
+
+The visual reference for Player Tool is now explicitly **v59.56**. Do not continue enlarging controls or replacing compact tracks with generic accessibility blocks. Accessibility work must be component-aware and must preserve the HUD's information density.
+
+## 2. Locked decisions in v59.71
+
+### 2.1 Player Tool visual baseline
+
+- The v59.56 layout, proportions and token language are the approved direction.
+- Evasion, Armor, thresholds, resource rows, Traits and Experiences remain compact.
+- Native browser spinners are forbidden.
+- Custom up/down chevrons return, but are locally scoped and no longer inflated by the portal-wide stylesheet.
+- Direct numeric editing remains available as an equivalent input method.
+- Player Tool does not load `veilfarers-accessibility.css/js`; it uses local semantic/focus rules designed for the HUD.
+- `body.vf-page-player-tool` is mandatory so restoration rules cannot leak into other pages.
+
+### 2.2 Class-feature information architecture
+
+Player Tool is an operational interface. It must not reproduce book prose.
+
+- Show feature name, cost/timing and actionable effect.
+- Remove flavor, authorial explanation, comparisons to Awakened/Sleeping equivalents and usage advice.
+- Do not remove mechanical conditions, limits, result scales or costs.
+- Canonical source data stays untouched.
+- `FEATURE_UI_OVERRIDES_RAW` contains presentation-only summaries.
+- `CLASS_FEATURE_TITLES` resolves 36 Class and Hope/Effort titles across nine classes and two Paths.
+- `playerFeatureTitle(kind)` is authoritative for card titles.
+- `FeatureSummaryCard` forces that canonical UI title after compact parsing, preventing an effect sentence from replacing the feature name.
+- Sleeping Vanguard remains a special combined presentation because its canonical class structure includes Trained Body, Unbroken Focus and The Refusal.
+
+### 2.3 Creator spatial feedback
+
+- Selecting Ancestry, Community, Class or Affiliation lifts the card by `translateY(-11px) translateZ(24px)` on desktop.
+- Cursor tilt adds to the base lift and returns to that base state on mouse leave.
+- A flipped card uses `rotateY(180deg)` and moves further forward.
+- `activeFullInfoCard` guarantees only one reverse is active.
+- Information controls stop propagation and must never select/deselect the card.
+
+### 2.4 Full-information reverse
+
+- A gold `[+]` appears when a card is explicitly marked as shortened or when runtime measurement detects clipping.
+- `[−]` closes the reverse.
+- The reverse is image-free, scrollable and uses the complete available card area.
+- Explicit reverse templates are used for Ancestry, Community, Class and Subclass.
+- Affiliation, Power and Equipment may use generated reverse content when clipped.
+- `activateCardDetails()` must be called after every relevant render.
+- Do not show `[+]` on cards whose front already contains all information.
+
+### 2.5 Recommendations
+
+- Recommendations must be visually obvious but explicitly non-canonical.
+- Spellcast Trait displays `Recommended +2`.
+- Equipment recommendations use eligibility, affordability and trait/protection heuristics.
+- Recommendation badges do not prevent selecting another valid option.
+
+### 2.6 Human ancestry
+
+The v59.70 workflow remains locked:
+
+- Made for the Graft: +2 Augment Capacity.
+- Inheritance of the Builders: The Graft or The Tool plus exact item.
+- Both inheritance decisions occur in Equipment.
+- No ancestry-stage dependent-choice overlay may be invoked.
+- Equipment blocks completion until Human inheritance branch and item are selected.
+- The inherited item remains free and transfers through existing JSON/Charsheet fields.
+
+### 2.7 Theme
+
+- VeilFarers Blue remains the only active theme.
+- White Stone stays disabled and is not to be re-enabled as a partial override layer.
+
+### 2.8 Functional stabilization preserved
+
+v59.71 does not alter:
+
+- `table-access.js` authentication refresh and `AUTH_EXPIRED` behavior;
+- polling-stop behavior after an invalid session;
+- `assets/3d-dice/vf-dice3d.js` cancellable roll lifecycle;
+- DiceBox/Babylon/Ammo/theme assets;
+- editorial PDFs;
+- canonical combat/damage rules;
+- Keeper Notes or table authorization rules.
+
+## 3. Root cause of the rejected v59.70 Player UI
+
+v59.70 solved overlap by removing controls and redesigning tokens, but it moved the HUD away from the approved visual identity. The later generic token shapes and enlarged controls reduced information density and visual hierarchy.
+
+v59.71 solves the original collision without abandoning the old design:
+
+- Experience rows are a stable `30px minmax(0,1fr) 28px` grid.
+- Numeric chevrons are contained at 11 × 9 px.
+- Resource-token buttons are 16 × 22 px with a 12 × 18 px visual mark.
+- Filled, empty and unavailable states remain encoded semantically and visually.
+- Portal-wide accessibility rules cannot resize these controls because they are not loaded on Player Tool.
+
+## 4. Files changed in v59.71
+
+### Player Tool
+
+- `player-tool.html`
+- `player-tool.jsx`
+- `player-tool.bundle.js`
+
+### Character Creator
+
+- `creator.html`
+
+### Release metadata/version labels
+
+- `_headers`
+- `netlify.toml`
+- `package.json`
+- `package-lock.json`
+- `data/deploy-version.json`
+- `data/changelog.json`
+- active root HTML pages
+- `START_HERE.txt`
+
+### Release documentation
+
+- `GITHUB_DEPLOY_SUMMARY_v59.71.md`
+- `PORTAL_HANDOVER_v59.71.md`
+- `VALIDATION_v59.71.txt`
+- `START_HERE_v59.71.txt`
+- `UI_REVIEW_FIXTURE_v59.71.png`
+- `SHA256_v59.71.txt` outside the archive
+
+## 5. Validation status
+
+Passed locally:
+
+- 35 JavaScript syntax checks;
+- 86 JSON parses;
+- 11 root HTML duplicate-ID scans;
+- 10 inline-script syntax checks;
+- deterministic Player JSX bundle regeneration;
+- 36/36 class-feature UI mapping audit;
+- controlled Chromium Player Tool geometry/state test;
+- Creator static interaction-path assertions and controlled component visual fixture;
+- byte comparison of authentication, dice lifecycle, 88 protected renderer assets and five PDFs.
+
+Requires Netlify Deploy Preview:
+
+- full Creator navigation on a served origin;
+- mobile card flips and keyboard flow;
+- real Identity refresh/re-login;
+- Keeper ↔ Player table synchronization;
+- deployed WASM 3D dice interruption/dismissal;
+- populated-character visual acceptance at multiple zoom levels.
+
+## 6. Deployment acceptance order
+
+1. Verify v59.71 response markers.
+2. Verify Blue-only theme lock.
+3. Verify Player Tool visual parity with v59.56.
+4. Verify all class/path feature summaries.
+5. Verify Creator lift/flip/recommendations.
+6. Verify Human Equipment inheritance.
+7. Verify 3D roll lifecycle.
+8. Verify real Keeper/Player synchronization and authentication recovery.
+
+## 7. Immediate next product work
+
+After v59.71 passes Deploy Preview, resume the five-session Hearts in the Void simulation. Do not fold adventure-balance findings into the portal release until they are reviewed as editorial decisions. Current playtest findings—Keeper Tool encounter-data mismatches, undefined Fascinated, Korren pacing, Core Overload pacing and multi-location Spotlight handling—remain analysis, not automatically approved canon.
+
+---
+
+# Cumulative handover through v59.70
+
+The following section preserves the complete previous handover. Where it conflicts with the v59.71 decisions above, v59.71 takes precedence.
+
+# VeilFarers Portal v59.70 — Complete Technical, Product, Editorial and Application Handover
+
+**Authoritative continuation release:** v59.70  
+**Baseline:** v59.69  
+**Date:** 2026-07-20
+
+## 1. Continue from v59.70
+
+v59.70 is the release-candidate stabilization baseline. Continue from this package, not from v59.69 and not from the editorial archive's historical portal data.
+
+This release responds to direct live-use evidence from Player Tool and Keeper Tool. It deliberately prioritizes stability and clarity over maintaining White Stone as a selectable theme.
+
+## 2. Decisions locked in this release
+
+### 2.1 Theme
+
+- **VeilFarers Blue is the only active theme.**
+- White Stone is temporarily disabled because its global overrides repeatedly damaged controls, resource states and page flow.
+- The White Stone CSS is retained for future redesign but is not exposed to users.
+- `veilfarers-theme.js` overwrites any stored theme with `blue`, removes any injected theme selector, and identifies the lock through `vf-theme-locked-blue`.
+- Do not re-enable White Stone until it has an independent component-by-component design system and full Player/Keeper regression coverage.
+
+### 2.2 Human ancestry workflow
+
+The Human Gifts remain canon as integrated in v59.69:
+
+- **Made for the Graft:** +2 Augment Capacity.
+- **Inheritance of the Builders:** choose The Graft or The Tool and an exact inherited item.
+
+The UX decision changes in v59.70:
+
+- Human ancestry selection does **not** ask for the inheritance branch.
+- Both branch and exact item are selected in **Equipment**.
+- Equipment is the only completion gate for this Gift.
+- The inherited choice remains free and does not consume the ordinary weapon or armor budget.
+- The existing transfer fields remain authoritative:
+  - `humanInheritance` / `human_inheritance_kind`;
+  - `humanInheritanceItem` / `human_inheritance_item_id`.
+
+### 2.3 Compact controls
+
+- Remove custom up/down chevrons from Player Tool numeric fields.
+- Do not reintroduce native-browser-looking spinner controls.
+- Numeric values are edited directly.
+- Global accessibility target sizing must not inflate compact HUD controls into overlapping rows.
+- Primary actions may be larger, while compact controls use a 24 px target or an equivalent compliant spacing model.
+
+### 2.4 Resource-token direction
+
+The v59.68 large solid token redesign is rejected as the visual direction.
+
+v59.70 returns to compact, elegant marks while retaining semantic state data and accessible names:
+
+- Player: `data-token-kind`, `data-token-state`, `aria-pressed`, `aria-label`.
+- Keeper Armor: compact shield silhouette with available/spent states.
+- Empty, filled and unavailable/spent states must differ by fill, border style and luminance—not color alone.
+- Blue token colors are explicit CSS variables; do not rely on Tailwind classes assembled dynamically at runtime.
+
+### 2.5 Feature-card content
+
+- Compact Player Tool cards show actionable rule text, not design commentary.
+- Expanded cards do not repeat the collapsed summary as their first bullet.
+- The source rule text remains untouched in canonical data.
+- Display-only filtering currently removes Soldier commentary about Effort being small, constant, frequent or not reserved for capstone moments.
+- Any future filtering must remain presentation-only and must never rewrite book data.
+
+### 2.6 Dice lifecycle
+
+The v59.65 cancellation controller remains the canonical 3D-roll safety mechanism.
+
+v59.70 interaction contract:
+
+- Clicking the overlay while dice are moving does nothing.
+- The explicit close button may cancel an active visual roll safely and return a numerical fallback.
+- After resolution, clicking anywhere in the full-screen overlay closes it.
+- Closing the React Player Roller explicitly calls `VFDice3D.hide({reason:'user'})` before unmounting the roller window.
+- A dismissed roll must not reopen when `showResults()` arrives late.
+- The following roll must be able to use 3D normally.
+
+### 2.7 Table authentication and synchronization
+
+The supplied console trace established that the browser session was not authorized:
+
+- `/.netlify/identity/token` returned 400;
+- `/api/table-api` returned 401;
+- Keeper polling continued every 1.25 seconds and flooded the console.
+
+v59.70 changes client behavior without weakening authorization:
+
+1. table calls require a bearer token before network access;
+2. a 401 retries once with `currentUser.jwt(true)`;
+3. failed refresh or second 401 becomes `AUTH_EXPIRED`;
+4. `veilfarers:auth-expired` is dispatched once;
+5. additional table calls are blocked locally;
+6. Keeper and Player polling stop;
+7. the user is told to sign in and reconnect;
+8. a new Identity login clears the local auth block.
+
+The portal must never solve this by sending anonymous requests, suppressing 401s, weakening Netlify Function checks or exposing Firebase writes directly.
+
+## 3. Files changed in v59.70
+
+### UI and theme
+
+- `veilfarers-theme.js`
+- `veilfarers-accessibility.css`
+- `creator-redesign.css`
+- release markers in the 11 root HTML pages
+
+### Creator
+
+- `creator.html`
+
+### Player Tool
+
+- `player-tool.jsx`
+- `player-tool.bundle.js`
+- `player-tool.html`
+
+`player-tool.bundle.js` was regenerated from `player-tool.jsx` with the installed TypeScript JSX transpiler using React classic output, ES2020 target and no module wrapper.
+
+### Keeper and table bridge
+
+- `keeper-tool.html`
+- `table-access.js`
+
+### 3D dice
+
+- `assets/3d-dice/vf-dice3d.js`
+
+All other protected DiceBox, Babylon, worker, Ammo and theme files are byte-identical to v59.69.
+
+### Release metadata
+
+- `_headers`
+- `netlify.toml`
+- `package.json`
+- `package-lock.json`
+- `data/deploy-version.json`
+- `data/changelog.json`
+- active page version labels
+
+## 4. Experience-row root cause and correction
+
+The overlapping Experience controls were not caused by the Experience data. The root cause was a collision between:
+
+- `NumField`'s two 9 px custom chevron buttons;
+- a fixed `h-6` Experience row;
+- the portal-wide accessibility rule assigning a 44 px minimum height to every button.
+
+The chevrons expanded beyond the 24 px row and overlapped the rows above and below. The same mechanism produced the triangle artifacts around Player Tool traits.
+
+v59.70 removes the chevron buttons entirely and replaces the row with:
+
+- 34 px bonus column;
+- flexible text column;
+- 30 px roll-action column;
+- 32 px minimum row height.
+
+The controlled Chromium fixture measured three separate 32 px rows with no overlap.
+
+## 5. Validation status
+
+Passed locally:
+
+- all active JavaScript syntax checks;
+- all inline Creator/Charsheet/Player/Keeper script syntax checks;
+- all JSON parse checks;
+- duplicate-ID scan across 11 root HTML pages;
+- Human Equipment workflow static assertions;
+- Player source-to-bundle regeneration;
+- deterministic mocked Identity retry/block tests;
+- isolated Chromium Experience/token geometry fixture;
+- protected 3D asset byte comparison against v59.69.
+
+Still requires Netlify Deploy Preview acceptance:
+
+- real Netlify Identity refresh and re-login;
+- real `/api/table-api` owner/member authorization;
+- real Firebase snapshot and Player/Keeper propagation;
+- populated-character visual inspection at 100%, 125% and 200% zoom;
+- desktop and mobile 3D overlay interaction;
+- complete Human Graft/Tool selection and Charsheet transfer.
+
+## 6. Immediate acceptance checklist
+
+1. Open every root page and confirm Blue only.
+2. Confirm no theme selector remains.
+3. Create Human and select inheritance entirely in Equipment.
+4. Load an existing Awakened and Sleeping character in Player Tool.
+5. Verify Experience rows, Traits, Wealth and Credits have no chevrons or overlap.
+6. Verify HP, Stress, Hope/Effort, Resolve, Fear, Shields and Keeper Armor states.
+7. Run/cancel/re-run 3D dice.
+8. Confirm post-roll overlay click closes the HUD.
+9. Test expired Identity behavior and ensure polling stops.
+10. Sign in, reconnect and confirm bidirectional Keeper/Player updates and Keeper Notes.
+
+## 7. Do not change without explicit approval
+
+- Do not re-enable White Stone.
+- Do not replace custom VeilFarers controls with native browser-looking UI.
+- Do not change published PDF files for the Massive explanation in this release.
+- Do not replace portal canonical data with the editorial archive's historical data folder.
+- Do not invent rules, conditions, states or features absent from approved books/user canon.
+- Do not remove the v59.65 3D cancellation controller.
+- Do not weaken table authorization to avoid login failures.
+
+## 8. Cumulative handover through v59.69
+
+The complete previous handover is preserved below. Where it conflicts with sections 1–7 above, the v59.70 decisions above take precedence.
+
+---
+
+# VeilFarers Portal v59.69 — Complete Technical, Product, Editorial and Application Handover
+
+**Authoritative continuation release:** v59.69  
+**Baseline:** v59.68  
+**Date:** 2026-07-20
+
+## 1. Continue from v59.69
+
+v59.69 preserves every approved portal behavior through v59.68 and adds two release-level integrations:
+
+1. the supplied editorial PDF line becomes the active Downloads line;
+2. the approved Human ancestry additions become executable Character Creator canon.
+
+Do not continue from the editorial package's bundled `data/` folder. That folder is a historical normalized snapshot and predates multiple approved portal/system changes. Continue from the v59.69 portal data and migrate editorial changes deliberately.
+
+## 2. Editorial decision
+
+Use these supplied PDFs unchanged:
+
+- Corebook 11.35;
+- Keeper's Companion 11.33;
+- Rust & Steel 11.33;
+- Alien Species 11.33.
+
+The Corebook's existing Massive wording is retained. The portal has a later approved Massive implementation, but that difference does not justify a new book version in this release. Record it as pending editorial clarification.
+
+The four PDFs in `/download/` are byte-identical to the uploaded editorial archive and match its SHA256SUMS.txt.
+
+## 3. Human ancestry canon
+
+Corebook 11.35, **Human → Ancestry Gifts**, adds:
+
+### Made for the Graft
+
+Human characters gain +2 Augment Capacity.
+
+### Inheritance of the Builders
+
+Choose one during character creation:
+
+- **The Graft:** one free Common TT1 or Military TT2 augmentation.
+  - Common: 0 Augment Slots.
+  - Military: 1 Augment Slot.
+  - No drawback.
+- **The Tool:** one Experimental TT3 item worth 9 Cr from an equipment catalogue in play.
+
+The Creator now enforces this choice.
+
+## 4. Human Creator workflow
+
+### Step 1 — Ancestry
+
+Selecting Human opens a custom in-app choice overlay:
+
+- The Graft
+- The Tool
+
+Step 1 cannot complete until a branch is chosen.
+
+### Step 8 — Equipment
+
+A dedicated Human inheritance panel appears above normal starting equipment.
+
+The panel provides:
+
+- search;
+- Core / Rust & Steel source filters;
+- Common / Military filters for The Graft;
+- weapon / armor / gear filters for The Tool;
+- selected-item confirmation;
+- accessible pressed states.
+
+Catalog counts in this release:
+
+- 53 eligible Grafts;
+- 65 eligible Tools.
+
+The exact item is required before Step 8 completes.
+
+Inherited items do not consume the standard 4-credit weapon or armor budgets.
+
+## 5. Data and transfer contract
+
+New Creator state fields:
+
+```text
+humanInheritance
+humanInheritanceItem
+```
+
+Values:
+
+```text
+humanInheritance = graft | tool
+humanInheritanceItem = canonical item ID
+```
+
+Charsheet-compatible fields:
+
+```text
+human_inheritance_kind
+human_inheritance_item_id
+human_inheritance_item_name
+```
+
+### Graft transfer
+
+The selected augmentation is written into the first augmentation row:
+
+```text
+aug_0_name
+aug_0_tier
+aug_0_benefit
+aug_0_stress
+aug_0_deg
+```
+
+`aug_0_deg` records the Human override: no drawback and the correct 0/1 slot treatment.
+
+### Tool transfer
+
+The selected item is written to the general equipment inventory. It remains identified by the Human inheritance fields even when the chosen catalogue is weapons or armor.
+
+### Historical imports
+
+Older Human records remain readable. Because they lack the new required fields, Creator returns them to an incomplete Human state until the player selects an inheritance branch and item.
+
+## 6. Changed files
+
+Primary runtime/data changes:
+
+- `creator.html`
+- `creator-redesign.css`
+- `sheet-bridge.js`
+- `veilfarers-import.js`
+- `veilfarers-data.js`
+- `data/ancestries.json`
+- `rules-data/core/ancestries.json`
+- `download/downloads.json`
+- `rules-data/downloads.json`
+- four editorial PDF files in `download/`
+- release/version files and documentation
+
+New release document:
+
+- `PRODUCT_REVIEW_v59.69.md`
+
+## 7. Product assessment
+
+The product is attractive to its intended science-fiction TTRPG audience now. The strongest acquisition surface is Character Creator; the strongest product proposition is the Awakened/Sleeping distinction.
+
+The primary remaining risk is not desirability but operational trust:
+
+- first-session clarity;
+- Keeper Tool reliability;
+- cloud failure recovery;
+- mobile end-to-end behavior;
+- excessive player-facing technical/version language.
+
+Read `PRODUCT_REVIEW_v59.69.md` for the full assessment and release recommendation.
+
+## 8. Preservation guarantees
+
+v59.69 does not change:
+
+- portal Massive logic;
+- Player Tool or Keeper Tool runtime;
+- 3D dice renderer or any protected 3D dice file;
+- table APIs, Firebase configuration or Firestore Rules;
+- White Stone / Blue token-state corrections;
+- class, subclass, Domain or advancement mechanics outside the Human ancestry addition;
+- supplied editorial PDF bytes.
+
+## 9. Validation and release gates
+
+Automated/static checks passed:
+
+- 86 JSON files parsed;
+- root HTML duplicate-ID scan;
+- JavaScript syntax;
+- Human data synchronization;
+- Creator branch/item requirements;
+- deterministic Graft and Tool Charsheet transfer;
+- editorial PDF checksums;
+- Downloads manifest integrity;
+- preservation of all 88 protected 3D dice files;
+- version markers.
+
+Live Deploy Preview acceptance remains mandatory. See `VALIDATION_v59.69.txt`.
+
+---
+
+# Previous complete baseline handover — v59.68
+
+The following v59.68 handover remains authoritative except where superseded above.
+
+# VeilFarers Portal v59.68 — Complete Technical, Product, Editorial and Accessibility Handover
+
+**Authoritative continuation release:** v59.68  
+**Date:** 2026-07-20  
+**Baseline:** v59.67
+
+## 1. Continuation directive
+
+Continue from **v59.68**. This release preserves every approved system through v59.67 and makes semantic, state-aware Player/Keeper resource controls part of the release baseline.
+
+Every future release must continue to include:
+
+- the deployable ZIP;
+- a GitHub deploy summary / PR description;
+- a complete cumulative handover;
+- validation notes;
+- START HERE instructions;
+- SHA-256 integrity information.
+
+
+## 2. v59.68 release decision — token state is semantic
+
+Resource and Armor tokens must never derive their meaning solely from inherited button colors or generated utility-class names. Every compact state control now carries:
+
+```text
+data-token-kind
+data-token-state
+aria-pressed
+aria-label
+```
+
+Supported Player Tool semantic kinds include:
+
+```text
+health
+stress
+hope
+effort
+resolve
+fear
+shields
+```
+
+Supported states include:
+
+```text
+filled
+empty
+unavailable
+```
+
+Keeper Armor uses:
+
+```text
+filled
+spent
+```
+
+Do not remove these attributes in future React rebuilds. Both `player-tool.jsx` and the deployed `player-tool.bundle.js` must remain in parity.
+
+### White Stone behavior
+
+- Empty Player tokens are hollow paper controls with a dark outline.
+- Filled tokens use a resource-specific solid fill.
+- Unavailable capacity uses a dashed outline and reduced emphasis.
+- Keeper Armor uses teal available slots and dashed paper spent slots.
+- Keeper Fear displays separate empty, active and maximum states.
+
+### VeilFarers Blue behavior
+
+- Explicit semantic palettes replace reliance on dynamic Tailwind class generation.
+- Hope/Effort is gold, Stress is magenta, Resolve/Shields is cyan, Health/Fear is red.
+- Keeper Armor uses cyan available slots and dashed slate spent slots.
+
+### Accessibility behavior
+
+- Compact resource targets are `24 × 24 CSS px`, the WCAG 2.2 AA minimum target size.
+- Keeper Fear controls are at least `32 × 32 CSS px`.
+- Focus remains visible in both themes.
+- Filled state is communicated by `aria-pressed` and labels, not color alone.
+- Unavailable capacity remains disabled and carries a semantic state.
+- Pending resource animations expose the destination as empty until the particle lands.
+
+### Root cause preserved for future debugging
+
+The v59.67 White Stone rule applied a paper background to every Player Tool button. Tokens are buttons, so the rule erased their state colors. The rule now excludes `[data-token]`, and dedicated semantic selectors own token appearance.
+
+Some Blue token classes were assembled dynamically, for example `bg-${color}-600`. Those classes are not guaranteed to exist in the compiled Tailwind stylesheet. v59.68 therefore supplies explicit theme CSS for every semantic token kind.
+
+## 3. v59.68 changed files
+
+```text
+player-tool.jsx
+player-tool.bundle.js
+app.js
+keeper-tool.html
+veilfarers-theme.css
+veilfarers-accessibility.css
+package.json
+package-lock.json
+data/changelog.json
+data/deploy-version.json
+release metadata and documentation
+```
+
+No canonical rules dataset, PDF, Firestore contract, table authorization rule, dice result logic or character-storage schema changed.
+
+## 4. v59.67 product decision
+
+White Stone is not merely a light page background. It is a complete application theme. No portal route may retain black or near-black application panels, custom selects, form controls, metadata chips or category controls while White Stone is active, except intentional artwork, media, dice or other content whose meaning depends on a dark image surface.
+
+The accessibility implementation targets **WCAG 2.2 Level AA**. Do not claim formal certification without a real assistive-technology and independent conformance audit. Future feature work must nevertheless preserve the measurable baseline implemented here: contrast, keyboard access, focus visibility, target size, status semantics, reduced motion and reflow.
+
+## 5. v59.67 implementation
+
+### Shared accessibility assets
+
+New files:
+
+```text
+veilfarers-accessibility.css
+veilfarers-accessibility.js
+```
+
+Both files are loaded after `veilfarers-theme.css` on all eleven HTML entry points. This load order is mandatory because the new layer must override legacy page-specific dark-theme declarations.
+
+The CSS provides:
+
+- Aller-first editorial/application typography without distributing font binaries;
+- a high-contrast focus system for Blue and White Stone;
+- 44px primary custom-control targets;
+- White Stone semantic surface, control, metadata and status colors;
+- Creator, Card Library and Level Up convergence;
+- catalogue and Feedback control convergence;
+- reduced-motion and forced-colors behavior;
+- 320px reflow and responsive grid safeguards.
+
+The JavaScript provides:
+
+- Skip to main content;
+- keyboard operation for legacy non-native tabs/navigation;
+- keyboard and ARIA state support for Creator selection cards;
+- accessible custom-filter names;
+- alert/live-region semantics;
+- tab and current-step state synchronization.
+
+### Level Up flow correction
+
+The root cause of the narrow, left-shifted Level Up page was CSS grid placement:
+
+- Level Up changes `.app` to one column;
+- `.resume-banner` retained `grid-column: 2`;
+- the browser therefore created an implicit second column;
+- Level Up occupied only the first column while the banner occupied the implicit second column.
+
+v59.67 explicitly moves the banner to column 1 on Level Up and Card Library routes. The banner remains in normal document flow, spans the route width and does not obscure keyboard focus. The route content is explicitly full-width with a centered maximum working width.
+
+### White Stone component corrections
+
+Corrected components include:
+
+- Creator Traits, Path, Class, Powers and Equipment;
+- Level Up Vault, advancement options, choice grids, configuration controls and status states;
+- Card Library panels, pills and DC tags;
+- Weapon & Armory and Item Inventory filters, menus, cards, metadata and inventory controls;
+- Feedback tabs, category choices and questionnaire cards;
+- shared module forms, statuses, tables, downloads and account surfaces;
+- portal navigation and theme dialog.
+
+## 6. Accessibility color baseline
+
+Primary White Stone combinations:
+
+```text
+Body text       #24323b on #fffdf8  = 12.96:1
+Muted text      #4f5d66 on #fffdf8  =  6.69:1
+Heading         #684617 on #fffdf8  =  8.34:1
+Gold text       #8a5a0a on #fffdf8  =  5.82:1
+Control border  #8f7446 on #fffdf8  =  4.34:1
+Focus           #005fcc on #fffdf8  =  5.89:1
+Active text     #1b160b on #d6b15a  =  8.83:1
+```
+
+Primary VeilFarers Blue combinations:
+
+```text
+Body text  #efe3c1 on #0a1523 = 14.35:1
+Muted text #a8a18f on #0a1523 =  7.13:1
+Focus      #72c7ff on #030811 = 10.82:1
+```
+
+## 7. Typography baseline
+
+Application and editorial copy use this fallback order:
+
+```css
+Aller, "Aller Text", Inter, "Helvetica Neue", Arial, sans-serif
+```
+
+Do not package, expose or redistribute font binaries. The VeilFarers masthead/title face remains the established display serif (`Cinzel` in the current web implementation). Do not replace the brand title face with Aller.
+
+## 8. Validation
+
+v59.67 passed 233 static and controlled-browser checks with zero failures. The controlled fixtures verify:
+
+- one-column Level Up layout;
+- full-width Resume Draft banner and Level Up content;
+- light White Stone Level Up cards;
+- light catalogue filter controls and metadata;
+- 44px primary targets;
+- no horizontal overflow at 320 CSS px in the module fixture.
+
+This is not a substitute for screen-reader and real-device acceptance.
+
+## 9. Files changed in v59.67
+
+```text
+veilfarers-accessibility.css (new)
+veilfarers-accessibility.js (new)
+all eleven root HTML entry points
+feedback.html visible release labels
+index.html visible release label
+package.json
+package-lock.json
+data/changelog.json
+data/deploy-version.json
+_headers
+netlify.toml
+assets/3d-dice/vf-dice3d.js release marker only
+START_HERE.txt
+START_HERE_v59.67.txt
+GITHUB_DEPLOY_SUMMARY_v59.67.md
+PORTAL_HANDOVER_v59.67.md
+VALIDATION_v59.67.txt
+SHA256_v59.67.txt
+```
+
+## 10. Explicitly unchanged
+
+- all canonical rules and editorial mechanics;
+- Awakened gold and Sleeping silver Charsheet differentiation;
+- Charsheet `data-f` bindings and PDF workflows;
+- Creator/Vault/Player/Keeper transfer contracts;
+- Massive damage pools;
+- Keeper Notes security and delivery;
+- 3D dice cancellation and renderer behavior;
+- exact-case `Dice.min.js` and Ammo WASM configuration;
+- Firebase/Firestore/Identity/table data contracts;
+- protected 3D assets and bundled PDFs.
+
+## 11. Immediate next-chat continuation prompt
+
+Continue VeilFarers Portal from **v59.67**. Treat `PORTAL_HANDOVER_v59.67.md` as authoritative. Preserve the portal-wide accessibility layer loaded after the theme CSS on all entry points. White Stone must contain no residual black application boxes or low-contrast copy; artwork may remain dark only where it is actual visual content. Preserve the Level Up one-column Resume Draft correction. Target WCAG 2.2 AA, but do not claim certified conformance without assistive-technology and independent audit evidence. Preserve Aller-first copy typography without distributing font files, and preserve the VeilFarers display title face. Also preserve the reconstructed Charsheet (Awakened gold, Sleeping silver), Massive damage pools, secured Keeper Notes, explicit 3D cancellation, exact-case `Dice.min.js`, `wasm-unsafe-eval`, Keeper/Vault decoupling and server-side Firebase Admin credentials. Every release must include ZIP, GitHub summary, validation, START HERE, SHA-256 and a complete cumulative handover.
+
+---
+
+# Retained cumulative handover through v59.66
+
+The following complete v59.66 handover is retained verbatim for editorial, strategic, security, data and application continuity. Where a historical statement conflicts with sections 1–9 above, the v59.67 sections are authoritative.
+
+# VeilFarers Portal v59.66 — Complete Technical, Product and Editorial Handover
+
+**Date:** 2026-07-20  
+**Authoritative continuation release:** v59.66  
+**Baseline package:** v59.65  
+**Brand:** VeilFarers remains active.  
+**Canon:** the latest normalized Corebook RC3 portal datasets and the user-approved book/download package remain authoritative.  
+**Purpose:** preserve the complete editorial, strategic, design, UX, technical, application, security, deployment and validation state required to continue in a new chat without losing decisions.
+
+## 3. Authoritative current state
+
+Continue from **v59.66**. This release preserves every approved system from v59.65 and reconstructs the digital Character Sheet presentation to match the current VeilFarers interface.
+
+The immediate visual decisions are non-negotiable unless the user explicitly reopens them:
+
+- **Awakened Character Sheet:** metallic **gold** outer frame, section dividers, active-engine emphasis and status accents.
+- **Sleeping Character Sheet:** metallic **silver** outer frame, section dividers, active-engine emphasis and status accents. Sleeping must not be represented as a blue-border variant.
+- **Shared Equipment/Ship sheets:** neutral mineral/bronze metal so they do not imply either Path.
+- **White Stone:** a coherent light application theme covering portal navigation, Charsheet toolbar, overlays, surrounding stage and form controls. It must not inject dark/black portal inputs into the light printable sheet.
+- **VeilFarers Blue:** deep navy application chrome while the printable sheet remains light, readable and path-coded.
+- **Typography:** Aller is the first-choice editorial/interface typeface through CSS `local()` lookup. No Aller binary is distributed. Trebuchet MS, Segoe UI and Arial are fallbacks. The VeilFarers masthead/title retains the established title face.
+- **Legacy UI removal:** do not restore the earlier mixture of Cinzel, Inter, Oswald and JetBrains Mono throughout the sheet, black rectangular identity fields, circular legacy trait controls, unrelated toolbar rails or native-looking select arrows.
+
+## 4. v59.66 implementation
+
+### 2.1 Dedicated Charsheet presentation layer
+
+New files:
+
+```text
+charsheet-redesign.css
+charsheet-redesign.js
+```
+
+`charsheet-redesign.css` loads after `veilfarers-theme.css` and is the final visual authority for `body.vf-full-sheet`.
+
+It reconstructs:
+
+- sheet shell and metallic frame;
+- paper texture and path palette;
+- character header and sigil area;
+- character name/pronouns;
+- Level, Evasion and Proficiency badges;
+- identity fields;
+- section cards and engine emphasis;
+- Traits;
+- HP/Stress/Armor/Hope/Effort/Resolve tracks;
+- thresholds;
+- weapons, powers, moves and feature fields;
+- Equipment and Ship pages;
+- Charsheet toolbar;
+- Creator, download, feedback and Vault overlays embedded in the Charsheet;
+- White Stone and VeilFarers Blue convergence;
+- responsive containment and print-safe style preservation.
+
+`charsheet-redesign.js`:
+
+- synchronizes `body.dataset.vfSheetPath` with the selected/visible Path;
+- observes the sheet flip state;
+- updates after Path-field changes;
+- assigns full-value tooltips to sheet controls so long values remain inspectable;
+- keeps visual state aligned after theme changes.
+
+### 2.2 Portal theme conflict removed
+
+The old portal-wide selector applied `var(--vf-input)` to every `input`, `textarea` and `select`, including controls inside the printable light sheet. That produced the black rectangles shown in the user screenshot.
+
+The selector in `veilfarers-theme.css` is now scoped so generic portal form treatment applies only outside `body.vf-full-sheet`. Charsheet fields are controlled by the dedicated sheet layer.
+
+Do not reintroduce a portal-global form selector that overrides the paper sheet.
+
+### 2.3 Data and mechanics preservation
+
+No `data-f` key, field name, track name, local-storage key, transfer contract or calculation was changed. The redesign is not a parallel sheet implementation.
+
+Preserved:
+
+- `veilfarers_sheet_fields_v2_40`;
+- `veilfarers_sheet_tracks_v2_40`;
+- flip/path state keys;
+- all historical migration sources;
+- Creator → Charsheet bridge;
+- Charsheet → Player Tool and Keeper Tool transfer;
+- permanent Character IDs and Vault behavior;
+- visual PDF, current-side PDF, editable PDF and flattened print PDF paths;
+- path-specific rules and engines;
+- all canonical rules datasets.
+
+## 5. v59.64–v59.65 retained runtime fixes
+
+### 3.1 Massive damage pools — v59.64
+
+Massive uses the final normal damage-dice count after Proficiency and critical multiplication:
+
+- roll twice that final count;
+- keep exactly the highest half;
+- apply the static modifier once.
+
+Example:
+
+```text
+Final normal damage: 2d8 + 3
+Massive visual pool: 4d8
+Keep: highest 2
+Total: kept dice + 3
+```
+
+A critical final `4d8+3` rolls `8d8` and keeps the highest four.
+
+### 3.2 Keeper Notes — v59.64
+
+Keeper Notes use authenticated server session polling and the secured handout subcollection rather than the obsolete `session.handouts` browser array.
+
+- notes remain table-scoped;
+- private notes remain recipient-scoped server-side;
+- sending is owner-only;
+- the Keeper composer remains visible/pinned inside the Keeper Console;
+- Player Tool receives notes through authenticated polling.
+
+### 3.3 3D dice close/cancel recovery — v59.65
+
+Closing the 3D dice HUD before physics settles is an explicit cancellation transaction:
+
+- cancel visual simulation;
+- settle internal DiceBox promises;
+- clean Ammo/Babylon world state;
+- preserve a valid numerical result through the standard hidden roller;
+- release the roll queue immediately;
+- allow the next 3D roll without page reload.
+
+The safety timeout remains only for a genuine renderer hang.
+
+## 6. 3D dice production requirements retained
+
+All of the following remain required:
+
+- exact-case `assets/3d-dice/Dice.min.js` compatibility path from v59.60;
+- lowercase compatibility file retained where present;
+- `'wasm-unsafe-eval'` in effective `script-src` for Ammo WebAssembly;
+- `_headers` at publish root;
+- matching CSP in `netlify.toml`;
+- correct `application/wasm` MIME treatment;
+- `X-VeilFarers-Release` and CSP profile response markers;
+- deploy verification against the real HTTP response, not repository inspection alone.
+
+Do not add general JavaScript `'unsafe-eval'` merely to support Ammo.
+
+## 7. Keeper/Firebase state retained
+
+Keeper Tool remains decoupled from Character Vault during startup. Do not restore `character-registry.js` or `character-sync-adapter.js` to `keeper-tool.html` merely for symmetry.
+
+Cloud Vault, permanent Character ID allocation, Firebase custom auth and table APIs require the server-only environment value:
+
+```text
+FIREBASE_SERVICE_ACCOUNT_JSON
+```
+
+It must never be committed or exposed to the browser. Safe 503 diagnostic codes remain the required behavior for missing/malformed server credentials.
+
+## 8. v59.66 files changed
+
+```text
+charsheet.html
+charsheet-redesign.css              new
+charsheet-redesign.js               new
+veilfarers-theme.css
+package.json
+package-lock.json
+data/changelog.json
+data/deploy-version.json
+_headers
+netlify.toml
+HTML release markers
+assets/3d-dice/vf-dice3d.js         release marker only
+START_HERE.txt
+START_HERE_v59.66.txt
+GITHUB_DEPLOY_SUMMARY_v59.66.md
+PORTAL_HANDOVER_v59.66.md
+VALIDATION_v59.66.txt
+SHA256_v59.66.txt
+```
+
+## 9. Explicitly unchanged in v59.66
+
+- canonical mechanics and data;
+- Character Creator state machine;
+- Character Registry/Vault contracts;
+- Player Tool runtime state;
+- Keeper Tool table authorization;
+- Netlify Functions logic;
+- Firebase/Firestore document contracts;
+- Firestore Rules;
+- bundled PDFs;
+- protected 3D renderer libraries, WASM and themes;
+- dice outcomes and physics settings;
+- Massive calculation from v59.64;
+- Keeper Notes communication from v59.64;
+- 3D close/cancel behavior from v59.65.
+
+## 10. Deployment procedure
+
+1. Preserve the v59.65 ZIP for rollback.
+2. Extract `VeilFarers_Portal_v59.66.zip`.
+3. Place the extracted files directly at the repository/Netlify publish root.
+4. Push to a test branch and create a Deploy Preview.
+5. Verify `/data/deploy-version.json` reports `v59.66`.
+6. Hard-refresh the Charsheet.
+7. Test both themes and both Paths.
+8. Test all Charsheet field editing, JSON, transfer and PDF workflows.
+9. Regress Player/Keeper/dice features from v59.64–v59.65.
+10. Do not deploy Firestore Rules; this release contains no Rules change.
+
+## 11. Priority visual acceptance
+
+### Sleeping
+
+- silver frame and silver element borders;
+- no blue primary border identity;
+- light readable fields;
+- Effort/Resolve layout intact;
+- long identity values no longer appear as narrow black truncated boxes.
+
+### Awakened
+
+- gold frame and gold element borders;
+- Hope/Domain layout intact;
+- gold status/path switch treatment;
+- no data loss when switching.
+
+### White Stone
+
+- navigation, toolbar, overlays and stage remain light;
+- text remains charcoal/high contrast;
+- fields on the paper do not become black;
+- modal cards no longer retain dark/beige mixed legacy styling;
+- Sleeping remains silver, Awakened remains gold.
+
+### VeilFarers Blue
+
+- application chrome is deep navy;
+- sheet paper remains editorial and printable;
+- gold/silver Path coding remains independent of portal theme.
+
+### Typography
+
+- Aller is used when installed;
+- fallback is acceptable when Aller is unavailable;
+- do not package or distribute Aller binaries;
+- VeilFarers masthead retains the title face.
+
+## 12. Known limitations
+
+- Aller is not bundled. Rendering depends on a locally installed Aller font; otherwise the approved fallback stack is used.
+- The Charsheet retains its large historical DOM and inline legacy CSS for functional/print compatibility. `charsheet-redesign.css` is the final scoped authority. Future cleanup may physically remove superseded rules only after exhaustive PDF and migration testing.
+- Native HTML selects remain semantically native for accessibility and data stability, but their visual appearance is replaced with an in-app chevron and controlled styling.
+- Real-device acceptance is still required for unusual browser zoom, mobile Safari and physical PDF printing.
+
+## 13. Rules for future Charsheet work
+
+1. Never rebuild the sheet as a disconnected second data model.
+2. Preserve all `data-f` bindings and migration keys unless an explicit migration is designed and validated.
+3. Keep Path identity independent from portal theme: Awakened gold, Sleeping silver.
+4. White Stone must be a full application theme, not a light body behind dark components.
+5. Do not use global portal selectors that override sheet-paper controls.
+6. Prefer Aller-first editorial typography; retain VeilFarers title typography only for the masthead/brand.
+7. Do not bundle font binaries without an explicit licensed source and user approval.
+8. Replace browser-looking controls with VeilFarers-styled controls while preserving accessibility.
+9. Regress print/PDF after every visual change.
+10. Every release includes ZIP, GitHub summary, validation report, SHA-256 and a complete cumulative handover.
+
+## 14. Authoritative continuation prompt
+
+Continue VeilFarers Portal from **v59.66**. Treat `PORTAL_HANDOVER_v59.66.md` as the complete project state. Preserve the reconstructed Charsheet: Awakened uses gold metal; Sleeping uses silver metal; shared Equipment/Ship pages use neutral mineral/bronze. Preserve the dedicated White Stone treatment and do not allow generic portal form rules to inject dark inputs into the paper sheet. Use Aller through local lookup/fallback without redistributing font binaries, while retaining the VeilFarers masthead title face. Preserve every Charsheet `data-f` binding, local-storage key, historical migration, Creator/Vault/Player/Keeper transfer contract and PDF workflow. Also preserve v59.64 Massive pools and secured Keeper Notes, v59.65 explicit 3D cancellation, exact-case `Dice.min.js`, effective `'wasm-unsafe-eval'`, Keeper/Vault startup decoupling and server-only Firebase Admin credentials. The immediate task is real Deploy Preview acceptance of the reconstructed sheet in both themes and Paths, including high zoom, long identity values, mobile/tablet containment and all PDF exports. Every release must include the deploy ZIP, GitHub summary, validation, SHA-256 and complete updated handover.
+
+---
+
+# Retained cumulative historical handover through v59.63
+
+The following material is retained to preserve earlier editorial, strategic, security, data and application decisions. Where historical release instructions conflict with sections 1–12 above, the v59.66 sections above are authoritative.
+
+# VeilFarers Portal v59.63 — Complete Technical and Product Handover
+
+## Current release: v59.63
+
+### Immediate production incident
+
+The 3D dice failure persisted after v59.61/v59.62 because the effective HTML response CSP still omitted `'wasm-unsafe-eval'`. The supplied Chrome console log is definitive: the browser quoted the old `script-src` value. Ammo was present and requested from the correct URL, but WebAssembly compilation and both instantiation paths were rejected before physics initialization.
+
+The “Ammo file not found”, `setValue` and “engine took too long” errors are downstream symptoms, not separate root causes.
+
+### v59.63 resolution
+
+1. `_headers` is now shipped at the publish root with the complete CSP. This is the deploy-authoritative policy for static/manual deployments.
+2. `netlify.toml` retains the same policy for repository/CLI builds.
+3. Both declare the narrow `'wasm-unsafe-eval'`; general JavaScript `'unsafe-eval'` remains absent.
+4. Responses identify the release with `X-VeilFarers-Release: v59.63` and the profile with `X-VeilFarers-CSP-Profile: wasm-3d-dice-v2`.
+5. `data/deploy-version.json` independently identifies the deployed static artifact.
+6. `vf-dice3d.js` performs a minimal WebAssembly compilation before starting DiceBox. A stale or overridden policy now fails immediately with `VF_WASM_CSP_BLOCKED`, rather than cascading through Ammo and worker errors.
+7. The loader logs its current release, making stale JS immediately visible.
+
+### Non-negotiable deploy verification
+
+Do not declare the dice fixed from repository inspection alone. The actual `player-tool.html` HTTP response must contain the release markers and `'wasm-unsafe-eval'`. If the marker is missing, Netlify is publishing another directory/deploy. If the marker is present but a second CSP omits the permission, remove or update the second CSP source because multiple CSP policies are cumulative and the stricter one still blocks WASM.
+
+### Preserved release chain
+
+- v59.60 exact-case `Dice.min.js` remains.
+- v59.61 WebAssembly policy intent remains.
+- v59.62 Keeper Tool/Vault startup decoupling and Firebase Admin diagnostics remain.
+- No rule, dice-result, theme, renderer-library, Ammo-binary, Firebase contract or stored-data migration is introduced.
+
+### Continuation instruction
+
+Continue from v59.63. Every future release must include the complete ZIP, GitHub deploy summary, validation report, SHA-256 and full cumulative handover. For any header-dependent feature, validate the effective production/preview response rather than only static configuration files.
+
+---
+
+## Retained complete v59.62 project handover
+
+# VeilFarers Portal v59.63 — Full Technical and Product Handover
+
+**Date:** 2026-07-20  
+**Baseline:** v59.61, retaining the complete v59.59 product/system baseline below  
+**Brand:** VeilFarers remains active; no Sileris rename has been applied.  
+**Canon:** Current normalized Corebook RC3 portal datasets and the user-revised Downloads package remain the source of truth.  
+**Purpose:** preserve every editorial, strategic, UX, visual, technical, application, security, deployment and validation decision required to continue the project in a new chat without context loss.
+
+## Authoritative release continuation: v59.60–v59.62
+
+This handover is cumulative. The complete v59.59 product, editorial, UX, data, security and deployment state is retained below. The following sections supersede any conflicting release instructions from earlier continuation prompts.
+
+### v59.60 — case-sensitive 3D module path
+
+Netlify/Linux requires exact filename casing. The bundled world renderer imports `assets/3d-dice/Dice.min.js`, while the original package contained `dice.min.js`. v59.60 adds the exact uppercase compatibility path and preserves the lowercase file. They are byte-identical. No renderer logic changed.
+
+### v59.61 — Ammo WebAssembly CSP permission
+
+The effective CSP blocked `WebAssembly.instantiateStreaming()` and `WebAssembly.instantiate()`. This caused Ammo physics initialization to abort, followed by misleading “Ammo file not found”, `setValue` and timeout errors. v59.61 adds the narrowly scoped source expression `'wasm-unsafe-eval'` to `script-src`; general JavaScript `'unsafe-eval'` remains blocked. The uppercase `Dice.min.js` fix remains present.
+
+### v59.62 — Keeper startup isolation and Firebase Admin diagnostics
+
+Keeper Tool previously loaded Character Registry and Character Sync Adapter although its campaign interface does not depend on Character Vault. Character Registry automatically called `/api/character-vault` during startup and again as Identity initialized, producing the two observed `500` requests. v59.62 removes those two scripts from `keeper-tool.html`.
+
+Consequences:
+
+- Keeper campaign selection and local campaign workflows can open independently of Character Vault.
+- Opening Keeper Tool no longer produces a Character Vault request.
+- Local Charsheet transfer still uses the Keeper page’s dedicated local-storage importer.
+- The shared portal navigation still reads the locally selected Character ID directly.
+- Cloud tables remain separate and still require authenticated Netlify Functions plus Firebase Admin credentials.
+
+The server endpoints now distinguish configuration failures from application failures. `_firebase-admin.mts` validates and normalizes `FIREBASE_SERVICE_ACCOUNT_JSON`, including JSON-encoded-string pastes and literal `\n` private-key line breaks. Missing, malformed, incomplete or unusable credentials produce safe HTTP `503` responses with stable diagnostic codes rather than generic `500` responses.
+
+Affected endpoints:
+
+```text
+/api/character-vault
+/api/table-api
+/api/firebase-auth-token
+/api/allocate-character-id  (inherits the normalized Firebase Admin parser)
+```
+
+The server logs detailed errors; browser responses never include the service-account JSON or private key.
+
+### Required deployment environment
+
+The following public/client variables remain unchanged:
+
+```text
+FIREBASE_API_KEY
+FIREBASE_AUTH_DOMAIN
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+FIREBASE_MESSAGING_SENDER_ID
+FIREBASE_APP_ID
+FIREBASE_MEASUREMENT_ID
+```
+
+The cloud Vault/table backend additionally requires:
+
+```text
+FIREBASE_SERVICE_ACCOUNT_JSON
+```
+
+This is the complete service-account JSON for the Firebase project and must be configured only as a Netlify Functions/server environment value. It must never be committed, placed in static files or returned by `/api/firebase-config`. Configure every Netlify deployment context that needs cloud tests, then trigger a new deploy.
+
+### Current diagnostic interpretation
+
+- `FIREBASE_ADMIN_NOT_CONFIGURED`: variable absent in the running deploy context.
+- `FIREBASE_ADMIN_INVALID_JSON`: value cannot be parsed as the service-account JSON object.
+- `FIREBASE_ADMIN_INCOMPLETE`: required fields are missing.
+- `FIREBASE_ADMIN_PRIVATE_KEY_INVALID`: the key cannot sign the Google assertion.
+- `FIREBASE_ADMIN_TOKEN_EXCHANGE_FAILED`: Google rejected the credentials or project relationship.
+- `FIREBASE_ADMIN_TOKEN_MISSING`: token endpoint returned no usable access token.
+- `FIREBASE_PROJECT_ID_MISSING`: neither the public project variable nor service-account project ID is available.
+
+These codes are configuration diagnostics, not game-state or authorization changes.
+
+### v59.62 non-negotiable preservation
+
+- Keep the v59.60 uppercase module compatibility file.
+- Keep the v59.61 `'wasm-unsafe-eval'` CSP source unless the physics engine is replaced with a CSP-compatible implementation.
+- Do not re-add Character Vault scripts to Keeper Tool merely for global consistency.
+- Do not replace the service-account secret with the public Firebase API key.
+- Do not expose server credentials in browser configuration, logs returned to users, GitHub or release artifacts.
+- Keeper local campaign access must remain available even when Vault/cloud-table services are unavailable.
+- Cloud table errors must be visible and actionable without blocking the campaign UI.
+
+
+## Historical baseline: v59.59 release delta
+
+v59.59 extends the approved Character Creator visual language across the entire portal and corrects the remaining Path/Class interaction defect at its source. This delta supersedes the v59.58 preview-card lock: before Path, the Class catalogue is now absent rather than merely visually disabled.
+
+### Product decisions
+
+1. **VeilFarers remains the active brand.** No Sileris rename has been applied.
+2. **Two portal themes are canonical UI options:**
+   - **VeilFarers Blue:** default deep stellar navy, dark application surfaces and gold metal.
+   - **White Stone:** bright mineral/stone texture, charcoal typography and restrained gold.
+3. Theme selection is a custom in-app component in the shared portal navigation. Native browser selects or dialogs are not used.
+4. Theme preference is device/browser-local. It is not stored in Firebase and does not follow the account across devices.
+5. The dark blue theme remains the default when no saved preference exists or storage is unavailable.
+
+### Absolute Path/Class dependency
+
+The v59.58 lock still left a catalogue-shaped region and relied partly on visual state. v59.59 uses an absolute gate:
+
+- `normalizeCreatorPath()` accepts only `Awakened` or `Sleeping`.
+- `enforceClassPathGate()` clears Class, Subclass, Powers, Veil Alignment and Sleeping Mystic domain state whenever no canonical Path exists.
+- the Class deck becomes `hidden`, `inert`, `aria-disabled` and leaves the tab order;
+- the locked deck contains zero child cards and zero `data-pick="cls"` targets;
+- a capture-phase click guard blocks interaction inside the contracted shell;
+- `autosave()` normalizes the state before persistence;
+- imported and restored state is normalized before rendering;
+- Step 3 readiness requires a valid Path plus Class and Subclass;
+- clicking the locked shell never surfaces a validation message.
+
+Choosing either Path reveals the canonical nine Class cards. Class/Subclass selection then continues through the existing authoritative workflow.
+
+### Selection motion changes
+
+- Cursor-position card illumination has been removed completely. The card may retain restrained 3D tilt, but `.sheen` receives no mouse-position gradient.
+- Unselected hover sheen is forced off.
+- Selected cards retain the metallic-gold border orbit and one-time arrival glow.
+- Particle density is increased by approximately 20% through an additional edge mote and calibrated layer opacity.
+- Path controls receive a matching additional mote.
+- Reduced-motion users retain a clear static selected state without animated orbit or particle drift.
+
+### Portal-wide visual layer
+
+The shared files `veilfarers-theme.css` and `veilfarers-theme.js` are loaded by all eleven portal entry pages:
+
+```text
+admin.html
+armory.html
+charsheet.html
+creator.html
+downloads.html
+feedback.html
+index.html
+items.html
+keeper-tool.html
+login.html
+player-tool.html
+```
+
+The theme layer standardizes navigation, panels, cards, forms, buttons, modal surfaces, headings, copy hierarchy and page backgrounds. White Stone includes page-specific convergence for Character Creator, Player Tool and Keeper Tool. This is a progressive portal-wide layer over the existing application implementations; it does not replace their state or business logic.
+
+### Files added
+
+```text
+veilfarers-theme.css
+veilfarers-theme.js
+```
+
+### Runtime files changed
+
+```text
+creator.html
+creator-redesign.css
+admin.html
+armory.html
+charsheet.html
+downloads.html
+feedback.html
+index.html
+items.html
+keeper-tool.html
+login.html
+player-tool.html
+package.json
+package-lock.json
+data/changelog.json
+```
+
+### Explicitly unchanged
+
+- canonical rules and datasets;
+- Character Registry, IDs, Vault and import migration;
+- Creator completion and Charsheet synchronization;
+- Level Up mechanics;
+- Player/Keeper data behavior and table security;
+- Netlify Functions, Firebase contracts and Firestore Rules;
+- Downloads and the five bundled PDFs;
+- all 87 protected 3D dice files and frozen dice behavior.
+
+### Controlled validation
+
+A real Chromium fixture confirmed:
+
+```json
+{
+  "initial": {"path": null, "cls": null, "locked": true, "hidden": true, "inert": true, "children": 0, "clickable": 0, "error": false},
+  "blocked": {"path": null, "cls": null, "hidden": true, "children": 0, "error": false},
+  "unlocked": {"path": "Awakened", "hidden": false, "inert": false, "children": 9, "clickable": 9},
+  "selected": {"requested": "diplomat", "selected": "diplomat"},
+  "cursor": {"inline": "", "opacity": "0"}
+}
+```
+
+Desktop screenshots were visually inspected for both VeilFarers Blue and White Stone. The class catalogue is visibly contracted and contains no cards before Path.
+
+### Live acceptance still required
+
+Deploy Preview must confirm persistence on a real Netlify origin, every portal page in both themes, keyboard/reduced-motion behavior, physical mobile devices, and the complete Creator → Vault → Charsheet workflow.
+
+## Inherited v59.58 release delta
+
+v59.58 is a focused Character Creator interaction refinement built on v59.57. It removes premature Class validation noise, makes the Path dependency explicit through a genuinely disabled Class catalogue, and adds restrained metallic-gold energy feedback to selected cards without changing canonical character creation rules.
+
+### Path-gated Class catalogue
+
+Class selection is now unavailable until the player chooses **Awakened** or **Sleeping**. Before a Path exists:
+
+- the Class section remains visibly contracted and darkened;
+- a compact in-app lock notice explains that a Path is required;
+- nine neutral preview silhouettes communicate that the catalogue exists without exposing clickable rule cards;
+- the Class deck carries `aria-disabled="true"`;
+- no Class card has a selection action or `data-pick` target;
+- clicking the disabled area does not create or preserve a validation error;
+- Next remains governed by the existing Step 3 readiness gate.
+
+Choosing Awakened or Sleeping unlocks the real Class catalogue and refreshes every card with the correct Path-specific resource, role and domain information. Changing Path continues to reset incompatible Class, Subclass and later dependent selections through the existing state workflow.
+
+The old guard clause remains as defensive protection, but it now performs a silent no-op rather than surfacing the persistent “choose a Path first” error.
+
+### Selected-card metallic energy feedback
+
+Selected cards now receive a smooth, restrained confirmation treatment:
+
+- a masked conic-gradient line travels around the existing border like polished metallic gold energy;
+- the animation uses the card's current geometry and does not change card dimensions;
+- a soft one-time arrival glow confirms the selection;
+- two sparse particle layers emit small golden motes near the card edges;
+- the effect applies to standard choice cards, Domain Power cards and Path controls;
+- unselected cards remain static and visually subordinate;
+- `prefers-reduced-motion: reduce` disables orbit, arrival and particle movement.
+
+The effect is implemented entirely in `creator-redesign.css`; no canvas, WebGL, external library or timer loop was added.
+
+### Runtime files changed
+
+```text
+creator.html
+creator-redesign.css
+package.json
+package-lock.json
+data/changelog.json
+```
+
+`creator-redesign.js`, canonical datasets, import normalizers, Character Registry, Vault, Charsheet synchronization, Level Up, Player Tool, Keeper Tool and Netlify Functions are unchanged.
+
+### Explicitly unchanged
+
+v59.58 does not change:
+
+- Path, Class, Subclass, resource or Domain rules;
+- existing step-readiness and finalization requirements;
+- Ailuran Sub-Strain logic or historical import migration;
+- Character ID allocation or multi-character Vault behavior;
+- Affiliation IDs, texts or crest mappings;
+- Level Up, Charsheet, Player Tool or Keeper Tool;
+- authentication, Firebase data, Netlify Functions or Firestore Rules;
+- Downloads, bundled PDFs or protected 3D dice behavior.
+
+### Validation completed
+
+- Creator HTML parsed with no duplicate IDs.
+- All inline Creator JavaScript passed Node syntax validation.
+- `creator-redesign.js` passed Node syntax validation.
+- All JSON parsed successfully and release metadata reports v59.58.
+- `creator-redesign.css` parsed with zero CSS errors.
+- Controlled desktop browser test confirmed zero selectable Class cards while locked, no visible validation error after clicking the locked region, and nine preview cards.
+- Controlled browser test confirmed choosing Awakened unlocks nine Class cards and selecting Diplomat produces the expected selected state.
+- Computed styles confirmed `vfMetalEnergyOrbit`, `vfGoldParticleDrift` and the selection-arrival state are active on selection.
+- Mobile render at 390 x 844 confirmed the compact Path-required notice, single-column layout and non-overlapping guided footer.
+- `download/downloads.json`, all five bundled PDFs and all 87 protected 3D dice files remain byte-identical to v59.57.
+
+A Deploy Preview remains required for full real-browser acceptance across all Path/Class combinations, keyboard interaction, reduced-motion preferences and the complete Creator-to-Vault workflow.
+
+
+## Inherited v59.57 release delta
+
+v59.57 is a full visual reconstruction of the Character Creator built on v59.56. It implements the approved dark navy, gold and heraldic Affiliate-screen direction across every creation step without changing the underlying creation rules or persistence workflow.
+
+### Product and design decision
+
+The approved Affiliate mockup is now the visual baseline for the Character Creator. The objective is not to reproduce a static illustration literally; it is to translate its hierarchy and atmosphere into a functional responsive application. The Creator now uses:
+
+- a persistent desktop Creation Progress rail;
+- a synchronized horizontal step rail above the active panel;
+- dark navy application surfaces rather than white browser-like cards;
+- restrained gold borders, ornamental corners and selected-state illumination;
+- centered editorial headings and explanatory copy;
+- a full-width guided action footer in the Creator workspace;
+- a mobile layout that replaces the desktop rail with a scrollable horizontal step navigator;
+- one coherent visual language across Ancestry, Community, Class, Traits, Experiences, Affiliation, Powers, Equipment and Review.
+
+This is a Character Creator-only visual release. Level Up, Card Library, Charsheet, Player Tool and Keeper Tool retain their existing visual and functional implementations.
+
+### Functional architecture preserved
+
+The redesign deliberately reuses the existing DOM IDs, state object, rendering functions, validation gates and event handlers. It does not duplicate the creation engine or create a parallel wizard. Existing functions including `goStep`, `isStepReady`, `validateStep`, dependent-choice overlays, canonical data loading, import normalization, `finishCreatorToSheet`, Character Registry allocation and Vault synchronization remain authoritative.
+
+The new files are:
+
+```text
+creator-redesign.css
+creator-redesign.js
+```
+
+Release metadata is aligned at v59.57 in `package.json`, `package-lock.json` and `data/changelog.json`; the changelog includes the Character Creator reconstruction as the current entry.
+
+`creator-redesign.css` contains the responsive visual system. `creator-redesign.js` synchronizes the secondary top step rail and the route-specific layout state. It does not persist character data and does not interact with authentication, Firebase or Netlify Functions.
+
+### Desktop information architecture
+
+At desktop widths the Creator uses a two-column application frame:
+
+1. **Left progress rail**
+   - VeilFarers Character Creator identity;
+   - all nine creation steps plus Character Sheet state;
+   - active, completed and pending visual states;
+   - persistent project quote;
+   - fixed-height viewport behavior with internal scrolling when required.
+
+2. **Main workspace**
+   - existing portal/header actions;
+   - Character Creator / Level Up mode control;
+   - synchronized horizontal step rail;
+   - active creation panel;
+   - guided Back/Next footer with existing readiness gates.
+
+The global portal navigation remains visible. It was not removed because portal-wide navigation consistency remains an established product requirement.
+
+### Mobile information architecture
+
+Below approximately 820 px:
+
+- the desktop progress rail is hidden;
+- the horizontal step rail becomes sticky below the application header;
+- card grids become single-column;
+- the action footer spans the mobile viewport;
+- Save and Load remain available;
+- the Send to Charsheet header action is hidden at the narrowest width because the final guided action remains available in the footer;
+- no native browser-looking modal or navigation control was introduced.
+
+### Card and input system
+
+All existing selection cards are visually rebuilt in place. The redesign preserves their text and click targets while changing presentation to:
+
+- dark raised panels;
+- gold corner geometry;
+- consistent selected-state outlines and checkmarks;
+- dark card bodies instead of white bodies;
+- improved domain, stat, feature and rules-chip contrast;
+- responsive art areas and text hierarchy.
+
+The same treatment extends to:
+
+- Path selection;
+- Sub-Strain and Subclass overlays;
+- Trait assignment;
+- Experience and personal-detail fields;
+- Domain Power cards;
+- Equipment cards and filters;
+- validation messages;
+- feature tooltips;
+- Review fields.
+
+### Complete canonical Affiliation crest set
+
+v59.56 integrated 11 canonical crest mappings and retained fallback monograms for House Amaranth and Independent. v59.57 completes the set:
+
+- `house-amaranth` -> `img/affiliation/house-amaranth.webp`
+- `independent` -> `img/affiliation/independent.webp`
+
+The Independent option uses the approved broken-chains crest. The supplied checkerboard backgrounds were converted to real alpha transparency and optimized to `720 x 1080` lossless WebP assets, matching the runtime dimensions of the existing crest set.
+
+All 13 canonical Affiliation choices now resolve to approved crest artwork. The canonical IDs, names, equipment access, benefits, Calls and obligations remain unchanged.
+
+Starborn Collective and Spire of Verita art remains packaged as future-ready artwork only. They are not added as Affiliation choices because they are absent from the current canonical Affiliation dataset. This follows the standing rule not to invent or expose unsupported rules/options.
+
+### Explicitly unchanged
+
+v59.57 does not change:
+
+- canonical creation rules;
+- Affiliation data or IDs;
+- Ailuran Sub-Strain rules and migration aliases;
+- Character ID allocation;
+- multi-character Vault behavior;
+- active-character semantics;
+- historical JSON import normalization;
+- Level Up rules or screens;
+- Charsheet or Player Tool synchronization;
+- Keeper Tool, table ownership, invitations, passwords, rolls or notes;
+- Netlify Functions or environment variables;
+- Firebase configuration or Firestore data structures;
+- Firestore Rules;
+- Downloads manifest or bundled PDFs;
+- protected 3D dice behavior or assets.
+
+### Validation completed
+
+The release was checked using both static and controlled-browser fixtures:
+
+- HTML parse and DOM count checks;
+- CSS parser validation;
+- external and inline JavaScript syntax checks;
+- canonical `rules-data` loading in a browser fixture;
+- desktop renders at 1600 x 1000 for Ancestry, Path/Class/Subclass, Traits, Affiliation, Domain Powers, Equipment and Review;
+- mobile renders at 390 x 844 for Ancestry and Affiliation;
+- all 13 Affiliation images loaded successfully with intrinsic `720 x 1080` dimensions;
+- House Amaranth and Independent alpha assets verified;
+- Downloads and all five bundled PDFs compared byte-for-byte with v59.56;
+- all 87 protected 3D dice assets compared byte-for-byte with v59.56.
+
+A live Deploy Preview is still required for the complete nine-step flow, authenticated completion, Vault registration, historical import, Charsheet transfer and real-device browser behavior.
+
+## v59.56 inherited release delta
+
+v59.56 is the Affiliation crest integration release on top of v59.55. Its decisions remain valid except where v59.57 explicitly replaces the House Amaranth and Independent fallbacks.
+
+### v59.56 implementation
+
+- Added a dedicated crest header to every Character Creator Affiliation card.
+- Converted supplied opaque checkerboard PNGs into transparent optimized WebP runtime assets.
+- Mapped approved artwork to Church of the Eternal Veil, Explorers' Guild, Free Fleet, House Joric, House Kurogane, House Solari, House Valerius, House Volkov, Solara Compact, Stellar Commerce Guild and House Kaelen.
+- Added responsive sizing, `object-fit: contain`, alternative text, broken-image fallback and local-only assets.
+- Preserved canonical Affiliation rules and IDs.
+- Included Starborn Collective and Spire of Verita as future-ready assets without exposing unsupported choices.
+
+House Amaranth and Independent no longer use fallback monograms in v59.57; their approved artwork is now mapped.
+
+## Inherited v59.55 full handover
+
+The complete v59.55 handover follows. Where a prior statement conflicts with a v59.56 or v59.57 release delta, the newest delta takes precedence.
+
+## v59.55 release delta
+
+v59.55 is a focused Keeper-note delivery and privacy hotfix built on v59.54. It preserves the user-revised Downloads manifest, bundled PDFs, Character Vault behavior, Player Tool bundle, Keeper visual redesign and protected dice assets.
+
+### Confirmed implementation defect
+
+The note composer supports pasted comma- or tab-separated tables. The browser represented those rows as `string[][]`, while the server attempted to persist that shape directly. Firestore rejects arrays whose direct elements are arrays. This caused `sendHandout` to fail inside `/api/table-api` and surface as a generic HTTP 500.
+
+### Firestore-safe note tables
+
+The server now stores note rows as map records:
+
+```json
+{"rows":[{"cells":["Gate","Locked"]}]}
+```
+
+API responses convert them back to the existing browser shape, so Player Tool rendering remains `rows: string[][]` and no Player Tool UI rewrite is required.
+
+### Table-scoped note documents
+
+New notes are stored under the current session's `handouts` subcollection instead of rewriting one shared `session.handouts` array. This removes concurrent-send overwrite risk, prevents note history from inflating the live session document and makes deletion address one note document. Legacy array notes remain readable and removable during migration.
+
+### Recipient isolation
+
+Private note privacy is enforced server-side on `readSession`. The table owner may review all notes. A player receives only broadcasts or notes whose target matches their authenticated UID or a character owned by that UID. Client filtering remains as defense-in-depth.
+
+### Keeper send UX and diagnostics
+
+The note Send button is disabled while the request is in flight, preventing repeated submissions. Each request carries a non-secret reference such as `vf-...`; safe errors expose that reference, and Netlify Function logs record it with the action, table and status for diagnosis.
+
+### Acceptance boundary
+
+Static validation covers the storage transform, browser conversion, recipient visibility fixtures, JavaScript syntax, package integrity and preserved asset hashes. A Deploy Preview with the table owner and at least two players remains required to validate Identity, Firebase Admin, private delivery, pasted-table delivery and deletion end to end.
+
+## Inherited v59.54 release delta
+
+The v59.54 release delta below remains fully applicable. Where it conflicts with v59.55, the v59.55 delta takes precedence.
+
+## v59.54 release delta
+
+v59.54 is a focused runtime and migration hotfix built directly from the user-revised `59_53.zip`. That uploaded package is the source of truth for this release, including its manually updated Downloads section, `download/downloads.json`, and the five bundled PDF documents. Those download assets were preserved byte-for-byte.
+
+### Player Tool startup crash
+
+The production bundle failed during `CharacterSheet` render with:
+
+```text
+ReferenceError: Cannot access 'character' before initialization
+```
+
+The incoming Keeper-handout effect evaluated `character` in its dependency array before the local `const character` declaration had initialized. v59.54 removes that temporal-dead-zone access in both `player-tool.jsx` and `player-tool.bundle.js`. The effect now depends on `handouts`, `activeTab`, and `sessionId`; its callback still resolves the normalized active character after render.
+
+### Multiple Vault characters without replacement
+
+The registry previously used the active Character ID as a fallback when `ensureId()` received a new build without an ID. That made a new Creator build or legacy JSON import overwrite the currently active Vault character.
+
+v59.54 changes the identity rule:
+
+- a valid ID supplied by the build updates that exact record;
+- a missing or legacy/non-final ID receives a new allocation;
+- the active character is never used as the identity of a different build;
+- `reuseCurrentId` exists only as an explicit opt-in for a future caller and is not used by current creation/import flows;
+- sync of a pending record passes its own pending ID into allocation, preventing accidental reassignment.
+
+A local fixture proved that an existing `VF-000111` remains in the registry while a new ID-less build is added as `VF-000222`.
+
+### Ailuran completion and Sub-Strain migration
+
+Creator import now preserves Ailuran Sub-Strain from:
+
+- canonical Creator state (`subStrain`);
+- Player Tool and legacy records (`subStrain`, `substrain`, `sub_strain`, `ancestrySubStrain`, `ancestryVariant`);
+- Charsheet fields, including the actual bridge field `ailuran_variant`;
+- legacy values such as `shroud`, `surge`, `still hunters`, and `kinetic predators`.
+
+These values normalize to the canonical IDs `ANC-AILURAN-SHROUD` and `ANC-AILURAN-SURGE`. Registered imports open directly on Creator Step 9 using a migration-review navigation path that does not re-run every earlier forward-step gate. The canonical Ailuran choice itself remains required for newly built characters.
+
+### Creator and Vault import behavior
+
+Account/Vault import continues to route JSON through Creator as the canonical migration surface. Direct Creator import and Vault import now share the corrected ID allocation and Sub-Strain normalization. A legacy JSON without a permanent ID becomes a new Vault character; a JSON carrying an existing `VF-######` updates that record.
+
+### Revised Downloads retained
+
+The following uploaded files and manifest are preserved exactly:
+
+- `download/downloads.json` — release `11.31-RC3.2`;
+- `VeilFarers_Corebook_11.31-PDF-Candidate.pdf`;
+- `VeilFarers_Keepers_Companion_11.3-PDF-Candidate.pdf`;
+- `VeilFarers_Rust_and_Steel_11.3-PDF-Candidate.pdf`;
+- `VeilFarers_Alien_Species_11.3-PDF-Candidate.pdf`;
+- `veilfarers_charsheet_fillable.pdf`.
+
+No code-generation step rewrote, renamed, recompressed, or replaced those files.
+
+### Validation and acceptance boundary
+
+Static/local validation covers syntax, JSON, clean npm installation, deterministic registry allocation fixtures, Ailuran import fixtures, and byte comparison of the Downloads directory. Live Netlify/Firebase acceptance remains required for cloud ID allocation, multi-character Vault persistence, historical JSON samples, and Downloads links.
+
+## Inherited v59.53 handover
+
+The remainder of this document preserves the full v59.53 product, architecture, security, editorial, UI and deployment state. Where a v59.53 statement conflicts with the release delta above, the v59.54 delta takes precedence.
+
+## 3. Current project decision
+
+VeilFarers remains the active product, interface and codebase name. `Sileris` and `Sileris Chronicles` remain possible future alternatives under legal review only. No visible brand, route, package, Firestore path, local-storage key, asset or internal identifier has been renamed in v59.53.
+
+## 4. Release objective
+
+v59.53 is a production-runtime, import, table-connectivity and global-controls release on top of v59.52. It responds to Deploy Preview feedback without reopening the protected v59.25 dice result/renderer behavior or changing the VeilFarers brand.
+
+The release objectives are:
+
+1. allow a Keeper who has already authenticated and joined a table to read the current session without depending on browser Firestore Rules that may still be on the production baseline;
+2. make imported historical JSON files pass through the canonical Creator normalizer, obtain a permanent `VF-######` when authenticated, become completed Vault records and open at the final Creator step;
+3. expose JSON import directly from Character Vault while retaining Creator and Level Up import compatibility;
+4. make every catalogue filter a true multi-select control with OR semantics inside one filter group and AND semantics between groups;
+5. make Shake to Roll open the Duality roller and execute the existing Hope/Fear roll, including the selected 3D presentation mode;
+6. make Spectrum of Fate enabled by default and treat it as one Player Tool setting shared by all characters/tabs on the current browser/device;
+7. reorganize Player Tool Options into clear Appearance, Rules, Dice, Audio and Spotlight sections;
+8. remove Tailwind CDN and in-browser Babel from production, precompile the Player Tool bundle and CSS, and vendor React/ReactDOM locally;
+9. prevent repeated Player Tool Firebase initialization and duplicate authentication/connection logs;
+10. retain all v59.52 behavior: many Vault characters with one active, exact note recipients, Keeper-only/current-table-public rolls and the Player-style Keeper UI.
+
+All earlier architecture remains in force: permanent `VF-######` identity, build/runtime separation, authenticated Netlify/Firebase identity bridge, owner/member tables, equipment Mods, drone synchronization, guided RC3.2 Level Up, Power Vault, 3D initialization fallback, navigation-owned Character ID, invitation administration and legacy password migration.
+
+## 5. v59.53 implementation details
+
+### Keeper connection through authenticated server reads
+
+The Keeper no longer requires a direct browser `onSnapshot()` merely to connect to and read a session. After `VFTableAccess.authorize()` confirms owner/member access, Keeper Tool stores the selected table ID and calls:
+
+```text
+/api/table-api  action: readSession
+```
+
+The server verifies the Netlify Identity bearer token and current table membership, then returns a safe live-session projection containing characters, Fear, Spotlight, Keeper notes, session name, current-table handouts and public current-table roll history. Keeper Tool refreshes that state on a controlled 1250 ms poll with a single-flight guard. Writes continue through whitelisted authenticated actions such as `patchSession`, `broadcastRoll` and `sendHandout`.
+
+This specifically avoids the Deploy Preview failure in which a valid Keeper account saw `permission-denied` because the preview client and production Firebase project shared a Rules version that did not yet authorize the new browser listener. It does not weaken table authorization: the server still rejects callers who are neither owner nor member.
+
+### Canonical historical JSON import and Vault entry
+
+Account/Character Vault now includes a custom **Import Character** action. A selected JSON file is stored briefly under:
+
+```text
+veilfarers.character.pendingImport.v1
+```
+
+and routed to Creator. Creator consumes the payload, runs the existing canonical compatibility normalizer, registers the result, awaits the registry/cloud synchronization result and opens the final review/completion step. When the user is authenticated and Firebase Admin is available, an old file without a permanent ID is allocated a `VF-######`, marked completed and added to the account-owned Vault. Offline/deferred imports retain a `PENDING-*` identity until a later authenticated sync.
+
+The same registration helper remains available to Level Up and direct Creator imports. Re-importing a character that already has a permanent ID updates the matching record instead of creating an unrelated copy.
+
+### Creator import destination
+
+A successful registered import now opens step 9, the final Creator review/finish surface, rather than restarting at ancestry. This allows the user to inspect the normalized character, correct any missing historical fields and continue to Charsheet without repeating the creation wizard.
+
+### Multi-select catalogue filters
+
+`catalog-page.js` stores pack/source, Tier, category, property, ownership and cost filters as arrays. Users may keep several values selected at once. Matching rules are:
+
+- selected values inside one group are OR alternatives;
+- separate groups remain AND constraints;
+- an empty group means no restriction;
+- filter menus remain open while selections are changed;
+- the control label shows the single selected value or a selected-count summary.
+
+This applies consistently to weapons, armor, equipment, augments and the shared inventory catalogue.
+
+### Shake executes Duality
+
+The motion listener remains opt-in and retains permission, two-peak detection, visibility, in-flight and cooldown guards. Once a valid shake is detected it now:
+
+1. opens and restores the Player Roller;
+2. switches the roller to Duality;
+3. invokes the same `rollDuality()` entry point used by the normal Hope/Fear button;
+4. uses the currently selected 2D or 3D display mode;
+5. preserves the existing Hope/Fear result, resource, damage and broadcast logic.
+
+No separate random result path was added.
+
+### Spectrum of Fate and structured Options
+
+Spectrum of Fate is enabled when no prior preference exists. Its key is:
+
+```text
+veilfarers.spectrumOfFate.global.v1
+```
+
+The setting applies across Player Tool characters and synchronizes between open tabs through the browser storage event. It is not tied to one character record. Options are grouped as:
+
+- Appearance;
+- Rules - including Spectrum of Fate;
+- Dice - 2D/3D, style, textures, tracking and Shake to Roll;
+- Audio;
+- Spotlight.
+
+### Production Player Tool build
+
+Production no longer loads `cdn.tailwindcss.com` or `@babel/standalone` and no longer uses a `text/babel` script. The release contains:
+
+```text
+assets/player-tool-tailwind.css
+player-tool.bundle.js
+assets/vendor/react.production.min.js
+assets/vendor/react-dom.production.min.js
+```
+
+Tailwind and Babel are build-time tools only. React and ReactDOM 18.3.1 are served locally. The CSP no longer needs `unsafe-eval`, the Tailwind CDN or unpkg for Player Tool. This removes the production console warnings and source-map connection errors caused by the browser transformer/CDN path.
+
+### Single-flight Player Firebase initialization
+
+`window.initFirebase` now returns one shared initialization promise. Concurrent components/callbacks await the same authentication and configuration work instead of starting duplicate Firebase setup sequences. The promise resets only after a genuine failure so a later retry remains possible.
+
+### v59.52 systems retained
+
+v59.53 retains the account-owned multi-character Vault with one active selection, exact one-player/all-current-table Keeper notes, Keeper Only/Broadcast roll modes, table-scoped communication, Player-style Keeper UI, invitations, historical password migration, Proficiency-scaled weapon damage, Player deduplication/runtime preservation, closable/resettable Log and the protected dice renderer/assets.
+
+## 6. Frozen and protected behavior
+
+- The exact v59.25 dice result calculation, roll resolution and protected `assets/3d-dice` renderer/assets remain frozen.
+- Shake to Roll only invokes the existing roll entry points.
+- The 3D loading modal wraps initialization but does not change result generation.
+- Automated validation confirms no Git diff under `assets/3d-dice`.
+
+## 7. Identity architecture
+
+### General account
+
+Netlify Identity remains the general user account authority. Firebase remains database and real-time synchronization.
+
+### Member role
+
+`netlify/functions/identity.mts` subscribes to typed `userSignup` and `userLogin` events. It adds `member` to `appMetadata.roles` while retaining existing roles.
+
+Role meaning:
+
+- `member`: ordinary logged-in VeilFarers user; may use Keeper Tool and own/join tables;
+- `keeper`: retained compatibility/special designation; also permitted to Keeper Tool;
+- `admin`: permitted to Keeper Tool and Admin.
+
+`netlify.toml` applies role-conditioned edge routing to Keeper Tool. Admin remains admin-only.
+
+Existing accounts need a new login or token refresh before the new role is represented in the JWT.
+
+### Firebase UID bridge
+
+`/api/firebase-auth-token` creates a Firebase custom token whose UID is the Netlify user ID. Character owner IDs and table member IDs therefore use one identity value.
+
+### Identity transport hotfix
+
+The browser now waits briefly for `netlifyIdentity.currentUser()` before issuing cloud calls. It obtains the current Identity JWT and sends it as `Authorization: Bearer <token>` to:
+
+- `/api/firebase-auth-token`;
+- `/api/allocate-character-id`;
+- `/api/character-vault`;
+- `/api/table-api`.
+
+This prevents login/session races and allows `@netlify/identity` `getUser()` to verify the caller inside Netlify Functions. The CSP `frame-src` list now permits `https://app.netlify.com`, which the current legacy Identity widget uses for its modal frame. `https://www.gstatic.com` is also allowed in `connect-src` so browser developer tools can retrieve Firebase source maps; these source maps are diagnostic only.
+
+## 8. Character identity and Vault
+
+### Permanent identity
+
+- Final format: `VF-######`.
+- Offline/deferred fallback: `PENDING-*`.
+- Firestore records: `characters/{characterId}`.
+- Server-only active selection: `characterVaultProfiles/{netlifyUid}`.
+- Counter: `systemCounters/characters`.
+- Local registry: `veilfarers.characters.registry.v1`.
+- Local active-selection mirror: `veilfarers.character.currentId.v1`.
+- Cross-tab channel: `veilfarers-character-sync-v1`.
+
+`allocate-character-id.mts` requires an authenticated Netlify user and reserves the character with forced `ownerId` and `ownerEmail`.
+
+### Vault behavior
+
+`character-registry.js` is the local/cloud Vault adapter. Account-owned CRUD goes through `/api/character-vault`, which verifies the Identity bearer token and uses Firebase Admin server-side.
+
+The adapter:
+
+- retains multiple completed characters for one account;
+- exposes exactly one active Character ID, or none when no active records exist;
+- synchronizes the active ID through the server-only profile document;
+- lists/gets/upserts only records belonging to the verified user;
+- distinguishes incomplete reservations from completed characters;
+- supports active/non-trashed records and Trash/restore;
+- retains deferred/offline sync and JSON portability;
+- exposes one summary model to Account, Level Up and Player Tool;
+- emits active-selection and registry-update events without reloading application pages;
+- deduplicates permanent IDs and migrates matching `PENDING-*` records when a permanent ID is allocated;
+- preserves Player runtime when a build record is updated.
+
+### Account page and import
+
+Account provides:
+
+- all completed characters plus a separate Trash view;
+- exactly one `ACTIVE` badge;
+- `Set Active` for every other character;
+- cloud refresh and current-record synchronization;
+- open Charsheet, Player Tool or Level Up after selecting that record;
+- export;
+- custom two-step Trash and restore flow;
+- **Import Character** for historical or current VeilFarers JSON.
+
+Account import routes through Creator's compatibility normalizer. A successful authenticated import receives/retains its permanent ID, becomes a completed Vault record and opens the final Creator step. Creating or importing another character never deletes unrelated Vault characters.
+
+## 9. Creator completion and import
+
+When Character Creator finishes:
+
+1. allocate or confirm the permanent Character ID;
+2. save the complete Creator state;
+3. generate the Charsheet payload;
+4. mark the Vault record completed;
+5. await local registration and attempt cloud synchronization;
+6. report saved, cloud-pending or deferred state;
+7. open Charsheet.
+
+Incomplete drafts remain local and do not clutter the normal account Vault.
+
+For JSON import, Creator accepts historical layouts through the shared normalizer, registers the imported state and opens the final review step. Missing historical fields remain editable before completion. When import originated from Account/Vault, the transient local payload is deleted after consumption so a refresh does not import it again.
+
+## 10. Shared Vault selection
+
+### One active character across tools
+
+Account is the primary Vault management surface. Charsheet, Player Tool and Level Up treat `activeCharacterId` as the default record, while still allowing a deliberate selection from the full Vault.
+
+Selecting a Player Tool tab with a permanent ID updates the shared active ID. Opening a different Vault character changes the active selection before importing/updating its Player representation. Opening Charsheet or Level Up from Account does the same.
+
+### Level Up
+
+`/creator.html#level-up` lists all completed characters belonging to the current user and marks the current active character. Selecting one does not create a copy; the existing permanent record is updated after advancement.
+
+### Player Tool
+
+The Add flow provides:
+
+- From Character Vault;
+- Create manually;
+- Create Drone.
+
+Opening a Vault character compares normalized permanent Character IDs:
+
+- same final ID: update the existing Player record;
+- pending/final version of the same build: migrate the pending record in place;
+- genuinely new final ID: add one Player record;
+- trashed record: exclude it from normal selection.
+
+Exact duplicates left in local storage are collapsed on startup. Runtime tracks remain attached to the existing Player record during build refreshes. Multiple Vault characters remain available even though only one is the current active selection.
+
+## 11. Guided Level Up
+
+### Canon source
+
+`VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf`, Chapter 12: **The Long Climb**, PDF pages 125–128. The workflow also loads canonical:
+
+- `rules-data/core/classes.json`;
+- `rules-data/core/subclasses.json`;
+- `rules-data/core/powers.json`;
+- `rules-data/core/resolve-moves.json`;
+- path-compatible class data from `data/classes.json`.
+
+### Workflow
+
+1. Select Character from Vault.
+2. Review target Level/Tier and automatic Tier Achievement.
+3. See all eleven advancement options.
+4. Select options while a two-slot meter validates cost.
+5. Configure exact choices.
+6. Review before/after.
+7. Apply once to the same Character ID.
+
+### Eleven options
+
+1. +1 Hit Point Slot — 1 slot.
+2. +1 Stress Slot — 1 slot.
+3. +1 to two Experiences / new Experience alternative — 1 slot.
+4. +1 Trait — 1 slot, once per Trait per Tier.
+5. +1 Evasion — 1 slot.
+6. +1 Proficiency — 2 slots, cap 6.
+7. +1 Technology Access — 1 slot.
+8. New Power — Awakened Domain Power or Sleeping Resolve maximum/Move — 1 slot.
+9. Multiclass — 2 slots, Level 5+, once.
+10. Upgraded Subclass — 2 slots, Level 5+, sequential Specialization then Mastery.
+11. Tempered Resolve — 2 slots, Tier 3 Sleeping only, once.
+
+All options remain visible. An unavailable option is disabled with its reason rather than removed.
+
+### Tier Achievements
+
+At Levels 2, 5 and 8, in addition to the two slots:
+
+- +1 Proficiency, cap 6;
+- +1 to two Experiences, including the book’s new-Experience alternative;
+- Levels 5 and 8 clear marked Traits when that optional rule is used.
+
+### Exact selectable content
+
+- Awakened Powers filter by accessible Domains, effective Domain level and current ownership.
+- New Powers enter the character’s Vault by default.
+- Sleeping Moves come from the exact canonical class/subclass Resolve Move collection.
+- Multiclass guides Class, valid genuinely new Domain, exact Class Feature and Background Question.
+- Subclass displays and writes the exact path-specific RC3.2 Specialization or Mastery.
+
+### Advancement data
+
+State includes:
+
+```text
+level
+proficiency
+hpMaxBonus
+stressMaxBonus
+evasionBonus
+technologyAccessLevel
+experienceBonuses
+traitAdvances
+vaultPowers
+resolveMoves
+resolveMaxBonus
+resolveDie
+subclassRank
+multiclass
+temperedResolve
+advancementHistory
+```
+
+Each application records a timestamped history entry with level, Tier, selected options and before/after values.
+
+## 12. Charsheet and Player synchronization
+
+### Bridge
+
+`sheet-bridge.js` now includes:
+
+- every acquired Subclass rank through current `subclassRank`;
+- exact path-specific Sleeping/Awakened subclass rules;
+- Multiclass Class, Domain, Class Feature and answered Background Question;
+- learned Resolve Moves;
+- Resolve die;
+- Power Vault;
+- advancement history;
+- all level-derived HP/Stress/Evasion/Resolve/Experience/Proficiency values.
+
+### Importer
+
+`veilfarers-import.js` restores these values from either Creator state or Charsheet payload. It loads path-compatible class data through `canonical-runtime.js` and prevents duplicate learned moves.
+
+### Build versus runtime
+
+Level Up changes build data. `character-sync-adapter.js` preserves live Player runtime:
+
+- current HP;
+- current Stress;
+- current Hope or Effort;
+- current Resolve;
+- current Armor/shields;
+- Conditions;
+- table notes/signal and other live fields.
+
+This prevents a level-up from healing, refreshing or clearing a character unintentionally.
+
+### Power Vault in Player Tool
+
+- New acquired Powers are owned but inactive.
+- Player Tool shows a `Power Vault` beneath active cards.
+- `Recall` moves an owned card into the active Loadout.
+- Returning an active card places it back in Vault.
+- Active Loadout remains capped at five.
+
+## 13. Mobile Shake to Roll
+
+- Opt-in setting; default off.
+- Handles `DeviceMotionEvent.requestPermission()` where required.
+- Listens only while the page is visible and no roll is already resolving.
+- Requires a two-peak movement pattern and applies a cooldown.
+- Opens/restores the Player Roller and selects Duality.
+- Invokes the existing `rollDuality()` Hope/Fear action after the UI opens.
+- Uses the selected 2D or 3D display mode and the same result/resource/broadcast path as the button.
+- The normal roll button always remains available.
+- `Permissions-Policy` permits accelerometer/gyroscope only for same-origin content.
+
+Real-device tuning remains mandatory, particularly iOS permission flow, Android sensitivity and 3D initialization on a first mobile roll.
+
+## 14. 3D dice initialization progress
+
+The Player Tool starts an idle preload. When a user rolls before initialization completes, a modal displays actual milestones:
+
+- renderer;
+- physics;
+- themes/assets;
+- scene preparation;
+- ready.
+
+The bar is milestone-based rather than a fake elapsed-time percentage. The pending roll continues automatically at Ready. v59.49 adds:
+
+- a 20-second hard initialization timeout;
+- a readiness ref that closes the modal even when preload and first-roll initialization overlap;
+- `Use 2D dice` and `Close` controls while loading, not only after failure;
+- `Retry` after an actual failure;
+- automatic standard random-result fallback when the 3D renderer fails.
+
+The numerical result does not depend on 3D success, and the protected renderer/assets remain untouched.
+
+## 15. Player Tool connection errors
+
+All connection errors use `ReactDOM.createPortal(..., document.body)`, `role="alert"` and `aria-live="assertive"`. Product placement was refined after real preview feedback:
+
+- the alert begins immediately below `--vf-portal-height`;
+- the navigation remains visually above it;
+- the alert has an explicit opaque `#450a0a` background and strong shadow, independent of Tailwind opacity-class generation;
+- it remains above Player Tool content and controls;
+- it can be dismissed.
+
+Messages must never echo secrets or password verifiers.
+
+## 16. Keeper Tool
+
+- Shared `portal.js` navigation is loaded immediately after `<body>`.
+- Keeper Tool requires Netlify Identity; authenticated `member`, `keeper` and `admin` roles may use it.
+- `window.VF_KEEPER_USER` exposes only ID, email and display name for UI/data ownership.
+- Local test bypass remains explicitly limited to the local runtime flag/private hostname.
+- `keeper-player.css` aligns the interface with Player Tool while retaining Keeper campaign modules.
+- A fixed/right responsive Keeper Console groups table connection, Spotlight, drones, private/public rolls and targeted notes.
+- Notes are owner-only and table/recipient scoped by the server.
+- Keeper rolls can be local-private or current-table public.
+- Table listing and authorization use authenticated server APIs.
+- Connected session reads use `readSession` polling rather than a direct browser Firestore listener.
+- The polling path is single-flight and stops/restarts when the Keeper changes tables.
+
+This fixes preview `permission-denied` connection failures while retaining owner/member authorization. Visual convergence does not merge permissions: account authentication, table membership and table ownership remain separate boundaries.
+
+## 17. Table architecture and v59.53 communication API
+
+Collections:
+
+```text
+artifacts/default-app-id/public/data/sessions/{tableId}
+artifacts/default-app-id/public/data/tableDirectory/{tableId}
+artifacts/default-app-id/public/data/tableInvites/{sha256(token)}
+artifacts/default-app-id/public/data/tableSecrets/{tableId}
+```
+
+Authorization remains:
+
+- authenticated safe directory;
+- creator is owner and first member;
+- owner manages members, password, invitations and Keeper notes;
+- a new non-member requires an invitation; a protected table additionally requires its password;
+- member IDs are Netlify/Firebase UIDs;
+- password verifiers and raw invitation tokens are never client-readable.
+
+Relevant `/api/table-api` actions:
+
+- `readSession`: owner/member-only safe projection used by Keeper Tool;
+- `patchSession`: whitelisted live state;
+- `broadcastRoll`: public roll normalized server-side with current `tableId`, `senderUid` and `visibility: public`;
+- `clearRollHistory`: authenticated table roll reset;
+- `sendHandout`: owner-only targeted note with current-table recipient validation;
+- `deleteHandout`: owner-only deletion in the current table;
+- legacy-compatible `setHandouts`: owner-only, normalized to the current table;
+- invitation/member/password owner administration retained.
+
+`readSession` returns only live fields required by Keeper Tool and filters handouts/rolls to the requested table; roll history returns public or legacy-public entries only. It is not a general Firestore proxy.
+
+Non-drone session characters may carry `memberUid` to identify the authenticated Player account. Historical records may use Character ID compatibility targeting. Hidden Keeper rolls never call `/api/table-api`; they remain local to the Keeper browser.
+
+Player Tool still uses real-time Firebase table listeners where immediate player broadcasts are required. Those browser paths remain subject to active Firestore membership Rules.
+
+## 18. Equipment, drones and compact rules retained from v59.47
+
+- Charsheet → Player Tool drone module `info`/`status` updates the same stable drone record.
+- Corebook weapon/armor Mods and Tier Hardpoints remain available in Charsheet and Player Tool.
+- Printable inventory lists `[Equipment] Mod — Effect` and overflows to General Notes.
+- Charsheet uses labeled schematic summaries; Player Tool uses maximum practical compression.
+- Costs, triggers, frequency, ranges, duration, dice, DC, Advantage/Disadvantage and restrictions remain visible.
+
+## 19. Navigation and Player Options
+
+Shared navigation includes Level Up and is present in Keeper Tool. The active Character ID is displayed in the navigation rather than repeated in roll callouts.
+
+Player Tool Options are divided into Appearance, Rules, Dice, Audio and Spotlight sections. Spectrum of Fate is a Rules setting enabled by default; Shake to Roll is a Dice setting. Native browser-looking controls should continue to be replaced with VeilFarers custom components where practical and accessible.
+
+## 20. Dependencies and production assets
+
+Runtime/build dependencies pinned by `package-lock.json`:
+
+```text
+@netlify/identity 1.2.x
+@netlify/functions 5.3.x
+```
+
+Browser assets bundled locally:
+
+```text
+React 18.3.1
+ReactDOM 18.3.1
+assets/player-tool-tailwind.css
+player-tool.bundle.js
+```
+
+Tailwind CSS and Babel are release-build tools only and are not loaded at runtime. Every npm `resolved` URL uses `https://registry.npmjs.org/`; `.npmrc` pins the same public registry. `node_modules` and temporary build tooling are excluded from the deploy artifact. Third-party notices are retained in `THIRD_PARTY_NOTICES.md`.
+
+## 21. Environment variables
+
+No new names:
+
+```text
+FIREBASE_API_KEY
+FIREBASE_AUTH_DOMAIN
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+FIREBASE_MESSAGING_SENDER_ID
+FIREBASE_APP_ID
+FIREBASE_MEASUREMENT_ID
+FIREBASE_PUBLIC_TABLE_DIRECTORY=false
+FIREBASE_SERVICE_ACCOUNT_JSON
+```
+
+`FIREBASE_SERVICE_ACCOUNT_JSON` remains server-only and must never appear in static files or `/api/firebase-config`.
+
+## 22. Firestore Rules and deployment boundary
+
+`firestore_v59.53.rules` retains the authenticated ownership/membership baseline; this release does not require a new project-wide Rules deployment merely to test Keeper session reads because Keeper now uses the authenticated server API.
+
+Character Vault CRUD also runs through an authenticated server function. Player Tool real-time table listeners and any remaining browser Firestore paths still depend on Firebase custom authentication and active membership Rules.
+
+Rules are project-wide. A branch deploy sharing production Firebase cannot safely test a different Rules version independently. Before the coordinated cutover:
+
+- Character Vault and Keeper `readSession` may be tested through server APIs;
+- use disposable table names for preview acceptance;
+- do not claim/modify a real production legacy table without a backup;
+- do not describe all browser table access as fully security-accepted until denial tests pass under the deployed Rules.
+
+## 23. Validation completed
+
+- package and lockfile versions are `59.53.0` and all dependency URLs use `registry.npmjs.org`;
+- portal JSON parses and changelog current version is v59.53;
+- first-party standalone JavaScript and generated `player-tool.bundle.js` pass `node --check`;
+- every non-data inline HTML script parses;
+- all Netlify Function `.mts` files compile under TypeScript with Node types and the project's non-strict compatibility settings;
+- Player Tool production HTML references local React/ReactDOM, compiled CSS and compiled JavaScript;
+- no production reference remains to Tailwind CDN, Babel standalone, `text/babel`, the internal package gateway or unpkg Player runtime;
+- static assertions confirm Keeper `readSession`, removal of Keeper `onSnapshot`, Vault import, awaited Creator registration, final-step import, Spectrum default, direct Shake Duality and multi-select filters;
+- protected `assets/3d-dice` contains 87 files identical to v59.52 byte-for-byte;
+- npm installation from the public registry completed with zero reported vulnerabilities at build time;
+- ZIP structure, dependency exclusion, credential scan and internal-registry scan pass;
+- the full DOCX handover was rendered and every page visually inspected before release.
+
+Full details are in `VALIDATION_v59.53.txt`. Static/build checks do not replace live Netlify/Firebase acceptance or real-device motion QA.
+
+## 24. Manual QA still required
+
+- deploy to a branch/Deploy Preview, hard-refresh and sign out/in before testing;
+- connect as the owner to an open table, a protected table and a joined-member table; verify Keeper loads live state and no `permission-denied` loop occurs;
+- verify Keeper state polling stops/restarts cleanly when switching tables and does not create duplicate requests/listeners;
+- import representative old JSON files from Account/Vault, Creator and Level Up; confirm normalization, final Creator step, permanent ID allocation and Vault insertion;
+- import the same permanent-ID JSON twice and confirm one record is updated rather than duplicated;
+- test import while offline/signed out and confirm a `PENDING-*` record can later synchronize;
+- select multiple values in every catalogue filter group and verify OR-within/AND-between behavior on weapons, armor, equipment and augments;
+- on real iOS and Android devices, enable Shake to Roll, shake from a closed/minimized roller and confirm one Hope/Fear roll occurs in both 2D and 3D modes;
+- confirm Spectrum of Fate starts on for a fresh browser profile and one toggle affects all Player Tool tabs/characters on that device;
+- inspect Player Tool console: no Tailwind CDN warning, no in-browser Babel warning, no unpkg Babel source-map CSP message and no duplicate Firebase initialization sequence;
+- regress v59.52 active-character, note-recipient, roll-visibility and Keeper UI scenarios;
+- regress invitations, historical passwords, Proficiency, Player runtime preservation, Log controls, Level Up, Mods, drones and Charsheet print/PDF.
+
+No live acceptance claim is made until these checks pass in a real Deploy Preview.
+
+## 25. Known limitations
+
+- the active Character ID is selection metadata, not a second character copy; an offline device can briefly show its last local selection before a successful Vault refresh;
+- an unauthenticated/offline old JSON import cannot obtain a final server ID immediately and remains `PENDING-*` until sync;
+- historical table characters without `memberUid` use Character ID compatibility targeting until next authenticated save;
+- private Keeper rolls are intentionally device-local and do not synchronize to another Keeper browser;
+- Keeper `readSession` uses 1250 ms polling rather than a push channel; this is deliberate to avoid preview Rule coupling and should be revisited only with a coordinated real-time server design;
+- only the latest raw invitation passkey retained on an owner device can be displayed; older raw tokens are irrecoverable because the server stores hashes only;
+- Vault permanent deletion/recovery policy and ownership transfer are not implemented;
+- invitation email is not sent automatically;
+- App Check and dedicated rate limiting remain pending;
+- Shake support depends on browser/hardware permission and physical-device sensitivity;
+- Spectrum global scope is the current browser/device, not a table-wide server policy;
+- remaining `unsafe-inline` CSP allowances are technical debt for legacy inline scripts, although Player Tool no longer requires runtime Babel/Tailwind or `unsafe-eval`.
+
+## 26. Production procedure
+
+1. Preserve the v59.52 ZIP and currently deployed Firestore Rules.
+2. Deploy the complete v59.53 artifact to a test branch/Deploy Preview.
+3. Hard-refresh and sign out/in on Keeper and Player accounts.
+4. Confirm the Netlify build installs from `registry.npmjs.org` and functions bundle successfully.
+5. Run open/protected/member Keeper connection tests using disposable tables.
+6. Run old JSON imports from Account/Vault, Creator and Level Up and verify permanent IDs/Vault records.
+7. Test multi-select catalogue filters on all catalogue tabs.
+8. Run Shake to Roll on real mobile hardware in 2D and 3D.
+9. Confirm Spectrum default/global-device behavior and structured Options.
+10. Inspect browser console and network for duplicate Firebase initialization or removed runtime CDN warnings.
+11. Regress all v59.52 communication and active-character acceptance scenarios.
+12. Complete `VALIDATION_v59.53.txt` and publish only after preview sign-off.
+13. Deploy project-wide membership Rules only as part of the coordinated security cutover and run denial tests immediately.
+
+## 27. Rules for future work
+
+1. Never invent VeilFarers mechanics; source them from the latest approved books/data and identify the source.
+2. Preserve one permanent Character ID across every representation.
+3. Treat Vault as the source of character build; treat Player runtime as live session state.
+4. Keep Charsheet and Player Tool compact, with full prose in book/reference surfaces.
+5. Never expose service-account credentials or confuse browser gates with authorization.
+6. Keep table directory metadata safe and authenticated.
+7. Preserve the protected dice calculation/renderer unless the user explicitly reopens that decision.
+8. Keep VeilFarers branding until the user explicitly approves a legally cleared replacement.
+9. Every release must include deploy ZIP, SHA-256, GitHub-ready summary, validation, security notes and full updated handover.
+10. Prefer authenticated server APIs for account-owned CRUD that does not need real-time listeners; reserve direct Firestore clients for real-time table state protected by Rules.
+11. Update this handover after every significant editorial, strategic, visual, data, security or deployment decision.
+
+## 28. New-chat continuation prompt
+
+Continue VeilFarers Portal from v59.53. Treat `PORTAL_HANDOVER_v59.53.md` as the complete source of project state. Keep VeilFarers branding. The immediate task is live Deploy Preview acceptance of Keeper server-read table connection, canonical historical JSON import into the Vault, multi-select equipment filters, real Shake-to-Duality behavior, Spectrum default/global-device settings and the precompiled Player Tool production runtime. Preserve all v59.52 systems: many Vault characters with one active, exact one-player/all-current-table Keeper notes, Keeper-only/current-table-public rolls and the Player-style Keeper UI. Preserve invitations, historical password migration, authenticated state writes, Proficiency-scaled damage, Player deduplication/runtime preservation, closable/resettable Log, permanent `VF-######` identity, guided RC3.2 Level Up, Mods, drones, compact rules and the protected v59.25 dice renderer. Do not reintroduce direct Keeper browser session reads, page reload loops, runtime Tailwind/Babel, global cross-table handouts, hidden-roll Firestore writes, single-select catalogue filters, duplicate Firebase initialization, recoverable raw invitation storage or internal package-registry URLs. Do not deploy project-wide Firestore Rules independently of the coordinated security cutover.
+
+## v59.55 continuation prompt
+
+Continue VeilFarers Portal from v59.55 using this handover as the complete project state. Preserve the user-revised Downloads manifest and bundled PDFs byte-for-byte. The immediate acceptance task is to verify Keeper notes end to end: broadcast, one-player private delivery, pasted-table content, deletion, reconnect persistence and cross-table isolation. Use the visible request reference to correlate any failure with the Netlify `table-api` Function log. Preserve v59.54 Player Tool startup, multi-character Vault, Creator import, Ailuran migration, Level Up, equipment, mods, drones, compact rules, Identity, Keeper UI and protected dice behavior.
+
+## 29. v59.57 continuation prompt — authoritative
+
+Continue VeilFarers Portal from v59.57. Treat `PORTAL_HANDOVER_v59.57.md` as the complete source of project state; the earlier v59.53 and v59.55 continuation prompts are retained only as historical records. Preserve VeilFarers branding and the v59.57 Character Creator visual system: dark navy and gold application shell, desktop Creation Progress rail, synchronized horizontal step rail, responsive guided footer, redesigned cards/fields/overlays and all 13 canonical Affiliation crests, including House Amaranth and the Independent broken-chains crest. Do not replace the existing creation engine, DOM IDs, validation gates, import normalization, Character Registry allocation or Vault synchronization with a parallel workflow. Keep Starborn Collective and Spire of Verita as packaged artwork only unless a future approved canon dataset adds them as selectable affiliations. Preserve the user-revised Downloads manifest and bundled PDFs byte-for-byte, the protected 3D dice renderer/assets, multi-character Vault with one active character, canonical historical JSON import, guided RC3.2 Level Up, Charsheet/Player Tool synchronization, equipment/mod/drone systems, compact mechanical text, Keeper ownership/invitation/password/note/roll boundaries and authenticated server APIs. The immediate acceptance task is a real Deploy Preview pass through all nine Creator steps on desktop and mobile, including Ailuran and every dependent Class/Subclass choice, import to Review, authenticated completion, permanent `VF-######` allocation, Vault insertion, Charsheet transfer and reload persistence. Do not deploy project-wide Firestore Rules independently of the coordinated security cutover.
+
+
+## v59.62 authoritative continuation prompt
+
+Continue VeilFarers Portal from v59.62. Treat `PORTAL_HANDOVER_v59.62.md` as the complete project state. Preserve all v59.59 editorial, strategic, UX, visual, data, security and application decisions included in this document. Preserve the v59.60 exact-case `assets/3d-dice/Dice.min.js` compatibility file and the v59.61 `'wasm-unsafe-eval'` CSP permission required for Ammo WebAssembly. Keeper Tool must remain decoupled from Character Vault at startup: do not restore `character-registry.js` or `character-sync-adapter.js` to `keeper-tool.html` unless a future approved design gives Keeper a direct Vault feature with a failure-isolated loader. Cloud Vault, permanent IDs, Firebase custom auth and table APIs require the Functions-only `FIREBASE_SERVICE_ACCOUNT_JSON`; never expose or commit it. Preserve safe `503` diagnostic codes and server-only detailed logging. The immediate acceptance task is a real Netlify Deploy Preview/production verification: Keeper opens with no `/api/character-vault` startup request; valid server credentials make `/api/character-vault`, `/api/table-api` and `/api/firebase-auth-token` return `200`; missing credentials return safe `503`; Player 3D dice load `Dice.min.js`, Ammo WASM compiles under the effective CSP and Duality/damage rendering works. Every release must include the complete deploy ZIP, GitHub summary, validation report and full updated handover.
+
+
+## v59.74 authoritative continuation prompt
+
+Continue VeilFarers Portal from v59.74 and treat `PORTAL_HANDOVER_v59.74.md` as the complete source of editorial, strategic, visual, application, data, security and deployment state. VeilFarers Blue is the only exposed theme; White Stone remains disabled. Preserve the v59.73 Creator/Level Up card parity and real front/back rotor, Human **The Tool / The Stubborn Relic**, Charsheet HP capacity states, compact v59.56 Player Tool direction, v59.70 Identity-expiry polling stop, v59.65 cancellation controller, v59.64 Massive behavior and Keeper Notes, current table/Vault contracts, protected 3D assets and supplied editorial PDFs. The immediate acceptance task is a real Netlify Deploy Preview test of v59.74: pressing anywhere on a visible unresolved 3D roll must immediately stop physics and open the same-parameter 2D roll; pressing after settlement must preserve the actual result. Use the temporary Creator controls to determine the final particle count and density separately. The release defaults are 19 particles and 100% density; the screenshot fixture shows a test value, not an approved final. After Pedro approves final values, remove the tuner UI and lock the constants without restoring the rejected fixed pseudo-particles or increasing vertical travel by a blanket 20%. Re-test Keeper ↔ Player synchronization after fresh Identity login and confirm expired sessions stop polling rather than producing repeated 401 requests. Every release must include the full deploy ZIP, SHA-256, GitHub-ready summary, validation report, START HERE and complete cumulative handover.

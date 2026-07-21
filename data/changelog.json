@@ -1,7 +1,29 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.72",
+  "currentVersion": "v59.76",
   "entries": [
+    {
+      "version": "v59.76",
+      "date": "2026-07-21",
+      "title": "Unified card feedback on both faces",
+      "changes": [
+        "Keeps the 48-particle field inside the card shell so it remains visible on the selected front and the opened reverse.",
+        "Moves the animated gold frame outside the rotating faces so the same border animation surrounds both card states.",
+        "Prevents duplicate particle layers when card details are initialized more than once.",
+        "Preserves the fixed 48 / 100% particle tuning, interior clipping, card parity and 3D-to-2D dice interruption from v59.75."
+      ]
+    },
+    {
+      "version": "v59.75",
+      "date": "2026-07-21",
+      "title": "Creator particle field finalized",
+      "changes": [
+        "Locks Creator card feedback to 48 particles at 100% density.",
+        "Clips the particle field inside the selected or flipped card so light never renders beyond its border.",
+        "Removes the temporary particle count and density sliders from the public Creator interface.",
+        "Preserves the v59.74 full-stage click interruption and automatic 2D fallback for unresolved 3D rolls."
+      ]
+    },
     {
       "version": "v59.72",
       "date": "2026-07-20",
@@ -742,5 +764,5 @@
       ]
     }
   ],
-  "version": "59.72.0"
+  "version": "59.76.0"
 }

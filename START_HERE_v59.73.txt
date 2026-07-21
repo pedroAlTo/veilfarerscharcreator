@@ -1,0 +1,57 @@
+VEILFARERS PORTAL v59.73 — START HERE
+
+1. DEPLOY
+   Upload the complete contents of VeilFarers_Portal_v59.73.zip to the normal Netlify deployment workflow.
+   Do not deploy selected files over an older folder.
+
+2. VERIFY THE RELEASE
+   Open /data/deploy-version.json and confirm v59.73.
+   Inspect the HTML response header and confirm X-VeilFarers-Release: v59.73.
+   Hard-refresh after deployment.
+
+3. THEME
+   VeilFarers Blue is the only active theme.
+   White Stone remains deliberately disabled.
+
+4. CREATOR ACCEPTANCE
+   - Inspect all card decks; cards inside each deck must remain the same height.
+   - Select one card: the card itself lifts, glows and receives a stronger border.
+   - Select another or click outside: the previous card returns to neutral.
+   - Click [+]: the card lifts further and rotates to a blue, image-free, full-text reverse.
+   - Click [-] or outside: it rotates back and returns neutral.
+   - Create a Human; choose The Graft or The Tool in Equipment.
+   - For The Tool, choose the exact eligible TT3 item and verify The Stubborn Relic text.
+
+5. LEVEL UP ACCEPTANCE
+   - Verify equal option-card sizing and the same select/flip behavior.
+   - Apply a level.
+   - Confirm the Build Changes panel flashes, dissolves into particles and reveals the exact changes applied.
+   - Repeat with reduced-motion enabled.
+
+6. CHARSHEET ACCEPTANCE
+   - Verify Level, Evasion, Armor and Proficiency do not overlap.
+   - Verify Armor shields remain beside Evasion.
+   - Compare HP states: purchased/available, marked and not-yet-purchased must be distinct.
+   - Verify Hope, Effort and Resolve geometry.
+
+7. DICE ACCEPTANCE
+   - Start a 3D Duality roll and click anywhere before it settles.
+   - 3D must stop and the same dice must roll automatically in 2D.
+   - Repeat with a generic pool and attack+damage append.
+   - Click after a result appears; the HUD must close while preserving the result.
+   - Start another roll and confirm the saved 3D preference was not changed.
+
+8. TABLE COMMUNICATION
+   Sign out and back in before testing.
+   Connect Keeper and Player to the same table.
+   Confirm updates flow in both directions and no repeated 401 polling appears.
+   Expire/sign out one session and confirm polling stops with a single login-required state.
+
+9. DOCUMENTS
+   Read:
+   - GITHUB_DEPLOY_SUMMARY_v59.73.md
+   - PORTAL_HANDOVER_v59.73.md
+   - VALIDATION_v59.73.txt
+
+10. RELEASE LIMIT
+   The package passed static and controlled-browser checks. Netlify Identity, Firebase, table communication, real DiceBox physics and real-device animation still require Deploy Preview acceptance.

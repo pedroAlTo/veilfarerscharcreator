@@ -1,0 +1,138 @@
+VEILFARERS PORTAL v59.73 — VALIDATION REPORT
+Date: 2026-07-21
+Baseline: v59.72
+
+RESULT
+------
+Static and controlled-browser validation: PASS
+Failures: 0
+Live Netlify/Firebase/Identity acceptance: NOT PERFORMED IN THIS ENVIRONMENT
+
+STATIC INTEGRITY
+----------------
+JSON parsed: 86
+JavaScript syntax checked with node --check: 35
+Root HTML files checked: 11
+Inline scripts syntax checked: 10
+CSS files checked for balanced braces: 11
+Duplicate root-HTML IDs: none after excluding script-template text
+
+CANON / DATA SYNCHRONIZATION
+----------------------------
+Human gifts synchronized: 4/4
+- Adaptive Spirit
+- Cultural Bridge
+- Made for the Graft
+- The Tool
+
+The Tool contains The Stubborn Relic in active ancestry data.
+The Stubborn Relic explicitly covers loss, theft, confiscation, abandonment and destruction.
+Return is restored/functional at the next narratively appropriate opportunity.
+Return is not immediate and does not bypass temporary absence.
+Voluntary sale/trade at appropriate value breaks the bond.
+Other permanent removal requires a major player-and-Keeper-agreed story event.
+
+Creator embedded ancestry literals synchronized: 2
+Runtime ancestry loader synchronized: yes
+Human inheritance branch selected in Equipment: preserved
+
+CREATOR CONTROLLED CHROMIUM TEST
+--------------------------------
+Selected Human card:
+- active selection class: true
+- card lifted via transform: true
+
+Selection transfer to Celestiari:
+- Human active: false
+- Celestiari active: true
+
+Full-information interaction:
+- [+] opens rotor/reverse: true
+- outside click closes reverse: true
+- outside click clears active state: true
+
+Ancestry deck rendered heights:
+324, 324, 324, 324, 324, 324, 324, 324, 324 px
+Equal-height parity: PASS
+
+Visual fixture:
+CREATOR_CARD_SYSTEM_v59.73.png
+
+CHARSHEET HP STATE TEST
+-----------------------
+Purchased/available HP: distinct
+Marked HP: distinct
+Not-yet-purchased/locked HP: segmented locked ring
+State separation analogous to Stress capacity: PASS
+
+Visual fixture:
+CHARSHEET_HP_STATES_v59.73.png
+
+LEVEL UP
+--------
+Creator-style rotor/front/back markers: present
+Selected lift/glow markers: present
+Equal-height normalizer invocation: present
+Exact pre-apply change summary capture: present
+Reward flash: present
+Expanding rings: present
+Particle dissolution: present
+Staggered exact-change reveal: present
+Reduced-motion path: present
+
+Controlled component fixture:
+LEVELUP_CARD_SYSTEM_v59.73.png
+
+Limitation: the complete deployed Level Up workflow and animation require Deploy Preview acceptance with actual saved character data.
+
+3D DICE INTERRUPTION — CONTROLLED LIFECYCLE TEST
+------------------------------------------------
+Pending 3D roll clicked before result:
+- cancelled: true
+- reason: user-fallback-2d
+- fallback value count: 2
+- close event fallback2D: true
+- resultPreserved: false
+
+Completed 3D roll clicked after result:
+- deterministic result: [7, 3]
+- HUD hidden: true
+- resultPreserved: true
+
+Same-parameter fallback markers in source and bundle: present
+Duality/appended-damage fallback-mode markers: present
+Future renderer preference remains unchanged: present
+
+PLAYER TOOL BUILD
+-----------------
+player-tool.bundle.js rebuilt from player-tool.jsx
+Deterministic rebuild comparison: PASS
+v59.70 auth-expiry handling retained
+v59.56-style compact Player Tool direction retained
+White Stone disabled; Blue-only marker present
+
+PROTECTED ASSETS
+----------------
+Protected DiceBox/Babylon/Ammo/theme assets byte-identical to v59.72: PASS
+Editorial PDFs byte-identical to v59.72: 5/5 PASS
+
+VISUAL REVIEW FILES
+-------------------
+CREATOR_CARD_SYSTEM_v59.73.png
+CHARSHEET_HP_STATES_v59.73.png
+LEVELUP_CARD_SYSTEM_v59.73.png
+UI_REVIEW_FULL_v59.73.png
+
+REQUIRED DEPLOY PREVIEW ACCEPTANCE
+----------------------------------
+- Human The Tool selection and TT3 inventory transfer.
+- Every Creator deck at desktop/mobile widths.
+- Real full Level Up selection, Apply Level and exact changes reveal.
+- Sleeping/Awakened Charsheet HP capacity states with real character data.
+- Real DiceBox interruption before and after physical settlement.
+- Duality and appended damage same-parameter 2D fallback.
+- Netlify Identity login/refresh/expiry.
+- Keeper ↔ Player polling and updates through /api/table-api.
+- Mobile overlay click-to-dismiss and reduced-motion behavior.
+
+Static validation does not certify live Netlify, Firebase, Identity or physical-device behavior.

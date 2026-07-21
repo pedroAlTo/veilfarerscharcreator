@@ -524,3 +524,104 @@ html[data-vf-theme="stone"] .human-inheritance-required{color:#8a2f21;background
 .vl-card.vf-selection-active .frame{opacity:1!important;}
 .vl-card.vf-selection-active .sheen::before{opacity:.67!important;}
 .vl-card.vf-selection-active .sheen::after{opacity:.42!important;}
+
+
+/* v59.74 — parity, stronger selection feedback, and readable Human gift grid. */
+.card-deck,.card-deck.cls-deck,.power-deck{align-items:stretch!important;grid-auto-rows:1fr!important;}
+.card-deck>.vl-card,.power-deck>.power-card{height:100%!important;align-self:stretch!important;}
+#ancestry-deck>.vl-card,#community-deck>.vl-card,#class-deck>.vl-card,#subclass-deck>.vl-card{min-height:430px!important;}
+#affiliation-deck>.vl-card{min-height:505px!important;}
+.vl-card>.vf-card-rotor,.power-card>.vf-card-rotor,.levelup-card.option>.vf-card-rotor{height:100%!important;min-height:inherit!important;}
+.vf-card-front{height:100%!important;}
+.vl-body{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;}
+.vl-desc{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:5!important;overflow:hidden!important;min-height:7.75em!important;}
+.vl-feature{margin-top:auto!important;}
+.vl-card[data-id="human"] .vl-feature{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;align-items:stretch!important;}
+.vl-card[data-id="human"] .vl-gift-summary{display:flex;flex-direction:column;justify-content:center;min-height:54px;padding:7px 8px;border:1px solid rgba(216,166,59,.23);background:rgba(216,166,59,.045);}
+.vl-card[data-id="human"] .vl-feature-name{font-size:10px!important;line-height:1.25!important;}
+.vl-card.vf-selection-active[data-pick="ancestry"],.vl-card.vf-selection-active[data-pick="community"],.vl-card.vf-selection-active[data-pick="cls"],.vl-card.vf-selection-active[data-pick="affiliation"],.levelup-card.option.selected{
+  transform:translateY(-10px) scale(1.012)!important;z-index:24!important;
+  border-color:#f6d878!important;
+  box-shadow:0 34px 66px rgba(0,0,0,.66),0 0 0 2px rgba(255,224,135,.62),0 0 38px rgba(242,202,100,.32),inset 0 0 22px rgba(255,221,125,.055)!important;
+  filter:brightness(1.05) saturate(1.06)!important;
+}
+.vl-card.vf-card-flipped,.power-card.vf-card-flipped,.levelup-card.option.vf-card-flipped{
+  transform:translateY(-22px) scale(1.032)!important;z-index:100!important;
+  border-color:#ffe59a!important;
+  box-shadow:0 48px 96px rgba(0,0,0,.82),0 0 0 2px rgba(255,226,139,.72),0 0 52px rgba(242,202,100,.34)!important;
+}
+.vl-card .frame,.power-card .frame,.levelup-card.option .frame{padding:3px!important;}
+.vl-card.vf-selection-active .frame,.power-card.selected .frame,.levelup-card.option.selected .frame{opacity:1!important;filter:drop-shadow(0 0 7px rgba(255,221,125,.68))!important;}
+.vl-card.vf-selection-active .sheen::before,.power-card.selected .sheen::before,.levelup-card.option.selected .sheen::before{opacity:.80!important;animation:vfGoldParticleDrift5973 4.5s ease-in-out infinite!important;}
+.vl-card.vf-selection-active .sheen::after,.power-card.selected .sheen::after,.levelup-card.option.selected .sheen::after{opacity:.54!important;animation:vfGoldParticleDriftReverse5973 5.7s ease-in-out infinite!important;}
+@keyframes vfGoldParticleDrift5973{0%,100%{transform:translate3d(0,6px,0) scale(.98)}50%{transform:translate3d(0,-8.5px,0) scale(1.025)}}
+@keyframes vfGoldParticleDriftReverse5973{0%,100%{transform:rotate(17deg) translate3d(0,-5px,0) scale(.92)}50%{transform:rotate(17deg) translate3d(0,8.5px,0) scale(.98)}}
+@media(max-width:700px){
+  #ancestry-deck>.vl-card,#community-deck>.vl-card,#class-deck>.vl-card,#subclass-deck>.vl-card{min-height:410px!important;}
+  .vl-card[data-id="human"] .vl-feature{grid-template-columns:1fr!important;}
+}
+
+
+/* v59.74 release authority — equal-card parity is measured per deck after render. */
+.card-deck>.vl-card,.power-deck>.power-card,.levelup-grid>.levelup-card.option{
+  box-sizing:border-box!important;
+  height:var(--vf-equal-card-height,auto)!important;
+  min-height:var(--vf-equal-card-height,0px)!important;
+}
+#ancestry-deck>.vl-card,#community-deck>.vl-card,#class-deck>.vl-card,#subclass-deck>.vl-card,#affiliation-deck>.vl-card{
+  height:var(--vf-equal-card-height,auto)!important;
+  min-height:var(--vf-equal-card-height,0px)!important;
+}
+.vl-card[data-id="human"] .vl-feature{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;
+}
+.vl-card[data-id="human"] .vl-gift-summary{min-width:0!important;overflow-wrap:anywhere!important;}
+.vl-card.vf-selection-active,.power-card.selected,.levelup-card.option.selected{
+  outline:1px solid rgba(255,233,162,.74)!important;
+  outline-offset:3px!important;
+}
+@media(max-width:480px){.vl-card[data-id="human"] .vl-feature{grid-template-columns:1fr!important;}}
+
+.human-inheritance-relic{margin:-6px 0 16px;padding:12px 14px;border:1px solid rgba(233,192,104,.42);border-left:4px solid #e0b459;background:linear-gradient(145deg,rgba(60,42,13,.38),rgba(8,18,30,.64));color:#cbd7df;font-size:12px;line-height:1.5}.human-inheritance-relic strong{color:#f5da8d;font-family:Cinzel,serif;letter-spacing:.04em}
+
+
+/* v59.75 — fixed 48-particle field, clipped to the interior of each card. */
+.vf-card-particle-field{position:absolute;inset:1px;z-index:23;overflow:hidden;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;}
+.vf-card-particle-field i{position:absolute;display:block;border-radius:50%;background:#fff1af;opacity:0;box-shadow:0 0 4px #ffe19a,0 0 9px rgba(225,160,43,.72);transform:translate(-50%,-50%);animation:vfCardParticleFloat ease-in-out infinite;}
+.vl-card.vf-selection-active>.vf-card-particle-field,.power-card.vf-selection-active>.vf-card-particle-field,.levelup-card.option.vf-selection-active>.vf-card-particle-field,
+.vf-card-flipped>.vf-card-particle-field{opacity:1;}
+.vl-card.vf-selection-active>.vf-card-particle-field i,.power-card.vf-selection-active>.vf-card-particle-field i,.levelup-card.option.vf-selection-active>.vf-card-particle-field i,
+.vf-card-flipped>.vf-card-particle-field i{opacity:var(--vf-dot-opacity,.65);}
+@keyframes vfCardParticleFloat{0%,100%{transform:translate(-50%,-50%) translate3d(0,2px,0) scale(.85)}50%{transform:translate(-50%,-50%) translate3d(0,calc(-1 * var(--vf-dot-drift,8px)),0) scale(1.2)}}
+/* The fixed field replaces the legacy pseudo-particle set. */
+.vl-card .sheen::before,.power-card .sheen::before,.vl-card .sheen::after,.power-card .sheen::after{content:none!important;display:none!important;}
+@media(prefers-reduced-motion:reduce){.vf-card-particle-field i{animation:none!important;opacity:.55!important}}
+
+.vl-card.vf-selection-active,.power-card.vf-selection-active,.levelup-card.option.vf-selection-active,.vf-card-flipped{overflow:visible!important;}
+
+
+/* v59.76 — unified selected/front and flipped/back feedback shell. */
+.vl-card>.frame,.power-card>.frame,.levelup-card.option>.frame,
+.vl-card>.sheen,.power-card>.sheen,.levelup-card.option>.sheen,
+.vl-card>.vf-card-particle-field,.power-card>.vf-card-particle-field,.levelup-card.option>.vf-card-particle-field{
+  position:absolute;pointer-events:none;
+}
+.vl-card>.frame,.power-card>.frame,.levelup-card.option>.frame{z-index:26!important;}
+.vl-card>.sheen,.power-card>.sheen,.levelup-card.option>.sheen{z-index:24!important;}
+.vl-card>.vf-card-particle-field,.power-card>.vf-card-particle-field,.levelup-card.option>.vf-card-particle-field{z-index:25!important;}
+.vl-card.vf-selection-active>.frame,.power-card.vf-selection-active>.frame,.levelup-card.option.vf-selection-active>.frame,
+.vl-card.vf-card-flipped>.frame,.power-card.vf-card-flipped>.frame,.levelup-card.option.vf-card-flipped>.frame{
+  opacity:1!important;
+  animation:vfMetalEnergyOrbit 6.2s linear infinite!important;
+  filter:drop-shadow(0 0 5px rgba(255,221,125,.52))!important;
+}
+.vl-card.vf-selection-active>.sheen,.power-card.vf-selection-active>.sheen,.levelup-card.option.vf-selection-active>.sheen,
+.vl-card.vf-card-flipped>.sheen,.power-card.vf-card-flipped>.sheen,.levelup-card.option.vf-card-flipped>.sheen{opacity:1!important;mix-blend-mode:screen!important;}
+.vl-card.vf-selection-active>.vf-card-particle-field,.power-card.vf-selection-active>.vf-card-particle-field,.levelup-card.option.vf-selection-active>.vf-card-particle-field,
+.vl-card.vf-card-flipped>.vf-card-particle-field,.power-card.vf-card-flipped>.vf-card-particle-field,.levelup-card.option.vf-card-flipped>.vf-card-particle-field{opacity:1!important;}
+.vl-card.vf-selection-active>.vf-card-particle-field i,.power-card.vf-selection-active>.vf-card-particle-field i,.levelup-card.option.vf-selection-active>.vf-card-particle-field i,
+.vl-card.vf-card-flipped>.vf-card-particle-field i,.power-card.vf-card-flipped>.vf-card-particle-field i,.levelup-card.option.vf-card-flipped>.vf-card-particle-field i{opacity:var(--vf-dot-opacity,.65)!important;}
+@media(prefers-reduced-motion:reduce){
+  .vl-card.vf-selection-active>.frame,.power-card.vf-selection-active>.frame,.levelup-card.option.vf-selection-active>.frame,
+  .vl-card.vf-card-flipped>.frame,.power-card.vf-card-flipped>.frame,.levelup-card.option.vf-card-flipped>.frame{animation:none!important;}
+}
