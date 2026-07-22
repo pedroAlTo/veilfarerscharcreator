@@ -1,7 +1,19 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.76",
+  "currentVersion": "v59.77",
   "entries": [
+    {
+      "version": "v59.77",
+      "date": "2026-07-22",
+      "title": "Level Up, inventory transfer and synchronized dice",
+      "changes": [
+        "Plays dados_1.mp3 for dice rolls and stops it whenever a roll animation is interrupted.",
+        "Fixes mobile Shake to Roll so it uses the current 2D or 3D display setting.",
+        "Adds compact popup selectors for Domain Powers and Traits, detailed Level Up reverses, bright changed values, simultaneous selection particles and a final page-frame glow.",
+        "Adds a color inventory illustration and explicit transfer actions for Player Tool, Charsheet or both.",
+        "Aligns every card reverse [−] control with the front [+] position."
+      ]
+    },
     {
       "version": "v59.76",
       "date": "2026-07-21",
@@ -764,5 +776,5 @@
       ]
     }
   ],
-  "version": "59.76.0"
+  "version": "59.77.0"
 }

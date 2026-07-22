@@ -1153,7 +1153,7 @@
           const [diceVolume, setDiceVolume] = useState(() => { try { const value = Number(localStorage.getItem('veilfarers_dice_volume')); return value >= 0 && value <= 1 ? value : 0.55; } catch (e) { return 0.55; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_sound', diceSoundEnabled ? '1' : '0'); } catch (e) {} }, [diceSoundEnabled]);
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_volume', String(diceVolume)); } catch (e) {} }, [diceVolume]);
-          const audioContextRef = useRef(null);
+          const diceAudioRef = useRef(null);
           const [diceMode, setDiceMode] = useState(() => { try { return localStorage.getItem('veilfarers_dice_mode') === '3d' ? '3d' : '2d'; } catch (e) { return '2d'; } });
           useEffect(() => { try { localStorage.setItem('veilfarers_dice_mode', diceMode); } catch (e) {} }, [diceMode]);
           const [dice3DStyle, setDice3DStyle] = useState(() => { try { return localStorage.getItem('veilfarers_dice_3d_style') === 'overlay' ? 'overlay' : 'box'; } catch (e) { return 'box'; } });
@@ -1185,32 +1185,24 @@
           const showConfirm = (message, onYes, title) => setDialog({ kind: 'confirm', title: title || 'Confirm', message: message, onOk: () => { setDialog(null); if (onYes) onYes(); } });
           const showPrompt = (message, defaultValue, onSubmit, title) => setDialog({ kind: 'prompt', title: title || 'Enter a value', message: message, value: defaultValue || '', onOk: (v) => { setDialog(null); if (onSubmit) onSubmit(v); } });
           const showAlert = (message, title) => setDialog({ kind: 'alert', title: title || 'Notice', message: message, onOk: () => setDialog(null) });
-          const playDiceSound = (count) => {
+          const stopDiceSound = () => {
+            const audio=diceAudioRef.current;if(!audio)return;
+            try{audio.pause();audio.currentTime=0;}catch(_){ }
+          };
+          const playDiceSound = () => {
             if (!diceSoundEnabled || diceVolume <= 0) return;
             try {
-              const AudioCtx = window.AudioContext || window.webkitAudioContext;
-              if (!AudioCtx) return;
-              const ctx = audioContextRef.current || new AudioCtx();
-              audioContextRef.current = ctx;
-              if (ctx.state === 'suspended') ctx.resume();
-              const now = ctx.currentTime;
-              const hits = Math.max(3, Math.min(12, Number(count) || 3));
-              for (let index = 0; index < hits; index++) {
-                const at = now + index * 0.028 + Math.random() * 0.018;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                const filter = ctx.createBiquadFilter();
-                osc.type = index % 2 ? 'triangle' : 'square';
-                osc.frequency.setValueAtTime(120 + Math.random() * 340, at);
-                filter.type = 'bandpass'; filter.frequency.setValueAtTime(500 + Math.random() * 1500, at); filter.Q.value = 0.7;
-                gain.gain.setValueAtTime(0.0001, at);
-                gain.gain.exponentialRampToValueAtTime(Math.max(0.001, diceVolume * (0.08 + Math.random() * 0.05)), at + 0.004);
-                gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.055 + Math.random() * 0.04);
-                osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-                osc.start(at); osc.stop(at + 0.12);
-              }
+              stopDiceSound();
+              const audio=diceAudioRef.current||new Audio('/assets/dados_1.mp3');
+              diceAudioRef.current=audio;audio.preload='auto';audio.volume=Math.max(0,Math.min(1,diceVolume));audio.currentTime=0;
+              const playback=audio.play();if(playback&&typeof playback.catch==='function')playback.catch(error=>console.warn('Dice sound playback was blocked:',error));
             } catch (error) { console.warn('Dice sound unavailable:', error); }
           };
+          useEffect(() => {
+            const onDiceClosed=()=>stopDiceSound();
+            window.addEventListener('veilfarers:dice3d-closed',onDiceClosed);
+            return ()=>{window.removeEventListener('veilfarers:dice3d-closed',onDiceClosed);stopDiceSound();};
+          }, []);
           const randomDiceValues = (groups) => {
             const values = [];
             (groups || []).forEach(group => {
@@ -1283,11 +1275,11 @@
             const executeRoll = async () => {
               const themedGroups = applyDiceTextureSet(groups);
               const count = themedGroups.reduce((n,g)=>n+(Number(g.qty)||1),0);
-              playDiceSound(count || 2);
               if (diceMode === '3d') {
                 try {
                   const dice3D = await ensureDice3DReady({showProgress:true});
                   const method = options && options.append && typeof dice3D.add === 'function' ? 'add' : 'roll';
+                  playDiceSound();
                   const result = await promiseWithTimeout(
                     dice3D[method](themedGroups, { label: label || 'VeilFarers Roll', deferResults: !!(options && options.deferResults), style: dice3DStyle }),
                     14000,
@@ -1308,10 +1300,12 @@
                   if (result && Array.isArray(result.values) && result.values.length === count) return result.values;
                   throw new Error(`The 3D renderer returned ${result && Array.isArray(result.values) ? result.values.length : 0} readable dice; ${count} were expected.`);
                 } catch (error) {
+                  stopDiceSound();
                   console.warn('3D dice unavailable; using the standard roller.', error);
                   setDice3DLoad({open:true,stage:'3D dice unavailable',progress:100,error:error.message || String(error)});
                 }
               }
+              playDiceSound();
               return randomDiceValues(themedGroups);
             };
             const previous = rollInFlightRef.current;
@@ -2124,7 +2118,7 @@
               };
               window.addEventListener('devicemotion',onMotion,{passive:true});
               return () => window.removeEventListener('devicemotion',onMotion);
-          }, [shakeToRollEnabled,rollModifier,playerRollType]);
+          }, [shakeToRollEnabled,rollModifier,playerRollType,diceMode,dice3DStyle,diceTextureSet,diceSoundEnabled,diceVolume]);
 
           // --- LOGGING / REAL-TIME CALLOUTS ---
           const makeBroadcastId = () => 'roll-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
@@ -3279,7 +3273,7 @@
                             <div className="pt-4 border-t border-slate-800">
                               <div className="text-[9px] font-black uppercase tracking-[.2em] text-cyan-400 mb-3">Audio</div>
                               <div className="flex items-center justify-between gap-3 mb-3">
-                                <div><label className="text-xs font-bold text-slate-500 uppercase block">Dice sound</label><span className="text-[10px] text-slate-500">Generated locally; no external audio file.</span></div>
+                                <div><label className="text-xs font-bold text-slate-500 uppercase block">Dice sound</label><span className="text-[10px] text-slate-500">Synced rolling audio · dados_1.mp3.</span></div>
                                 <button role="switch" aria-checked={diceSoundEnabled} onClick={() => setDiceSoundEnabled(value => !value)} className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${diceSoundEnabled ? 'bg-cyan-600' : 'bg-slate-700'}`}><span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${diceSoundEnabled ? 'left-[22px]' : 'left-0.5'}`}></span></button>
                               </div>
                               <div className={`flex items-center justify-between gap-3 ${diceSoundEnabled ? '' : 'opacity-40 pointer-events-none'}`}>
@@ -3499,7 +3493,7 @@
                                   <button onClick={() => setDiceMode(value => value === '2d' ? '3d' : '2d')} title="Toggle 2D / 3D dice" className={`px-1.5 py-1 rounded border text-[8px] font-black ${diceMode === '3d' ? 'border-cyan-500 text-cyan-300 bg-cyan-950/40' : 'border-slate-700 text-slate-400'}`}>{diceMode.toUpperCase()}</button>
                                   <button onClick={() => setRollerScale(s => Math.max(0.5, Math.round((s-0.1)*10)/10))} title="Smaller" className="p-1 rounded hover:bg-slate-700 text-slate-400 text-xs font-bold w-5">-</button><button onClick={() => setRollerScale(s => Math.min(1, Math.round((s+0.1)*10)/10))} title="Larger" className="p-1 rounded hover:bg-slate-700 text-slate-400 text-xs font-bold w-5">+</button><button onClick={() => setPinned(p => ({...p, player: !p.player}))} title="Pin Window (Prevents auto-close)" className={`p-1 rounded hover:bg-slate-700 ${pinned.player ? 'text-cyan-400' : 'text-slate-500'}`}><Pin className="w-3 h-3" /></button>
                                   <button onClick={() => setMinimized(p => ({...p, player: !p.player}))} title="Minimize" className="p-1 rounded hover:bg-slate-700 text-slate-400"><Minus className="w-3 h-3" /></button>
-                                  <button onClick={() => { if (diceMode === '3d' && window.VFDice3D) window.VFDice3D.hide({reason:'user'}); setShowRoller(false); }} title="Close" className="p-1 rounded hover:bg-red-900/50 text-slate-400 hover:text-red-400"><X className="w-3 h-3" /></button>
+                                  <button onClick={() => { stopDiceSound(); if (diceMode === '3d' && window.VFDice3D) window.VFDice3D.hide({reason:'user'}); setShowRoller(false); }} title="Close" className="p-1 rounded hover:bg-red-900/50 text-slate-400 hover:text-red-400"><X className="w-3 h-3" /></button>
                               </div>
                           </div>
                           

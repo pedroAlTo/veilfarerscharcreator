@@ -600,7 +600,7 @@ html[data-vf-theme="stone"] .human-inheritance-required{color:#8a2f21;background
 .vl-card.vf-selection-active,.power-card.vf-selection-active,.levelup-card.option.vf-selection-active,.vf-card-flipped{overflow:visible!important;}
 
 
-/* v59.76 — unified selected/front and flipped/back feedback shell. */
+/* v59.77 — unified selected/front and flipped/back feedback shell. */
 .vl-card>.frame,.power-card>.frame,.levelup-card.option>.frame,
 .vl-card>.sheen,.power-card>.sheen,.levelup-card.option>.sheen,
 .vl-card>.vf-card-particle-field,.power-card>.vf-card-particle-field,.levelup-card.option>.vf-card-particle-field{

@@ -30,7 +30,8 @@ function freshPlan(){
     message:'',
     applied:false,
     appliedLevel:null,
-    appliedSummary:[]
+    appliedSummary:[],
+    picker:''
   };
 }
 
@@ -47,7 +48,7 @@ function injectStyles(){
     .levelup-card.option.locked{opacity:.58}.levelup-card.option .option-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.levelup-card.option .option-cost{white-space:nowrap;border:1px solid rgba(233,192,104,.28);border-radius:999px;padding:5px 8px;font:700 9px/1 'JetBrains Mono',monospace;color:var(--gold-1);text-transform:uppercase}
     .levelup-card.option .option-reason{margin-top:auto;border-top:1px solid rgba(255,255,255,.07);padding-top:10px;color:#e6a5a5;font-size:10px}.levelup-card.option .btn{margin-top:auto}
     .levelup-choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px;margin:10px 0}.levelup-choice{border:1px solid rgba(233,192,104,.22);border-radius:10px;background:rgba(0,0,0,.2);padding:10px;color:var(--text-mid);text-align:left;cursor:pointer}.levelup-choice:hover,.levelup-choice.active{border-color:rgba(233,192,104,.72);background:rgba(233,192,104,.1);color:#fff6d8}.levelup-choice:disabled{opacity:.38;cursor:not-allowed}
-    .levelup-choice strong{display:block;color:inherit;font-size:11px}.levelup-choice span{display:block;margin-top:4px;color:var(--text-dim);font-size:9px;line-height:1.4}
+    .levelup-choice strong{display:block;color:inherit;font-size:11px}.levelup-choice span{display:block;margin-top:4px;color:var(--text-dim);font-size:9px;line-height:1.4}.levelup-choice .levelup-next,.levelup-picked-value .levelup-next{display:inline;color:#72ff9d!important;font-weight:900;text-shadow:0 0 10px rgba(72,255,132,.65)}
     .levelup-config{margin-top:12px;padding-top:12px;border-top:1px solid rgba(233,192,104,.16)}.levelup-config label{display:block;margin:8px 0;color:var(--text-dim);font:700 9px/1.4 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}.levelup-config input,.levelup-config textarea{box-sizing:border-box;width:100%;margin-top:6px;border:1px solid rgba(233,192,104,.26);border-radius:10px;background:rgba(0,0,0,.26);color:#fff6d8;padding:10px 11px;outline:none}.levelup-config textarea{min-height:82px;resize:vertical}.levelup-config input:focus,.levelup-config textarea:focus{border-color:rgba(233,192,104,.72)}
     .levelup-summary{display:grid;gap:7px;margin-top:12px}.levelup-summary-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;font-size:11px}.levelup-summary-row strong{color:#fff6d8}.levelup-delta{color:#9fdb8c;font-family:'JetBrains Mono',monospace}.levelup-error{border:1px solid rgba(248,113,113,.5);border-radius:10px;background:rgba(127,29,29,.22);color:#fecaca;padding:10px 12px;font-size:11px}.levelup-success{border:1px solid rgba(132,204,22,.45);border-radius:10px;background:rgba(54,83,20,.2);color:#d9f99d;padding:10px 12px;font-size:11px}
     .levelup-inline-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.levelup-mini{padding:7px 9px;font-size:9px}.levelup-option-description{min-height:62px}.levelup-section-kicker{font:700 9px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px}
@@ -63,6 +64,10 @@ function injectStyles(){
     .levelup-apply-summary.vf-reward-active::before,.levelup-apply-summary.vf-reward-active::after{content:'';position:absolute;left:50%;top:50%;z-index:18;width:42px;height:42px;border:2px solid rgba(255,246,190,.96);border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.2);animation:vfLevelRewardRing 1.5s .26s cubic-bezier(.12,.66,.18,1) both}
     .levelup-apply-summary.vf-reward-active::after{animation-delay:.48s;border-color:rgba(255,194,45,.72)}
     .vf-reward-active h3{animation:vfLevelRewardTitle 1.85s .60s ease both}
+    .levelup-picked-value{margin:10px 0;padding:10px 12px;border:1px solid rgba(114,255,157,.34);border-radius:10px;background:rgba(22,101,52,.12);color:#d9ffe5;font-size:11px;line-height:1.45}.levelup-picked-value strong{color:#72ff9d}
+    .levelup-picker-overlay{position:fixed;z-index:2600;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(1,4,8,.84);backdrop-filter:blur(9px)}.levelup-picker-dialog{width:min(980px,96vw);max-height:min(820px,90vh);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(233,192,104,.62);border-radius:16px;background:linear-gradient(155deg,#0d1b2a,#040a11 72%);box-shadow:0 34px 90px rgba(0,0,0,.72),0 0 36px rgba(233,192,104,.12)}.levelup-picker-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:20px 22px;border-bottom:1px solid rgba(233,192,104,.18)}.levelup-picker-head h3{margin:3px 0 5px}.levelup-picker-head p{margin:0;color:var(--text-dim);font-size:11px}.levelup-picker-close{width:36px;height:36px;min-width:36px;border:1px solid rgba(233,192,104,.42);border-radius:8px;background:#061322;color:#f4cf78;font-size:22px;cursor:pointer}.levelup-picker-scroll{overflow:auto;padding:18px 22px 24px}.levelup-picker-domain{margin:17px 0 7px;color:#f4cf78;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase}.levelup-picker-scroll .levelup-choice-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.levelup-picker-scroll .levelup-choice{min-height:92px}
+    body.vf-level-page-glow :where(.levelup-card,.levelup-vault-character,.levelup-choice){animation:vfPageFramePulse .82s ease-out both}
+    @keyframes vfPageFramePulse{0%{border-color:inherit;box-shadow:inherit;filter:none}35%{border-color:#fff0a8;box-shadow:0 0 0 1px rgba(255,240,168,.74),0 0 30px rgba(255,211,77,.55),inset 0 0 18px rgba(255,211,77,.13);filter:brightness(1.16)}100%{filter:none}}
     @keyframes vfLevelRewardRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(16)}}
     @keyframes vfLevelRewardTitle{0%,22%{opacity:0;filter:blur(7px);transform:translateY(8px) scale(.96)}52%{opacity:1;filter:blur(0) drop-shadow(0 0 18px rgba(255,225,116,.92));transform:none}100%{filter:none}}
     @media(prefers-reduced-motion:reduce){.levelup-card.option.selected{transform:none}.vf-reward-active .levelup-reward-flash,.vf-reward-active .levelup-reward-particles i,.vf-reward-active .levelup-summary-row{animation:none!important;opacity:1;transform:none}}
@@ -144,7 +149,7 @@ function experienceLabel(index){
   return `${name} (+${state.experienceBonuses[index]||2})`;
 }
 function experienceButtons(selected,handler,exclude=[]){
-  return `<div class="levelup-choice-grid">${state.experiences.map((_,index)=>`<button type="button" class="levelup-choice ${Number(selected)===index?'active':''}" ${exclude.includes(index)?'disabled':''} onclick="${handler}(${index})"><strong>${safe(experienceLabel(index))}</strong></button>`).join('')}</div>`;
+  return `<div class="levelup-choice-grid">${state.experiences.map((_,index)=>{const active=Number(selected)===index;const name=String(state.experiences[index]||'').trim()||`Experience ${index+1}`;const current=state.experienceBonuses[index]||2;return `<button type="button" class="levelup-choice ${active?'active':''}" ${exclude.includes(index)?'disabled':''} onclick="${handler}(${index})"><strong>${safe(name)} <span>(+${current})</span>${active?` <span class="levelup-next">(+${Math.min(5,current+1)})</span>`:''}</strong></button>`;}).join('')}</div>`;
 }
 function chipButtons(items,selected,handler,disabledFn){
   return `<div class="levelup-choice-grid">${items.map(item=>{
@@ -199,17 +204,17 @@ function definitions(target){
   const sleeping=state.path==='Sleeping';
   const subclass=subclassNext();
   const defs=[
-    {id:'hp',cost:1,title:'+1 Hit Point Slot',text:'Permanent HP maximum +1.'},
-    {id:'stress',cost:1,title:'+1 Stress Slot',text:'Permanent Stress maximum +1.'},
-    {id:'experiences',cost:1,title:'+1 to Experiences',text:'Two existing Experiences +1 each, or add one new Experience at +2 and one existing Experience +1.'},
-    {id:'trait',cost:1,title:'+1 to a Trait',text:'One Trait +1. A Trait can be raised only once per Tier.'},
-    {id:'evasion',cost:1,title:'+1 Evasion',text:'Permanent Evasion +1.'},
-    {id:'proficiency',cost:2,title:'+1 Proficiency',text:'Damage Proficiency +1. Maximum 6.',disabled:state.proficiency>=6,reason:'Already at the Proficiency cap of 6.'},
-    {id:'tech',cost:1,title:'+1 Technology Access',text:'Technology Access Level +1.'},
-    {id:'power',cost:1,title:sleeping?'Resolve Growth':'New Domain Power',text:sleeping?'Choose +1 Resolve maximum or learn one available Class Resolve Move.':'Choose one eligible Power from an accessible Domain. It enters the Vault.',disabled:sleeping?false:availablePowers(target).length===0,reason:'No unowned Powers are currently eligible.'},
-    {id:'multiclass',cost:2,title:'Multiclass',text:'Tier 2+. Add a second Class Feature, one genuinely new Domain and its Background Question.',disabled:target<5||!!state.multiclass,reason:target<5?'Unlocks at Level 5.':'This character has already multiclassed.'},
-    {id:'subclass',cost:2,title:'Upgraded Subclass',text:subclass.target==='Specialization'?'Gain the current Subclass Specialization Feature.':'Gain the current Subclass Mastery Feature.',disabled:target<5||state.subclassRank==='Mastery'||(state.subclassRank==='Specialization'&&targetTier<3)||!subclass.feature,reason:target<5?'Unlocks at Level 5.':state.subclassRank==='Mastery'?'Subclass already at Mastery.':(state.subclassRank==='Specialization'&&targetTier<3)?'Mastery unlocks at Tier 3.':'No matching canonical Subclass Feature was found.'},
-    {id:'tempered',cost:2,title:'Tempered Resolve',text:'Sleeping Tier 3 only. Upgrade the entire Resolve pool from d4 to d6.',disabled:!sleeping||targetTier<3||state.resolveDie==='d6',reason:!sleeping?'Sleeping characters only.':targetTier<3?'Unlocks at Level 8.':'Resolve dice are already d6.'}
+    {id:'hp',cost:1,title:'+1 Hit Point Slot',text:'Permanent HP maximum +1.',detail:'Adds one permanent space to the character’s HP track. It does not mark or heal HP when selected.',example:'Example: an HP maximum of 6 becomes 7.'},
+    {id:'stress',cost:1,title:'+1 Stress Slot',text:'Permanent Stress maximum +1.',detail:'Adds one permanent space to the Stress track. Current marked Stress is preserved.',example:'Example: a Stress maximum of 6 becomes 7.'},
+    {id:'experiences',cost:1,title:'+1 to Experiences',text:'Two existing Experiences +1 each, or add one new Experience at +2 and one existing Experience +1.',detail:'Characters begin with three Experiences at +2. This advancement improves two different existing Experiences, or adds a new Experience at +2 while improving one existing Experience.',example:'Example: Military Savvy (+2) becomes Military Savvy (+3).'},
+    {id:'trait',cost:1,title:'+1 to a Trait',text:'One Trait +1. A Trait can be raised only once per Tier.',detail:'Choose one of the six Traits. The same Trait cannot receive this advancement twice within the same Tier.',example:'Example: Strength +1 becomes Strength +2.'},
+    {id:'evasion',cost:1,title:'+1 Evasion',text:'Permanent Evasion +1.',detail:'Raises the character’s permanent Evasion bonus by one. Equipment modifiers continue to apply separately.',example:'Example: an Evasion bonus of +0 becomes +1.'},
+    {id:'proficiency',cost:2,title:'+1 Proficiency',text:'Damage Proficiency +1. Maximum 6.',detail:'Consumes both Advancement Slots and permanently raises Damage Proficiency by one, up to the maximum of 6.',example:'Example: Proficiency 2 becomes 3.',disabled:state.proficiency>=6,reason:'Already at the Proficiency cap of 6.'},
+    {id:'tech',cost:1,title:'+1 Technology Access',text:'Technology Access Level +1.',detail:'Raises the character’s Technology Access Level by one and expands which equipment tiers they can use.',example:'Example: Technology Access 1 becomes 2.'},
+    {id:'power',cost:1,title:sleeping?'Resolve Growth':'New Domain Power',text:sleeping?'Choose +1 Resolve maximum or learn one available Class Resolve Move.':'Choose one eligible Power from an accessible Domain. It enters the Vault.',detail:sleeping?'Improve the permanent Resolve maximum by one, or learn one currently available Resolve Move for this Class and Subclass.':'Open the focused selector to browse only eligible, unowned Powers from the character’s accessible Domains. The chosen Power is stored in the Vault.',example:sleeping?'Example: Resolve maximum 4 becomes 5, or add the selected Resolve Move to the character.':'Example: choose a Level 2 Blade Power; only that Power remains shown on the advancement card.',disabled:sleeping?false:availablePowers(target).length===0,reason:'No unowned Powers are currently eligible.'},
+    {id:'multiclass',cost:2,title:'Multiclass',text:'Tier 2+. Add a second Class Feature, one genuinely new Domain and its Background Question.',detail:'Choose a second Class, gain its path-appropriate Class Feature, select one Domain the character does not already possess, and answer that Class Background Question.',example:'The new Domain advances at the effective multiclass Domain level shown in the selector.',disabled:target<5||!!state.multiclass,reason:target<5?'Unlocks at Level 5.':'This character has already multiclassed.'},
+    {id:'subclass',cost:2,title:'Upgraded Subclass',text:subclass.target==='Specialization'?'Gain the current Subclass Specialization Feature.':'Gain the current Subclass Mastery Feature.',detail:'Advances the current Subclass to its next canonical rank and grants the complete matching Feature. Specialization is available from Tier 2; Mastery from Tier 3.',example:`Example: ${state.subclass||'the current Subclass'} advances from ${state.subclassRank} to ${subclass.target}.`,disabled:target<5||state.subclassRank==='Mastery'||(state.subclassRank==='Specialization'&&targetTier<3)||!subclass.feature,reason:target<5?'Unlocks at Level 5.':state.subclassRank==='Mastery'?'Subclass already at Mastery.':(state.subclassRank==='Specialization'&&targetTier<3)?'Mastery unlocks at Tier 3.':'No matching canonical Subclass Feature was found.'},
+    {id:'tempered',cost:2,title:'Tempered Resolve',text:'Sleeping Tier 3 only. Upgrade the entire Resolve pool from d4 to d6.',detail:'Permanently changes every die in the Sleeping character’s Resolve pool from d4 to d6. The pool size and marked dice do not change.',example:'Example: a pool of four d4 Resolve dice becomes four d6 Resolve dice.',disabled:!sleeping||targetTier<3||state.resolveDie==='d6',reason:!sleeping?'Sleeping characters only.':targetTier<3?'Unlocks at Level 8.':'Resolve dice are already d6.'}
   ];
   return defs;
 }
@@ -230,12 +235,21 @@ function toggleOption(id){
     plan.choices=plan.choices.filter(value=>(definition(value,target)?.cost||0)!==2);
     if(slotsUsed(target)<2)plan.choices.push(id);
   }
+  if(plan.choices.includes(id)&&(id==='trait'||(id==='power'&&state.path!=='Sleeping')))plan.picker=id;
+  else if(plan.picker===id)plan.picker='';
   plan.message='';plan.applied=false;render();
 }
 function setDetail(id,key,value){
   plan.details[id]={...(plan.details[id]||{}),[key]:value};
   plan.message='';render();
 }
+function choosePicker(value){
+  const target=Math.min(10,state.level+1);
+  if(plan.picker==='trait'&&!traitRaisedThisTier(value,target))plan.details.trait={...(plan.details.trait||{}),trait:value};
+  if(plan.picker==='power'&&powerByValue(value,target))plan.details.power={...(plan.details.power||{}),powerId:value};
+  plan.picker='';plan.message='';render();
+}
+function closePicker(){plan.picker='';render();}
 function setTier(key,value){plan.tier={...plan.tier,[key]:value};plan.message='';render();}
 
 function configExperiences(id){
@@ -245,8 +259,8 @@ function configExperiences(id){
 }
 function configTrait(target){
   const data=plan.details.trait||{};
-  const items=TRAIT_IDS.map(id=>({value:id,label:id[0].toUpperCase()+id.slice(1),meta:`${number(state.traits[id])>=0?'+':''}${number(state.traits[id])}${traitRaisedThisTier(id,target)?' · already raised this Tier':''}`}));
-  return `<div class="levelup-config"><div class="levelup-section-kicker">Choose Trait</div>${chipButtons(items,data.trait,`VFLevelUp.detail.bind(null,'trait','trait')`,item=>traitRaisedThisTier(item.value,target))}</div>`;
+  const current=data.trait?number(state.traits[data.trait]):null;
+  return `<div class="levelup-config"><div class="levelup-section-kicker">Chosen Trait</div>${data.trait?`<div class="levelup-picked-value"><strong>${safe(data.trait[0].toUpperCase()+data.trait.slice(1))}</strong> (${current>=0?'+':''}${current}) <span class="levelup-next">(${current+1>=0?'+':''}${current+1})</span></div>`:'<p class="levelup-note">No Trait chosen yet.</p>'}<button type="button" class="btn btn-secondary levelup-mini" onclick="VFLevelUp.openPicker('trait')">${data.trait?'Change Trait':'Choose Trait'}</button></div>`;
 }
 function configPower(target){
   const data=plan.details.power||{};
@@ -256,8 +270,23 @@ function configPower(target){
     return `<div class="levelup-config"><div class="levelup-section-kicker">Resolve growth</div>${chipButtons([{value:'resolve',label:'+1 Resolve maximum',meta:`${Math.min(10,resolveBase(target)+state.resolveMaxBonus)} → ${Math.min(10,resolveBase(target)+state.resolveMaxBonus+1)}`},{value:'move',label:'Learn Resolve Move',meta:`${moves.length} available`}],type,`VFLevelUp.detail.bind(null,'power','type')`)}${type==='move'?`<div class="levelup-choice-grid">${moves.map(move=>`<button type="button" class="levelup-choice ${data.moveId===move.id?'active':''}" onclick="VFLevelUp.detail('power','moveId','${attr(move.id)}')"><strong>${safe(move.name)}</strong><span>${safe(move.cost)} · ${safe(move.text)}</span></button>`).join('')||'<p>No unowned canonical Resolve Move is available for this Class/Subclass.</p>'}</div>`:''}</div>`;
   }
   const powers=availablePowers(target);
-  const grouped={};powers.forEach(power=>{const domain=power.d||power.domain;(grouped[domain]||(grouped[domain]=[])).push(power);});
-  return `<div class="levelup-config"><div class="levelup-section-kicker">Eligible Domain Powers</div>${Object.entries(grouped).map(([domain,list])=>`<p><strong>${safe(domain)}</strong></p><div class="levelup-choice-grid">${list.map(power=>`<button type="button" class="levelup-choice ${data.powerId===power.id?'active':''}" onclick="VFLevelUp.detail('power','powerId','${attr(power.id)}')"><strong>${safe(`L${power.l||power.level} · ${power.n||power.name}`)}</strong><span>${safe([power.t||power.powerType,power.cost,power.dc].filter(Boolean).join(' · '))}<br>${safe(power.txt||power.text||'')}</span></button>`).join('')}</div>`).join('')||'<p>No eligible Powers remain.</p>'}</div>`;
+  const chosen=powerByValue(data.powerId,target);
+  return `<div class="levelup-config"><div class="levelup-section-kicker">Chosen Domain Power</div>${chosen?`<div class="levelup-picked-value"><strong>${safe(chosen.n||chosen.name)}</strong><br>${safe(chosen.d||chosen.domain)} · L${safe(chosen.l||chosen.level)} · ${safe([chosen.t||chosen.powerType,chosen.cost,chosen.dc].filter(Boolean).join(' · '))}</div>`:'<p class="levelup-note">No Domain Power chosen yet.</p>'}<button type="button" class="btn btn-secondary levelup-mini" onclick="VFLevelUp.openPicker('power')">${chosen?'Change Power':'Choose Power'}</button></div>`;
+}
+
+function pickerMarkup(target){
+  const type=plan.picker;if(!type)return '';
+  let title='Choose an option',copyText='',body='';
+  if(type==='trait'){
+    title='Choose a Trait';copyText='Only the confirmed Trait will remain on the Level Up card.';
+    const items=TRAIT_IDS.map(id=>({value:id,label:id[0].toUpperCase()+id.slice(1),meta:`${number(state.traits[id])>=0?'+':''}${number(state.traits[id])} → ${number(state.traits[id])+1>=0?'+':''}${number(state.traits[id])+1}${traitRaisedThisTier(id,target)?' · already raised this Tier':''}`}));
+    body=chipButtons(items,plan.details.trait?.trait,'VFLevelUp.choosePicker',item=>traitRaisedThisTier(item.value,target));
+  }else{
+    title='Choose a Domain Power';copyText='Eligible Powers are grouped by Domain. Pick one to place it in the Vault.';
+    const grouped={};availablePowers(target).forEach(power=>{const domain=power.d||power.domain;(grouped[domain]||(grouped[domain]=[])).push(power);});
+    body=Object.entries(grouped).map(([domain,list])=>`<div class="levelup-picker-domain">${safe(domain)}</div><div class="levelup-choice-grid">${list.map(power=>`<button type="button" class="levelup-choice ${plan.details.power?.powerId===power.id?'active':''}" onclick="VFLevelUp.choosePicker('${attr(power.id)}')"><strong>${safe(`L${power.l||power.level} · ${power.n||power.name}`)}</strong><span>${safe([power.t||power.powerType,power.cost,power.dc].filter(Boolean).join(' · '))}<br>${safe(power.txt||power.text||'')}</span></button>`).join('')}</div>`).join('')||'<p>No eligible Powers remain.</p>';
+  }
+  return `<div class="levelup-picker-overlay" onclick="if(event.target===this)VFLevelUp.closePicker()"><section class="levelup-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="levelup-picker-title"><header class="levelup-picker-head"><div><div class="levelup-section-kicker">Level Up selection</div><h3 id="levelup-picker-title">${safe(title)}</h3><p>${safe(copyText)}</p></div><button type="button" class="levelup-picker-close" onclick="VFLevelUp.closePicker()" aria-label="Close selector">×</button></header><div class="levelup-picker-scroll custom-scrollbar">${body}</div></section></div>`;
 }
 function multiclassOptions(){
   return classCatalogue().filter(cls=>cls.id!==state.cls).map(cls=>({value:cls.id,label:cls.name,meta:classDomains(cls).join(' · ')}));
@@ -478,7 +507,7 @@ function renderHistory(){
 function levelOptionCard(def,target){
   const selected=plan.choices.includes(def.id);
   const front=`<div class="option-head"><h3>${safe(def.title)}</h3><span class="option-cost">${def.cost} slot${def.cost===1?'':'s'}</span></div><p class="levelup-option-description">${safe(def.text)}</p>${def.disabled?`<div class="option-reason">${safe(def.reason||'Unavailable')}</div>`:`<button class="btn ${selected?'btn-primary':'btn-secondary'}" onclick="VFLevelUp.toggle('${def.id}')">${selected?'Selected · remove':'Select'}</button>`}${selected?configFor(def.id,target):''}`;
-  const back=`<h3>${safe(def.title)}</h3><div class="vf-card-back-meta"><span>${def.cost} slot${def.cost===1?'':'s'}</span><span>${def.disabled?'Unavailable':'Available'}</span></div><h4>Advancement</h4><p>${safe(def.text)}</p>${def.reason?`<h4>Restriction</h4><p>${safe(def.reason)}</p>`:''}`;
+  const back=`<h3>${safe(def.title)}</h3><div class="vf-card-back-meta"><span>${def.cost} slot${def.cost===1?'':'s'}</span><span>${def.disabled?'Unavailable':'Available'}</span></div><h4>What changes</h4><p>${safe(def.detail||def.text)}</p>${def.example?`<h4>Example</h4><p>${safe(def.example)}</p>`:''}${def.reason?`<h4>Restriction</h4><p>${safe(def.reason)}</p>`:''}`;
   return `<article class="levelup-card option ${def.disabled?'locked':''} ${selected?'selected vf-selection-active':''}" data-card-truncated="1"><template class="vf-card-back-template">${back}</template><div class="option-content-source">${front}</div><div class="sheen"></div><div class="frame"></div></article>`;
 }
 function rewardParticles(){
@@ -500,8 +529,8 @@ function activateLevelUpCards(root){
     while(source.firstChild)front.appendChild(source.firstChild);source.remove();
     const plus=document.createElement('button');plus.type='button';plus.className='vf-card-expand';plus.textContent='[+]';plus.setAttribute('aria-label','Show full advancement information');front.appendChild(plus);
     const back=document.createElement('div');back.className='vf-card-back custom-scrollbar';back.innerHTML=template.innerHTML;template.remove();back.insertAdjacentHTML('afterbegin','<button type="button" class="vf-card-back-close" aria-label="Return to advancement front">[−]</button>');
-    card.querySelectorAll(':scope > .sheen,:scope > .frame').forEach(node=>front.appendChild(node));
     rotor.append(front,back);card.appendChild(rotor);
+    if(window.VFBuildCardParticleField)window.VFBuildCardParticleField(card);
     plus.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.toggleFullInfoCard?window.toggleFullInfoCard(card):card.classList.add('vf-card-flipped');});
     back.querySelector('.vf-card-back-close').addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.closeFullInfoCard?window.closeFullInfoCard(card):card.classList.remove('vf-card-flipped');});
     back.addEventListener('click',event=>event.stopPropagation());
@@ -515,9 +544,9 @@ function render(){
   const root=document.getElementById('levelup-root');if(!root)return;
   const target=Math.min(10,state.level+1);const used=state.level<10?slotsUsed(target):0;
   const current=window.VeilFarersCharacterRegistry?.get(state.characterId);const summary=current?recordSummary(current):{name:state.name||'Current draft',characterId:state.characterId||'No saved ID',level:state.level,path:state.path,className:className(),subclass:state.subclass};
-  root.innerHTML=`<div class="levelup-shell">${renderVault()}<section class="levelup-card"><div class="levelup-section-kicker">Selected build</div><h3>${safe(summary.name)}</h3><div class="levelup-badges"><span class="levelup-badge">${safe(summary.characterId||'No saved ID')}</span><span class="levelup-badge">Level ${state.level}</span><span class="levelup-badge">Tier ${tierFor(state.level)}</span><span class="levelup-badge">${safe([state.path,className(),state.subclass].filter(Boolean).join(' · '))}</span></div>${!state.characterId?'<div class="levelup-error" style="margin-top:12px">Choose a completed character from Character Vault. Level Up will not create a second copy.</div>':''}</section>${state.level>=10?'<section class="levelup-card"><h3>Maximum Level</h3><p>The Core rules stop at Level 10.</p></section>':`${tierConfig(target)}<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Advancement menu</div><h3>Level ${state.level} → ${target}</h3></div><span class="levelup-badge">${used}/2 slots selected</span></div><p>All Corebook options remain visible. Unavailable options explain why they are locked.</p><div class="levelup-grid">${definitions(target).map(def=>levelOptionCard(def,target)).join('')}</div></section><section id="levelup-apply-summary" class="levelup-card levelup-apply-summary ${plan.applied?'vf-reward-active':''}">${plan.applied?'<div class="levelup-reward-flash" aria-hidden="true"></div>'+rewardParticles():''}<div class="levelup-section-kicker">${plan.applied?`Reward secured · Level ${plan.appliedLevel}`:'Review before applying'}</div><h3>${plan.applied?'Changes applied':'Build changes'}</h3><div class="levelup-summary">${(plan.applied&&plan.appliedSummary.length?plan.appliedSummary:previewRows(target)).map((row,index)=>`<div class="levelup-summary-row" style="--row:${index}"><strong>${safe(row[0])}</strong><span><span>${safe(row[1])}</span> <span class="levelup-delta">→ ${safe(row[2])}</span></span></div>`).join('')}</div>${plan.message?`<div class="${plan.applied?'levelup-success':'levelup-error'}" style="margin-top:12px">${safe(plan.message)}</div>`:''}<div class="levelup-actions"><button class="btn btn-primary" onclick="VFLevelUp.apply()" ${!state.characterId||used===0?'disabled':''}>Apply Level ${target}</button><a class="btn btn-secondary" href="/charsheet.html">Open Charsheet</a><a class="btn btn-secondary" href="/player-tool.html">Open Player Tool</a><a class="btn btn-secondary" href="#creator">Return to Creator</a></div><p class="levelup-note">Level Up changes the character build. Current HP, Stress, Hope/Effort, Resolve, Armor marks and Conditions in Player Tool are preserved when the same Character ID is updated.</p></section>`}${renderHistory()}</div>`;
+  root.innerHTML=`<div class="levelup-shell">${renderVault()}<section class="levelup-card"><div class="levelup-section-kicker">Selected build</div><h3>${safe(summary.name)}</h3><div class="levelup-badges"><span class="levelup-badge">${safe(summary.characterId||'No saved ID')}</span><span class="levelup-badge">Level ${state.level}</span><span class="levelup-badge">Tier ${tierFor(state.level)}</span><span class="levelup-badge">${safe([state.path,className(),state.subclass].filter(Boolean).join(' · '))}</span></div>${!state.characterId?'<div class="levelup-error" style="margin-top:12px">Choose a completed character from Character Vault. Level Up will not create a second copy.</div>':''}</section>${state.level>=10?'<section class="levelup-card"><h3>Maximum Level</h3><p>The Core rules stop at Level 10.</p></section>':`${tierConfig(target)}<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Advancement menu</div><h3>Level ${state.level} → ${target}</h3></div><span class="levelup-badge">${used}/2 slots selected</span></div><p>All Corebook options remain visible. Unavailable options explain why they are locked.</p><div class="levelup-grid">${definitions(target).map(def=>levelOptionCard(def,target)).join('')}</div></section><section id="levelup-apply-summary" class="levelup-card levelup-apply-summary ${plan.applied?'vf-reward-active':''}">${plan.applied?'<div class="levelup-reward-flash" aria-hidden="true"></div>'+rewardParticles():''}<div class="levelup-section-kicker">${plan.applied?`Reward secured · Level ${plan.appliedLevel}`:'Review before applying'}</div><h3>${plan.applied?'Changes applied':'Build changes'}</h3><div class="levelup-summary">${(plan.applied&&plan.appliedSummary.length?plan.appliedSummary:previewRows(target)).map((row,index)=>`<div class="levelup-summary-row" style="--row:${index}"><strong>${safe(row[0])}</strong><span><span>${safe(row[1])}</span> <span class="levelup-delta">→ ${safe(row[2])}</span></span></div>`).join('')}</div>${plan.message?`<div class="${plan.applied?'levelup-success':'levelup-error'}" style="margin-top:12px">${safe(plan.message)}</div>`:''}<div class="levelup-actions"><button class="btn btn-primary" onclick="VFLevelUp.apply()" ${!state.characterId||used===0?'disabled':''}>Apply Level ${target}</button><a class="btn btn-secondary" href="/charsheet.html">Open Charsheet</a><a class="btn btn-secondary" href="/player-tool.html">Open Player Tool</a><a class="btn btn-secondary" href="#creator">Return to Creator</a></div><p class="levelup-note">Level Up changes the character build. Current HP, Stress, Hope/Effort, Resolve, Armor marks and Conditions in Player Tool are preserved when the same Character ID is updated.</p></section>`}${renderHistory()}</div>${pickerMarkup(target)}`;
   activateLevelUpCards(root);
-  if(plan.applied){requestAnimationFrame(()=>document.getElementById('levelup-apply-summary')?.scrollIntoView({behavior:'smooth',block:'center'}));}
+  if(plan.applied){requestAnimationFrame(()=>document.getElementById('levelup-apply-summary')?.scrollIntoView({behavior:'smooth',block:'center'}));setTimeout(()=>{document.body.classList.remove('vf-level-page-glow');void document.body.offsetWidth;document.body.classList.add('vf-level-page-glow');setTimeout(()=>document.body.classList.remove('vf-level-page-glow'),900);},1950);}
   if(!vaultLoaded&&!vaultLoading&&window.VeilFarersCharacterRegistry){vaultLoaded=true;setTimeout(()=>refreshVault(),0);}
 }
 
@@ -536,7 +565,8 @@ async function loadCanonicalLevelUpData(){
 
 window.VFLevelUp={
   render,refreshVault,select:selectCharacter,trash:trashCharacter,toggle:toggleOption,
-  detail:(id,key,value)=>setDetail(id,key,value),tier:setTier,cancelTrash,apply,chooseImport:chooseImportFile,importFile:importLevelUpFile
+  detail:(id,key,value)=>setDetail(id,key,value),tier:setTier,cancelTrash,apply,chooseImport:chooseImportFile,importFile:importLevelUpFile,
+  openPicker:type=>{plan.picker=type;render();},choosePicker,closePicker
 };
 
 loadCanonicalLevelUpData().finally(render);

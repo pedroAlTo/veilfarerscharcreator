@@ -1,0 +1,19 @@
+VEILFARERS PORTAL v59.77 — START HERE
+
+1. Deploy every file from the ZIP root. Do not deploy a parent folder.
+2. Confirm /data/deploy-version.json reports v59.77.
+3. Confirm HTML responses include X-VeilFarers-Release: v59.77 and the wasm-3d-dice-v2 CSP profile.
+4. Acceptance checks:
+   - Roll in 2D and 3D: dados_1.mp3 starts with the roll and stops if the animation is cancelled.
+   - On mobile, enable Shake to Roll with 3D selected and confirm physical dice appear.
+   - Select more than one one-slot Level Up option and confirm every selected frame has particles.
+   - Open Trait and Domain Power pickers; only the chosen entry should remain on the card.
+   - Apply Level Up; after the reward animation, all page frames except navigation should pulse.
+   - Open a card reverse; [−] must occupy the same bottom-right position as [+].
+   - Add equipment and send it to Player Tool, Charsheet, then Both.
+5. Release documents:
+   - PORTAL_HANDOVER_v59.77.md
+   - GITHUB_DEPLOY_SUMMARY_v59.77.md
+   - VALIDATION_v59.77.txt
+
+Live Netlify/Firebase connectivity and real-device motion permission still require deploy-preview acceptance.

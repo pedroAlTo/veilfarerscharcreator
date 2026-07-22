@@ -1,23 +1,24 @@
-VEILFARERS PORTAL v59.76 — START HERE
+VEILFARERS PORTAL v59.77 — START HERE
 
 1. DEPLOY
-   Deploy the complete contents of VeilFarers_Portal_v59.76.zip from the ZIP root.
+   Deploy the complete contents of VeilFarers_Portal_v59.77.zip from the ZIP root.
    Do not deploy a parent folder containing the portal.
 
 2. VERIFY RELEASE AUTHORITY
-   - Open /data/deploy-version.json and confirm v59.76.
-   - Inspect an HTML response and confirm X-VeilFarers-Release: v59.76.
+   - Open /data/deploy-version.json and confirm v59.77.
+   - Inspect an HTML response and confirm X-VeilFarers-Release: v59.77.
    - Confirm X-VeilFarers-CSP-Profile: wasm-3d-dice-v2.
 
-3. CREATOR CARD ACCEPTANCE
-   - Select a card in Ancestry, Community, Class and Affiliation.
-   - Confirm 48 particles and the animated gold frame are visible on the selected front.
-   - Press [+] and confirm the same particles and frame remain visible around the blue reverse.
-   - Confirm particles remain clipped inside the rounded card border.
-   - Press [-] or click outside and confirm the card returns to neutral with no residual field.
-   - Confirm only one card can remain expanded.
+3. LEVEL UP AND INVENTORY ACCEPTANCE
+   - Select multiple one-slot Level Up cards and confirm every selected frame has particles.
+   - Open Trait and Domain Power selectors; confirm only the chosen entry remains on the card.
+   - Press [+] and verify detailed rules/examples; confirm [−] occupies the same corner.
+   - Apply a Level Up and confirm the other page frames glow after the reward animation.
+   - Send an inventory to Player Tool, Charsheet and Both; verify each destination receives it.
 
-4. DICE REGRESSION CHECK
+4. DICE AND AUDIO REGRESSION CHECK
+   - Select 3D dice on mobile, enable Shake to Roll and confirm a shake opens physical 3D dice.
+   - Confirm /assets/dados_1.mp3 starts with each roll and stops when the animation is dismissed.
    - Start a 3D roll and press anywhere on the full overlay before settlement.
    - Confirm physical dice disappear and the identical roll resolves in 2D.
    - Let another 3D roll settle, then click the overlay and confirm its result is preserved.
@@ -29,11 +30,10 @@ VEILFARERS PORTAL v59.76 — START HERE
    - Confirm live table updates flow in both directions.
 
 6. INCLUDED RELEASE DOCUMENTS
-   - GITHUB_DEPLOY_SUMMARY_v59.76.md
-   - PORTAL_HANDOVER_v59.76.md
-   - VALIDATION_v59.76.txt
-   - START_HERE_v59.76.txt
-   - CARD_FEEDBACK_STATES_v59.76.png
+   - GITHUB_DEPLOY_SUMMARY_v59.77.md
+   - PORTAL_HANDOVER_v59.77.md
+   - VALIDATION_v59.77.txt
+   - START_HERE_v59.77.txt
 
 7. KNOWN RELEASE POSITION
    - VeilFarers Blue is the only exposed theme.

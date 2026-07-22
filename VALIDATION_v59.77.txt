@@ -1,0 +1,20 @@
+VEILFARERS PORTAL v59.77 — STATIC VALIDATION
+Date: 2026-07-22
+
+PASS 35 JavaScript files: node --check
+PASS 10 inline HTML scripts: parsed
+PASS 86 JSON files: parsed
+PASS 11/11 root HTML release markers: v59.77
+PASS root CSS files: brace balance
+PASS player-tool.bundle.js deterministic parity with player-tool.jsx
+PASS assets/dados_1.mp3 present; MPEG Layer III; duration 4.075102 s
+PASS dice audio source and veilfarers:dice3d-closed cancellation listener
+PASS Shake to Roll dependencies include current 3D mode/style/texture
+PASS Trait and Domain Power popup contracts
+PASS multiple Level Up selection particle hook
+PASS reverse [−] bottom-right alignment with [+]
+PASS inventory transfer buttons on Armory and Items
+PASS local HTTP smoke for Creator, v59.77 metadata, dice audio and inventory art
+
+NOT CLAIMED live Netlify/Firebase acceptance
+NOT CLAIMED real iOS/Android motion-sensor or mobile-audio acceptance

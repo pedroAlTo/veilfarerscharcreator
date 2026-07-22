@@ -16,7 +16,7 @@
     tabs: document.querySelector('#catalog-tabs'), cards:document.querySelector('#catalog-cards'), count:document.querySelector('#catalog-count'),
     search:document.querySelector('#catalog-search'), filters:[...document.querySelectorAll('[data-filter-name]')], reset:document.querySelector('#catalog-reset'),
     inventory:document.querySelector('#inventory-list'), invCount:document.querySelector('#inventory-count'), invCredits:document.querySelector('#inventory-credits'), release:document.querySelector('#canonical-release'),
-    exportBtn:document.querySelector('#inventory-export'), importInput:document.querySelector('#inventory-import'), clearBtn:document.querySelector('#inventory-clear')
+    exportBtn:document.querySelector('#inventory-export'), importInput:document.querySelector('#inventory-import'), clearBtn:document.querySelector('#inventory-clear'), transferStatus:document.querySelector('#inventory-transfer-status')
   };
 
   const esc = D.escapeHtml;
@@ -204,6 +204,54 @@
     }).join('');
   }
   function allLoaded(){return Object.values(data).flat();}
+  function ownedCanonical(){
+    const entries=I.read().entries;
+    const byId=new Map(allLoaded().map(item=>[item.id,item]));
+    const groups={weapons:[],armor:[],gear:[],augments:[]};
+    Object.values(entries).forEach(entry=>{
+      const item=byId.get(entry.id);if(!item||Number(entry.quantity||0)<1)return;
+      const bucket=item.type==='weapon'?'weapons':item.type==='armor'?'armor':item.type==='augment'?'augments':'gear';
+      groups[bucket].push({...item,quantity:Number(entry.quantity||1)});
+    });
+    return groups;
+  }
+  function mergeItems(existing,incoming){
+    const map=new Map();[...(Array.isArray(existing)?existing:[]),...incoming].forEach(item=>{const key=String(item?.canonicalId||item?.id||item?.name||'').trim();if(key)map.set(key,item);});return [...map.values()];
+  }
+  function transferStatus(message,error=false){if(!els.transferStatus)return;els.transferStatus.textContent=message;els.transferStatus.classList.toggle('error',error);}
+  function sendToPlayerTool(groups){
+    const key='veilfarers-player-tool-characters';
+    let characters=[];try{characters=JSON.parse(localStorage.getItem(key)||'[]');}catch(_){ }
+    if(!Array.isArray(characters))characters=[];
+    const registryId=window.VeilFarersCharacterRegistry?.currentId?.()||localStorage.getItem('veilfarers.character.currentId.v1')||'';
+    let index=characters.findIndex(item=>item&&item.entityType!=='drone'&&registryId&&String(item.characterId||item.id||'').toUpperCase()===String(registryId).toUpperCase());
+    if(index<0)index=characters.findIndex(item=>item&&item.entityType!=='drone');
+    if(index<0)throw Error('Open or import a character in Player Tool first.');
+    const character={...characters[index]};
+    character.weaponArsenal=mergeItems(character.weaponArsenal,groups.weapons);character.weaponInventory=character.weaponArsenal.map(item=>item.canonicalId||item.id||item.name);
+    character.armorArsenal=mergeItems(character.armorArsenal,groups.armor);character.armorInventory=character.armorArsenal.map(item=>item.canonicalId||item.id||item.name);
+    character.gearArsenal=mergeItems(character.gearArsenal,groups.gear);character.gearInventory=character.gearArsenal.map(item=>item.canonicalId||item.id||item.name);
+    character.augmentArsenal=mergeItems(character.augmentArsenal,groups.augments);character.augmentInventory=character.augmentArsenal.map(item=>item.canonicalId||item.id||item.name);
+    characters[index]=character;localStorage.setItem(key,JSON.stringify(characters));
+    const id=String(character.characterId||character.id||'');const registry=window.VeilFarersCharacterRegistry;
+    if(registry&&/^VF-\d{6,}$/i.test(id)&&registry.get(id))registry.saveLocalData(id,{playerCharacter:character},{source:'inventory-transfer-v59.77'});
+    return character.name||id||'active character';
+  }
+  function sendToSheet(groups){
+    const key='veilfarers_sheet_fields_v2_40';let fields={};try{fields=JSON.parse(localStorage.getItem(key)||'{}')||{};}catch(_){ }
+    const primary=groups.weapons[0],secondary=groups.weapons[1],armor=groups.armor[0];
+    if(primary)fields.wpri_name=primary.name;if(secondary)fields.wsec_name=secondary.name;if(armor)fields.armor_name=armor.name;
+    groups.gear.slice(0,8).forEach((item,index)=>{fields[`eq_${index}_name`]=item.name;fields[`eq_${index}_qty`]=String(item.quantity||1);});
+    groups.augments.slice(0,10).forEach((item,index)=>{fields[`aug_${index}_name`]=item.name;});
+    localStorage.setItem(key,JSON.stringify(fields));return true;
+  }
+  function sendInventory(target){
+    try{
+      const groups=ownedCanonical();const count=Object.values(groups).flat().length;if(!count)throw Error('Add equipment to the inventory before sending it.');
+      let player='';if(target==='player'||target==='both')player=sendToPlayerTool(groups);if(target==='sheet'||target==='both')sendToSheet(groups);
+      transferStatus(target==='both'?`Sent ${count} equipment entries to ${player} and Charsheet.`:target==='player'?`Sent ${count} equipment entries to ${player}.`:`Sent ${count} equipment entries to Charsheet.`);
+    }catch(error){transferStatus(error.message||String(error),true);}
+  }
   function renderInventory(){
     const state=I.read();
     const entries=Object.values(state.entries).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
@@ -223,8 +271,9 @@
   }
   async function init(){
     try{
-      const [manifest,...groups]=await Promise.all([D.manifest(),...config.tabs.map(([name])=>D.loadCollection(name))]);
-      config.tabs.forEach(([name],index)=>data[name]=groups[index]);
+      const collectionNames=['weapons','armor','gear','augments'];
+      const [manifest,...groups]=await Promise.all([D.manifest(),...collectionNames.map(name=>D.loadCollection(name))]);
+      collectionNames.forEach((name,index)=>data[name]=groups[index]);
       els.release.textContent=manifest.release||manifest.version||'11.1 RC3';
       renderTabs();renderFilters();filterItems();renderInventory();
     }catch(error){els.cards.innerHTML=`<div class="vf-error">Canonical data could not be loaded: ${esc(error.message)}</div>`;}
@@ -272,6 +321,7 @@
   els.exportBtn.addEventListener('click',I.exportFile);
   els.importInput.addEventListener('change',async event=>{try{if(event.target.files[0])await I.importFile(event.target.files[0]);}catch(error){alert(error.message);}event.target.value='';});
   els.clearBtn.addEventListener('click',()=>{if(confirm('Clear the local VeilFarers inventory?'))I.clear();});
+  document.querySelectorAll('[data-inventory-send]').forEach(button=>button.addEventListener('click',()=>sendInventory(button.dataset.inventorySend)));
   I.subscribe(()=>{renderInventory();renderFilters();filterItems();});
   init();
 })();
