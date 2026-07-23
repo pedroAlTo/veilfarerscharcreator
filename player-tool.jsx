@@ -2353,50 +2353,11 @@
           };
           // Tables list is always shown: refresh it every time the config modal opens.
           useEffect(() => { if (showConfig) fetchTables(); }, [showConfig]);
-          // Table passwords use PBKDF2-SHA256 with a random salt. Legacy SHA-256
-          // records remain readable and are replaced the next time the password changes.
-          const bytesToBase64 = (bytes) => btoa(String.fromCharCode(...bytes));
-          const base64ToBytes = (value) => Uint8Array.from(atob(String(value || '')), ch => ch.charCodeAt(0));
-          const legacyHashPass = async (txt) => {
-              const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('veilfarers:' + txt));
-              return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-          };
-          const derivePasswordHash = async (txt, saltValue, iterations) => {
-              const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(txt || '')), 'PBKDF2', false, ['deriveBits']);
-              const bits = await crypto.subtle.deriveBits({ name:'PBKDF2', hash:'SHA-256', salt:base64ToBytes(saltValue), iterations:Number(iterations)||150000 }, key, 256);
-              return bytesToBase64(new Uint8Array(bits));
-          };
-          const makePasswordRecord = async (txt) => {
-              const salt = crypto.getRandomValues(new Uint8Array(16));
-              const record = { algorithm:'PBKDF2-SHA256', iterations:150000, salt:bytesToBase64(salt) };
-              record.hash = await derivePasswordHash(txt, record.salt, record.iterations);
-              return record;
-          };
-          const passwordRecordToken = (record) => record ? JSON.stringify({ algorithm:record.algorithm, iterations:record.iterations, salt:record.salt, hash:record.hash }) : '';
-          const verifyTablePassword = async (existing, cleanSessionId, suppliedPass) => {
-              if (existing && existing.passAuth && existing.passAuth.hash) {
-                  const expectedToken = passwordRecordToken(existing.passAuth);
-                  const cached = localStorage.getItem('veilfarers_tableauth_' + cleanSessionId);
-                  if (!suppliedPass && cached === expectedToken) return true;
-                  if (!suppliedPass) return false;
-                  const candidate = await derivePasswordHash(suppliedPass, existing.passAuth.salt, existing.passAuth.iterations);
-                  const ok = candidate === existing.passAuth.hash;
-                  if (ok) localStorage.setItem('veilfarers_tableauth_' + cleanSessionId, expectedToken);
-                  return ok;
-              }
-              if (existing && existing.passHash) {
-                  const cached = localStorage.getItem('veilfarers_tablepass_' + cleanSessionId);
-                  const candidate = suppliedPass ? await legacyHashPass(suppliedPass) : cached;
-                  const ok = candidate === existing.passHash;
-                  if (ok) localStorage.setItem('veilfarers_tablepass_' + cleanSessionId, existing.passHash);
-                  return ok;
-              }
-              return true;
-          };
           const connectToCloud = async () => {
               setErrorMsg('');
               if(!window.initFirebase||!window.VFTableAccess){setStatusMsg('Cloud table services are not loaded.');return;}
               try{
+                  if(isConnected)disconnectFromCloud();
                   setStatusMsg('Authorizing table…');
                   const services=await window.initFirebase();
                   const cleanSessionId=normalizeSessionKey(sessionId);
@@ -2426,6 +2387,7 @@
               setNewTablePass(''); setConfirmTablePass('');
               setStatusMsg("Disconnected.");
               setHandouts([]); setOpenNotes([]); seenNotesRef.current = null;
+              if(window.VFTableAccess)window.VFTableAccess.mountAdmin('','');
           };
 
           useEffect(() => {
@@ -2437,12 +2399,27 @@
               const expired = (event) => {
                   if (unsubscribeRef.current) { try { unsubscribeRef.current(); } catch(_) {} unsubscribeRef.current=null; }
                   setFbServices(null);setIsConnected(false);setConnectedTableLocked(false);
+                  if(window.VFTableAccess)window.VFTableAccess.mountAdmin('','');
                   setStatusMsg('Login expired. Sign in again to reconnect the table.');
                   setErrorMsg((event && event.detail && event.detail.message) || 'Your VeilFarers login expired.');
               };
               window.addEventListener('veilfarers:auth-expired', expired);
               return () => window.removeEventListener('veilfarers:auth-expired', expired);
           }, []);
+
+          useEffect(() => {
+              const deleted = (event) => {
+                  const deletedId=normalizeSessionKey(event && event.detail && event.detail.tableId);
+                  if(!deletedId||deletedId!==normalizeSessionKey(sessionId))return;
+                  disconnectFromCloud();
+                  try{localStorage.removeItem('veilfarers_session_id');}catch(_){}
+                  setAvailableTables(list=>list.filter(table=>normalizeSessionKey(table.id)!==deletedId));
+                  setStatusMsg(`Table "${deletedId}" was permanently deleted.`);
+                  setShowConfig(false);
+              };
+              window.addEventListener('veilfarers:table-deleted', deleted);
+              return () => window.removeEventListener('veilfarers:table-deleted', deleted);
+          }, [sessionId, isConnected]);
 
           useEffect(() => {
               if (!isConnected || !sessionId || !window.VFTableAccess) return;
@@ -3096,7 +3073,7 @@
                           <input type="password" value={tablePass} onChange={e => setTablePass(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="Password (also required with an invitation when protected)" />
                           <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Invitation passkey <span className="text-slate-600 normal-case font-normal">(required for new members)</span></label>
                           <input type="text" value={invitePasskey} onChange={e => setInvitePasskey(e.target.value.trim())} className="w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs" placeholder="Paste invitation passkey, or open an invitation link" />
-                          <div className="rounded border border-cyan-800/50 bg-cyan-950/20 p-2 mb-4 text-[10px] text-cyan-200"><strong>Membership:</strong> the table owner creates invitation links or passkeys. A password does not replace the invitation.</div>
+                          <div className="rounded border border-cyan-800/50 bg-cyan-950/20 p-2 mb-4 text-[10px] text-cyan-200"><strong>Access:</strong> the owner creates invitation links or passkeys for new members. Every connection to a closed table—including the owner and existing members—also requires its password.</div>
 
                           {isConnected && (
                             <div className="rounded border border-slate-700 bg-slate-950/60 p-3 mb-4">

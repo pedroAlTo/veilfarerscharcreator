@@ -1,0 +1,25 @@
+VEILFARERS PORTAL v59.79 — START HERE
+
+1. Deploy every file from the ZIP root.
+2. Confirm /data/deploy-version.json and response headers report v59.79.
+3. Closed-table password checks:
+   - Empty password: rejected.
+   - Wrong password: rejected.
+   - Correct password: accepted.
+   - Repeat as owner and as an existing member.
+4. Owner deletion:
+   - Open Table Admin.
+   - Type the exact table name.
+   - Press Delete table, then Confirm permanent deletion.
+   - Confirm the table disappears from Player and Keeper lists.
+5. Legacy deletion:
+   - Successfully join/claim a disposable old-format table.
+   - Delete it from the same owner-only danger zone.
+6. Confirm v59.78 Hearts in the Void, trimmed dice audio and active Inventory target remain intact.
+
+Release documents:
+- PORTAL_HANDOVER_v59.79.md
+- GITHUB_DEPLOY_SUMMARY_v59.79.md
+- VALIDATION_v59.79.txt
+
+Use disposable tables for Deploy Preview. Do not test deletion against a production table without a backup.

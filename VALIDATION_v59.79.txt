@@ -1,0 +1,68 @@
+VEILFARERS PORTAL v59.79 — VALIDATION
+Date: 2026-07-23
+
+RESULT: PASS for local security-unit, source-contract, build, static and package validation.
+
+CLOSED-TABLE PASSWORD GATE
+- Current server PBKDF2 record + correct password: PASS
+- Current server PBKDF2 record + wrong password: REJECTED
+- Current server PBKDF2 record + empty password: REJECTED
+- Open table + empty password: PASS
+- Historical session PBKDF2 + correct password: PASS, marked for migration
+- Historical SHA-256(veilfarers:<password>): PASS, marked for migration
+- Historical SHA-256(raw password): PASS, marked for migration
+- Oldest raw legacy password: PASS, marked for migration
+- Wrong/empty values for protected records: REJECTED
+- Closed marker or isOpen=false without a verifier: REJECTED with repair-required 409
+- The password gate executes before member admission/update and is not conditional on new membership
+- Owner and existing-member reconnections therefore use the same gate as a new admission
+- Changing/removing a password clears passAuth, passHash, passwordHash, tablePasswordHash, password and tablePassword legacy fields
+- Dead client-side password-verification/cache code is absent from Player and Keeper sources
+
+OWNER-ONLY TABLE DELETION
+- deleteTable is behind the table owner authorization guard
+- Exact table-name confirmation is required server-side
+- Custom Table Admin UI requires exact-name entry and a second confirmation
+- Session document deletion: present
+- Directory document deletion: present
+- Server password document deletion: present
+- Stored handout subdocument deletion: present
+- Table invitation deletion: present
+- Invitation lookup is scoped to artifacts/default-app-id/public/data and filtered by tableId
+- Player Tool listens for successful deletion and clears live/list/saved-table state
+- Keeper Tool listens for successful deletion and clears polling/live/table-admin state
+- Ownerless legacy tables retain the existing successful-join claim path before owner deletion
+
+AUTOMATED TESTS
+- tests/table-security.test.mts: PASS
+- tests/table-api-contract.test.mjs: PASS
+- tests/firebase-query-scope.test.mts: PASS
+- Clean Player Tool esbuild reconstruction matches player-tool.bundle.js byte-for-byte
+- All 8 Netlify Function MTS entry files bundle/parse under Node 20 target
+- First-party JS/MJS syntax: 38 files pass
+- JSON parsing: 86 files pass
+- Inline HTML JavaScript parsing: 10 blocks pass
+- Root release metadata: 11/11 HTML pages report v59.79
+- package.json/package-lock.json: 59.79.0
+- changelog/deploy metadata: v59.79 / 59.79.0
+- Local HTTP smoke: 8/8 requested static endpoints return 200
+- ZIP root layout and unzip integrity: PASS
+
+V59.78 REGRESSION LOCK
+- Hearts in the Void complete adventure directory: byte-identical
+- hearts-in-the-void-template.js: byte-identical
+- app.js Keeper adventure runtime: byte-identical
+- Trimmed assets/dados_1.mp3: byte-identical
+- Inventory active-character transfer implementation: byte-identical
+- Player Tool retains the trimmed audio URL and existing dice interruption lifecycle
+
+LIVE DEPLOY PREVIEW ACCEPTANCE STILL REQUIRED
+- Netlify Identity owner/member denial tests against the deployed function
+- Correct-password acceptance after empty/wrong attempts
+- Current Firestore document cascade deletion and list refresh
+- Claim and deletion of a disposable production-shaped legacy table
+- Confirmation that no invitations/handouts remain after deletion
+- Authenticated Keeper-to-Player synchronization
+- Physical mobile Shake to Roll and subjective audio timing
+
+Never test permanent deletion against a production table without a backup.

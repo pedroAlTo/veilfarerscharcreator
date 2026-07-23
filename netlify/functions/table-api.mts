@@ -2,8 +2,9 @@ import type { Config, Context } from '@netlify/functions'
 import { getUser, verifyRequestOrigin } from '@netlify/identity'
 import {
   deleteDoc, getDoc, googleAccessToken, inviteToken, listDocs, makePassword,
-  patchDoc, putDoc, responseHeaders, safeTableId, tokenHash, verifyPassword,
+  patchDoc, putDoc, queryDocsAt, responseHeaders, safeTableId, tokenHash,
 } from './_firebase-admin.mts'
+import { SERVER_LOCK_MARKER, tablePasswordGate } from './_table-security.mts'
 
 const appId = 'default-app-id'
 const base = `artifacts/${appId}/public/data`
@@ -11,7 +12,6 @@ const sessions = `${base}/sessions`
 const directory = `${base}/tableDirectory`
 const invites = `${base}/tableInvites`
 const secrets = `${base}/tableSecrets`
-const SERVER_LOCK_MARKER = 'SERVER_MANAGED'
 const now = () => Date.now()
 const cleanString=(value:any,max=500)=>String(value||'').slice(0,max)
 const sessionPatchKeys=new Set(['characters','fearTokens','spotlight','keeperNotes','sessionName'])
@@ -103,7 +103,15 @@ export default async (req: Request, _ctx: Context) => {
         map.set(item.id, {
           id: item.id,
           name: item.data.name || item.id,
-          locked: !!(item.data.passAuth || item.data.passHash || item.data.isOpen === false),
+          locked: !!(
+            item.data.passAuth?.hash ||
+            item.data.passHash ||
+            item.data.passwordHash ||
+            item.data.tablePasswordHash ||
+            item.data.password ||
+            item.data.tablePassword ||
+            item.data.isOpen === false
+          ),
           members: Array.isArray(item.data.memberIds)
             ? item.data.memberIds.length
             : (Array.isArray(item.data.characters) ? item.data.characters.length : 0),
@@ -174,15 +182,7 @@ export default async (req: Request, _ctx: Context) => {
     const isMember = memberIds.includes(user.id)
     const secretDoc = await getDoc(secretPath, access)
     const secretAuth = secretDoc?.data?.passAuth || null
-    const legacyAuth = !secretAuth && data.passAuth?.hash ? data.passAuth : null
-    const legacyHashValue = data.passHash && data.passHash !== SERVER_LOCK_MARKER
-      ? data.passHash
-      : (data.passwordHash || data.tablePasswordHash || '')
-    const legacyHash = !secretAuth && !legacyAuth && legacyHashValue ? String(legacyHashValue) : ''
-    const legacyPlain = !secretAuth && !legacyAuth && !legacyHash && (data.password || data.tablePassword)
-      ? String(data.password || data.tablePassword)
-      : ''
-    const locked = !!(secretAuth?.hash || legacyAuth?.hash || legacyHash || legacyPlain || data.passHash === SERVER_LOCK_MARKER || data.isOpen === false)
+    const locked = tablePasswordGate(data, secretAuth, '').locked
 
     if (action === 'join') {
       let role = isOwner ? 'owner' : 'member'
@@ -209,28 +209,11 @@ export default async (req: Request, _ctx: Context) => {
       }
 
       const suppliedPassword = String(body.password || '')
-      let migratedPassword: any = null
-      // Membership is the durable authorization boundary. A password is an
-      // additional admission gate for a new member (or the first legacy-table
-      // claimant), not a credential existing members must repeatedly disclose.
-      if (needsAdmission || claimLegacy) {
-        if (secretAuth?.hash && !verifyPassword(suppliedPassword, secretAuth)) {
-          return json({ error: 'The table password is required and did not match.' }, 403)
-        }
-        if (legacyAuth?.hash) {
-          if (!verifyPassword(suppliedPassword, legacyAuth)) return json({ error: 'The table password is required and did not match.' }, 403)
-          migratedPassword = makePassword(suppliedPassword)
-        } else if (legacyHash) {
-          const candidates = [tokenHash(`veilfarers:${suppliedPassword}`), tokenHash(suppliedPassword), suppliedPassword]
-          if (!suppliedPassword || !candidates.includes(legacyHash)) return json({ error: 'The table password is required and did not match.' }, 403)
-          migratedPassword = makePassword(suppliedPassword)
-        } else if (legacyPlain) {
-          if (!suppliedPassword || suppliedPassword !== legacyPlain) return json({ error: 'The table password is required and did not match.' }, 403)
-          migratedPassword = makePassword(suppliedPassword)
-        } else if (data.passHash === SERVER_LOCK_MARKER && !secretAuth?.hash) {
-          return json({ error: 'This protected table is missing its server password record. The owner must set a new password.' }, 409)
-        }
-      }
+      // Closed tables require their password on every connection. Membership
+      // still controls table data, but no longer bypasses the explicit lock.
+      const passwordGate = tablePasswordGate(data, secretAuth, suppliedPassword)
+      if (!passwordGate.allowed) return json({ error: passwordGate.error }, passwordGate.status || 403)
+      const migratedPassword: any = passwordGate.migrate ? makePassword(suppliedPassword) : null
 
       if (migratedPassword) await putDoc(secretPath, { passAuth: migratedPassword, updatedAt: now() }, access)
       if (claimLegacy) {
@@ -263,7 +246,7 @@ export default async (req: Request, _ctx: Context) => {
           lastUsedAt: now(),
         }, access)
       }
-      const effectiveLocked = locked || !!migratedPassword
+      const effectiveLocked = passwordGate.locked || !!migratedPassword
       await putDoc(directoryPath, {
         name: data.name || tableId,
         locked: effectiveLocked,
@@ -376,6 +359,26 @@ export default async (req: Request, _ctx: Context) => {
     }
 
     if (!isOwner) return json({ error: 'Only the table owner can perform this action.' }, 403)
+
+    if (action === 'deleteTable') {
+      const confirmation = String(body.confirmTableId || '').trim()
+      if (confirmation !== tableId) return json({ error: 'Type the exact table name to confirm permanent deletion.' }, 400)
+      const handoutDocs = await listDocs(`${path}/handouts`, access)
+      const inviteDocs = await queryDocsAt(base, 'tableInvites', 'tableId', tableId, access, 500)
+      await Promise.all(handoutDocs.map((item:any) => deleteDoc(handoutPath(path, item.id), access)))
+      await Promise.all(inviteDocs.map((item:any) => deleteDoc(`${invites}/${item.id}`, access)))
+      await Promise.all([
+        deleteDoc(secretPath, access),
+        deleteDoc(directoryPath, access),
+        deleteDoc(path, access),
+      ])
+      return json({
+        ok: true,
+        deletedTableId: tableId,
+        deletedHandouts: handoutDocs.length,
+        deletedInvites: inviteDocs.length,
+      })
+    }
 
     if (action === 'admin') {
       const inviteDocs = (await listDocs(invites, access)).filter(item => item.data.tableId === tableId)
@@ -495,6 +498,10 @@ export default async (req: Request, _ctx: Context) => {
       await patchDoc(path, {
         passAuth: null,
         passHash: password ? SERVER_LOCK_MARKER : null,
+        passwordHash: null,
+        tablePasswordHash: null,
+        password: null,
+        tablePassword: null,
         isOpen: !password,
         passwordUpdatedAt: now(),
         updatedAt: now(),

@@ -1,0 +1,30 @@
+VEILFARERS PORTAL v59.79 — DESCARGA POR PARTES
+
+Esta entrega contiene exactamente el portal v59.79, dividido en seis ZIP
+independientes para evitar errores de descarga.
+
+Descarga los paquetes 01–06 y extrae todos en la misma carpeta. Cuando el
+sistema pregunte si debe combinar carpetas, acepta. Los archivos no se
+sobrescriben entre paquetes: cada ZIP contiene una parte distinta del portal.
+
+PAQUETES
+
+01 — Aplicación, Hearts in the Void, reglas, documentación y handover.
+02 — Ilustraciones generales y capturas de revisión.
+03 — Motor de dados 3D, audio recortado y recursos base.
+04 — Primera mitad de los temas visuales de dados 3D.
+05 — Segunda mitad de los temas visuales de dados 3D.
+06 — Libros PDF y ficha rellenable incluidos en Descargas.
+
+El archivo PORTAL_HANDOVER_v59.79.md está incluido en el paquete 01.
+
+INICIO
+
+Tras extraer los seis paquetes en la misma ubicación:
+
+- Windows: ejecuta START_LOCAL_WINDOWS.bat.
+- Otros sistemas: sirve la carpeta con un servidor web local.
+- Consulta START_HERE_v59.79.txt para las instrucciones completas.
+
+No es necesario descargar el ZIP único de 51 MB si utilizas estos seis
+paquetes.

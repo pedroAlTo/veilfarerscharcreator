@@ -1,16 +1,16 @@
 {
   "schema": "veilfarers.deploy/1",
-  "version": "v59.78",
-  "packageVersion": "59.78.0",
+  "version": "v59.79",
+  "packageVersion": "59.79.0",
   "date": "2026-07-23",
   "cspProfile": "wasm-3d-dice-v2",
   "requiredScriptSource": "'wasm-unsafe-eval'",
   "expectedResponseHeaders": {
-    "X-VeilFarers-Release": "v59.78",
+    "X-VeilFarers-Release": "v59.79",
     "X-VeilFarers-CSP-Profile": "wasm-3d-dice-v2"
   },
   "accessibilityProfile": "WCAG-2.2-AA-target",
   "generatedAt": "2026-07-23",
-  "release": "v59.78",
-  "notes": "Hearts in the Void now uses the consolidated Corebook 11.35 / Keeper's Companion 11.33 adventure template, dados_1.mp3 has no long leading silence, and Inventory identifies and protects the active character transfer target."
+  "release": "v59.79",
+  "notes": "Closed tables now require their password on every connection, including owners and existing members. Table owners can permanently delete current or claimed legacy tables together with their linked secrets, invitations and handouts."
 }

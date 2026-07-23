@@ -93,6 +93,14 @@ export async function patchDoc(path:string,data:any,access?:string){
 export async function deleteDoc(path:string,access?:string){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}/${path}`,{method:'DELETE',headers:{authorization:`Bearer ${token}`}});if(!r.ok&&r.status!==404)throw new Error(`Firestore delete failed (${r.status})`)}
 export async function listDocs(path:string,access?:string){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}/${path}?pageSize=200`,{headers:{authorization:`Bearer ${token}`}});if(!r.ok)throw new Error(`Firestore list failed (${r.status})`);const raw:any=await r.json();return (raw.documents||[]).map((doc:any)=>({id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}))}
 export async function queryDocs(collectionId:string,fieldPath:string,value:any,access?:string,limit=200){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}:runQuery`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath},op:'EQUAL',value:encode(value)}},limit}})});if(!r.ok)throw new Error(`Firestore query failed (${r.status})`);const raw:any[]=await r.json();return raw.filter(item=>item.document).map(item=>{const doc=item.document;return {id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}})}
+export async function queryDocsAt(parentPath:string,collectionId:string,fieldPath:string,value:any,access?:string,limit=200){
+ const token=access||await googleAccessToken()
+ const parent=String(parentPath||'').replace(/^\/+|\/+$/g,'')
+ const r=await fetch(`${docBase()}/${parent}:runQuery`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath},op:'EQUAL',value:encode(value)}},limit}})})
+ if(!r.ok)throw new Error(`Firestore scoped query failed (${r.status})`)
+ const raw:any[]=await r.json()
+ return raw.filter(item=>item.document).map(item=>{const doc=item.document;return {id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}})
+}
 export function safeTableId(v:any){return String(v||'').trim().replace(/[\\/\?#%]/g,'-').replace(/\s+/g,' ').slice(0,80)}
 export function makePassword(password:string){
  const saltBytes=randomBytes(16),salt=saltBytes.toString('base64'),iterations=150000

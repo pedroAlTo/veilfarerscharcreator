@@ -1,7 +1,20 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.78",
+  "currentVersion": "v59.79",
   "entries": [
+    {
+      "version": "v59.79",
+      "date": "2026-07-23",
+      "title": "Strict table passwords and owner deletion",
+      "changes": [
+        "Requires the correct password on every connection to a closed table, including reconnections by the owner and existing members.",
+        "Disconnects the previous live table before a new authorization attempt, so a rejected password cannot look like a successful connection.",
+        "Keeps historical PBKDF2, SHA-256 and plain-password records as one-time server-side migration paths while rejecting empty or incorrect input.",
+        "Adds an owner-only danger zone that requires the exact table name and a second confirmation before permanent deletion.",
+        "Deletes the session, directory record, server password, invitations and stored handouts for current and owner-claimed legacy tables.",
+        "Notifies Player and Keeper tools immediately after deletion and clears their active table state."
+      ]
+    },
     {
       "version": "v59.78",
       "date": "2026-07-23",
@@ -789,5 +802,5 @@
       ]
     }
   ],
-  "version": "59.78.0"
+  "version": "59.79.0"
 }

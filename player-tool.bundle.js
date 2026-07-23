@@ -2884,44 +2884,6 @@ ${move.text}` });
       useEffect(() => {
         if (showConfig) fetchTables();
       }, [showConfig]);
-      const bytesToBase64 = (bytes) => btoa(String.fromCharCode(...bytes));
-      const base64ToBytes = (value) => Uint8Array.from(atob(String(value || "")), (ch) => ch.charCodeAt(0));
-      const legacyHashPass = async (txt) => {
-        const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("veilfarers:" + txt));
-        return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
-      };
-      const derivePasswordHash = async (txt, saltValue, iterations) => {
-        const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(String(txt || "")), "PBKDF2", false, ["deriveBits"]);
-        const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: base64ToBytes(saltValue), iterations: Number(iterations) || 15e4 }, key, 256);
-        return bytesToBase64(new Uint8Array(bits));
-      };
-      const makePasswordRecord = async (txt) => {
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        const record = { algorithm: "PBKDF2-SHA256", iterations: 15e4, salt: bytesToBase64(salt) };
-        record.hash = await derivePasswordHash(txt, record.salt, record.iterations);
-        return record;
-      };
-      const passwordRecordToken = (record) => record ? JSON.stringify({ algorithm: record.algorithm, iterations: record.iterations, salt: record.salt, hash: record.hash }) : "";
-      const verifyTablePassword = async (existing, cleanSessionId, suppliedPass) => {
-        if (existing && existing.passAuth && existing.passAuth.hash) {
-          const expectedToken = passwordRecordToken(existing.passAuth);
-          const cached = localStorage.getItem("veilfarers_tableauth_" + cleanSessionId);
-          if (!suppliedPass && cached === expectedToken) return true;
-          if (!suppliedPass) return false;
-          const candidate = await derivePasswordHash(suppliedPass, existing.passAuth.salt, existing.passAuth.iterations);
-          const ok = candidate === existing.passAuth.hash;
-          if (ok) localStorage.setItem("veilfarers_tableauth_" + cleanSessionId, expectedToken);
-          return ok;
-        }
-        if (existing && existing.passHash) {
-          const cached = localStorage.getItem("veilfarers_tablepass_" + cleanSessionId);
-          const candidate = suppliedPass ? await legacyHashPass(suppliedPass) : cached;
-          const ok = candidate === existing.passHash;
-          if (ok) localStorage.setItem("veilfarers_tablepass_" + cleanSessionId, existing.passHash);
-          return ok;
-        }
-        return true;
-      };
       const connectToCloud = async () => {
         setErrorMsg("");
         if (!window.initFirebase || !window.VFTableAccess) {
@@ -2929,6 +2891,7 @@ ${move.text}` });
           return;
         }
         try {
+          if (isConnected) disconnectFromCloud();
           setStatusMsg("Authorizing table\u2026");
           const services = await window.initFirebase();
           const cleanSessionId = normalizeSessionKey(sessionId);
@@ -2994,6 +2957,7 @@ ${move.text}` });
         setHandouts([]);
         setOpenNotes([]);
         seenNotesRef.current = null;
+        if (window.VFTableAccess) window.VFTableAccess.mountAdmin("", "");
       };
       useEffect(() => {
         const savedSession = localStorage.getItem("veilfarers_session_id");
@@ -3011,12 +2975,29 @@ ${move.text}` });
           setFbServices(null);
           setIsConnected(false);
           setConnectedTableLocked(false);
+          if (window.VFTableAccess) window.VFTableAccess.mountAdmin("", "");
           setStatusMsg("Login expired. Sign in again to reconnect the table.");
           setErrorMsg(event && event.detail && event.detail.message || "Your VeilFarers login expired.");
         };
         window.addEventListener("veilfarers:auth-expired", expired);
         return () => window.removeEventListener("veilfarers:auth-expired", expired);
       }, []);
+      useEffect(() => {
+        const deleted = (event) => {
+          const deletedId = normalizeSessionKey(event && event.detail && event.detail.tableId);
+          if (!deletedId || deletedId !== normalizeSessionKey(sessionId)) return;
+          disconnectFromCloud();
+          try {
+            localStorage.removeItem("veilfarers_session_id");
+          } catch (_) {
+          }
+          setAvailableTables((list) => list.filter((table) => normalizeSessionKey(table.id) !== deletedId));
+          setStatusMsg(`Table "${deletedId}" was permanently deleted.`);
+          setShowConfig(false);
+        };
+        window.addEventListener("veilfarers:table-deleted", deleted);
+        return () => window.removeEventListener("veilfarers:table-deleted", deleted);
+      }, [sessionId, isConnected]);
       useEffect(() => {
         if (!isConnected || !sessionId || !window.VFTableAccess) return;
         let stopped = false, busy = false;
@@ -3620,7 +3601,7 @@ ${canonical.use || ""}`, playerName: character.name || "Drone", actorId: charact
         activeCallouts.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "vf-callout-grid", style: { transform: `scale(${calloutScale})` } }, activeCallouts.map((callout) => /* @__PURE__ */ React.createElement(AnimatedCalloutCard, { key: rollEventKey(callout), callout, onClose: () => setActiveCallouts((prev) => prev.filter((item) => rollEventKey(item) !== rollEventKey(callout))) }))),
         showConfig && /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-slate-900 border border-cyan-500 rounded-xl p-6 max-w-lg w-full shadow-[0_0_30px_rgba(6,182,212,0.2)]" }, /* @__PURE__ */ React.createElement("h2", { className: "text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2" }, /* @__PURE__ */ React.createElement(CloudLightning, null), " Cloud Config"), /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-2" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs font-bold text-slate-500 uppercase" }, "Table access"), tableDirectoryEnabled === true && /* @__PURE__ */ React.createElement("button", { onClick: fetchTables, className: "text-[10px] text-cyan-400 hover:text-white uppercase font-bold" }, "Refresh")), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-2 max-h-32 overflow-y-auto mb-3" }, tablesLoading && /* @__PURE__ */ React.createElement("span", { className: "text-[11px] text-slate-500 italic animate-pulse" }, "Checking table access\u2026"), !tablesLoading && tableDirectoryEnabled === false && /* @__PURE__ */ React.createElement("span", { className: "text-[11px] text-slate-500 italic" }, "For privacy, public table discovery is disabled. Enter the exact table name below."), !tablesLoading && tableDirectoryEnabled === true && availableTables.length === 0 && /* @__PURE__ */ React.createElement("span", { className: "text-[11px] text-slate-600 italic" }, "No tables yet \u2014 type a name below to create one."), !tablesLoading && tableDirectoryEnabled === true && availableTables.map(function(tb) {
           return /* @__PURE__ */ React.createElement("button", { key: tb.id, onClick: () => setSessionId(tb.id), className: `px-3 py-1 rounded text-xs font-bold border ${sessionId === tb.id ? "border-cyan-500 bg-cyan-950 text-cyan-300" : "border-slate-700 bg-slate-950 text-slate-400 hover:border-cyan-500"}` }, /* @__PURE__ */ React.createElement("span", { className: tb.locked ? "text-amber-300" : "text-emerald-300" }, tb.locked ? "CLOSED" : "OPEN"), " \xB7 ", tb.name, " ", /* @__PURE__ */ React.createElement("span", { className: "text-slate-600" }, "(", tb.players, ")"));
-        }))), /* @__PURE__ */ React.createElement("label", { className: "text-xs font-bold text-slate-500 uppercase mb-1 block" }, "Join or create a table"), /* @__PURE__ */ React.createElement("input", { type: "text", value: sessionId, onChange: (e) => setSessionId(e.target.value), className: "w-full bg-slate-950 border border-slate-700 rounded p-2 mb-3 text-white font-mono text-xs", placeholder: "Table name (e.g. Friday Night)" }), /* @__PURE__ */ React.createElement("label", { className: "text-xs font-bold text-slate-500 uppercase mb-1 block" }, "Table password ", /* @__PURE__ */ React.createElement("span", { className: "text-slate-600 normal-case font-normal" }, "(creates a closed table or unlocks one)")), /* @__PURE__ */ React.createElement("input", { type: "password", value: tablePass, onChange: (e) => setTablePass(e.target.value), className: "w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "Password (also required with an invitation when protected)" }), /* @__PURE__ */ React.createElement("label", { className: "text-xs font-bold text-slate-500 uppercase mb-1 block" }, "Invitation passkey ", /* @__PURE__ */ React.createElement("span", { className: "text-slate-600 normal-case font-normal" }, "(required for new members)")), /* @__PURE__ */ React.createElement("input", { type: "text", value: invitePasskey, onChange: (e) => setInvitePasskey(e.target.value.trim()), className: "w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "Paste invitation passkey, or open an invitation link" }), /* @__PURE__ */ React.createElement("div", { className: "rounded border border-cyan-800/50 bg-cyan-950/20 p-2 mb-4 text-[10px] text-cyan-200" }, /* @__PURE__ */ React.createElement("strong", null, "Membership:"), " the table owner creates invitation links or passkeys. A password does not replace the invitation."), isConnected && /* @__PURE__ */ React.createElement("div", { className: "rounded border border-slate-700 bg-slate-950/60 p-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-2 mb-2" }, /* @__PURE__ */ React.createElement("span", { className: "text-xs font-black uppercase tracking-wide text-white" }, connectedTableLocked ? "Change table password" : "Add table password"), /* @__PURE__ */ React.createElement("span", { className: `text-[9px] font-black uppercase ${connectedTableLocked ? "text-amber-300" : "text-emerald-300"}` }, connectedTableLocked ? "Closed" : "Open")), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-slate-500 mb-2" }, "This control is available only after successfully joining the table."), /* @__PURE__ */ React.createElement("input", { type: "password", value: newTablePass, onChange: (e) => setNewTablePass(e.target.value), className: "w-full bg-black border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "New password" }), /* @__PURE__ */ React.createElement("input", { type: "password", value: confirmTablePass, onChange: (e) => setConfirmTablePass(e.target.value), className: "w-full bg-black border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "Confirm new password" }), /* @__PURE__ */ React.createElement("button", { disabled: passwordChanging, onClick: changeConnectedTablePassword, className: "w-full px-3 py-2 rounded border border-amber-600/50 bg-amber-950/30 text-amber-200 text-[10px] font-black uppercase disabled:opacity-40" }, passwordChanging ? "Updating\u2026" : connectedTableLocked ? "Change password" : "Protect table")), /* @__PURE__ */ React.createElement("div", { className: "bg-slate-950/50 p-3 rounded border border-green-900/30 mb-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-xs text-green-400 font-bold mb-1" }, "Configuration Status:"), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-slate-400" }, "Firebase project configuration is loaded at runtime. Access control must be enforced by Firebase Security Rules and App Check, not by obscuring this configuration.")), /* @__PURE__ */ React.createElement("div", { className: "flex justify-end gap-2" }, isConnected && /* @__PURE__ */ React.createElement("button", { onClick: disconnectFromCloud, className: "px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded" }, "Disconnect"), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowConfig(false), className: "px-4 py-2 text-slate-400" }, "Cancel"), /* @__PURE__ */ React.createElement("button", { onClick: () => connectToCloud(), className: "px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold" }, "Connect")))),
+        }))), /* @__PURE__ */ React.createElement("label", { className: "text-xs font-bold text-slate-500 uppercase mb-1 block" }, "Join or create a table"), /* @__PURE__ */ React.createElement("input", { type: "text", value: sessionId, onChange: (e) => setSessionId(e.target.value), className: "w-full bg-slate-950 border border-slate-700 rounded p-2 mb-3 text-white font-mono text-xs", placeholder: "Table name (e.g. Friday Night)" }), /* @__PURE__ */ React.createElement("label", { className: "text-xs font-bold text-slate-500 uppercase mb-1 block" }, "Table password ", /* @__PURE__ */ React.createElement("span", { className: "text-slate-600 normal-case font-normal" }, "(creates a closed table or unlocks one)")), /* @__PURE__ */ React.createElement("input", { type: "password", value: tablePass, onChange: (e) => setTablePass(e.target.value), className: "w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "Password (also required with an invitation when protected)" }), /* @__PURE__ */ React.createElement("label", { className: "text-xs font-bold text-slate-500 uppercase mb-1 block" }, "Invitation passkey ", /* @__PURE__ */ React.createElement("span", { className: "text-slate-600 normal-case font-normal" }, "(required for new members)")), /* @__PURE__ */ React.createElement("input", { type: "text", value: invitePasskey, onChange: (e) => setInvitePasskey(e.target.value.trim()), className: "w-full bg-slate-950 border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "Paste invitation passkey, or open an invitation link" }), /* @__PURE__ */ React.createElement("div", { className: "rounded border border-cyan-800/50 bg-cyan-950/20 p-2 mb-4 text-[10px] text-cyan-200" }, /* @__PURE__ */ React.createElement("strong", null, "Access:"), " the owner creates invitation links or passkeys for new members. Every connection to a closed table\u2014including the owner and existing members\u2014also requires its password."), isConnected && /* @__PURE__ */ React.createElement("div", { className: "rounded border border-slate-700 bg-slate-950/60 p-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-2 mb-2" }, /* @__PURE__ */ React.createElement("span", { className: "text-xs font-black uppercase tracking-wide text-white" }, connectedTableLocked ? "Change table password" : "Add table password"), /* @__PURE__ */ React.createElement("span", { className: `text-[9px] font-black uppercase ${connectedTableLocked ? "text-amber-300" : "text-emerald-300"}` }, connectedTableLocked ? "Closed" : "Open")), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-slate-500 mb-2" }, "This control is available only after successfully joining the table."), /* @__PURE__ */ React.createElement("input", { type: "password", value: newTablePass, onChange: (e) => setNewTablePass(e.target.value), className: "w-full bg-black border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "New password" }), /* @__PURE__ */ React.createElement("input", { type: "password", value: confirmTablePass, onChange: (e) => setConfirmTablePass(e.target.value), className: "w-full bg-black border border-slate-700 rounded p-2 mb-2 text-white font-mono text-xs", placeholder: "Confirm new password" }), /* @__PURE__ */ React.createElement("button", { disabled: passwordChanging, onClick: changeConnectedTablePassword, className: "w-full px-3 py-2 rounded border border-amber-600/50 bg-amber-950/30 text-amber-200 text-[10px] font-black uppercase disabled:opacity-40" }, passwordChanging ? "Updating\u2026" : connectedTableLocked ? "Change password" : "Protect table")), /* @__PURE__ */ React.createElement("div", { className: "bg-slate-950/50 p-3 rounded border border-green-900/30 mb-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-xs text-green-400 font-bold mb-1" }, "Configuration Status:"), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-slate-400" }, "Firebase project configuration is loaded at runtime. Access control must be enforced by Firebase Security Rules and App Check, not by obscuring this configuration.")), /* @__PURE__ */ React.createElement("div", { className: "flex justify-end gap-2" }, isConnected && /* @__PURE__ */ React.createElement("button", { onClick: disconnectFromCloud, className: "px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded" }, "Disconnect"), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowConfig(false), className: "px-4 py-2 text-slate-400" }, "Cancel"), /* @__PURE__ */ React.createElement("button", { onClick: () => connectToCloud(), className: "px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold" }, "Connect")))),
         openNotes.map((o) => /* @__PURE__ */ React.createElement(
           NoteWindow,
           {

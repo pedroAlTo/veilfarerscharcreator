@@ -1,24 +1,32 @@
-VEILFARERS PORTAL v59.78 — START HERE
+VEILFARERS PORTAL v59.79 — START HERE
 
 Deploy every file from this ZIP root. Do not deploy a parent folder.
 
 Release authority:
-- /data/deploy-version.json: v59.78
-- X-VeilFarers-Release: v59.78
+- /data/deploy-version.json: v59.79
+- X-VeilFarers-Release: v59.79
 - X-VeilFarers-CSP-Profile: wasm-3d-dice-v2
 
-Primary acceptance:
-1. Load Hearts in the Void in Keeper Tool and verify 11 playable stages, 10 Sleeping pregenerates and linked Markdown chapters.
-2. Confirm Core Overload has 6 segments, Korren is not an automatic traitor, the final standoff has no roll and The Ship That Learns is optional/recommended.
-3. Confirm dados_1.mp3 starts immediately and stops with an interrupted roll.
-4. Confirm Inventory prominently names the active character and ID.
-5. Confirm transfer is disabled without an active character and refuses mismatched Player Tool/Charsheet targets.
-6. Re-test mobile 3D Shake to Roll and authenticated Keeper ↔ Player table sync.
+Primary table acceptance:
+1. Create a closed disposable table and disconnect.
+2. Reconnect as owner with an empty password: access must be rejected.
+3. Reconnect as owner with a wrong password: access must be rejected.
+4. Reconnect with the correct password: access must succeed.
+5. Repeat the three password cases with an existing member.
+6. Open Table Admin, type the exact table name and complete the two-step deletion.
+7. Confirm the session, table directory entry, password, invitations and handouts are gone.
+8. Claim a disposable legacy-format table through a valid join, then delete it as its new owner.
+
+Regression acceptance:
+- Hearts in the Void remains the v59.78 current adventure integration.
+- dados_1.mp3 retains its trimmed start and interruption behavior.
+- Inventory retains its explicit active-character target.
+- Re-test authenticated Keeper ↔ Player synchronization and mobile 3D Shake to Roll.
 
 Release documents:
-- PORTAL_HANDOVER_v59.78.md
-- GITHUB_DEPLOY_SUMMARY_v59.78.md
-- VALIDATION_v59.78.txt
-- START_HERE_v59.78.txt
+- PORTAL_HANDOVER_v59.79.md
+- GITHUB_DEPLOY_SUMMARY_v59.79.md
+- VALIDATION_v59.79.txt
+- START_HERE_v59.79.txt
 
-VeilFarers Blue remains the only exposed theme. Live Netlify/Firebase and physical-device acceptance remain required before public release.
+Use disposable tables in Deploy Preview. Live Netlify/Firebase denial tests remain required before public release.
