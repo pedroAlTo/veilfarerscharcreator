@@ -92,6 +92,9 @@
   const characterTrigger=nav.querySelector('#vf-nav-character-trigger');
   const characterBadgeValue=characterBadge&&characterBadge.querySelector('.vf-nav-character-name');
   const characterMenu=nav.querySelector('#vf-nav-character-menu');
+  // Keep the floating picker outside the sticky navigation's clipping and
+  // backdrop-filter containing block. It remains linked through aria-controls.
+  document.body.appendChild(characterMenu);
   const normalizeCharacterId=value=>String(value||'').trim().toUpperCase();
   const parseStored=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'')||fallback;}catch(_){return fallback;}};
   function currentCharacterId(){
