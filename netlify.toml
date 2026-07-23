@@ -17,14 +17,15 @@ functions = "netlify/functions"
 [functions]
   [functions."*"]
 
-# Every authenticated VeilFarers account receives the member role through netlify/functions/identity.mts.
-# Role checks happen at Netlify's CDN edge. The browser-side gate remains as a UX fallback.
+# Every authenticated account receives the base member role. It does not grant
+# protected-tool access. Player, keeper and admin are explicit Identity roles.
+# The same role policy is rechecked inside every sensitive server function.
 [[redirects]]
 from = "/player-tool"
 to = "/player-tool.html"
 status = 200
 force = true
-conditions = {Role = ["member", "keeper", "admin"]}
+conditions = {Role = ["player", "admin"]}
 
 [[redirects]]
 from = "/player-tool"
@@ -37,7 +38,7 @@ from = "/player-tool.html"
 to = "/player-tool.html"
 status = 200
 force = true
-conditions = {Role = ["member", "keeper", "admin"]}
+conditions = {Role = ["player", "admin"]}
 
 [[redirects]]
 from = "/player-tool.html"
@@ -50,7 +51,7 @@ from = "/keeper-tool"
 to = "/keeper-tool.html"
 status = 200
 force = true
-conditions = {Role = ["member", "keeper", "admin"]}
+conditions = {Role = ["keeper", "admin"]}
 
 [[redirects]]
 from = "/keeper-tool"
@@ -63,7 +64,7 @@ from = "/keeper-tool.html"
 to = "/keeper-tool.html"
 status = 200
 force = true
-conditions = {Role = ["member", "keeper", "admin"]}
+conditions = {Role = ["keeper", "admin"]}
 
 [[redirects]]
 from = "/keeper-tool.html"
@@ -109,7 +110,7 @@ for = "/*"
   Permissions-Policy = "accelerometer=(self), gyroscope=(self), camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
   Strict-Transport-Security = "max-age=31536000; includeSubDomains"
   Cross-Origin-Opener-Policy = "same-origin-allow-popups"
-  X-VeilFarers-Release = "v59.79"
+  X-VeilFarers-Release = "v59.80"
   X-VeilFarers-CSP-Profile = "wasm-3d-dice-v2"
   Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://docs.google.com; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net https://www.gstatic.com https://identity.netlify.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com https://identity.netlify.com https://api.netlify.com https://*.netlify.com; frame-src 'self' https://identity.netlify.com https://app.netlify.com https://docs.google.com; worker-src 'self' blob:; media-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
 
@@ -125,6 +126,11 @@ for = "/player-tool.html"
 
 [[headers]]
 for = "/keeper-tool.html"
+  [headers.values]
+  Cache-Control = "private, no-store"
+
+[[headers]]
+for = "/admin.html"
   [headers.values]
   Cache-Control = "private, no-store"
 

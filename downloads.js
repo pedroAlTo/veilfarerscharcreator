@@ -13,7 +13,7 @@
     fetch('/download/downloads.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`Manifest ${r.status}`);return r.json();}),
     D.manifest()
   ]).then(([manifest,canonical])=>{
-    release.textContent = canonical.release || manifest.release;
+    release.textContent = manifest.release || canonical.release;
     status.textContent = manifest.pdfCandidateStatus || '';
     const currentItems = (manifest.items||[]).filter(item => item && item.current !== false && !['deprecated','superseded','withdrawn'].includes(String(item.lifecycle || item.status || '').toLowerCase()));
     list.innerHTML = currentItems.map(item=>`<article class="vf-download-card">

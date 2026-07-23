@@ -91,15 +91,30 @@ export async function patchDoc(path:string,data:any,access?:string){
  if(!r.ok)throw new Error(`Firestore patch failed (${r.status}): ${await r.text()}`);return r.json()
 }
 export async function deleteDoc(path:string,access?:string){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}/${path}`,{method:'DELETE',headers:{authorization:`Bearer ${token}`}});if(!r.ok&&r.status!==404)throw new Error(`Firestore delete failed (${r.status})`)}
-export async function listDocs(path:string,access?:string){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}/${path}?pageSize=200`,{headers:{authorization:`Bearer ${token}`}});if(!r.ok)throw new Error(`Firestore list failed (${r.status})`);const raw:any=await r.json();return (raw.documents||[]).map((doc:any)=>({id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}))}
-export async function queryDocs(collectionId:string,fieldPath:string,value:any,access?:string,limit=200){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}:runQuery`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath},op:'EQUAL',value:encode(value)}},limit}})});if(!r.ok)throw new Error(`Firestore query failed (${r.status})`);const raw:any[]=await r.json();return raw.filter(item=>item.document).map(item=>{const doc=item.document;return {id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}})}
+export async function listDocs(path:string,access?:string){
+ const token=access||await googleAccessToken(),items:any[]=[]
+ let pageToken='',pages=0
+ do{
+  const query=new URLSearchParams({pageSize:'200'})
+  if(pageToken)query.set('pageToken',pageToken)
+  const r=await fetch(`${docBase()}/${path}?${query}`,{headers:{authorization:`Bearer ${token}`}})
+  if(!r.ok)throw new Error(`Firestore list failed (${r.status})`)
+  const raw:any=await r.json()
+  items.push(...(raw.documents||[]).map((doc:any)=>({id:decodeURIComponent(String(doc.name).split('/').pop()||''),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))})))
+  pageToken=String(raw.nextPageToken||'')
+  pages+=1
+  if(pages>=50&&pageToken)throw serviceError('Firestore list exceeded the safe pagination limit.','FIREBASE_LIST_LIMIT',503)
+ }while(pageToken)
+ return items
+}
+export async function queryDocs(collectionId:string,fieldPath:string,value:any,access?:string,limit=200){const token=access||await googleAccessToken();const r=await fetch(`${docBase()}:runQuery`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath},op:'EQUAL',value:encode(value)}},limit}})});if(!r.ok)throw new Error(`Firestore query failed (${r.status})`);const raw:any[]=await r.json();return raw.filter(item=>item.document).map(item=>{const doc=item.document;return {id:decodeURIComponent(String(doc.name).split('/').pop()||''),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}})}
 export async function queryDocsAt(parentPath:string,collectionId:string,fieldPath:string,value:any,access?:string,limit=200){
  const token=access||await googleAccessToken()
  const parent=String(parentPath||'').replace(/^\/+|\/+$/g,'')
  const r=await fetch(`${docBase()}/${parent}:runQuery`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath},op:'EQUAL',value:encode(value)}},limit}})})
  if(!r.ok)throw new Error(`Firestore scoped query failed (${r.status})`)
  const raw:any[]=await r.json()
- return raw.filter(item=>item.document).map(item=>{const doc=item.document;return {id:decodeURIComponent(String(doc.name).split('/').pop()),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}})
+ return raw.filter(item=>item.document).map(item=>{const doc=item.document;return {id:decodeURIComponent(String(doc.name).split('/').pop()||''),data:Object.fromEntries(Object.entries(doc.fields||{}).map(([k,v])=>[k,decode(v)]))}})
 }
 export function safeTableId(v:any){return String(v||'').trim().replace(/[\\/\?#%]/g,'-').replace(/\s+/g,' ').slice(0,80)}
 export function makePassword(password:string){

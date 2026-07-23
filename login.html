@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head>
-  <meta name="veilfarers-release" content="v59.79">
+  <meta name="veilfarers-release" content="v59.80">
   <script src="local-runtime.js"></script>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Account & Character Vault · VeilFarers</title>
@@ -15,8 +15,20 @@
     <header class="vf-hero"><div><div class="vf-eyebrow">Authenticated Character Library</div><h1>Account & Character Vault</h1><p class="vf-lead">Your completed VeilFarers use one permanent <code>VF-######</code> identity across Creator, Level Up, Charsheet and Player Tool. Firebase stores the account-owned Vault; local storage and JSON exports remain portable backups.</p></div><div class="vf-release">Account<strong id="account-email">Guest</strong><span id="account-role">—</span></div></header>
     <p class="vf-status" id="account-status">Initializing account and Character Vault…</p>
     <section class="vf-panel vf-content"><div class="vf-actions" style="justify-content:space-between"><div class="vf-actions"><button class="vf-button primary" id="new-character">Create Character</button><button class="vf-button" id="import-character">Import Character</button><input id="vault-import-input" type="file" accept="application/json,.json" hidden><button class="vf-button" id="refresh-vault">Refresh Vault</button><button class="vf-button" id="sync-current">Sync Current Character</button><button class="vf-button" id="toggle-trash">Open Trash</button></div><div id="signed-out-actions" class="vf-actions"><button class="vf-button primary" id="login-button">Log in</button><button class="vf-button" id="signup-button">Create account</button></div><div id="signed-in-actions" class="vf-actions vf-hidden"><button class="vf-button danger" id="logout-button">Log out</button></div></div></section>
-    <section class="vf-panel vf-content"><p>By creating an account you confirm that you are at least 16 and accept the <a href="/legal.html#terms">Terms</a>. Read the <a href="/legal.html#privacy">Privacy Notice</a> and <a href="/legal.html#storage">storage information</a>. To request deletion of the account and associated cloud data, email <a href="mailto:pedro.alm.to@gmail.com">pedro.alm.to@gmail.com</a> from the account address.</p></section>
+    <section class="vf-panel vf-content"><p>By creating an account you confirm that you are at least 16 and accept the <a href="/legal.html#terms">Terms</a>. Read the <a href="/legal.html#privacy">Privacy Notice</a> and <a href="/legal.html#storage">storage information</a>. You may delete your account and associated cloud data below, or contact <a href="mailto:pedro.alm.to@gmail.com">pedro.alm.to@gmail.com</a>.</p></section>
     <section class="vf-panel vf-content"><div class="vf-results-head"><h2>Character Vault</h2><span id="vault-mode">Characters · one active</span></div><div id="vault-list"><div class="vf-empty">Waiting for Vault status…</div></div></section>
+    <section class="vf-panel vf-content vf-hidden" id="account-danger-zone">
+      <div class="vf-section-heading"><div><div class="vf-eyebrow">Privacy control</div><h2>Delete account and cloud data</h2></div><span class="vf-badge">Permanent</span></div>
+      <p>This removes your Character Vault records, table memberships and invitations. A table that you own is transferred to another member when possible; an empty owned table is deleted. This browser's VeilFarers local data is also cleared after server deletion succeeds.</p>
+      <div class="vf-sheet-block">
+        <label for="delete-account-email"><strong>Type your account email</strong></label>
+        <input class="vf-input" id="delete-account-email" type="email" autocomplete="off">
+        <label for="delete-account-phrase"><strong>Type DELETE MY DATA</strong></label>
+        <input class="vf-input" id="delete-account-phrase" type="text" autocomplete="off">
+        <div class="vf-actions" style="margin-top:10px"><button class="vf-button danger" id="delete-account-button" type="button">Delete account and data</button></div>
+        <p class="vf-status" id="delete-account-status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
   </main>
   <script src="account.js"></script><script src="portal.js"></script>
 </body></html>

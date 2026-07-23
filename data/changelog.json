@@ -1,7 +1,20 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.79",
+  "currentVersion": "v59.80",
   "entries": [
+    {
+      "version": "v59.80",
+      "date": "2026-07-24",
+      "title": "Private Identity roles, data deletion and current books",
+      "changes": [
+        "Removes protected-tool access from the base member role and requires explicit player, keeper or admin roles.",
+        "Rechecks protected roles inside the tool-access, table and Firebase-session APIs instead of relying on browser UI or redirects alone.",
+        "Adds an administrator-only Identity panel for email invitations, Player/Keeper role assignment, revocation and confirmed user deletion.",
+        "Requires the administrator role and the Functions-only VF_ADMIN_EMAIL allowlist; the portal cannot grant or delete administrator accounts.",
+        "Adds self-service account deletion and an Identity deletion hook that remove Character Vault data, memberships and invitations while transferring shared tables where possible.",
+        "Updates Downloads to Keeper's Companion 11.4 and publishes Hearts in the Void 1.0 as a standalone adventure alongside the retained valid Corebook 11.35."
+      ]
+    },
     {
       "version": "v59.79",
       "date": "2026-07-23",
@@ -802,5 +815,5 @@
       ]
     }
   ],
-  "version": "59.79.0"
+  "version": "59.80.0"
 }

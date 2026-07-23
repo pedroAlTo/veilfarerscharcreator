@@ -1,0 +1,4 @@
+VEILFARERS PORTAL v59.80
+
+Open START_HERE.txt for the deployment sequence, role model, current book
+versions and acceptance-test documents.

@@ -1,32 +1,39 @@
-VEILFARERS PORTAL v59.79 — START HERE
+VEILFARERS PORTAL v59.80 — START HERE
 
-Deploy every file from this ZIP root. Do not deploy a parent folder.
+This is a complete GitHub/Netlify deployment package, not an overlay patch.
 
-Release authority:
-- /data/deploy-version.json: v59.79
-- X-VeilFarers-Release: v59.79
-- X-VeilFarers-CSP-Profile: wasm-3d-dice-v2
+1. Create a branch from the currently deployed portal.
+2. Replace the branch contents with this package, preserving your repository
+   history and Netlify site link.
+3. In Netlify Identity, set Registration to Invite only.
+4. Give only the owner account the admin Identity role.
+5. Set the Functions-only environment variable VF_ADMIN_EMAIL to that owner
+   account's normalized email address.
+6. Deploy the branch as a Deploy Preview and run VALIDATION_v59.80.txt.
+7. After the preview passes, merge the branch and deploy production.
 
-Primary table acceptance:
-1. Create a closed disposable table and disconnect.
-2. Reconnect as owner with an empty password: access must be rejected.
-3. Reconnect as owner with a wrong password: access must be rejected.
-4. Reconnect with the correct password: access must succeed.
-5. Repeat the three password cases with an existing member.
-6. Open Table Admin, type the exact table name and complete the two-step deletion.
-7. Confirm the session, table directory entry, password, invitations and handouts are gone.
-8. Claim a disposable legacy-format table through a valid join, then delete it as its new owner.
+PRIVATE ACCESS ROLES
 
-Regression acceptance:
-- Hearts in the Void remains the v59.78 current adventure integration.
-- dados_1.mp3 retains its trimmed start and interruption behavior.
-- Inventory retains its explicit active-character target.
-- Re-test authenticated Keeper ↔ Player synchronization and mobile 3D Shake to Roll.
+- member: account only; no Player or Keeper Tool access
+- player: Player Tool
+- keeper: Keeper Tool
+- admin: administration and both tools
 
-Release documents:
-- PORTAL_HANDOVER_v59.79.md
-- GITHUB_DEPLOY_SUMMARY_v59.79.md
-- VALIDATION_v59.79.txt
-- START_HERE_v59.79.txt
+Invite players and Keepers from /admin.html. Do not make them Netlify team
+collaborators.
 
-Use disposable tables in Deploy Preview. Live Netlify/Firebase denial tests remain required before public release.
+CURRENT BOOKS
+
+- Corebook 11.35 (retained valid portal copy; the new upload was truncated)
+- Keeper's Companion 11.4
+- Hearts in the Void 1.0, standalone adventure
+- Rust & Steel 11.33
+- Alien Species 11.33
+
+READ NEXT
+
+- SECURITY_IDENTITY_ACCESS_v59.80.md
+- PORTAL_HANDOVER_v59.80.md
+- GITHUB_DEPLOY_SUMMARY_v59.80.md
+- VALIDATION_v59.80.txt
+- LEGAL_LAUNCH_CHECKLIST_v59.80.md

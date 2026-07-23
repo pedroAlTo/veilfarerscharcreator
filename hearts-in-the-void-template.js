@@ -52,7 +52,7 @@
   const chapter = fileName => `/adventures/hearts-in-the-void/CURRENT/${fileName}`;
 
   global.VF_HEARTS_IN_THE_VOID_TEMPLATE = {
-    templateRevision: 'Corebook 11.35 · Keeper’s Companion 11.33 · adventure package 2026-07-22 v12',
+    templateRevision: 'Hearts in the Void 1.0 · standalone adventure',
     sourcePath: '/adventures/hearts-in-the-void/Hearts_in_the_Void_COMPLETE_Corebook_11_35_KC_11_33.md',
     sessionName: 'Hearts in the Void',
     fearTokens: 0,

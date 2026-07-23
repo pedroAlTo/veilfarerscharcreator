@@ -1,16 +1,16 @@
 {
   "schema": "veilfarers.deploy/1",
-  "version": "v59.79",
-  "packageVersion": "59.79.0",
-  "date": "2026-07-23",
+  "version": "v59.80",
+  "packageVersion": "59.80.0",
+  "date": "2026-07-24",
   "cspProfile": "wasm-3d-dice-v2",
   "requiredScriptSource": "'wasm-unsafe-eval'",
   "expectedResponseHeaders": {
-    "X-VeilFarers-Release": "v59.79",
+    "X-VeilFarers-Release": "v59.80",
     "X-VeilFarers-CSP-Profile": "wasm-3d-dice-v2"
   },
   "accessibilityProfile": "WCAG-2.2-AA-target",
-  "generatedAt": "2026-07-23",
-  "release": "v59.79",
-  "notes": "Closed tables now require their password on every connection, including owners and existing members. Table owners can permanently delete current or claimed legacy tables together with their linked secrets, invitations and handouts."
+  "generatedAt": "2026-07-24",
+  "release": "v59.80",
+  "notes": "Protected tools now require explicit player, keeper or admin Identity roles; the administrator can invite and manage the private group, account deletion purges linked cloud data, and Downloads carries Keeper's Companion 11.4 plus standalone Hearts in the Void 1.0."
 }

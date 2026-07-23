@@ -1,0 +1,59 @@
+VEILFARERS PORTAL v59.80 — VALIDATION
+Date: 2026-07-24
+
+AUTOMATED CHECKS
+
+PASS  Node test suite: 9/9.
+PASS  member alone has no protected-tool access.
+PASS  player and keeper roles remain separate; admin receives both.
+PASS  administrator requires both admin role and VF_ADMIN_EMAIL match.
+PASS  redirects do not grant Player/Keeper Tool access to member.
+PASS  browser gate contains no shared invitation-token path or storage.
+PASS  table password, owner deletion and scoped Firestore query tests.
+PASS  TypeScript no-emit compile of every new or modified Netlify function.
+PASS  JavaScript syntax checks for admin, account, access gate, downloads,
+      Keeper Tool runtime and Hearts in the Void template.
+PASS  JSON and netlify.toml parse checks.
+PASS  root HTML script and stylesheet references resolve locally.
+PASS  repository scan found no embedded private key, API token or
+      VF_ADMIN_EMAIL value.
+
+PDF CHECKS
+
+PASS  Corebook 11.35: 205 pages, 9,088,507 bytes, SHA-256
+      d7f55052b0eb9d66095a23d461163fcc9bd02253aff8868dc650847bef28be9b
+PASS  Keeper's Companion 11.4: 145 pages, 3,294,107 bytes, SHA-256
+      12c5395428b88e5d0bf1250b70a92b1b04767cc94d577d81f30878949f193242
+PASS  Hearts in the Void 1.0: 218 pages, 15,656,266 bytes, SHA-256
+      0e14b937e669c9540758e6a3e569382f674a1dc83d7a513d44fbfe6679c82613
+PASS  Rust & Steel 11.33: 303 pages, 10,010,451 bytes, SHA-256
+      f378fca1a312286d0ebc897161bf9e6be6ad97d1817f3866342840a206edcde1
+PASS  Alien Species 11.33: 168 pages, 2,736,437 bytes, SHA-256
+      c8807e858b85c2844921f0f0d9a2eacd4e456af1a3c582a7ab40263d48098051
+PASS  Cover and representative interior-page renders were visually inspected.
+PASS  downloads.json byte counts, versions and SHA-256 values match.
+
+REJECTED SOURCE ARTIFACT
+
+FAIL  The newly uploaded VeilFarers_Corebook_11.35-PDF-Candidate.pdf is
+      exactly 8,388,608 bytes and has no valid xref/trailer. It is truncated.
+ACTION The existing valid 205-page Corebook 11.35 artifact was retained.
+
+DEPLOY PREVIEW CHECKS REQUIRED
+
+PENDING  Netlify Identity Registration is Invite only.
+PENDING  Only the owner has admin, and VF_ADMIN_EMAIL matches that owner.
+PENDING  member: Player 403; Keeper 403.
+PENDING  player: Player allowed; Keeper 403.
+PENDING  keeper: Keeper allowed; Player 403.
+PENDING  admin: administration and both tools allowed.
+PENDING  Invitation email acceptance and post-login role refresh.
+PENDING  Removing a protected role revokes API access after session refresh.
+PENDING  Self deletion removes the Identity account and Character Vault data.
+PENDING  Administrator deletion requires exact email and cannot delete admin.
+PENDING  Shared-table owner deletion transfers ownership to a remaining member.
+PENDING  Empty owned-table deletion removes session, directory, secret,
+         invitations and handouts.
+PENDING  Netlify Function logs contain no purge or authorization failures.
+
+Production merge is blocked until every PENDING item passes in Deploy Preview.

@@ -16,6 +16,7 @@
   const list=el('vault-list');
   const signedOut=el('signed-out-actions');
   const signedIn=el('signed-in-actions');
+  const dangerZone=el('account-danger-zone');
 
   function setStatus(text,type=''){
     accountStatus.textContent=text;
@@ -87,6 +88,7 @@
   function renderUser(user){
     activeUser=user||null;const logged=!!activeUser;
     signedOut.classList.toggle('vf-hidden',logged);signedIn.classList.toggle('vf-hidden',!logged);
+    dangerZone?.classList.toggle('vf-hidden',!logged);
     if(logged){
       el('account-email').textContent=activeUser.email||activeUser.id;
       const roles=activeUser.app_metadata?.roles||activeUser.appMetadata?.roles||[];
@@ -133,12 +135,35 @@
   el('login-button').addEventListener('click',()=>ID?.open('login'));
   el('signup-button').addEventListener('click',()=>ID?.open('signup'));
   el('logout-button').addEventListener('click',()=>ID?.logout());
+  el('delete-account-button')?.addEventListener('click',async()=>{
+    const button=el('delete-account-button'),deleteStatus=el('delete-account-status');
+    if(!activeUser){deleteStatus.textContent='Sign in before deleting your account.';return}
+    button.disabled=true;deleteStatus.textContent='Deleting cloud data and account…';
+    try{
+      const token=await activeUser.jwt(true);
+      const response=await fetch('/api/account-delete',{
+        method:'POST',credentials:'same-origin',cache:'no-store',
+        headers:{'content-type':'application/json',authorization:`Bearer ${token}`},
+        body:JSON.stringify({confirmEmail:el('delete-account-email').value.trim(),confirmation:el('delete-account-phrase').value}),
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw Error(data.error||'Account deletion failed.');
+      [localStorage,sessionStorage].forEach(storage=>{
+        for(let index=storage.length-1;index>=0;index-=1){
+          const key=storage.key(index);if(key&&key.toLowerCase().startsWith('veilfarers'))storage.removeItem(key);
+        }
+      });
+      deleteStatus.textContent='Account and cloud data deleted.';
+      setTimeout(()=>location.href='/',900);
+    }catch(error){deleteStatus.textContent=error.message||String(error);button.disabled=false}
+  });
 
   window.addEventListener('veilfarers:active-character-changed',renderVault);
   renderVault();
   if(window.VF_IS_LOCAL_TEST===true){
     signedOut.classList.add('vf-hidden');signedIn.classList.remove('vf-hidden');
     el('logout-button').classList.add('vf-hidden');el('account-email').textContent='Local test';el('account-role').textContent='offline';
+    dangerZone?.classList.add('vf-hidden');
     setStatus('Local test mode. The same Character Vault UI uses local records; cloud synchronization requires the deployed authenticated site.');
     return;
   }
