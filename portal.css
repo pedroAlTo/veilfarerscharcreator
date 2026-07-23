@@ -40,12 +40,25 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-portal-nav{z-index:60000}
 .vf-construction-banner{z-index:59999}
 
-/* v59.50: the persistent Character ID is shown in the shared navigation rather than as a floating callout. */
-.vf-portal-nav .vf-nav-character-id{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid rgba(233,192,104,.45);background:rgba(38,31,19,.86);border-radius:999px;padding:6px 10px;color:#f5e8bd;line-height:1}
+/* v59.50: the persistent active character is shown in the shared navigation rather than as a floating callout. */
+.vf-portal-nav .vf-nav-character-id{display:inline-flex;align-items:center;white-space:nowrap}
 .vf-portal-nav .vf-nav-character-id[hidden]{display:none!important}
-.vf-portal-nav .vf-nav-character-id span{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#a99566}
-.vf-portal-nav .vf-nav-character-id strong{font-size:10px;letter-spacing:.07em;color:#fff1c9}
-@media(max-width:700px){.vf-portal-nav .vf-nav-character-id span{display:none}.vf-portal-nav .vf-nav-character-id{padding:7px 9px}}
+.vf-nav-character-trigger{display:inline-flex;align-items:center;gap:6px;min-height:32px;max-width:240px;border:1px solid rgba(233,192,104,.45);background:rgba(38,31,19,.86);border-radius:999px;padding:6px 9px 6px 10px;color:#f5e8bd;font:inherit;line-height:1;cursor:pointer;transition:border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.vf-nav-character-trigger:hover,.vf-nav-character-trigger:focus-visible,.vf-nav-character-id.is-open .vf-nav-character-trigger{outline:none;border-color:#e9c068;background:rgba(68,53,26,.96);box-shadow:0 0 16px rgba(233,192,104,.13)}
+.vf-nav-character-trigger .vf-nav-character-kicker{flex:0 0 auto;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#a99566}
+.vf-nav-character-trigger .vf-nav-character-name{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:10px;letter-spacing:.035em;color:#fff1c9}
+.vf-nav-character-trigger svg{flex:0 0 auto;width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .16s ease}
+.vf-nav-character-id.is-open .vf-nav-character-trigger svg{transform:rotate(180deg)}
+.vf-nav-character-menu{position:fixed;z-index:60020;display:grid;gap:5px;max-height:min(420px,calc(100vh - 70px));overflow:auto;padding:8px;border:1px solid rgba(233,192,104,.42);border-radius:14px;background:linear-gradient(180deg,rgba(31,27,20,.99),rgba(13,12,10,.99));box-shadow:0 18px 50px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,239,194,.05);backdrop-filter:blur(14px)}
+.vf-nav-character-menu[hidden]{display:none!important}
+.vf-nav-character-option{position:relative;display:grid;gap:4px;width:100%;padding:10px 34px 10px 11px;border:1px solid rgba(233,192,104,.14);border-radius:10px;background:rgba(255,255,255,.025);color:#e8dcc0;font:inherit;text-align:left;cursor:pointer;transition:border-color .14s ease,background .14s ease,color .14s ease}
+.vf-nav-character-option:hover,.vf-nav-character-option:focus-visible{outline:none;border-color:rgba(233,192,104,.7);background:rgba(233,192,104,.10);color:#fff7dd}
+.vf-nav-character-option strong{overflow:hidden;text-overflow:ellipsis;font-size:11px;letter-spacing:.025em}
+.vf-nav-character-option small{overflow:hidden;text-overflow:ellipsis;color:#9d9278;font-size:8px;letter-spacing:.055em;text-transform:uppercase}
+.vf-nav-character-option.is-selected{border-color:rgba(52,211,153,.6);background:rgba(6,78,59,.32);color:#dffff0}
+.vf-nav-character-option.is-selected::after{content:"✓";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#34d399;font-size:13px;font-weight:900}
+.vf-nav-character-empty{padding:14px 12px;color:#a99d82;font-size:10px;line-height:1.45;text-align:center}
+@media(max-width:700px){.vf-nav-character-trigger .vf-nav-character-kicker{display:none}.vf-nav-character-trigger{max-width:180px;padding:7px 8px 7px 10px}.vf-nav-character-menu{max-height:calc(100vh - 62px)}}
 
 
 /* v59.52: a Vault may contain many characters, but exactly one is the active cross-tool character. */

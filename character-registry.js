@@ -380,12 +380,17 @@
     id=normalizeId(id);
     const record=id&&get(id);
     if(record&&record.status==='trashed')id='';
+    if(typeof window.VeilFarersPortalRenderCharacterPicker==='function'){
+      window.VeilFarersPortalRenderCharacterPicker(id);
+      return;
+    }
     const element=document.getElementById('vf-nav-character-id');
     const value=element&&element.querySelector('strong');
     if(!element)return;
     element.hidden=!id;
-    if(value)value.textContent=cleanText(id);
-    element.title=id?`Current character: ${cleanText(id)}`:'';
+    const name=record&&summary(record).name;
+    if(value)value.textContent=cleanText(name||'Unnamed VeilFarer');
+    element.title=id?`Active character: ${cleanText(name||'Unnamed VeilFarer')} (${cleanText(id)})`:'';
   }
 
   function injectStyle(){ /* Character ID presentation is owned by the shared portal navigation. */ }
