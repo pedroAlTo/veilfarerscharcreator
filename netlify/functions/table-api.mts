@@ -5,6 +5,7 @@ import {
   patchDoc, putDoc, queryDocsAt, responseHeaders, safeTableId, tokenHash,
 } from './_firebase-admin.mts'
 import { SERVER_LOCK_MARKER, tablePasswordGate } from './_table-security.mts'
+import { requireAnyWipAccess } from './_wip-access.mts'
 
 const appId = 'default-app-id'
 const base = `artifacts/${appId}/public/data`
@@ -89,6 +90,7 @@ export default async (req: Request, _ctx: Context) => {
     if (!user) return json({ error: 'You must be logged in.' }, 401)
     if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
     verifyRequestOrigin(req)
+    await requireAnyWipAccess(req,user)
 
     const body: any = await req.json().catch(() => ({}))
     action = String(body.action || '')

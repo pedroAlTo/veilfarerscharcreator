@@ -6,9 +6,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>VeilFarers · Character Creator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Oswald:wght@400;500;600;700&display=swap"/>
 <style>
 :root{
   --gold-1:#f8e7a8; --gold-2:#e9c068; --gold-3:#c48411; --gold-4:#8a5a0a;
@@ -570,6 +567,15 @@ html,body{
 .wizard-dock .btn{min-height:44px;padding:10px 18px;justify-content:center;}
 .wizard-dock .btn[disabled]{opacity:.34;cursor:not-allowed;filter:grayscale(.55);transform:none;box-shadow:none;}
 .wizard-next.ready{box-shadow:0 0 0 1px rgba(248,231,168,.28),0 0 22px rgba(233,192,104,.26);}
+.step-nav-item{appearance:none;width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.step-nav-item:focus-visible,.creator-top-step:focus-visible{outline:2px solid var(--gold-1);outline-offset:-3px}
+.experience-ideas{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0;color:var(--text-mid);font-size:13px}
+.experience-ideas-panel{border:1px solid var(--border-gold);background:rgba(0,0,0,.22);padding:14px;margin:0 0 18px;border-radius:10px}
+.experience-ideas-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
+.experience-ideas-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.experience-idea{border:1px solid rgba(233,192,104,.22);background:rgba(233,192,104,.05);color:var(--text-bright);padding:10px;border-radius:8px;text-align:left;cursor:pointer}
+.experience-idea:hover,.experience-idea:focus-visible{border-color:var(--gold-2);background:rgba(233,192,104,.12)}
+@media(max-width:720px){.experience-ideas-list{grid-template-columns:1fr}}
 
 .choice-overlay{
   position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;
@@ -1012,16 +1018,16 @@ body.choice-open{overflow:hidden;}
       <div class="creator-side-subtitle">Character Creator</div>
     </div>
     <div class="creator-progress-label">Creation progress</div>
-    <div class="step-nav-item active" data-step="1"><span class="step-num">Step 1</span><span class="step-label">Ancestry</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="2"><span class="step-num">Step 2</span><span class="step-label">Community</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="3"><span class="step-num">Step 3</span><span class="step-label">Class</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="4"><span class="step-num">Step 4</span><span class="step-label">Traits</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="5"><span class="step-num">Step 5</span><span class="step-label">Experiences</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="6"><span class="step-num">Step 6</span><span class="step-label">Affiliation</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="7"><span class="step-num">Step 7</span><span class="step-label">Powers</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="8"><span class="step-num">Step 8</span><span class="step-label">Equipment</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="9"><span class="step-num">Final</span><span class="step-label">Details</span><span class="step-check">&#10003;</span></div>
-    <div class="step-nav-item" data-step="sheet"><span class="step-num">Sheet</span><span class="step-label">Character</span></div>
+    <button type="button" class="step-nav-item active" data-step="1"><span class="step-num">Step 1</span><span class="step-label">Ancestry</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="2"><span class="step-num">Step 2</span><span class="step-label">Community</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="3"><span class="step-num">Step 3</span><span class="step-label">Class</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="4"><span class="step-num">Step 4</span><span class="step-label">Traits</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="5"><span class="step-num">Step 5</span><span class="step-label">Experiences</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="6"><span class="step-num">Step 6</span><span class="step-label">Affiliation</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="7"><span class="step-num">Step 7</span><span class="step-label">Powers</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="8"><span class="step-num">Step 8</span><span class="step-label">Equipment</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="9"><span class="step-num">Final</span><span class="step-label">Details</span><span class="step-check">&#10003;</span></button>
+    <button type="button" class="step-nav-item" data-step="sheet"><span class="step-num">Sheet</span><span class="step-label">Character</span></button>
     <div class="creator-side-quote">Every path leaves a mark.<br>Choose wisely.</div>
   </nav>
 
@@ -1147,6 +1153,14 @@ body.choice-open{overflow:hidden;}
     <h2 class="step-heading">Experiences</h2>
     <p class="step-sub">Choose <strong>three defining experiences</strong> from your past. Each starts at <strong>+2</strong> and can be invoked when relevant (spend 1 Hope or Effort) to add a flat bonus to a roll. Make them personal, applicable, and distinct.</p>
     <div class="validation-msg" id="val-5">Complete all three experiences to continue.</div>
+    <div class="experience-ideas">
+      <button class="btn btn-ghost" id="experience-ideas-button" type="button">I need an idea!</button>
+      <span>Uses the combination you have chosen so far and never overwrites your writing.</span>
+    </div>
+    <div class="experience-ideas-panel" id="experience-ideas-panel" hidden>
+      <div class="experience-ideas-head"><strong>Experience prompts</strong><button class="btn btn-ghost" id="experience-ideas-refresh" type="button">Refresh ideas</button></div>
+      <div id="experience-ideas-list" class="experience-ideas-list"></div>
+    </div>
     <div class="experience-inputs">
       <div class="experience-item">
         <div class="experience-num">Experience 1 &middot; +2</div>
@@ -1554,6 +1568,13 @@ function attachAll3D(container){
    webp is tried first, then png, then jpg; if none exist the colour gradient is shown. */
 const CARD_IMG_EXTS = ["png","webp","jpg"];
 const CARD_IMG_COUNTS = Object.freeze({ ancestry:9, community:7, class:9 });
+const COMMUNITY_ART_ORDER=Object.freeze({
+  "core-world":1,"trade-hub":2,"frontier-colony":3,"void-station":4,
+  "free-fleet":5,"agrisynth":6,"displaced-enclave":7
+});
+function communityArtIndex(community,fallback){
+  return COMMUNITY_ART_ORDER[String(community&&community.id||"")]||fallback;
+}
 function artImg(cat,idx,cls){
   // This distribution contains art for the three categories above. Other card
   // types intentionally use their tinted gradient instead of requesting files
@@ -1831,7 +1852,7 @@ function renderCommunities(){
     return `
     <div class="vl-card${state.community===c.id?" selected":""}${locked?" disabled":""}" data-pick="community" data-id="${c.id}" data-card-truncated="1">
       <div class="vl-art" style="${artBg(c.color)}">
-        ${artImg("community",i+1)}
+        ${artImg("community",communityArtIndex(c,i+1))}
         <span class="vl-art-icon">${esc(c.colorName)}</span>
         <span class="vl-checkmark">&#10003;</span>
         <span class="vl-art-name">${esc(c.name)}</span>
@@ -2752,7 +2773,7 @@ const STEP_META={
 function isStepReady(step){
   if(step===1){const anc=ANCESTRIES.find(a=>a.id===state.ancestry);if(!state.ancestry)return false;return !(anc&&anc.subStrains&&anc.subStrains.length)||!!state.subStrain;}
   if(step===2)return !!state.community;
-  if(step===3)return enforceClassPathGate()&&!!(state.cls&&state.subclass);
+  if(step===3)return !!(normalizeCreatorPath(state.path)&&state.cls&&state.subclass);
   if(step===4){
     const ids=["agility","strength","finesse","instinct","presence","knowledge"];
     if(!ids.every(id=>Object.prototype.hasOwnProperty.call(state.traits||{},id)))return false;
@@ -2790,14 +2811,18 @@ function updateWizardDock(){
 
 function goStep(step){
   saveInputs();
-  if(step>currentStep && typeof currentStep==="number" && !validateStep(currentStep))return;
   autosave();
   document.querySelectorAll(".step-panel").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".step-nav-item").forEach(ni=>{
     const s=ni.dataset.step;
     ni.classList.remove("active","done");
     if(s==step) ni.classList.add("active");
-    else if(!isNaN(s)&&typeof step==="number"&&parseInt(s)<step) ni.classList.add("done");
+    else if(!isNaN(s)&&isStepReady(parseInt(s))) ni.classList.add("done");
+  });
+  document.querySelectorAll(".creator-top-step").forEach(item=>{
+    const itemStep=parseInt(item.dataset.step);
+    item.classList.toggle("active",itemStep===step);
+    item.classList.toggle("done",isStepReady(itemStep));
   });
   const panel=document.getElementById("step-"+step);
   if(panel)panel.classList.add("active");
@@ -2831,6 +2856,40 @@ function saveInputs(){
   set("char-name","name"); set("char-pronouns","pronouns");
   set("char-appearance","appearance"); set("char-voice","voice");
   set("char-bg-answer","bgAnswer"); set("char-anchor","anchor"); set("char-wound","wound");
+}
+
+function experienceIdeas(){
+  saveInputs();
+  const ancestry=ANCESTRIES.find(item=>item.id===state.ancestry)?.name||"my ancestry";
+  const community=COMMUNITIES.find(item=>item.id===state.community)?.name||"the place that raised me";
+  const cls=CLASSES.find(item=>item.id===state.cls)?.name||"my calling";
+  const path=state.path||"uncertain path";
+  const subclass=CLASSES.find(item=>item.id===state.cls)?.subclasses?.find(item=>item.id===state.subclass)?.name||"my training";
+  const strongest=Object.entries(state.traits||{}).sort((a,b)=>Number(b[1])-Number(a[1]))[0]?.[0]||"instinct";
+  return [
+    `I learned to trust my ${strongest} when ${community} failed me.`,
+    `As ${ancestry}, I survived a crisis that changed how I see ${path} people.`,
+    `${cls} training taught me the rule I still refuse to break.`,
+    `Someone from ${community} knows what I did to earn my place.`,
+    `My ${subclass} mentor left me with a debt no one else understands.`,
+    `I kept the crew alive once by doing what ${cls} doctrine forbids.`
+  ];
+}
+function renderExperienceIdeas(){
+  const panel=document.getElementById("experience-ideas-panel");
+  const list=document.getElementById("experience-ideas-list");
+  if(!panel||!list)return;
+  list.innerHTML=experienceIdeas().map(text=>`<button class="experience-idea" type="button">${esc(text)}</button>`).join("");
+  panel.hidden=false;
+}
+function applyExperienceIdea(text){
+  saveInputs();
+  const index=state.experiences.findIndex(value=>!String(value||"").trim());
+  if(index<0)return;
+  state.experiences[index]=text;
+  const input=document.getElementById(`exp${index+1}`);
+  if(input)input.value=text;
+  autosave();updateWizardDock();
 }
 
 async function finishCreatorToSheet(){
@@ -3207,7 +3266,17 @@ document.getElementById("step-nav").addEventListener("click",e=>{
   const s=item.dataset.step;
   if(s==="sheet"){ finishCreatorToSheet(); return; }
   const n=parseInt(s);
-  if(n<=currentStep||item.classList.contains("done")){ saveInputs(); goStep(n); }
+  saveInputs(); goStep(n);
+});
+document.getElementById("creator-top-rail").addEventListener("click",e=>{
+  const item=e.target.closest(".creator-top-step");
+  if(item)goStep(parseInt(item.dataset.step));
+});
+document.getElementById("experience-ideas-button").addEventListener("click",renderExperienceIdeas);
+document.getElementById("experience-ideas-refresh").addEventListener("click",renderExperienceIdeas);
+document.getElementById("experience-ideas-list").addEventListener("click",e=>{
+  const item=e.target.closest(".experience-idea");
+  if(item)applyExperienceIdea(item.textContent.trim());
 });
 
 document.getElementById("load-file-input").addEventListener("change",handleLoadFile);
@@ -3336,7 +3405,7 @@ function libAncestryCard(a,i){
 function libCommunityCard(cm,i){
   return `<article class="lib-card" style="--accent:${cm.color}">
     <div class="lib-cc">
-      <div class="lib-art">${artImg("community",i+1,"lib-art-photo")}<div class="lib-art-name" style="font-size:16px">${esc(cm.name)}</div></div>
+      <div class="lib-art">${artImg("community",communityArtIndex(cm,i+1),"lib-art-photo")}<div class="lib-art-name" style="font-size:16px">${esc(cm.name)}</div></div>
       <div class="lib-pnl">
         <div class="lib-pnl-sub">${esc(cm.epithet)}</div>
         <div class="lib-pnl-body"><div class="ft"><b>${esc(cm.feature.name)}</b></div>${esc(trim(cm.feature.text,150))}</div>

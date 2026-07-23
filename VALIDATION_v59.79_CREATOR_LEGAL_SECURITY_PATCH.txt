@@ -1,0 +1,71 @@
+VeilFarers Portal v59.79 — Creator, legal and WIP security patch
+Validation date: 2026-07-23
+
+PASS — Base reconstructed in order:
+  VeilFarers_Portal_v59.79.zip
+  Character_Picker_PATCH
+  Character_Picker_MENU_FIX
+
+PASS — JavaScript syntax:
+  portal.js
+  wip-access.js
+  legal.js
+  scripts/create-wip-invite.mjs
+
+PASS — Inline JavaScript parse:
+  creator.html
+  feedback.html
+  player-tool.html
+  keeper-tool.html
+
+PASS — TypeScript:
+  netlify/functions/wip-access.mts and dependencies
+  netlify/functions/table-api.mts and dependencies
+  Checked with TypeScript, Node types, ES2022/DOM, bundler resolution, skipLibCheck.
+
+PASS — netlify.toml parses as valid TOML.
+
+PASS — Creator static acceptance:
+  semantic side-step buttons
+  unrestricted side/top navigation
+  Back navigation retained
+  Next validation retained
+  six contextual Experience prompts
+  first-empty-only prompt application
+  explicit Community art mapping 01–07
+
+PASS — DPCGL:
+  official PNG extracted without visual modification from the Darrington Press package
+  PNG dimensions 2662 × 649, RGBA
+  SHA-256 26f4f0e2762e21fc57fa804fb905649a6d75a27000d932e41a6eb8974b84d059
+  required attribution appears in legal.html and THIRD_PARTY_NOTICES.md
+
+PASS — Privacy/security static checks:
+  no DNI/NIF value in delivered public files
+  no Google Fonts network references remain
+  public controller/contact details present
+  WIP token records contain hashes, not plaintext tokens
+  invitation email/scope/expiry/revocation are checked server-side
+  signed cookie is HttpOnly, Secure and SameSite=Strict
+  table API requires a current WIP grant
+  Player/Keeper/API responses receive no-store headers
+  official tool routes require a Netlify Identity member role
+
+PASS — Invitation generator smoke test:
+  creates a random VF-WIP token and SHA-256 environment record
+  supports player, keeper or combined scope
+  supports bounded expiry
+
+LIVE ACCEPTANCE STILL REQUIRED:
+  correct/mismatched/incorrect/empty/expired/revoked token cases
+  Netlify Identity bearer validation and Set-Cookie behavior
+  immediate environment-based revocation on protected API request
+  Firebase production rules and table authorization
+  keyboard/mobile behavior and visual layout
+  processor-console retention and legal operational checklist
+
+LEGAL LAUNCH BLOCKER:
+  The current DPCGL limits permitted formats and custom VTT distribution. The
+  community logo and attribution do not themselves authorize a public interactive
+  portal. Keep Player/Keeper access closed and private until qualified advice or
+  written Darrington Press confirmation resolves the portal/Creator format.

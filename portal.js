@@ -291,4 +291,8 @@
     script.onload=()=>bindIdentity(window.netlifyIdentity,true);
     document.head.appendChild(script);
   }
+  const footer=document.createElement('footer');
+  footer.className='vf-legal-footer';
+  footer.innerHTML=`<span>© ${new Date().getFullYear()} Pedro Almagro Torrecillas</span><span class="vf-legal-footer-links"><a href="/legal.html#legal-notice">Legal</a><a href="/legal.html#privacy">Privacy</a><a href="/legal.html#storage">Cookies & storage</a><a href="/legal.html#terms">Terms</a><a href="/legal.html#daggerheart">Daggerheart attribution</a><a href="mailto:pedro.alm.to@gmail.com">Contact</a></span>`;
+  document.body.appendChild(footer);
 })();
