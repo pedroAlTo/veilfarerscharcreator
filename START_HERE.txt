@@ -1,41 +1,24 @@
-VEILFARERS PORTAL v59.77 — START HERE
+VEILFARERS PORTAL v59.78 — START HERE
 
-1. DEPLOY
-   Deploy the complete contents of VeilFarers_Portal_v59.77.zip from the ZIP root.
-   Do not deploy a parent folder containing the portal.
+Deploy every file from this ZIP root. Do not deploy a parent folder.
 
-2. VERIFY RELEASE AUTHORITY
-   - Open /data/deploy-version.json and confirm v59.77.
-   - Inspect an HTML response and confirm X-VeilFarers-Release: v59.77.
-   - Confirm X-VeilFarers-CSP-Profile: wasm-3d-dice-v2.
+Release authority:
+- /data/deploy-version.json: v59.78
+- X-VeilFarers-Release: v59.78
+- X-VeilFarers-CSP-Profile: wasm-3d-dice-v2
 
-3. LEVEL UP AND INVENTORY ACCEPTANCE
-   - Select multiple one-slot Level Up cards and confirm every selected frame has particles.
-   - Open Trait and Domain Power selectors; confirm only the chosen entry remains on the card.
-   - Press [+] and verify detailed rules/examples; confirm [−] occupies the same corner.
-   - Apply a Level Up and confirm the other page frames glow after the reward animation.
-   - Send an inventory to Player Tool, Charsheet and Both; verify each destination receives it.
+Primary acceptance:
+1. Load Hearts in the Void in Keeper Tool and verify 11 playable stages, 10 Sleeping pregenerates and linked Markdown chapters.
+2. Confirm Core Overload has 6 segments, Korren is not an automatic traitor, the final standoff has no roll and The Ship That Learns is optional/recommended.
+3. Confirm dados_1.mp3 starts immediately and stops with an interrupted roll.
+4. Confirm Inventory prominently names the active character and ID.
+5. Confirm transfer is disabled without an active character and refuses mismatched Player Tool/Charsheet targets.
+6. Re-test mobile 3D Shake to Roll and authenticated Keeper ↔ Player table sync.
 
-4. DICE AND AUDIO REGRESSION CHECK
-   - Select 3D dice on mobile, enable Shake to Roll and confirm a shake opens physical 3D dice.
-   - Confirm /assets/dados_1.mp3 starts with each roll and stops when the animation is dismissed.
-   - Start a 3D roll and press anywhere on the full overlay before settlement.
-   - Confirm physical dice disappear and the identical roll resolves in 2D.
-   - Let another 3D roll settle, then click the overlay and confirm its result is preserved.
+Release documents:
+- PORTAL_HANDOVER_v59.78.md
+- GITHUB_DEPLOY_SUMMARY_v59.78.md
+- VALIDATION_v59.78.txt
+- START_HERE_v59.78.txt
 
-5. SERVICE CHECK
-   - Sign in with Netlify Identity.
-   - Connect one Keeper Tool and one Player Tool to the same table.
-   - Confirm no repeated 401 polling loop appears.
-   - Confirm live table updates flow in both directions.
-
-6. INCLUDED RELEASE DOCUMENTS
-   - GITHUB_DEPLOY_SUMMARY_v59.77.md
-   - PORTAL_HANDOVER_v59.77.md
-   - VALIDATION_v59.77.txt
-   - START_HERE_v59.77.txt
-
-7. KNOWN RELEASE POSITION
-   - VeilFarers Blue is the only exposed theme.
-   - White Stone remains disabled pending a separate reconstruction.
-   - Live Netlify/Firebase, production card transforms and real DiceBox acceptance remain required before public release.
+VeilFarers Blue remains the only exposed theme. Live Netlify/Firebase and physical-device acceptance remain required before public release.

@@ -1350,7 +1350,7 @@
         if (!diceSoundEnabled || diceVolume <= 0) return;
         try {
           stopDiceSound();
-          const audio = diceAudioRef.current || new Audio("/assets/dados_1.mp3");
+          const audio = diceAudioRef.current || new Audio("/assets/dados_1.mp3?v=59.78");
           diceAudioRef.current = audio;
           audio.preload = "auto";
           audio.volume = Math.max(0, Math.min(1, diceVolume));

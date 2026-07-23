@@ -16,7 +16,8 @@
     tabs: document.querySelector('#catalog-tabs'), cards:document.querySelector('#catalog-cards'), count:document.querySelector('#catalog-count'),
     search:document.querySelector('#catalog-search'), filters:[...document.querySelectorAll('[data-filter-name]')], reset:document.querySelector('#catalog-reset'),
     inventory:document.querySelector('#inventory-list'), invCount:document.querySelector('#inventory-count'), invCredits:document.querySelector('#inventory-credits'), release:document.querySelector('#canonical-release'),
-    exportBtn:document.querySelector('#inventory-export'), importInput:document.querySelector('#inventory-import'), clearBtn:document.querySelector('#inventory-clear'), transferStatus:document.querySelector('#inventory-transfer-status')
+    exportBtn:document.querySelector('#inventory-export'), importInput:document.querySelector('#inventory-import'), clearBtn:document.querySelector('#inventory-clear'), transferStatus:document.querySelector('#inventory-transfer-status'),
+    activeCharacter:document.querySelector('#inventory-active-character'), activeCharacterId:document.querySelector('#inventory-active-character-id'), activeCharacterPanel:document.querySelector('.vf-active-loadout'), transferButtons:[...document.querySelectorAll('[data-inventory-send]')]
   };
 
   const esc = D.escapeHtml;
@@ -219,14 +220,44 @@
     const map=new Map();[...(Array.isArray(existing)?existing:[]),...incoming].forEach(item=>{const key=String(item?.canonicalId||item?.id||item?.name||'').trim();if(key)map.set(key,item);});return [...map.values()];
   }
   function transferStatus(message,error=false){if(!els.transferStatus)return;els.transferStatus.textContent=message;els.transferStatus.classList.toggle('error',error);}
+  function activeCharacterTarget(){
+    const registry=window.VeilFarersCharacterRegistry;
+    const id=String(registry?.currentId?.()||localStorage.getItem('veilfarers.character.currentId.v1')||'').trim().toUpperCase();
+    const record=id&&registry?.get?.(id);
+    let characters=[];try{characters=JSON.parse(localStorage.getItem('veilfarers-player-tool-characters')||'[]');}catch(_){ }
+    if(!Array.isArray(characters))characters=[];
+    const playerCharacter=characters.find(item=>item&&item.entityType!=='drone'&&id&&String(item.characterId||item.id||'').trim().toUpperCase()===id);
+    const characterData=record?.characterData||{};
+    const fields=characterData.sheetPayload?.fields||{};
+    const name=clean(
+      playerCharacter?.name||
+      characterData.playerCharacter?.name||
+      characterData.creatorState?.name||
+      fields.character_name||fields.name||
+      record?.name
+    );
+    return {id,name:name||id,record,playerCharacter};
+  }
+  function renderActiveCharacter(){
+    if(!els.activeCharacter)return;
+    const target=activeCharacterTarget();
+    const ready=Boolean(target.id);
+    els.activeCharacter.textContent=ready?(target.name||target.id):'No active character selected';
+    els.activeCharacterId.textContent=ready?`${target.id} · All transfer buttons target this character.`:'Choose an active character in the Character Vault, Creator or Player Tool before transferring equipment.';
+    els.activeCharacterPanel?.setAttribute('data-active-character-state',ready?'ready':'missing');
+    els.transferButtons.forEach(button=>{button.disabled=!ready;button.setAttribute('aria-disabled',String(!ready));});
+    if(!ready)transferStatus('Select an active character before sending this inventory.',true);
+    else if(els.transferStatus?.classList.contains('error'))transferStatus('');
+    return target;
+  }
   function sendToPlayerTool(groups){
     const key='veilfarers-player-tool-characters';
     let characters=[];try{characters=JSON.parse(localStorage.getItem(key)||'[]');}catch(_){ }
     if(!Array.isArray(characters))characters=[];
     const registryId=window.VeilFarersCharacterRegistry?.currentId?.()||localStorage.getItem('veilfarers.character.currentId.v1')||'';
+    if(!registryId)throw Error('Select an active character before sending equipment.');
     let index=characters.findIndex(item=>item&&item.entityType!=='drone'&&registryId&&String(item.characterId||item.id||'').toUpperCase()===String(registryId).toUpperCase());
-    if(index<0)index=characters.findIndex(item=>item&&item.entityType!=='drone');
-    if(index<0)throw Error('Open or import a character in Player Tool first.');
+    if(index<0)throw Error(`The active character ${registryId} is not available in Player Tool. Open or import that character first.`);
     const character={...characters[index]};
     character.weaponArsenal=mergeItems(character.weaponArsenal,groups.weapons);character.weaponInventory=character.weaponArsenal.map(item=>item.canonicalId||item.id||item.name);
     character.armorArsenal=mergeItems(character.armorArsenal,groups.armor);character.armorInventory=character.armorArsenal.map(item=>item.canonicalId||item.id||item.name);
@@ -234,11 +265,15 @@
     character.augmentArsenal=mergeItems(character.augmentArsenal,groups.augments);character.augmentInventory=character.augmentArsenal.map(item=>item.canonicalId||item.id||item.name);
     characters[index]=character;localStorage.setItem(key,JSON.stringify(characters));
     const id=String(character.characterId||character.id||'');const registry=window.VeilFarersCharacterRegistry;
-    if(registry&&/^VF-\d{6,}$/i.test(id)&&registry.get(id))registry.saveLocalData(id,{playerCharacter:character},{source:'inventory-transfer-v59.77'});
+    if(registry&&/^VF-\d{6,}$/i.test(id)&&registry.get(id))registry.saveLocalData(id,{playerCharacter:character},{source:'inventory-transfer-v59.78'});
     return character.name||id||'active character';
   }
   function sendToSheet(groups){
     const key='veilfarers_sheet_fields_v2_40';let fields={};try{fields=JSON.parse(localStorage.getItem(key)||'{}')||{};}catch(_){ }
+    const target=activeCharacterTarget();if(!target.id)throw Error('Select an active character before sending equipment.');
+    const sheetId=String(fields.character_id||'').trim().toUpperCase();
+    if(sheetId&&sheetId!==target.id)throw Error(`Charsheet is showing ${sheetId}, but ${target.id} is active. Open the active character in Charsheet first.`);
+    fields.character_id=target.id;
     const primary=groups.weapons[0],secondary=groups.weapons[1],armor=groups.armor[0];
     if(primary)fields.wpri_name=primary.name;if(secondary)fields.wsec_name=secondary.name;if(armor)fields.armor_name=armor.name;
     groups.gear.slice(0,8).forEach((item,index)=>{fields[`eq_${index}_name`]=item.name;fields[`eq_${index}_qty`]=String(item.quantity||1);});
@@ -247,9 +282,11 @@
   }
   function sendInventory(target){
     try{
+      const activeTarget=activeCharacterTarget();if(!activeTarget.id)throw Error('Select an active character before sending equipment.');
       const groups=ownedCanonical();const count=Object.values(groups).flat().length;if(!count)throw Error('Add equipment to the inventory before sending it.');
       let player='';if(target==='player'||target==='both')player=sendToPlayerTool(groups);if(target==='sheet'||target==='both')sendToSheet(groups);
-      transferStatus(target==='both'?`Sent ${count} equipment entries to ${player} and Charsheet.`:target==='player'?`Sent ${count} equipment entries to ${player}.`:`Sent ${count} equipment entries to Charsheet.`);
+      const activeName=player||activeTarget.name||activeTarget.id;
+      transferStatus(target==='both'?`Sent ${count} equipment entries to ${activeName} in Player Tool and Charsheet.`:target==='player'?`Sent ${count} equipment entries to ${activeName} in Player Tool.`:`Sent ${count} equipment entries to ${activeName} in Charsheet.`);
     }catch(error){transferStatus(error.message||String(error),true);}
   }
   function renderInventory(){
@@ -276,6 +313,7 @@
       collectionNames.forEach((name,index)=>data[name]=groups[index]);
       els.release.textContent=manifest.release||manifest.version||'11.1 RC3';
       renderTabs();renderFilters();filterItems();renderInventory();
+      renderActiveCharacter();
     }catch(error){els.cards.innerHTML=`<div class="vf-error">Canonical data could not be loaded: ${esc(error.message)}</div>`;}
   }
 
@@ -322,6 +360,9 @@
   els.importInput.addEventListener('change',async event=>{try{if(event.target.files[0])await I.importFile(event.target.files[0]);}catch(error){alert(error.message);}event.target.value='';});
   els.clearBtn.addEventListener('click',()=>{if(confirm('Clear the local VeilFarers inventory?'))I.clear();});
   document.querySelectorAll('[data-inventory-send]').forEach(button=>button.addEventListener('click',()=>sendInventory(button.dataset.inventorySend)));
+  window.addEventListener('veilfarers:active-character-changed',renderActiveCharacter);
+  window.addEventListener('veilfarers:character-updated',renderActiveCharacter);
+  window.addEventListener('storage',event=>{if(['veilfarers.character.currentId.v1','veilfarers-player-tool-characters'].includes(event.key))renderActiveCharacter();});
   I.subscribe(()=>{renderInventory();renderFilters();filterItems();});
   init();
 })();

@@ -2979,6 +2979,28 @@ body.keeper-mode .keeper-moves-grid {
   margin-top: 0.25rem;
 }
 
+.template-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.template-reference-btn {
+  border: 1px solid #475569;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.template-reference-btn:hover {
+  border-color: #e2b45a;
+  color: #fff0c8;
+}
+
 .template-load-btn {
   background-color: #7c3aed;
   border: none;
@@ -2992,6 +3014,31 @@ body.keeper-mode .keeper-moves-grid {
 
 .template-load-btn:hover {
   background-color: #8b5cf6;
+}
+
+.scene-source-link {
+  display: inline-flex;
+  align-items: center;
+  color: #f4d48b;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.scene-source-link:hover {
+  color: #fff4ce;
+  text-decoration: underline;
+}
+
+.narrative-profile {
+  margin: 0.65rem 0;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(226, 180, 90, 0.32);
+  border-radius: 0.4rem;
+  background: rgba(226, 180, 90, 0.07);
+  color: #f4d48b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 /* Tutorial Section */

@@ -1,0 +1,64 @@
+VEILFARERS PORTAL v59.78 — VALIDATION
+Date: 2026-07-23
+
+RESULT: PASS for local static, structural and package validation.
+
+KEEPER TOOL / HEARTS IN THE VOID
+- Current runtime template loads before app.js: PASS
+- Template stages: 11
+- Level 1 Sleeping pregenerated characters: 10/10
+- Narrative major NPC profiles without invented combat statistics: 10
+- Weaver Queen profiles: 2 phases
+- Each stage has a resolving Markdown chapter link: 11/11
+- Bundled current chapter files: 17/17, byte-identical to the 2026-07-22 v12 source set
+- Bundled complete adventure Markdown: byte-identical to source
+- Core Overload: 6 segments
+- Final standoff: explicitly no persuasion roll
+- The Ship That Learns: retained as optional/recommended
+- I Need an Idea!: retained as terminal backup rather than an unrelated clock tax
+- Active-source search for The Traitor, TRAITOR, Fascinated, a four-segment Core Overload and the legacy Hearts template: no matches
+- Both Keeper campaign export paths include scenes; load restores scenes
+- New Keeper section exports use veilfarers_* identifiers; historical voidlight_* is accepted only on import
+
+PLAYER TOOL / AUDIO
+- Original audio duration: approximately 4.075 seconds
+- v59.78 audio duration: 2.690612 seconds
+- Removed leading near-silence: approximately 1.38 seconds
+- Remaining codec-safe opening pad at -35 dB threshold: 0.025624 seconds
+- Source audio request: /assets/dados_1.mp3?v=59.78
+- Clean esbuild reconstruction of player-tool.jsx matches player-tool.bundle.js exactly
+- Existing stop/restart/cancel/fallback hooks remain in the same playback lifecycle
+
+INVENTORY
+- Active-character panel present in items.html and armory.html
+- Active name and Character Vault ID displayed
+- Player Tool, Charsheet and Both buttons target the displayed active ID
+- Buttons disabled when no active character exists
+- No fallback to the first Player Tool character
+- Mismatched Player Tool/Charsheet targets stop with an explicit error
+- Active target refreshes on registry and storage events
+
+PORTAL STATIC VALIDATION
+- Standalone JavaScript syntax: 36/36 files pass node --check
+- JSON parsing: 86/86 files pass
+- Inline HTML JavaScript parsing: 10/10 blocks pass
+- Root release metadata: 11/11 HTML pages report v59.78
+- CSS structural brace checks: styles.css and module.css pass
+- Package/package-lock version: 59.78.0
+- Deploy version/header profile: v59.78 / wasm-3d-dice-v2
+- Local HTTP smoke: 8/8 requested endpoints return 200
+  - keeper-tool.html
+  - hearts-in-the-void-template.js
+  - complete adventure Markdown
+  - current Queen/ship-fusion chapter
+  - trimmed MP3 with v59.78 cache key
+  - items.html
+  - armory.html
+  - deploy-version.json
+- ZIP root layout and unzip integrity: PASS
+
+DEPLOY PREVIEW / PHYSICAL DEVICE ACCEPTANCE STILL REQUIRED
+- Authenticated Keeper-to-Player synchronization
+- Mobile motion permission and physical Shake to Roll
+- Subjective audio timing plus interruption on a real browser/device
+- Netlify response-header confirmation after deployment

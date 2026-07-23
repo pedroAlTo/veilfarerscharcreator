@@ -23,8 +23,9 @@ const BLANK_TEMPLATE = {
 
 const CAMPAIGN_TEMPLATES = [
   { id: "hearts_in_the_void", name: "Hearts in the Void", 
-    description: "A complete adventure featuring the Iron Hearts crew, Hunger Weavers, and betrayal among the stars.",
-    author: "Veilfarers Core", scenes: 8, players: 6, npcs: 8, monsters: 4 },
+    description: "The current introductory campaign adventure: Sleeping crews, player-driven loyalties, multiple ship routes, and consequences that continue into play.",
+    author: "VeilFarers · Corebook 11.35 / Keeper’s Companion 11.33", scenes: 11, players: 10, npcs: 10, monsters: 2,
+    reference: "/adventures/hearts-in-the-void/Hearts_in_the_Void_COMPLETE_Corebook_11_35_KC_11_33.md" },
   { id: "derelicts_secret", name: "The Derelict's Secret",
     description: "Quickstart adventure from the Core Rules. Investigate a time-looped freighter.",
     author: "Veilfarers Quickstart", scenes: 5, players: 7, npcs: 2, monsters: 0 },
@@ -88,7 +89,10 @@ function renderTemplateList() {
         <div class="template-desc">${escapeHtml(template.description)}</div>
         <div class="template-meta">${template.scenes} scenes • ${template.players} players • ${template.npcs} NPCs</div>
       </div>
-      <button class="template-load-btn" onclick="loadTemplate('${template.id}')">Load</button>
+      <div class="template-actions">
+        ${template.reference ? `<a class="template-reference-btn" href="${escapeHtml(template.reference)}" target="_blank" rel="noopener">Full adventure</a>` : ''}
+        <button class="template-load-btn" onclick="loadTemplate('${template.id}')">Load</button>
+      </div>
     </div>
   `).join('');
 }
@@ -251,402 +255,23 @@ function initializeMainApp() {
 // Vanilla JavaScript Implementation
 
 // ==================== STATE ====================
-const state = {
+if (!window.VF_HEARTS_IN_THE_VOID_TEMPLATE) {
+  throw new Error('The current Hearts in the Void template could not be loaded.');
+}
+const state = Object.assign({
   keeperMode: true,
   activeTab: 'dashboard',
-  fearTokens: 0,
-  currentScene: 1,
-  notes: '',
-  sessionName: 'Hearts in the Void - Session 1',
   lastSaved: null,
-  spotlightFocus: null, // { type: 'player'|'npc'|'monster', id: number }
+  spotlightFocus: null,
   hoveredAbility: null,
-  modalAbilities: [], // Temporary abilities for add character modal
-  editingAbilityIndex: null, // Index of ability being edited in modal
-  
-  dashboardPins: {
-    players: [1, 2, 3, 4, 5, 6],
-    npcs: [1, 3],
-    monsters: [1]
-  },
-  
-  clocks: [
-    { id: 1, name: "Korren's Desperation", segments: 4, filled: 0, hidden: false },
-    { id: 2, name: "Core Overload", segments: 4, filled: 0, hidden: false },
-    { id: 3, name: "Structural Collapse", segments: 6, filled: 0, hidden: false },
-    { id: 4, name: "The Swarm Catches You", segments: 4, filled: 0, hidden: false }
-  ],
-  
-  players: [
-    { id: 1, name: 'Spark', subtitle: 'Human Engineer', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, armor: 3, armorMinor: 5, armorSevere: 10, armorSlots: 3, armorMarked: [], evasion: 9, abilities: ['Scrap Genius (3 Hope)', 'Technical Intuition', 'Digital Ghost'], equipment: 'Plasma Pistol, Multi-tool, Hacking Kit' },
-    { id: 2, name: 'Marcus', subtitle: 'Human Soldier', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, armor: 4, armorMinor: 8, armorSevere: 16, armorSlots: 4, armorMarked: [], evasion: 9, abilities: ['Combat Surge (2 Hope)', 'Combat Focus', 'Bodyguard Protocol'], equipment: 'Assault Rifle, Riot Shield' },
-    { id: 3, name: 'Whisper', subtitle: 'Ethereal Mystic', hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 2, armor: 2, armorMinor: 5, armorSevere: 11, armorSlots: 2, armorMarked: [], evasion: 10, abilities: ['Path to Nirvana (3 Hope)', 'Unbroken Focus', 'Veil Sight'], equipment: 'Ceremonial Robes, Emergency Blaster' },
-    { id: 4, name: 'Dr. Lyra', subtitle: 'Kryllian Scholar', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, armor: 3, armorMinor: 5, armorSevere: 10, armorSlots: 3, armorMarked: [], evasion: 9, abilities: ['Eureka Moment (3 Hope)', 'Analytical Mind', 'Combat Medicine'], equipment: 'Medical Kit, Biological Scanner' },
-    { id: 5, name: 'Flash', subtitle: 'Celestiari Pilot', hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 2, armor: 2, armorMinor: 5, armorSevere: 11, armorSlots: 2, armorMarked: [], evasion: 11, abilities: ['Veil Surge (3 Hope)', 'Stellar Instinct', "Pathfinder's Sense"], equipment: 'Energy Pistol, Starcharts' },
-    { id: 6, name: 'Shadow', subtitle: 'Synthetic Scoundrel', hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 2, armor: 4, armorMinor: 7, armorSevere: 16, armorSlots: 4, armorMarked: [], evasion: 12, abilities: ['Vanishing Act (3 Hope)', 'Shadow Operative', 'Blend with Crowd'], equipment: 'Gauss Pistol, Morphic Key, Holo-Mask' }
-  ],
-  
-  npcs: [
-    { 
-      id: 1, name: 'Zara Kaine', subtitle: 'Iron Hearts Captain', 
-      hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, 
-      armor: 3, armorMinor: 5, armorSevere: 10, armorSlots: 3, armorMarked: [], evasion: 12, 
-      description: "Pilot with a laugh like thunder. In love with Alexei. Can't cook—once started a fire in space.", 
-      abilities: [
-        { name: 'Expert Pilot', type: 'Passive', cost: 0, desc: '+2 to all piloting checks' },
-        { name: 'Cover Fire', type: 'Action', cost: 1, desc: 'Suppress enemies, giving allies advantage on movement' }
-      ],
-      keeperNotes: 'Will NOT leave Alexei. Protective.', hidden: false, isAlly: true 
-    },
-    { 
-      id: 2, name: 'Alexei Joric', subtitle: 'The "Kidnapped" Nobleman', 
-      hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 1, 
-      armor: 1, armorMinor: 3, armorSevere: 6, armorSlots: 1, armorMarked: [], evasion: 11, 
-      description: 'Young poet with terrible poetry. Useless in combat. Quotes verse when nervous.', 
-      abilities: [
-        { name: 'Terrible Poetry', type: 'Action', cost: 0, desc: 'Recite poetry. Enemies may be distracted or annoyed' },
-        { name: 'Noble Bearing', type: 'Passive', cost: 0, desc: '+1 to social checks with nobility' }
-      ],
-      keeperNotes: 'Non-combatant. Liability in fights.', hidden: false, isAlly: true 
-    },
-    { 
-      id: 3, name: 'Brix', subtitle: 'Loyal Kryx', 
-      hp: 10, maxHp: 10, stress: 0, maxStress: 6, hope: 2, 
-      armor: 3, armorMinor: 6, armorSevere: 12, armorSlots: 3, armorMarked: [], evasion: 11, 
-      description: "Massive wolf-alien. Doesn't understand human customs. Treats handshakes as combat.", 
-      abilities: [
-        { name: 'Brutal Charge', type: 'Action', cost: 1, desc: 'Charge and knockdown, +4 attack, 2d6 damage' },
-        { name: 'Pack Loyalty', type: 'Reaction', cost: 1, desc: 'Intercept attack meant for Zara, take damage instead' },
-        { name: 'Intimidating Presence', type: 'Passive', cost: 0, desc: 'Enemies have disadvantage on first attack against party' }
-      ],
-      keeperNotes: 'Charges biggest threat. Loyal to Zara.', hidden: false, isAlly: true 
-    },
-    { 
-      id: 4, name: 'Korren', subtitle: 'The Traitor', 
-      hp: 8, maxHp: 8, stress: 0, maxStress: 7, 
-      armor: 5, armorMinor: 10, armorSevere: 20, armorSlots: 5, armorMarked: [], evasion: 10, 
-      description: 'Kryllian engineer drowning in gambling debt. Worst luck in the galaxy.', 
-      abilities: [
-        { name: 'Heavy Weapons', type: 'Action', cost: 0, desc: '+3 attack with heavy weapons, 2d8 damage' },
-        { name: 'Sabotage', type: 'Action', cost: 1, desc: 'Disable a system or device, DC 14 to notice' },
-        { name: 'Engineering', type: 'Passive', cost: 0, desc: 'Can repair or jury-rig most tech' }
-      ],
-      keeperNotes: 'TRAITOR. Will betray when clock fills. Desperate, not evil.', hidden: true, isAlly: false 
-    },
-    { 
-      id: 5, name: 'Thex', subtitle: 'The Manipulator', 
-      hp: 6, maxHp: 6, stress: 0, maxStress: 6, 
-      armor: 2, armorMinor: 4, armorSevere: 8, armorSlots: 2, armorMarked: [], evasion: 10, 
-      description: "Ethereal obsessed with wealth. No idea what things cost. Makes dramatic pronouncements nobody listens to.", 
-      abilities: [
-        { name: 'Emotional Manipulation', type: 'Action', cost: 1, desc: 'DC 14 Presence or target believes a lie' },
-        { name: 'Time Sight', type: 'Action', cost: 2, desc: 'Glimpse 1 round into future, gain advantage' }
-      ],
-      keeperNotes: 'TRAITOR. Works with Korren. Hangs back in fights.', hidden: true, isAlly: false 
-    },
-    { 
-      id: 6, name: 'Madame Silk', subtitle: 'Assassin Leader', 
-      hp: 8, maxHp: 8, stress: 0, maxStress: 6, 
-      armor: 4, armorMinor: 7, armorSevere: 16, armorSlots: 4, armorMarked: [], evasion: 15, 
-      description: 'Rift Spinner assassin. Art snob about killing. Once let target live for better lighting.', 
-      abilities: [
-        { name: 'Camouflage', type: 'Action', cost: 1, desc: 'Become invisible until attack or damaged' },
-        { name: 'Filament Strike', type: 'Action', cost: 0, desc: '+5 attack, 2d8 damage, ignores 2 armor' },
-        { name: 'Ambush', type: 'Reaction', cost: 2, desc: 'When revealed, make free attack with advantage' }
-      ],
-      keeperNotes: 'Invisible until strikes. Flanks. Targets weakest.', hidden: true, isAlly: false 
-    },
-    { 
-      id: 7, name: 'Scalpel', subtitle: 'Medical Torturer', 
-      hp: 8, maxHp: 8, stress: 0, maxStress: 6, 
-      armor: 3, armorMinor: 6, armorSevere: 12, armorSlots: 3, armorMarked: [], evasion: 12, 
-      description: 'Inappropriately cheerful. Offers tea to torture victims. Hums while working.', 
-      abilities: [
-        { name: 'Surgical Strike', type: 'Action', cost: 0, desc: '+4 attack, 1d10 damage, +2 Stress on hit' },
-        { name: 'Toxins', type: 'Action', cost: 1, desc: 'Apply poison: DC 13 or 1d6 damage per round' },
-        { name: 'Medical Knowledge', type: 'Passive', cost: 0, desc: 'Can stabilize or harm with equal skill' }
-      ],
-      keeperNotes: 'Targets wounded. May offer "deals."', hidden: true, isAlly: false 
-    },
-    { 
-      id: 8, name: 'Maya Santos', subtitle: 'Amaranth Agent', 
-      hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 1, 
-      armor: 2, armorMinor: 4, armorSevere: 8, armorSlots: 2, armorMarked: [], evasion: 11, 
-      description: "Nothing surprises her anymore. Sighs constantly. Will nod at any plan.", 
-      abilities: [
-        { name: 'Concealed Weapon', type: 'Reaction', cost: 1, desc: 'Surprise attack when least expected, +3, 1d8' },
-        { name: 'Information Network', type: 'Action', cost: 1, desc: 'Contact sources, learn one secret about target' }
-      ],
-      keeperNotes: 'Quest giver. Not meant for combat.', hidden: false, isAlly: true 
-    }
-  ],
-  
-  monsters: [
-    { 
-      id: 1, 
-      name: 'Hunger Weaver', 
-      subtitle: 'Individual', 
-      hp: 4, maxHp: 4, stress: 0, maxStress: 3, 
-      armor: 0, armorMinor: 6, armorSevere: 10, armorSlots: 0, armorMarked: [], 
-      evasion: 12, 
-      description: 'Crystalline jellyfish. Feeds on bio-electric energy.', 
-      abilities: [
-        { name: 'Draining Tentacle', type: 'Action', fearCost: 0, desc: '+3, 1d6 Magic, DC 13 or +1 Stress' },
-        { name: 'Hypnotic Illusions', type: 'Action', fearCost: 1, desc: 'DC 12 Presence or Fascinated for 1 round' },
-        { name: 'Fluid Form', type: 'Passive', fearCost: 0, desc: 'Can pass through 5cm gaps' }
-      ],
-      keeperNotes: 'Weak to bright light and high-frequency sound.', 
-      hidden: false 
-    },
-    { 
-      id: 2, 
-      name: 'Weaver Swarm', 
-      subtitle: '4-5 Weavers', 
-      hp: 16, maxHp: 16, stress: 0, maxStress: 6, 
-      armor: 0, armorMinor: 6, armorSevere: 10, armorSlots: 0, armorMarked: [], 
-      evasion: 14, 
-      description: 'Coordinated group. Sets ambushes. Learns.', 
-      abilities: [
-        { name: 'Multi-Attack', type: 'Action', fearCost: 1, desc: 'Attack 2 different targets' },
-        { name: 'Swarm Tactics', type: 'Passive', fearCost: 0, desc: '+2 to hit when near allies' },
-        { name: 'Overwhelming Numbers', type: 'Reaction', fearCost: 2, desc: 'When hit, spawn 1d4 new Weavers' }
-      ],
-      keeperNotes: 'More arrive every 2-3 rounds during chaos.', 
-      hidden: true 
-    },
-    { 
-      id: 3, 
-      name: 'Weaver Queen (Phase 1)', 
-      subtitle: 'Boss - The Sovereign', 
-      hp: 25, maxHp: 25, stress: 0, maxStress: 0, 
-      armor: 0, armorMinor: 8, armorSevere: 14, armorSlots: 0, armorMarked: [], 
-      evasion: 13, 
-      description: 'Size of a small car. Crown of eyes. Ancient and intelligent.', 
-      abilities: [
-        { name: 'Royal Tentacle', type: 'Action', fearCost: 0, desc: '+3, 2d6+3, DC 14 Str or dragged' },
-        { name: 'Summon Children', type: 'Action', fearCost: 2, desc: 'Spawn 1d4 Weavers (2x per fight)' },
-        { name: 'Hypnotic Cascade', type: 'Action', fearCost: 2, desc: 'Medium range, DC 14 Presence, all targets' },
-        { name: 'Veil Shield', type: 'Reaction', fearCost: 1, desc: 'Reduce damage by half' }
-      ],
-      keeperNotes: 'Choose 2 actions per turn. Transforms at 0 HP.', 
-      hidden: true 
-    },
-    { 
-      id: 4, 
-      name: 'Weaver Queen (Phase 2)', 
-      subtitle: 'Boss - Hunger Ascendant', 
-      hp: 20, maxHp: 20, stress: 0, maxStress: 0, 
-      armor: 0, armorMinor: 10, armorSevere: 16, armorSlots: 0, armorMarked: [], 
-      evasion: 15, 
-      description: 'Expanded, pulsing with Veil energy. Your heartbeat is her heartbeat.', 
-      abilities: [
-        { name: 'Neural Feast', type: 'Action', fearCost: 1, desc: 'DC 17 Instinct, drain 1d8 HP, heal same, +2 Stress' },
-        { name: 'Crystalline Eruption', type: 'Action', fearCost: 3, desc: 'Recharge 5-6, 20ft, DC 14 Agi, 3d6 + Immobilized' },
-        { name: 'Phase Shift', type: 'Reaction', fearCost: 2, desc: 'Negate one attack, teleport Close range' },
-        { name: 'Psychic Scream', type: 'Action', fearCost: 2, desc: 'All players DC 15 Presence or 2 Stress' }
-      ],
-      keeperNotes: 'Phase 2 after Phase 1 reaches 0 HP.', 
-      hidden: true 
-    }
-  ],
-  
-  scenes: [
-    { 
-      id: 1, 
-      name: 'Scene 1: The Offer', 
-      location: 'Nexus Inferior Bar', 
-      notes: 'Maya hires the crew. DC 12 Instinct to read her. DC 13 Presence for more info.',
-      details: {
-        atmosphere: 'The Nexus Inferior earns its name. Three levels below the main promenade, where the lighting is "atmospheric" because replacing the bulbs would cost money nobody has.',
-        objectives: ['Meet Maya Santos', 'Learn about the job', 'Negotiate payment'],
-        keyRolls: [
-          'Instinct + Perception DC 12: Notice Maya\'s hidden nervousness',
-          'Presence + Persuasion DC 13: Get more information about the kidnapping'
-        ],
-        npcsPresent: ['Maya Santos'],
-        possibleOutcomes: [
-          'Success with Hope: Maya reveals she works for House Amaranth',
-          'Success with Fear: Maya becomes guarded, withholds info',
-          'Players accept: Wealth Level 0 → 1, receive coordinates'
-        ],
-        tips: 'Play Maya as tired, professional, and genuinely worried. She sighs a lot.'
-      }
-    },
-    { 
-      id: 2, 
-      name: 'Scene 2: Securing Transport', 
-      location: 'Crossroads Station', 
-      notes: 'Options: Buy ship, Book passage, or Steal The Collector (DC 16 heist).',
-      details: {
-        atmosphere: 'The docking levels of Crossroads Station buzz with activity. Merchants hawk wares, crews load cargo, and the Bone Dogs swagger through like they own the place.',
-        objectives: ['Secure transport to Charon\'s Refuge', 'Choose method: Buy, Book, or Steal'],
-        keyRolls: [
-          'Option A - Buy Ship: Reduce Wealth Level to 0',
-          'Option B - Book Passage: Keep Wealth Level 1',
-          'Option C - Steal The Collector: Base DC 16 (reducible)',
-          'The Mechanic DC 12: -2 to heist DC',
-          'The Bartender DC 13: -2 to heist DC',
-          'The Smuggler DC 14: -1 to heist DC'
-        ],
-        npcsPresent: ['Ratko (Bone Dogs)', 'Grond', 'Vek'],
-        possibleOutcomes: [
-          'Heist Success with Hope: +1 Rep with Unaligned, clean escape',
-          'Heist Success with Fear: +1 Heat with House Volkov',
-          'Heist Failure: Shootout, +2 Heat with authorities'
-        ],
-        tips: 'Everything goes wrong for Ratko. His eye glitches, he trips, gun jams. Comedy gold.'
-      }
-    },
-    { 
-      id: 3, 
-      name: 'Scene 3: Arrival', 
-      location: "Charon's Refuge", 
-      notes: 'First Weaver encounter. Combat tutorial. ARIA-7 introduction.',
-      details: {
-        atmosphere: 'The station drifts in shadow, running lights flickering in strange patterns. The airlock opens to the smell of ozone, old metal, and something organic.',
-        objectives: ['Explore the station', 'Survive first Weaver encounter', 'Find clues about other groups'],
-        keyRolls: [
-          'Knowledge + Tech DC 12: Access information terminal',
-          'Instinct + Investigation DC 13: Find traces of occupation',
-          'Combat: 2 Hunger Weavers (tutorial fight)'
-        ],
-        npcsPresent: ['ARIA-7 (potential ally)'],
-        possibleOutcomes: [
-          'Terminal Success: Learn Iron Hearts arrived 3 days ago',
-          'Terminal Success with Hope: Also learn Whispers arrived 18 hours later',
-          'ARIA-7: Can be befriended with compliments or reprogrammed DC 14'
-        ],
-        tips: 'This is the combat tutorial. Walk through the Duality Dice step by step.'
-      }
-    },
-    { 
-      id: 4, 
-      name: 'Scene 4: Shadows', 
-      location: 'Residential Zone', 
-      notes: 'Meet Brix. DC 14 Presence to convince. DC 16 Instinct spots Silk.',
-      details: {
-        atmosphere: 'The residential sector is a ghost town. Tables set for diners who never arrived. A half-finished game on a datapad. Thick, expectant silence.',
-        objectives: ['Locate Alexei without alerting assassins', 'Make contact with Iron Hearts', 'Detect the Whispers'],
-        keyRolls: [
-          'Presence + Persuasion DC 14: Convince Brix you\'re not enemies',
-          'Presence + Deception DC 15: Alternative approach with Brix',
-          'Instinct + Perception DC 16: Spot Madame Silk\'s camouflage'
-        ],
-        npcsPresent: ['Brix', 'Madame Silk (hidden)'],
-        possibleOutcomes: [
-          'Convince Brix: He leads you to Zara and Alexei',
-          'Fail with Brix: He attacks or flees, alerts Iron Hearts',
-          'Spot Silk with Fear: She knows your position now'
-        ],
-        tips: 'Brix is confused by human customs. Play up his literal interpretations for humor.'
-      }
-    },
-    { 
-      id: 5, 
-      name: 'Scene 5: Broken Heart', 
-      location: 'Engine Room', 
-      notes: 'Meet Zara & Alexei. Betrayal Clock active. DC 15 Instinct detects traitors.',
-      details: {
-        atmosphere: 'Hot air, ozone smell. Makeshift barricades of supply crates. Zara aims her pistol with exhaustion, not hostility. Alexei watches with poetic hope.',
-        objectives: ['Learn the truth about the "kidnapping"', 'Decide who to help', 'Watch for betrayal'],
-        keyRolls: [
-          'Instinct + Perception DC 15: Notice Korren and Thex exchanging looks',
-          'Presence + Diplomacy DC 18: Negotiate a third way (very hard)'
-        ],
-        npcsPresent: ['Zara', 'Alexei', 'Brix', 'Korren', 'Thex'],
-        possibleOutcomes: [
-          'Option A: Uphold contract, take Alexei by force',
-          'Option B: Help the lovers escape',
-          'Option C: Find compromise (DC 18)',
-          'Betrayal Clock fills: Korren acts at worst moment'
-        ],
-        tips: 'Use the Betrayal Clock. Advance when players ignore Korren, remove segment if they show empathy.'
-      }
-    },
-    { 
-      id: 6, 
-      name: 'Scene 6: Betrayal', 
-      location: 'Engine Room', 
-      notes: 'Three-way fight! Korren betrays. Silk attacks. Weavers arrive.',
-      details: {
-        atmosphere: '"It\'s over, Zara! The money is real!" Korren\'s voice cracks. Lights die. Crystalline figures emerge. Hungry chirps from the vents.',
-        objectives: ['Survive the three-way battle', 'Protect or capture Alexei', 'Escape before reactor overloads'],
-        keyRolls: [
-          'Combat against multiple factions',
-          'Core Overload Clock: Mark segment when heavy weapon misses or hits console'
-        ],
-        npcsPresent: ['Zara', 'Alexei', 'Brix', 'Korren', 'Thex', 'Madame Silk', 'Scalpel', '4-5 Weavers'],
-        possibleOutcomes: [
-          'Korren can be talked down or killed',
-          'Silk prioritizes contract over revenge',
-          'Weavers attack nearest targets indiscriminately',
-          'Core Overload Clock fills: Triggers Scene 7'
-        ],
-        tips: 'This is chaos. Let factions fight each other. Thex makes dramatic pronouncements nobody listens to.'
-      }
-    },
-    { 
-      id: 7, 
-      name: 'Scene 7: Desperate Escape', 
-      location: 'Corridors', 
-      notes: 'Chase scene. Collapse Clock + Swarm Clock. Final dilemma.',
-      details: {
-        atmosphere: 'Alarms howl. Floor trembles. Emergency lights paint everything in blood. Behind you, an ocean of Weavers. Ahead, fire and closing blast doors.',
-        objectives: ['Reach the ship before station collapses', 'Navigate obstacles', 'Make the final choice'],
-        keyRolls: [
-          'The Fire: Strength + Athletics DC 14 OR Knowledge + Tech DC 15',
-          'Blast Doors: Finesse + Tech DC 16 OR Strength DC 18',
-          'Save Survivor: Strength + Power DC 17 (advances BOTH clocks)'
-        ],
-        npcsPresent: ['Survivors from Scene 6', 'ARIA-7 (if befriended)'],
-        possibleOutcomes: [
-          'Structural Collapse Clock (6 segments): Station disintegrates',
-          'Swarm Clock (4 segments): Face full Weaver Swarm',
-          'Save survivor: Moral victory but costs time',
-          'ARIA-7 sacrifice: "TELL... MY MOPS... I LOVED THEM..."'
-        ],
-        tips: 'Display clocks openly. Build tension. ARIA-7\'s sacrifice should be emotional.'
-      }
-    },
-    { 
-      id: 8, 
-      name: 'Scene 8: Resolution', 
-      location: 'Ship Cockpit', 
-      notes: 'Report to Maya. Determine reputation changes. Hooks for future.',
-      details: {
-        atmosphere: 'Charon\'s Refuge burns in the rearview. Silence. The cost of survival hangs heavy. Did you do the right thing?',
-        objectives: ['Report to Maya', 'Receive payment (or not)', 'Set up future hooks'],
-        keyRolls: ['No rolls required - this is resolution'],
-        npcsPresent: ['Maya Santos (via comms)', 'Surviving NPCs'],
-        possibleOutcomes: [
-          'Alexei to Amaranth: Full bonus (15 credits), +1 Amaranth, -1 Joric, -1 Valerius',
-          'Alexei escaped: Partial pay (5 credits), -1 multiple houses, +1 Independent',
-          'Alexei dead: No bonus, -2 all houses, Maya furious',
-          'Zara survived: Becomes ally, future ship available',
-          'Silk survived: Job offer and veiled threat'
-        ],
-        tips: 'Maya nods at whatever happened. "I have seen worse ideas." Let consequences sink in.'
-      }
-    }
-  ],
-  
-  // Dice roller state
-  diceRoller: {
-    modifier: 0,
-    advantage: 'normal', // 'normal', 'advantage', 'disadvantage'
-    difficulty: 15,
-    results: null,
-    rollHistory: []
-  },
-  
-  // Keeper moves data
+  modalAbilities: [],
+  editingAbilityIndex: null,
   softMoves: [
     { name: 'Show a Threat', desc: 'Reveal danger without harm' },
     { name: 'Reveal Unwelcome Truth', desc: 'Expose hidden information' },
     { name: 'Ominous Warning', desc: 'Strange sounds, flickering lights' },
     { name: 'Offer Opportunity', desc: 'Present a choice with cost' }
   ],
-  
   hardMoves: [
     { name: 'Inflict Harm', cost: 1, desc: 'Deal damage directly' },
     { name: 'Cause Malfunction', cost: 1, desc: 'Equipment fails' },
@@ -655,14 +280,13 @@ const state = {
     { name: 'Use Ability', cost: 1, desc: 'Antagonist special power' },
     { name: 'Reinforce', cost: 2, desc: 'Enemies arrive' }
   ],
-  
   devastatingMoves: [
     { name: 'Betrayal Revealed', cost: 4, desc: 'Ally turns enemy' },
     { name: 'Secret Unleashed', cost: 4, desc: 'Major plot twist' },
     { name: 'Catastrophe', cost: 5, desc: 'Environmental disaster' },
     { name: 'Boss Phase 2', cost: 4, desc: 'Enemy transforms' }
   ]
-};
+}, JSON.parse(JSON.stringify(window.VF_HEARTS_IN_THE_VOID_TEMPLATE)));
 
 // ==================== UTILITY FUNCTIONS ====================
 const rollDie = (sides) => Math.floor(Math.random() * sides) + 1;
@@ -803,7 +427,8 @@ function addClock() {
 
 // ==================== CHARACTER CARD RENDERING ====================
 function renderArmorSlots(char, compact = false) {
-  const slots = char.armorSlots || 4;
+  const parsedSlots = Number(char.armorSlots);
+  const slots = Number.isFinite(parsedSlots) ? Math.max(0, parsedSlots) : 4;
   const marked = char.armorMarked || [];
   
   let html = '';
@@ -830,7 +455,8 @@ function toggleArmorSlot(charId, slotIndex, type) {
   if (!char) return;
   
   const currentMarked = [...(char.armorMarked || [])];
-  const totalSlots = char.armorSlots || 4;
+  const parsedSlots = Number(char.armorSlots);
+  const totalSlots = Number.isFinite(parsedSlots) ? Math.max(0, parsedSlots) : 4;
   const isMarked = currentMarked.includes(slotIndex);
   
   if (isMarked) {
@@ -968,6 +594,31 @@ function renderCharacterCard(char, isPlayer, isPinned = false) {
   }
   
   const spotMatch = (state.spotlight && char.syncId && char.syncId === state.spotlight) ? true : (state.spotlight && !char.syncId && char.name && char.name === state.spotlight) ? true : false;
+  if (char.narrativeOnly) {
+    return `
+      <div class="character-card ${cardClass} ${char.hidden ? 'hidden-char' : ''}" data-char-id="${char.id}">
+        <div class="character-card-header">
+          <div>
+            <h4 class="character-name">${escapeHtml(char.name)} ${isAlly ? '<span class="ally-indicator">★ Ally</span>' : ''}</h4>
+            ${char.subtitle ? `<p class="character-subtitle">${escapeHtml(char.subtitle)}</p>` : ''}
+          </div>
+          <div class="character-header-buttons">
+            ${state.keeperMode ? `<button class="ally-toggle-btn ${char.isAlly ? 'ally' : 'adversary'}" onclick="toggleAllyStatus(${char.id})" title="${char.isAlly ? 'Switch to Adversary' : 'Switch to Ally'}">${char.isAlly ? '★' : '⚔'}</button>` : ''}
+            <button class="pin-btn ${isPinned ? 'pinned' : ''}" onclick="toggleDashboardPin('npcs', ${char.id})" title="${isPinned ? 'Remove from Dashboard' : 'Pin to Dashboard'}">📌</button>
+            ${char.hidden ? '<span class="hidden-indicator">👁</span>' : ''}
+            <button class="expand-btn" onclick="toggleCharExpand('${expandedId}')">▶</button>
+          </div>
+        </div>
+        <div class="narrative-profile">Narrative NPC · no canonical combat profile</div>
+        <div id="${expandedId}" class="character-expanded hidden">
+          ${char.description ? `<p class="character-description">${escapeHtml(char.description)}</p>` : ''}
+          ${abilitiesHtml ? `<div class="abilities-section"><h5 class="abilities-title">Intentions and leverage:</h5>${abilitiesHtml}</div>` : ''}
+          ${state.keeperMode && char.keeperNotes ? `<div class="keeper-notes-section"><h5 class="keeper-notes-title">Keeper Notes:</h5><p class="keeper-notes-text">${escapeHtml(char.keeperNotes)}</p></div>` : ''}
+        </div>
+        ${state.keeperMode ? `<div class="char-action-buttons"><button class="edit-char-btn" onclick="showEditCharacterModal('npc', ${char.id})">✏️ Edit</button><button class="delete-char-btn" onclick="deleteCharacter(${char.id}, 'npc')">🗑️ Delete</button></div>` : ''}
+      </div>
+    `;
+  }
   return `
     <div class="character-card ${cardClass} ${char.hidden ? 'hidden-char' : ''} ${spotMatch ? 'vf-spotlight' : ''}" data-char-id="${char.id}">
       <div class="character-card-header">
@@ -1015,6 +666,7 @@ ${lanternSvg(spotMatch, char.syncId || char.name)}${escapeHtml(char.name)}
           <button class="stat-btn" onclick="updateCharStat(${char.id}, '${charType}', 'effort', -1)">-</button>
           <span>${char.effort || 0}/${char.maxEffort || 6}</span>
           <button class="stat-btn" onclick="updateCharStat(${char.id}, '${charType}', 'effort', 1)">+</button>
+          <span class="text-gray text-small">Track ${char.effortTrack || 0}/2</span>
           <span class="stat-label hope" style="margin-left: 0.5rem;">Resolve:</span>
           <button class="stat-btn" onclick="updateCharStat(${char.id}, '${charType}', 'resolve', -1)">-</button>
           <span>${char.resolve || 0}/${char.maxResolve || 6}</span>
@@ -1282,6 +934,19 @@ function renderDashboardCharCard(char, type) {
   const isSpotlight = state.spotlightFocus?.type === type && state.spotlightFocus?.id === char.id;
   
   char.type = type;
+
+  if (char.narrativeOnly) {
+    return `
+      <div class="dashboard-char-card ${cardClass}" data-char-id="${char.id}">
+        <div class="dashboard-card-header">
+          <div class="dashboard-card-name">${escapeHtml(char.name)} ${isAlly ? '<span class="ally-indicator">★</span>' : ''}</div>
+          <div class="dashboard-card-buttons"><button class="unpin-btn" onclick="event.stopPropagation(); toggleDashboardPin('npcs', ${char.id})" title="Unpin">✕</button></div>
+        </div>
+        <div class="narrative-profile">Narrative NPC · use intentions, needs and leverage</div>
+        ${char.keeperNotes ? `<p class="text-gray text-small">${escapeHtml(char.keeperNotes)}</p>` : ''}
+      </div>
+    `;
+  }
   
   return `
     <div class="dashboard-char-card ${cardClass} ${isSpotlight ? 'spotlight' : ''}" 
@@ -1325,8 +990,21 @@ function renderDashboardCharCard(char, type) {
           </div>
         </div>
         
-        ${canHaveHope ? `
-          <!-- Hope -->
+        ${canHaveHope ? ((char.path === 'sleeping') ? `
+          <!-- Sleeping resource -->
+          <div class="dashboard-stat">
+            <div class="dashboard-stat-header">
+              <span class="dashboard-stat-icon hope">◆</span>
+              <span class="dashboard-stat-value ${(char.effort || 0) >= (char.maxEffort || 6) ? 'max' : ''}">${char.effort || 0}/${char.maxEffort || 6}</span>
+            </div>
+            <div class="dashboard-stat-buttons">
+              <button class="dashboard-stat-btn neutral" onclick="event.stopPropagation(); updateCharStat(${char.id}, '${type}', 'effort', -1)">−</button>
+              <button class="dashboard-stat-btn neutral" onclick="event.stopPropagation(); updateCharStat(${char.id}, '${type}', 'effort', 1)">+</button>
+            </div>
+            <span class="text-gray text-small">Effort · Track ${char.effortTrack || 0}/2</span>
+          </div>
+        ` : `
+          <!-- Awakened resource -->
           <div class="dashboard-stat">
             <div class="dashboard-stat-header">
               <span class="dashboard-stat-icon hope">✦</span>
@@ -1337,7 +1015,7 @@ function renderDashboardCharCard(char, type) {
               <button class="dashboard-stat-btn neutral" onclick="event.stopPropagation(); updateCharStat(${char.id}, '${type}', 'hope', 1)">+</button>
             </div>
           </div>
-        ` : ''}
+        `) : ''}
       </div>
       
       <!-- Armor & Evasion -->
@@ -1529,6 +1207,12 @@ function renderSceneDetail(scene) {
               <p class="scene-tips">${escapeHtml(scene.details.tips)}</p>
             </div>
           ` : ''}
+
+          ${scene.source ? `
+            <div class="scene-section">
+              <a class="scene-source-link" href="${escapeHtml(scene.source)}" target="_blank" rel="noopener">Open the complete chapter ↗</a>
+            </div>
+          ` : ''}
         ` : ''}
       </div>
     </div>
@@ -1690,7 +1374,7 @@ function renderDiceResult(results) {
         <div class="roll-outcome ${results.outcomeClass}">${results.outcome}</div>
         
         <div class="gain-indicators">
-          ${results.gainHope ? '<span class="gain-hope">+1 Hope</span>' : ''}
+          ${results.resourceNotice ? `<span class="gain-hope">${escapeHtml(results.resourceNotice)}</span>` : ''}
           ${results.gainFear ? '<span class="gain-fear">+1 Fear Token</span>' : ''}
         </div>
       </div>
@@ -1766,6 +1450,7 @@ function rollDuality() {
   let outcomeClass = '';
   let gainHope = false;
   let gainFear = false;
+  let resourceNotice = '';
   
   if (doubles) {
     outcome = '🎯 CRITICAL SUCCESS!';
@@ -1800,19 +1485,41 @@ function rollDuality() {
     if (window.keeperPushFear) window.keeperPushFear();
   }
   
-  // Auto-increment Hope for spotlighted player
+  // Apply the correct path resource to the spotlighted character.
   if (gainHope && state.spotlightFocus) {
     if (state.spotlightFocus.type === 'player') {
       const player = state.players.find(p => p.id === state.spotlightFocus.id);
       if (player) {
-        player.hope = Math.min(10, (player.hope || 0) + 1);
+        if (player.path === 'sleeping') {
+          if (doubles) {
+            player.stress = Math.max(0, (player.stress || 0) - 1);
+            player.effortTrack = 0;
+            resourceNotice = 'Critical: clear 1 Stress; choose +1 Effort or Resolve';
+          } else {
+            const nextTrack = (player.effortTrack || 0) + 1;
+            if (nextTrack >= 2) {
+              player.effortTrack = 0;
+              player.effort = Math.min(player.maxEffort || 6, (player.effort || 0) + 1);
+              resourceNotice = '+1 Effort · track completed';
+            } else {
+              player.effortTrack = nextTrack;
+              resourceNotice = `Effort Track +1 · ${nextTrack}/2`;
+            }
+          }
+        } else {
+          player.hope = Math.min(10, (player.hope || 0) + 1);
+          resourceNotice = '+1 Hope';
+        }
       }
     } else if (state.spotlightFocus.type === 'npc') {
       const npc = state.npcs.find(n => n.id === state.spotlightFocus.id);
       if (npc?.isAlly) {
         npc.hope = Math.min(5, (npc.hope || 0) + 1);
+        resourceNotice = '+1 Hope';
       }
     }
+  } else if (gainHope) {
+    resourceNotice = doubles ? 'Critical resource: apply to the acting character' : 'Hope / Effort Track: apply to the acting character';
   }
   
   const result = {
@@ -1829,6 +1536,7 @@ function rollDuality() {
     doubles,
     gainHope,
     gainFear,
+    resourceNotice,
     timestamp: new Date().toLocaleTimeString()
   };
   
@@ -2744,6 +2452,7 @@ function renderScenesTab() {
         ` : ''}
         
         <div class="scene-actions">
+          ${scene.source ? `<a class="btn btn-small btn-gray scene-source-link" href="${escapeHtml(scene.source)}" target="_blank" rel="noopener">Full chapter ↗</a>` : ''}
           <button class="btn btn-small ${isCurrentScene ? 'btn-green' : 'btn-gray'}" onclick="setCurrentScene(${scene.id})">
             ${isCurrentScene ? '✓ Current' : 'Set Active'}
           </button>
@@ -2826,6 +2535,7 @@ function saveGame() {
     players: state.players,
     npcs: state.npcs,
     monsters: state.monsters,
+    scenes: state.scenes,
     diceRoller: {
       modifier: state.diceRoller.modifier,
       advantage: state.diceRoller.advantage,
@@ -2868,6 +2578,7 @@ function loadGame(event) {
       state.players = saveData.players || state.players;
       state.npcs = saveData.npcs || state.npcs;
       state.monsters = saveData.monsters || state.monsters;
+      state.scenes = saveData.scenes || state.scenes;
       
       if (saveData.diceRoller) {
         state.diceRoller.modifier = saveData.diceRoller.modifier || 0;
@@ -3243,7 +2954,7 @@ function adjustFear(delta) {
 // ==================== EMBEDDED CAMPAIGN TEMPLATES ====================
 function getEmbeddedTemplate(templateId) {
   if (templateId === 'hearts_in_the_void') {
-    return getHeartsInTheVoidTemplate();
+    return getCurrentHeartsInTheVoidTemplate();
   } else if (templateId === 'derelicts_secret') {
     return getDerelictsSecretTemplate();
   } else if (templateId === 'example_campaign') {
@@ -3252,55 +2963,11 @@ function getEmbeddedTemplate(templateId) {
   return null;
 }
 
-function getHeartsInTheVoidTemplate() {
-  return {
-    sessionName: 'Hearts in the Void - Session 1',
-    fearTokens: 0,
-    currentScene: 1,
-    notes: '',
-    dashboardPins: { players: [1, 2, 3, 4, 5, 6], npcs: [1, 3], monsters: [1] },
-    clocks: [
-      { id: 1, name: "Korren's Desperation", segments: 4, filled: 0, hidden: false },
-      { id: 2, name: "Core Overload", segments: 4, filled: 0, hidden: false },
-      { id: 3, name: "Structural Collapse", segments: 6, filled: 0, hidden: false },
-      { id: 4, name: "The Swarm Catches You", segments: 4, filled: 0, hidden: false }
-    ],
-    players: [
-      { id: 1, name: 'Spark', subtitle: 'Human Engineer', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, armor: 3, armorMinor: 5, armorSevere: 10, armorSlots: 3, armorMarked: [], evasion: 9, abilities: ['Scrap Genius (3 Hope)', 'Technical Intuition', 'Digital Ghost'], equipment: 'Plasma Pistol, Multi-tool, Hacking Kit' },
-      { id: 2, name: 'Marcus', subtitle: 'Human Soldier', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, armor: 4, armorMinor: 8, armorSevere: 16, armorSlots: 4, armorMarked: [], evasion: 9, abilities: ['Combat Surge (2 Hope)', 'Combat Focus', 'Bodyguard Protocol'], equipment: 'Assault Rifle, Riot Shield' },
-      { id: 3, name: 'Whisper', subtitle: 'Ethereal Mystic', hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 2, armor: 2, armorMinor: 5, armorSevere: 11, armorSlots: 2, armorMarked: [], evasion: 10, abilities: ['Path to Nirvana (3 Hope)', 'Unbroken Focus', 'Veil Sight'], equipment: 'Ceremonial Robes, Emergency Blaster' },
-      { id: 4, name: 'Dr. Lyra', subtitle: 'Kryllian Scholar', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, armor: 3, armorMinor: 5, armorSevere: 10, armorSlots: 3, armorMarked: [], evasion: 9, abilities: ['Eureka Moment (3 Hope)', 'Analytical Mind', 'Combat Medicine'], equipment: 'Medical Kit, Biological Scanner' },
-      { id: 5, name: 'Flash', subtitle: 'Celestiari Pilot', hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 2, armor: 2, armorMinor: 5, armorSevere: 11, armorSlots: 2, armorMarked: [], evasion: 11, abilities: ['Veil Surge (3 Hope)', 'Stellar Instinct', "Pathfinder's Sense"], equipment: 'Energy Pistol, Starcharts' },
-      { id: 6, name: 'Shadow', subtitle: 'Synthetic Scoundrel', hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 2, armor: 4, armorMinor: 7, armorSevere: 16, armorSlots: 4, armorMarked: [], evasion: 12, abilities: ['Vanishing Act (3 Hope)', 'Shadow Operative', 'Blend with Crowd'], equipment: 'Gauss Pistol, Morphic Key, Holo-Mask' }
-    ],
-    npcs: [
-      { id: 1, name: 'Zara Kaine', subtitle: 'Iron Hearts Captain', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 2, armor: 3, armorMinor: 5, armorSevere: 10, armorSlots: 3, armorMarked: [], evasion: 12, description: "Pilot with a laugh like thunder. In love with Alexei. Can't cook—once started a fire in space.", abilities: [{ name: 'Expert Pilot', type: 'Passive', cost: 0, desc: '+2 to all piloting checks' }, { name: 'Cover Fire', type: 'Action', cost: 1, desc: 'Suppress enemies, giving allies advantage on movement' }], keeperNotes: 'Will NOT leave Alexei. Protective.', hidden: false, isAlly: true },
-      { id: 2, name: 'Alexei Joric', subtitle: 'The "Kidnapped" Nobleman', hp: 6, maxHp: 6, stress: 0, maxStress: 6, hope: 1, armor: 1, armorMinor: 3, armorSevere: 6, armorSlots: 1, armorMarked: [], evasion: 11, description: 'Young poet with terrible poetry. Useless in combat. Quotes verse when nervous.', abilities: [{ name: 'Terrible Poetry', type: 'Action', cost: 0, desc: 'Recite poetry. Enemies may be distracted or annoyed' }, { name: 'Noble Bearing', type: 'Passive', cost: 0, desc: '+1 to social checks with nobility' }], keeperNotes: 'Non-combatant. Liability in fights.', hidden: false, isAlly: true },
-      { id: 3, name: 'Brix', subtitle: 'Loyal Kryx', hp: 10, maxHp: 10, stress: 0, maxStress: 6, hope: 2, armor: 3, armorMinor: 6, armorSevere: 12, armorSlots: 3, armorMarked: [], evasion: 11, description: "Massive wolf-alien. Doesn't understand human customs. Treats handshakes as combat.", abilities: [{ name: 'Brutal Charge', type: 'Action', cost: 1, desc: 'Charge and knockdown, +4 attack, 2d6 damage' }, { name: 'Pack Loyalty', type: 'Reaction', cost: 1, desc: 'Intercept attack meant for Zara, take damage instead' }, { name: 'Intimidating Presence', type: 'Passive', cost: 0, desc: 'Enemies have disadvantage on first attack against party' }], keeperNotes: 'Charges biggest threat. Loyal to Zara.', hidden: false, isAlly: true },
-      { id: 4, name: 'Korren', subtitle: 'The Traitor', hp: 8, maxHp: 8, stress: 0, maxStress: 7, armor: 5, armorMinor: 10, armorSevere: 20, armorSlots: 5, armorMarked: [], evasion: 10, description: 'Kryllian engineer drowning in gambling debt. Worst luck in the galaxy.', abilities: [{ name: 'Heavy Weapons', type: 'Action', cost: 0, desc: '+3 attack with heavy weapons, 2d8 damage' }, { name: 'Sabotage', type: 'Action', cost: 1, desc: 'Disable a system or device, DC 14 to notice' }, { name: 'Engineering', type: 'Passive', cost: 0, desc: 'Can repair or jury-rig most tech' }], keeperNotes: 'TRAITOR. Will betray when clock fills. Desperate, not evil.', hidden: true, isAlly: false },
-      { id: 5, name: 'Thex', subtitle: 'The Manipulator', hp: 6, maxHp: 6, stress: 0, maxStress: 6, armor: 2, armorMinor: 4, armorSevere: 8, armorSlots: 2, armorMarked: [], evasion: 10, description: "Ethereal obsessed with wealth. No idea what things cost. Makes dramatic pronouncements nobody listens to.", abilities: [{ name: 'Emotional Manipulation', type: 'Action', cost: 1, desc: 'DC 14 Presence or target believes a lie' }, { name: 'Time Sight', type: 'Action', cost: 2, desc: 'Glimpse 1 round into future, gain advantage' }], keeperNotes: 'TRAITOR. Works with Korren. Hangs back in fights.', hidden: true, isAlly: false },
-      { id: 6, name: 'Madame Silk', subtitle: 'Assassin Leader', hp: 8, maxHp: 8, stress: 0, maxStress: 6, armor: 4, armorMinor: 7, armorSevere: 16, armorSlots: 4, armorMarked: [], evasion: 15, description: 'Rift Spinner assassin. Art snob about killing. Once let target live for better lighting.', abilities: [{ name: 'Camouflage', type: 'Action', cost: 1, desc: 'Become invisible until attack or damaged' }, { name: 'Filament Strike', type: 'Action', cost: 0, desc: '+5 attack, 2d8 damage, ignores 2 armor' }, { name: 'Ambush', type: 'Reaction', cost: 2, desc: 'When revealed, make free attack with advantage' }], keeperNotes: 'Invisible until strikes. Flanks. Targets weakest.', hidden: true, isAlly: false },
-      { id: 7, name: 'Scalpel', subtitle: 'Medical Torturer', hp: 8, maxHp: 8, stress: 0, maxStress: 6, armor: 3, armorMinor: 6, armorSevere: 12, armorSlots: 3, armorMarked: [], evasion: 12, description: 'Inappropriately cheerful. Offers tea to torture victims. Hums while working.', abilities: [{ name: 'Surgical Strike', type: 'Action', cost: 0, desc: '+4 attack, 1d10 damage, +2 Stress on hit' }, { name: 'Toxins', type: 'Action', cost: 1, desc: 'Apply poison: DC 13 or 1d6 damage per round' }, { name: 'Medical Knowledge', type: 'Passive', cost: 0, desc: 'Can stabilize or harm with equal skill' }], keeperNotes: 'Targets wounded. May offer deals.', hidden: true, isAlly: false },
-      { id: 8, name: 'Maya Santos', subtitle: 'Amaranth Agent', hp: 7, maxHp: 7, stress: 0, maxStress: 6, hope: 1, armor: 2, armorMinor: 4, armorSevere: 8, armorSlots: 2, armorMarked: [], evasion: 11, description: "Nothing surprises her anymore. Sighs constantly. Will nod at any plan.", abilities: [{ name: 'Concealed Weapon', type: 'Reaction', cost: 1, desc: 'Surprise attack when least expected, +3, 1d8' }, { name: 'Information Network', type: 'Action', cost: 1, desc: 'Contact sources, learn one secret about target' }], keeperNotes: 'Quest giver. Not meant for combat.', hidden: false, isAlly: true }
-    ],
-    monsters: [
-      { id: 1, name: 'Hunger Weaver', subtitle: 'Individual', hp: 4, maxHp: 4, stress: 0, maxStress: 3, armor: 0, armorMinor: 6, armorSevere: 10, armorSlots: 0, armorMarked: [], evasion: 12, description: 'Crystalline jellyfish. Feeds on bio-electric energy.', abilities: [{ name: 'Draining Tentacle', type: 'Action', fearCost: 0, desc: '+3, 1d6 Magic, DC 13 or +1 Stress' }, { name: 'Hypnotic Illusions', type: 'Action', fearCost: 1, desc: 'DC 12 Presence or Fascinated for 1 round' }, { name: 'Fluid Form', type: 'Passive', fearCost: 0, desc: 'Can pass through 5cm gaps' }], keeperNotes: 'Weak to bright light and high-frequency sound.', hidden: false },
-      { id: 2, name: 'Weaver Swarm', subtitle: '4-5 Weavers', hp: 16, maxHp: 16, stress: 0, maxStress: 6, armor: 0, armorMinor: 6, armorSevere: 10, armorSlots: 0, armorMarked: [], evasion: 14, description: 'Coordinated group. Sets ambushes. Learns.', abilities: [{ name: 'Multi-Attack', type: 'Action', fearCost: 1, desc: 'Attack 2 different targets' }, { name: 'Swarm Tactics', type: 'Passive', fearCost: 0, desc: '+2 to hit when near allies' }, { name: 'Overwhelming Numbers', type: 'Reaction', fearCost: 2, desc: 'When hit, spawn 1d4 new Weavers' }], keeperNotes: 'More arrive every 2-3 rounds during chaos.', hidden: true },
-      { id: 3, name: 'Weaver Queen (Phase 1)', subtitle: 'Boss - The Sovereign', hp: 25, maxHp: 25, stress: 0, maxStress: 0, armor: 0, armorMinor: 8, armorSevere: 14, armorSlots: 0, armorMarked: [], evasion: 13, description: 'Ancient, massive, alien intelligence. Defensive and calculating at first.', abilities: [{ name: 'Psionic Scream', type: 'Action', fearCost: 2, desc: 'All in area: DC 15 Presence or 2d6 damage + 2 Stress' }, { name: 'Summon Swarm', type: 'Action', fearCost: 1, desc: 'Spawn 1d4 Hunger Weavers' }, { name: 'Psychic Shield', type: 'Reaction', fearCost: 1, desc: 'Reduce incoming damage by 1d6' }], keeperNotes: 'Transforms to Phase 2 at 12 HP or less.', hidden: true },
-      { id: 4, name: 'Weaver Queen (Phase 2)', subtitle: 'Boss - The Desperate', hp: 20, maxHp: 20, stress: 0, maxStress: 0, armor: 0, armorMinor: 10, armorSevere: 18, armorSlots: 0, armorMarked: [], evasion: 11, description: 'Wounded and enraged. Abandons all caution.', abilities: [{ name: 'Frenzy', type: 'Passive', fearCost: 0, desc: '+2 to all attacks, -2 to Evasion' }, { name: 'Consume Minion', type: 'Action', fearCost: 0, desc: 'Destroy a Weaver to heal 1d8 HP' }, { name: 'Death Throes', type: 'Reaction', fearCost: 3, desc: 'On death: All in area take 3d6 damage' }], keeperNotes: 'Desperate. Will sacrifice minions. Make death dramatic.', hidden: true }
-    ],
-    scenes: [
-      { id: 1, name: 'Scene 1: The Offer', location: 'Nexus Inferior Bar', notes: 'Maya Santos hires the crew', details: { atmosphere: 'Smoke curls through recycled air. The bar\'s neon sign flickers in shades of dying pink. At a corner booth, a woman in a grey coat waits.', objectives: ['Meet Maya Santos', 'Accept the contract', 'Learn about the Iron Hearts'], keyRolls: ['Presence + Insight (DC 12) to read Maya', 'Knowledge + Streetwise (DC 14) for Iron Hearts info'], npcsPresent: ['Maya Santos'], possibleOutcomes: ['Accept: Story continues', 'Negotiate: Better terms possible', 'Refuse: Maya finds other means'], tips: 'Maya is tired but professional. She\'s seen too much.' } },
-      { id: 2, name: 'Scene 2: Securing Transport', location: 'Crossroads Station', notes: 'Find passage to Charon\'s Refuge', details: { atmosphere: 'The station hums with commerce and desperation. Ships dock and depart. Someone here can get you where you need to go.', objectives: ['Find transport', 'Negotiate passage', 'Prepare for the journey'], keyRolls: ['Presence + Persuasion (DC 12) to find a captain', 'Knowledge + Trade (DC 14) for fair price'], npcsPresent: [], possibleOutcomes: ['Success: Fast, safe passage', 'Partial: Slow but safe', 'Failure: Dangerous route'], tips: 'Introduce potential complications for later.' } },
-      { id: 3, name: 'Scene 3: Arrival', location: "Charon's Refuge", notes: 'The derelict station. First encounter with the Iron Hearts.', details: { atmosphere: "The station drifts in the shadow of a dead moon. Half its lights are dark. The Iron Hearts' ship, The Stubborn Echo, is docked at bay 7.", objectives: ['Board the station', 'Find the Iron Hearts', 'Assess the situation'], keyRolls: ['Instinct + Perception (DC 12) to spot dangers', 'Finesse + Stealth (DC 14) to approach unseen'], npcsPresent: ['Zara Kaine', 'Brix', 'Alexei Joric'], possibleOutcomes: ['Peaceful: Earn trust quickly', 'Tense: Trust must be built', 'Hostile: Mistaken for enemies'], tips: 'First impressions matter. Let players choose their approach.' } },
-      { id: 4, name: 'Scene 4: Shadows', location: 'Residential Zone', notes: 'Strange occurrences. First hints of the Weavers.', details: { atmosphere: 'The corridors are too quiet. Lights flicker. Something moves in the darkness between sections.', objectives: ['Investigate disappearances', 'Find evidence', 'Survive first encounter'], keyRolls: ['Instinct + Survival (DC 14) to track movement', 'Knowledge + Tech (DC 12) to analyze evidence'], npcsPresent: ['Korren', 'Thex'], possibleOutcomes: ['Discovery: Learn about Weavers early', 'Partial: Hints but no confirmation', 'Ambush: Surprise attack'], tips: 'Build tension. The Weavers are watching.' } },
-      { id: 5, name: 'Scene 5: Broken Heart', location: 'Engine Room', notes: "The station's heart is failing. Sabotage discovered.", details: { atmosphere: 'The reactor core groans. Warning lights paint everything red. Someone has been here before you.', objectives: ['Assess the damage', 'Find the saboteur', 'Prevent catastrophe'], keyRolls: ['Knowledge + Tech (DC 15) to understand sabotage', 'Instinct + Investigation (DC 14) to find clues'], npcsPresent: ['Korren'], possibleOutcomes: ['Success: Stop the overload', 'Partial: Buy time', 'Failure: Clock advances'], tips: "This is where Korren's betrayal becomes clear." } },
-      { id: 6, name: 'Scene 6: Betrayal', location: 'Engine Room', notes: "Korren's clock fills. The traitors reveal themselves.", details: { atmosphere: "Korren's hands shake as he levels his weapon. Behind him, Thex smiles. 'Nothing personal. Just business.'", objectives: ['Survive the betrayal', 'Protect allies', 'Make a choice about Korren'], keyRolls: ['Combat rolls', 'Presence + Persuasion (DC 16) to talk Korren down'], npcsPresent: ['Korren', 'Thex', 'Zara Kaine'], possibleOutcomes: ['Korren dies: Simple but tragic', 'Korren redeemed: Harder but hopeful', 'Everyone survives: Nearly impossible'], tips: 'Korren is desperate, not evil. Make his choice feel real.' } },
-      { id: 7, name: 'Scene 7: Desperate Escape', location: 'Corridors', notes: 'The Weaver swarm attacks. Run for the ship.', details: { atmosphere: 'The walls writhe with crystalline bodies. The Weavers have stopped hunting. Now they\'re swarming.', objectives: ['Reach the ship', 'Protect civilians', "Don't get separated"], keyRolls: ['Agility + Athletics (DC 14) to outrun', 'Combat to clear paths'], npcsPresent: ['Zara Kaine', 'Brix', 'Alexei Joric'], possibleOutcomes: ['Clean escape: Everyone makes it', 'Losses: Someone falls behind', 'Trapped: Must fight the Queen'], tips: 'This should feel desperate. Use the Swarm clock.' } },
-      { id: 8, name: 'Scene 8: Resolution', location: 'Ship Cockpit', notes: 'Escape and aftermath. What happens next?', details: { atmosphere: "Stars streak past as the Stubborn Echo clears the station. Behind you, Charon's Refuge burns. Ahead lies uncertain future.", objectives: ['Escape the station', 'Assess losses', 'Plan next steps'], keyRolls: ['Finesse + Piloting (DC 12) to escape safely'], npcsPresent: ['Surviving NPCs'], possibleOutcomes: ['Victory: Safe with allies', 'Pyrrhic: Safe but scarred', 'Cliffhanger: Queen survives'], tips: 'Let players feel the weight of their choices.' } }
-    ],
-    diceRoller: { modifier: 0, advantage: 'normal', difficulty: 15, results: null, rollHistory: [] }
-  };
+function getCurrentHeartsInTheVoidTemplate() {
+  if (!window.VF_HEARTS_IN_THE_VOID_TEMPLATE) {
+    throw new Error('The current Hearts in the Void template is unavailable.');
+  }
+  return JSON.parse(JSON.stringify(window.VF_HEARTS_IN_THE_VOID_TEMPLATE));
 }
 
 function getDerelictsSecretTemplate() {
@@ -4531,24 +4198,24 @@ function exportSection(section) {
   
   switch(section) {
     case 'players':
-      data = { type: 'voidlight_players', version: '1.0', players: state.players };
-      filename = 'voidlight_players.json';
+      data = { type: 'veilfarers_players', version: '1.0', players: state.players };
+      filename = 'veilfarers_players.json';
       break;
     case 'npcs':
-      data = { type: 'voidlight_npcs', version: '1.0', npcs: state.npcs };
-      filename = 'voidlight_npcs.json';
+      data = { type: 'veilfarers_npcs', version: '1.0', npcs: state.npcs };
+      filename = 'veilfarers_npcs.json';
       break;
     case 'monsters':
-      data = { type: 'voidlight_monsters', version: '1.0', monsters: state.monsters };
-      filename = 'voidlight_monsters.json';
+      data = { type: 'veilfarers_monsters', version: '1.0', monsters: state.monsters };
+      filename = 'veilfarers_monsters.json';
       break;
     case 'scenes':
-      data = { type: 'voidlight_scenes', version: '1.0', scenes: state.scenes };
-      filename = 'voidlight_scenes.json';
+      data = { type: 'veilfarers_scenes', version: '1.0', scenes: state.scenes };
+      filename = 'veilfarers_scenes.json';
       break;
     case 'clocks':
-      data = { type: 'voidlight_clocks', version: '1.0', clocks: state.clocks };
-      filename = 'voidlight_clocks.json';
+      data = { type: 'veilfarers_clocks', version: '1.0', clocks: state.clocks };
+      filename = 'veilfarers_clocks.json';
       break;
     case 'all':
       saveCampaign();
@@ -4573,24 +4240,25 @@ function importSection(event) {
     try {
       const data = JSON.parse(e.target.result);
       
-      // Determine what type of data this is
-      if (data.type === 'voidlight_players' && data.players) {
+      // Accept current VeilFarers exports and historical files created before the rename.
+      const sectionType = name => data.type === `veilfarers_${name}` || data.type === `voidlight_${name}`;
+      if (sectionType('players') && data.players) {
         if (confirm(`Import ${data.players.length} players? This will add to existing players.`)) {
           data.players.forEach(p => { p.id = Date.now() + Math.random(); state.players.push(p); });
         }
-      } else if (data.type === 'voidlight_npcs' && data.npcs) {
+      } else if (sectionType('npcs') && data.npcs) {
         if (confirm(`Import ${data.npcs.length} NPCs? This will add to existing NPCs.`)) {
           data.npcs.forEach(n => { n.id = Date.now() + Math.random(); state.npcs.push(n); });
         }
-      } else if (data.type === 'voidlight_monsters' && data.monsters) {
+      } else if (sectionType('monsters') && data.monsters) {
         if (confirm(`Import ${data.monsters.length} monsters? This will add to existing monsters.`)) {
           data.monsters.forEach(m => { m.id = Date.now() + Math.random(); state.monsters.push(m); });
         }
-      } else if (data.type === 'voidlight_scenes' && data.scenes) {
+      } else if (sectionType('scenes') && data.scenes) {
         if (confirm(`Import ${data.scenes.length} scenes? This will add to existing scenes.`)) {
           data.scenes.forEach(s => { s.id = Date.now() + Math.random(); state.scenes.push(s); });
         }
-      } else if (data.type === 'voidlight_clocks' && data.clocks) {
+      } else if (sectionType('clocks') && data.clocks) {
         if (confirm(`Import ${data.clocks.length} clocks? This will add to existing clocks.`)) {
           data.clocks.forEach(c => { c.id = Date.now() + Math.random(); state.clocks.push(c); });
         }

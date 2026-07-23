@@ -1,0 +1,25 @@
+VEILFARERS PORTAL v59.78 — START HERE
+
+1. Deploy every file from the ZIP root. Do not deploy a parent folder.
+2. Confirm /data/deploy-version.json reports v59.78.
+3. Confirm HTML responses include X-VeilFarers-Release: v59.78 and the wasm-3d-dice-v2 CSP profile.
+4. Keeper Tool acceptance:
+   - Load Hearts in the Void and confirm 11 playable stages and 10 Sleeping pregenerates.
+   - Open Full adventure and at least two Full chapter links.
+   - Confirm Core Overload has 6 segments.
+   - Confirm Korren is an engineer at the breaking point, not an automatic traitor.
+   - Confirm I Need an Idea is a terminal backup, the Scene 8 standoff has no roll, and The Ship That Learns is optional/recommended.
+5. Audio acceptance:
+   - Roll in 2D and 3D; dados_1.mp3 should begin immediately.
+   - Interrupt a roll; sound and animation must stop together.
+6. Inventory acceptance:
+   - Confirm the active character name and ID are prominent.
+   - Change the active character and confirm the target updates.
+   - With no active character, all transfer buttons must be disabled.
+   - Test Player Tool, Charsheet and Both with matching IDs.
+7. Release documents:
+   - PORTAL_HANDOVER_v59.78.md
+   - GITHUB_DEPLOY_SUMMARY_v59.78.md
+   - VALIDATION_v59.78.txt
+
+Live Netlify/Firebase connectivity, motion permission and physical-device audio remain Deploy Preview acceptance items.

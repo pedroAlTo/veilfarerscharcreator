@@ -1,7 +1,20 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.77",
+  "currentVersion": "v59.78",
   "entries": [
+    {
+      "version": "v59.78",
+      "date": "2026-07-23",
+      "title": "Current Hearts in the Void, immediate dice audio and explicit inventory target",
+      "changes": [
+        "Replaces the Keeper Tool runtime Hearts in the Void template with the consolidated 17-block adventure based on Corebook 11.35 and Keeper's Companion 11.33.",
+        "Adds 11 playable stages, ten canonical Level 1 Sleeping pregenerates, narrative NPC profiles without invented combat statistics, corrected clocks, and the current two-phase Weaver Queen.",
+        "Preserves I Need an Idea as a terminal backup, the final standoff without a roll, and The Ship That Learns as an optional recommended ending that the crew can prevent.",
+        "Bundles the complete Markdown adventure and its 17 current source chapters with direct chapter links from Keeper Tool scenes.",
+        "Removes approximately 1.38 seconds of near-silence from the start of dados_1.mp3 while preserving roll interruption behavior.",
+        "Shows the active character name and ID above Inventory transfers, disables transfer without an active character, and prevents silent fallback to the first Player Tool character."
+      ]
+    },
     {
       "version": "v59.77",
       "date": "2026-07-22",
@@ -776,5 +789,5 @@
       ]
     }
   ],
-  "version": "59.77.0"
+  "version": "59.78.0"
 }
