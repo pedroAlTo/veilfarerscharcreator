@@ -3,7 +3,7 @@ Date: 2026-07-24
 
 AUTOMATED CHECKS
 
-PASS  Node test suite: 9/9.
+PASS  Node test suite: 10/10.
 PASS  member alone has no protected-tool access.
 PASS  player and keeper roles remain separate; admin receives both.
 PASS  administrator requires both admin role and VF_ADMIN_EMAIL match.
@@ -17,6 +17,8 @@ PASS  JSON and netlify.toml parse checks.
 PASS  root HTML script and stylesheet references resolve locally.
 PASS  repository scan found no embedded private key, API token or
       VF_ADMIN_EMAIL value.
+PASS  Netlify scan exceptions contain only public Firebase Web SDK keys.
+PASS  FIREBASE_SERVICE_ACCOUNT_JSON and VF_ADMIN_EMAIL remain scanned.
 
 PDF CHECKS
 
@@ -42,6 +44,8 @@ ACTION The existing valid 205-page Corebook 11.35 artifact was retained.
 DEPLOY PREVIEW CHECKS REQUIRED
 
 PENDING  Netlify Identity Registration is Invite only.
+PENDING  Public Firebase Web variables contain the correct Firebase values;
+         none contains the portal contact email.
 PENDING  Only the owner has admin, and VF_ADMIN_EMAIL matches that owner.
 PENDING  member: Player 403; Keeper 403.
 PENDING  player: Player allowed; Keeper 403.

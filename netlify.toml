@@ -7,6 +7,13 @@ publish = "."
 publishOrigin = "config"
 functions = "netlify/functions"
 
+  # Firebase Web SDK configuration is deliberately returned to authenticated
+  # browsers by /api/firebase-config. These identifiers are public application
+  # configuration, not server credentials. Keep Firebase service accounts,
+  # VF_ADMIN_EMAIL and every other environment variable inside secret scanning.
+  [build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "FIREBASE_API_KEY,FIREBASE_APP_ID,FIREBASE_AUTH_DOMAIN,FIREBASE_MEASUREMENT_ID,FIREBASE_MESSAGING_SENDER_ID,FIREBASE_PROJECT_ID,FIREBASE_STORAGE_BUCKET"
+
   [build.processing]
     [build.processing.css]
     [build.processing.html]
