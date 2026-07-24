@@ -2,9 +2,9 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const api = readFileSync(new URL('../netlify/functions/table-api.mts', import.meta.url), 'utf8')
-const access = readFileSync(new URL('../table-access.js', import.meta.url), 'utf8')
-const player = readFileSync(new URL('../player-tool.jsx', import.meta.url), 'utf8')
-const keeper = readFileSync(new URL('../keeper-tool.html', import.meta.url), 'utf8')
+const access = readFileSync(new URL('../public/table-access.js', import.meta.url), 'utf8')
+const player = readFileSync(new URL('../source/player-tool.jsx', import.meta.url), 'utf8')
+const keeper = readFileSync(new URL('../public/keeper-tool.html', import.meta.url), 'utf8')
 
 const gate = api.indexOf('const passwordGate = tablePasswordGate')
 const memberWrite = api.indexOf('if (!memberIds.includes(user.id))')

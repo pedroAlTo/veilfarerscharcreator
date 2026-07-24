@@ -3,7 +3,7 @@ functionsDirectoryOrigin = "default"
 plugins = []
 
 [build]
-publish = "."
+publish = "public"
 publishOrigin = "config"
 functions = "netlify/functions"
 
@@ -14,8 +14,9 @@ functions = "netlify/functions"
   [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "FIREBASE_API_KEY,FIREBASE_APP_ID,FIREBASE_AUTH_DOMAIN,FIREBASE_MEASUREMENT_ID,FIREBASE_MESSAGING_SENDER_ID,FIREBASE_PROJECT_ID,FIREBASE_STORAGE_BUCKET"
   # The administrator email is also the published legal/privacy contact. Allow
-  # it only in these intentional public references while scanning every other path.
-  SECRETS_SCAN_OMIT_PATHS = "LEGAL_LAUNCH_CHECKLIST_v59.79.md,LEGAL_LAUNCH_CHECKLIST_v59.80.md,PORTAL_HANDOVER_v59.79_CREATOR_LEGAL_SECURITY_PATCH.md,legal.html,login.html,portal.js"
+  # it only in these intentional public references and in the unpublished docs/
+  # folder, while scanning every other path.
+  SECRETS_SCAN_OMIT_PATHS = "public/legal.html,public/login.html,public/portal.js,docs/"
 
   [build.processing]
     [build.processing.css]
@@ -104,6 +105,21 @@ conditions = {Role = ["admin"]}
 
 [[redirects]]
 from = "/admin.html"
+to = "/login.html"
+status = 302
+force = true
+
+# The Hearts in the Void source text is consumed by the Keeper Tool. It is not
+# public reading material, so it carries the same role condition as the tool.
+[[redirects]]
+from = "/adventures/*"
+to = "/adventures/:splat"
+status = 200
+force = true
+conditions = {Role = ["keeper", "admin"]}
+
+[[redirects]]
+from = "/adventures/*"
 to = "/login.html"
 status = 302
 force = true

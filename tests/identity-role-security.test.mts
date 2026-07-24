@@ -48,7 +48,7 @@ test('Netlify redirects do not grant protected tools to member',()=>{
 })
 
 test('browser gate no longer accepts or stores custom invitation tokens',()=>{
-  const source=readFileSync(new URL('../wip-access.js',import.meta.url),'utf8')
+  const source=readFileSync(new URL('../public/wip-access.js',import.meta.url),'utf8')
   assert.doesNotMatch(source,/VF-WIP-[A-Za-z0-9]/)
   assert.doesNotMatch(source,/vf_wip_access|invitation token|action\s*[:=]\s*['"]redeem/i)
   assert.match(source,/\/api\/tool-access/)
@@ -74,12 +74,10 @@ test('Netlify secret-scan exceptions cover only intentional public values',()=>{
   const pathsMatch=config.match(/SECRETS_SCAN_OMIT_PATHS\s*=\s*"([^"]+)"/)
   assert.ok(pathsMatch,'SECRETS_SCAN_OMIT_PATHS must be explicit')
   assert.deepEqual(new Set(pathsMatch[1].split(',')),new Set([
-    'LEGAL_LAUNCH_CHECKLIST_v59.79.md',
-    'LEGAL_LAUNCH_CHECKLIST_v59.80.md',
-    'PORTAL_HANDOVER_v59.79_CREATOR_LEGAL_SECURITY_PATCH.md',
-    'legal.html',
-    'login.html',
-    'portal.js',
+    'public/legal.html',
+    'public/login.html',
+    'public/portal.js',
+    'docs/',
   ]))
   assert.doesNotMatch(config,/SECRETS_SCAN_ENABLED\s*=\s*"false"/)
 })
