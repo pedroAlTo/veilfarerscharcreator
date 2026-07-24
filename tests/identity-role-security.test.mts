@@ -54,7 +54,7 @@ test('browser gate no longer accepts or stores custom invitation tokens',()=>{
   assert.match(source,/\/api\/tool-access/)
 })
 
-test('Netlify secret-scan exceptions cover only public Firebase web config',()=>{
+test('Netlify secret-scan exceptions cover only intentional public values',()=>{
   const config=readFileSync(new URL('../netlify.toml',import.meta.url),'utf8')
   const match=config.match(/SECRETS_SCAN_OMIT_KEYS\s*=\s*"([^"]+)"/)
   assert.ok(match,'SECRETS_SCAN_OMIT_KEYS must be explicit')
@@ -71,5 +71,15 @@ test('Netlify secret-scan exceptions cover only public Firebase web config',()=>
   assert.deepEqual(omitted,expected)
   assert.equal(omitted.has('FIREBASE_SERVICE_ACCOUNT_JSON'),false)
   assert.equal(omitted.has('VF_ADMIN_EMAIL'),false)
+  const pathsMatch=config.match(/SECRETS_SCAN_OMIT_PATHS\s*=\s*"([^"]+)"/)
+  assert.ok(pathsMatch,'SECRETS_SCAN_OMIT_PATHS must be explicit')
+  assert.deepEqual(new Set(pathsMatch[1].split(',')),new Set([
+    'LEGAL_LAUNCH_CHECKLIST_v59.79.md',
+    'LEGAL_LAUNCH_CHECKLIST_v59.80.md',
+    'PORTAL_HANDOVER_v59.79_CREATOR_LEGAL_SECURITY_PATCH.md',
+    'legal.html',
+    'login.html',
+    'portal.js',
+  ]))
   assert.doesNotMatch(config,/SECRETS_SCAN_ENABLED\s*=\s*"false"/)
 })

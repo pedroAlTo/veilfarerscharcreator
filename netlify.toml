@@ -13,6 +13,9 @@ functions = "netlify/functions"
   # VF_ADMIN_EMAIL and every other environment variable inside secret scanning.
   [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "FIREBASE_API_KEY,FIREBASE_APP_ID,FIREBASE_AUTH_DOMAIN,FIREBASE_MEASUREMENT_ID,FIREBASE_MESSAGING_SENDER_ID,FIREBASE_PROJECT_ID,FIREBASE_STORAGE_BUCKET"
+  # The administrator email is also the published legal/privacy contact. Allow
+  # it only in these intentional public references while scanning every other path.
+  SECRETS_SCAN_OMIT_PATHS = "LEGAL_LAUNCH_CHECKLIST_v59.79.md,LEGAL_LAUNCH_CHECKLIST_v59.80.md,PORTAL_HANDOVER_v59.79_CREATOR_LEGAL_SECURITY_PATCH.md,legal.html,login.html,portal.js"
 
   [build.processing]
     [build.processing.css]
