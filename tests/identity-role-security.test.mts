@@ -53,3 +53,23 @@ test('browser gate no longer accepts or stores custom invitation tokens',()=>{
   assert.doesNotMatch(source,/vf_wip_access|invitation token|action\s*[:=]\s*['"]redeem/i)
   assert.match(source,/\/api\/tool-access/)
 })
+
+test('Netlify secret-scan exceptions cover only public Firebase web config',()=>{
+  const config=readFileSync(new URL('../netlify.toml',import.meta.url),'utf8')
+  const match=config.match(/SECRETS_SCAN_OMIT_KEYS\s*=\s*"([^"]+)"/)
+  assert.ok(match,'SECRETS_SCAN_OMIT_KEYS must be explicit')
+  const omitted=new Set(match[1].split(','))
+  const expected=new Set([
+    'FIREBASE_API_KEY',
+    'FIREBASE_APP_ID',
+    'FIREBASE_AUTH_DOMAIN',
+    'FIREBASE_MEASUREMENT_ID',
+    'FIREBASE_MESSAGING_SENDER_ID',
+    'FIREBASE_PROJECT_ID',
+    'FIREBASE_STORAGE_BUCKET',
+  ])
+  assert.deepEqual(omitted,expected)
+  assert.equal(omitted.has('FIREBASE_SERVICE_ACCOUNT_JSON'),false)
+  assert.equal(omitted.has('VF_ADMIN_EMAIL'),false)
+  assert.doesNotMatch(config,/SECRETS_SCAN_ENABLED\s*=\s*"false"/)
+})

@@ -293,6 +293,188 @@
   }
   const footer=document.createElement('footer');
   footer.className='vf-legal-footer';
-  footer.innerHTML=`<span>© ${new Date().getFullYear()} Pedro Almagro Torrecillas</span><span class="vf-legal-footer-links"><a href="/legal.html#legal-notice">Legal</a><a href="/legal.html#privacy">Privacy</a><a href="/legal.html#storage">Cookies & storage</a><a href="/legal.html#terms">Terms</a><a href="/legal.html#daggerheart">Daggerheart attribution</a><a href="mailto:pedro.alm.to@gmail.com">Contact</a></span>`;
+  footer.innerHTML=`<span>© ${new Date().getFullYear()} Pedro Almagro Torrecillas</span><span class="vf-legal-footer-links"><a href="/legal.html#legal-notice">Legal</a><a href="/legal.html#privacy">Privacy</a><button id="vf-storage-control" type="button">Privacy & device data</button><a href="/legal.html#terms">Terms</a><a href="/legal.html#daggerheart">Daggerheart attribution</a><a href="mailto:pedro.alm.to@gmail.com">Contact</a></span>`;
   document.body.appendChild(footer);
+
+  const storageButton=footer.querySelector('#vf-storage-control');
+  let privacyDialog=null;
+  let privacyReturnFocus=null;
+  const spanish=()=>{
+    try{
+      return document.documentElement.lang==='es'
+        ||localStorage.getItem('veilfarers.legal.language.v1')==='es'
+        ||(!localStorage.getItem('veilfarers.legal.language.v1')&&(navigator.language||'').toLowerCase().startsWith('es'));
+    }catch(_){return document.documentElement.lang==='es';}
+  };
+  const copy=()=>spanish()?{
+    title:'Privacidad y datos del dispositivo',
+    intro:'VeilFarers no utiliza actualmente publicidad, analítica de comportamiento ni cookies de seguimiento. El almacenamiento indicado aquí permite las funciones que solicitas.',
+    inventory:'Almacenamiento utilizado',
+    device:'Partidas, personajes e inventario',
+    deviceDetail:'Almacenamiento local propio · persiste hasta que lo borres, elimines la cuenta desde este navegador o borres los datos del sitio.',
+    preferences:'Preferencias de interfaz',
+    preferencesDetail:'Almacenamiento local propio · idioma, tema, accesibilidad, dados y personaje activo; persiste hasta que lo borres.',
+    identity:'Autenticación y roles',
+    identityDetail:'Netlify Identity · sesión y almacenamiento técnico necesarios para iniciar sesión y proteger Player Tool, Keeper Tool y Administración.',
+    cloud:'Datos sincronizados',
+    cloudDetail:'Firebase/Firestore · personajes y mesas vinculados a la cuenta; no se eliminan al limpiar sólo este dispositivo.',
+    optional:'Seguimiento opcional',
+    optionalDetail:'Desactivado. Si se activa en el futuro, deberá solicitarse consentimiento antes de cargarlo.',
+    detected:'En este navegador',
+    warning:'Borrar este dispositivo elimina personajes y cambios que no estén sincronizados o exportados. No elimina por sí mismo los datos en la nube.',
+    clear:'Borrar datos de VeilFarers en este dispositivo',
+    phrase:'Escribe BORRAR ESTE DISPOSITIVO',
+    confirm:'Confirmar borrado local',
+    cancel:'Cancelar',
+    close:'Cerrar',
+    cloudDelete:'Eliminar también cuenta y datos en la nube',
+    working:'Cerrando sesión y borrando almacenamiento…',
+    done:'Datos locales eliminados. Recargando VeilFarers…',
+    mismatch:'La frase de confirmación no coincide.',
+    localKeys:'elementos locales',
+    sessionKeys:'elementos de sesión',
+  }:{
+    title:'Privacy and device data',
+    intro:'VeilFarers currently uses no advertising, behavioural analytics or tracking cookies. The storage shown here supports features that you request.',
+    inventory:'Storage in use',
+    device:'Campaigns, characters and inventory',
+    deviceDetail:'First-party local storage · persists until you clear it, delete the account from this browser, or clear site data.',
+    preferences:'Interface preferences',
+    preferencesDetail:'First-party local storage · language, theme, accessibility, dice and active character; persists until cleared.',
+    identity:'Authentication and roles',
+    identityDetail:'Netlify Identity · session and technical storage needed to sign in and protect Player Tool, Keeper Tool and Administration.',
+    cloud:'Synchronized data',
+    cloudDetail:'Firebase/Firestore · account-linked characters and tables; not removed merely by clearing this device.',
+    optional:'Optional tracking',
+    optionalDetail:'Disabled. If enabled later, consent must be requested before it loads.',
+    detected:'In this browser',
+    warning:'Clearing this device removes characters and changes that have not been synchronized or exported. It does not by itself delete cloud data.',
+    clear:'Clear VeilFarers data from this device',
+    phrase:'Type CLEAR THIS DEVICE',
+    confirm:'Confirm local deletion',
+    cancel:'Cancel',
+    close:'Close',
+    cloudDelete:'Also delete account and cloud data',
+    working:'Signing out and clearing storage…',
+    done:'Local data cleared. Reloading VeilFarers…',
+    mismatch:'The confirmation phrase does not match.',
+    localKeys:'local items',
+    sessionKeys:'session items',
+  };
+  const storageSize=storage=>{
+    let bytes=0;
+    try{
+      for(let index=0;index<storage.length;index+=1){
+        const key=storage.key(index)||'';
+        bytes+=(key.length+(storage.getItem(key)||'').length)*2;
+      }
+    }catch(_){ }
+    if(bytes<1024)return `${bytes} B`;
+    if(bytes<1048576)return `${(bytes/1024).toFixed(1)} KB`;
+    return `${(bytes/1048576).toFixed(1)} MB`;
+  };
+  const closePrivacy=()=>{
+    if(!privacyDialog)return;
+    privacyDialog.remove();
+    privacyDialog=null;
+    document.documentElement.classList.remove('vf-privacy-open');
+    privacyReturnFocus?.focus();
+  };
+  const deleteIndexedDatabases=async()=>{
+    if(!window.indexedDB?.databases)return;
+    const databases=await indexedDB.databases().catch(()=>[]);
+    await Promise.all((databases||[]).filter(item=>item.name).map(item=>new Promise(resolve=>{
+      const request=indexedDB.deleteDatabase(item.name);
+      request.onsuccess=request.onerror=request.onblocked=()=>resolve();
+    })));
+  };
+  const clearDeviceData=async status=>{
+    status.textContent=copy().working;
+    const identity=window.netlifyIdentity;
+    if(identity?.currentUser?.()){
+      await Promise.race([
+        Promise.resolve(identity.logout()).catch(()=>undefined),
+        new Promise(resolve=>setTimeout(resolve,4000)),
+      ]);
+    }
+    try{localStorage.clear();}catch(_){ }
+    try{sessionStorage.clear();}catch(_){ }
+    if(window.caches){
+      const names=await caches.keys().catch(()=>[]);
+      await Promise.all(names.map(name=>caches.delete(name)));
+    }
+    await deleteIndexedDatabases().catch(()=>undefined);
+    if(navigator.serviceWorker){
+      const registrations=await navigator.serviceWorker.getRegistrations().catch(()=>[]);
+      await Promise.all(registrations.map(item=>item.unregister()));
+    }
+    status.textContent=copy().done;
+    setTimeout(()=>location.assign('/'),700);
+  };
+  const openPrivacy=()=>{
+    if(privacyDialog)return;
+    privacyReturnFocus=document.activeElement;
+    const text=copy();
+    const localCount=(()=>{try{return localStorage.length;}catch(_){return 0;}})();
+    const sessionCount=(()=>{try{return sessionStorage.length;}catch(_){return 0;}})();
+    const localSize=(()=>{try{return storageSize(localStorage);}catch(_){return 'unavailable';}})();
+    const sessionSize=(()=>{try{return storageSize(sessionStorage);}catch(_){return 'unavailable';}})();
+    privacyDialog=document.createElement('div');
+    privacyDialog.className='vf-privacy-layer';
+    privacyDialog.innerHTML=`<section class="vf-privacy-dialog" role="dialog" aria-modal="true" aria-labelledby="vf-privacy-title">
+      <div class="vf-privacy-head"><div><div class="vf-privacy-kicker">VEILFARERS · ESSENTIAL STORAGE</div><h2 id="vf-privacy-title">${text.title}</h2></div><button class="vf-privacy-close" type="button" aria-label="${text.close}">×</button></div>
+      <p>${text.intro}</p>
+      <h3>${text.inventory}</h3>
+      <div class="vf-privacy-inventory">
+        <article><strong>${text.device}</strong><span>${text.deviceDetail}</span></article>
+        <article><strong>${text.preferences}</strong><span>${text.preferencesDetail}</span></article>
+        <article><strong>${text.identity}</strong><span>${text.identityDetail}</span></article>
+        <article><strong>${text.cloud}</strong><span>${text.cloudDetail}</span></article>
+        <article class="is-disabled"><strong>${text.optional}</strong><span>${text.optionalDetail}</span></article>
+      </div>
+      <p class="vf-privacy-detected"><strong>${text.detected}:</strong> ${localCount} ${text.localKeys} (${localSize}) · ${sessionCount} ${text.sessionKeys} (${sessionSize}).</p>
+      <div class="vf-privacy-danger">
+        <strong>${text.clear}</strong><p>${text.warning}</p>
+        <button class="vf-privacy-begin" type="button">${text.clear}</button>
+        <div class="vf-privacy-confirm" hidden>
+          <label for="vf-privacy-phrase">${text.phrase}</label>
+          <input id="vf-privacy-phrase" type="text" autocomplete="off" spellcheck="false">
+          <div class="vf-privacy-actions"><button class="vf-privacy-delete" type="button">${text.confirm}</button><button class="vf-privacy-cancel" type="button">${text.cancel}</button></div>
+        </div>
+        <p class="vf-privacy-status" role="status" aria-live="polite"></p>
+      </div>
+      <div class="vf-privacy-links"><a href="/login.html#account-danger-zone">${text.cloudDelete}</a><a href="/legal.html#storage">Legal details</a></div>
+    </section>`;
+    document.body.appendChild(privacyDialog);
+    document.documentElement.classList.add('vf-privacy-open');
+    const dialog=privacyDialog.querySelector('.vf-privacy-dialog');
+    const close=privacyDialog.querySelector('.vf-privacy-close');
+    const begin=privacyDialog.querySelector('.vf-privacy-begin');
+    const confirm=privacyDialog.querySelector('.vf-privacy-confirm');
+    const input=privacyDialog.querySelector('#vf-privacy-phrase');
+    const status=privacyDialog.querySelector('.vf-privacy-status');
+    close.addEventListener('click',closePrivacy);
+    privacyDialog.addEventListener('pointerdown',event=>{if(event.target===privacyDialog)closePrivacy();});
+    begin.addEventListener('click',()=>{begin.hidden=true;confirm.hidden=false;input.focus();});
+    privacyDialog.querySelector('.vf-privacy-cancel').addEventListener('click',()=>{confirm.hidden=true;begin.hidden=false;input.value='';status.textContent='';begin.focus();});
+    privacyDialog.querySelector('.vf-privacy-delete').addEventListener('click',async event=>{
+      const expected=spanish()?'BORRAR ESTE DISPOSITIVO':'CLEAR THIS DEVICE';
+      if(input.value.trim()!==expected){status.textContent=text.mismatch;input.focus();return;}
+      event.currentTarget.disabled=true;
+      input.disabled=true;
+      await clearDeviceData(status);
+    });
+    dialog.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){event.preventDefault();closePrivacy();}
+      if(event.key==='Tab'){
+        const focusable=[...dialog.querySelectorAll('a,button,input:not([disabled])')].filter(item=>!item.hidden);
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+        if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+      }
+    });
+    close.focus();
+  };
+  storageButton.addEventListener('click',openPrivacy);
+  window.VeilFarersPrivacy={open:openPrivacy,close:closePrivacy};
 })();

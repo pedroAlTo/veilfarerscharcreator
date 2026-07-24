@@ -1,7 +1,20 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.80",
+  "currentVersion": "v59.81",
   "entries": [
+    {
+      "version": "v59.81",
+      "date": "2026-07-24",
+      "title": "Privacy controls and structured GDPR information",
+      "changes": [
+        "Adds a bilingual global Privacy & device data panel with a live local/session storage summary and no misleading accept-all banner.",
+        "Adds two-step confirmed deletion for this origin's local storage, session storage, caches, IndexedDB databases, service workers and Netlify Identity session.",
+        "Separates device clearing from account and synchronized cloud-data deletion to prevent accidental loss of shared or remote data.",
+        "Structures the Article 13 notice by purpose, data, legal basis and retention and identifies processors, transfer safeguards, rights and UODO.",
+        "Adds an inventory of essential storage and explicitly keeps analytics, advertising and behavioural tracking disabled.",
+        "Adds a pre-link privacy notice for the external Google Forms questionnaires and preserves the requirement for an Article 13 notice inside every form."
+      ]
+    },
     {
       "version": "v59.80",
       "date": "2026-07-24",
@@ -815,5 +828,5 @@
       ]
     }
   ],
-  "version": "59.80.0"
+  "version": "59.81.0"
 }
