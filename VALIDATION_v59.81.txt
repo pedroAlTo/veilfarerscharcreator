@@ -1,0 +1,32 @@
+VEILFARERS PORTAL v59.81 — PRIVACY VALIDATION
+Date: 2026-07-24
+
+AUTOMATED
+
+PASS  Full Node test suite: 14/14.
+PASS  JavaScript syntax checks.
+PASS  JSON and netlify.toml parsing.
+PASS  Global privacy panel contract and custom two-step confirmation.
+PASS  Local and cloud deletion paths remain separate.
+PASS  No analytics or tracking runtime in the privacy/legal surfaces.
+PASS  Secret scanning remains enabled for server credentials.
+
+DEPLOY PREVIEW
+
+PENDING  Open Privacy & device data from the footer on desktop and mobile.
+PENDING  English and Spanish copy follows the selected legal language.
+PENDING  Escape, backdrop, Close and keyboard focus behavior work.
+PENDING  The first delete click only reveals the confirmation field.
+PENDING  Wrong confirmation leaves all data intact.
+PENDING  Export or synchronize a test character before deletion.
+PENDING  Correct confirmation signs out, clears device data and reloads Home.
+PENDING  Unsynchronized local test data disappears.
+PENDING  Synchronized cloud data remains after local-only clearing.
+PENDING  Account deletion still removes Identity and linked cloud data.
+PENDING  No analytics, advertising or tracking request appears in DevTools.
+PENDING  Every Google Form contains its own Article 13 notice.
+PENDING  Netlify and Google processor terms are accepted and recorded.
+PENDING  DPCGL/public-interactive review is complete before open publication.
+
+Do not describe v59.81 as legally certified. Keep protected tools Invite only
+until all deployment and external legal checks are complete.

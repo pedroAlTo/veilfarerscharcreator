@@ -1,0 +1,20 @@
+VEILFARERS PORTAL v59.81 — PRIVACY PATCH
+
+Apply this patch over the complete v59.80 private-access branch after applying
+the Netlify secret-scanning correction.
+
+1. Deploy as a Netlify Deploy Preview.
+2. Run VALIDATION_v59.81.txt.
+3. Add the Article 13 notice inside every linked Google Form.
+4. Confirm and retain the Netlify and Google data-processing terms.
+5. Keep Player Tool and Keeper Tool Invite only.
+6. Do not describe the portal as legally certified.
+
+The portal has no analytics, advertising or behavioural tracking. The new
+Privacy & device data panel manages essential first-party device storage and
+keeps local deletion separate from account/cloud deletion.
+
+READ:
+- PORTAL_HANDOVER_v59.81.md
+- GITHUB_DEPLOY_SUMMARY_v59.81.md
+- VALIDATION_v59.81.txt

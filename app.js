@@ -1,5 +1,5 @@
-// Veilfarers Keeper's Companion - Universal Campaign System
-// Based on Hearts in the Void implementation
+// VeilFarers Keeper Tool - Universal Campaign System
+// Includes the standalone Hearts in the Void adventure template
 
 // ==================== CAMPAIGN TEMPLATES ====================
 const BLANK_TEMPLATE = {
@@ -24,7 +24,7 @@ const BLANK_TEMPLATE = {
 const CAMPAIGN_TEMPLATES = [
   { id: "hearts_in_the_void", name: "Hearts in the Void", 
     description: "The current introductory campaign adventure: Sleeping crews, player-driven loyalties, multiple ship routes, and consequences that continue into play.",
-    author: "VeilFarers · Corebook 11.35 / Keeper’s Companion 11.33", scenes: 11, players: 10, npcs: 10, monsters: 2,
+    author: "VeilFarers · standalone adventure 1.0", scenes: 11, players: 10, npcs: 10, monsters: 2,
     reference: "/adventures/hearts-in-the-void/Hearts_in_the_Void_COMPLETE_Corebook_11_35_KC_11_33.md" },
   { id: "derelicts_secret", name: "The Derelict's Secret",
     description: "Quickstart adventure from the Core Rules. Investigate a time-looped freighter.",
@@ -251,7 +251,7 @@ function initializeMainApp() {
   renderAll();
 }
 
-// Hearts in the Void - Keeper's Companion
+// Hearts in the Void - standalone adventure template
 // Vanilla JavaScript Implementation
 
 // ==================== STATE ====================

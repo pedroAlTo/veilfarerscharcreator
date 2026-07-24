@@ -1,12 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="veilfarers-release" content="v59.79">
+  <meta name="veilfarers-release" content="v59.81">
   <script src="local-runtime.js"></script>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Administration · VeilFarers</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="portal.css"><link rel="stylesheet" href="module.css">
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script src="veilfarers-theme.js"></script>
@@ -23,13 +21,29 @@
       <li>Open the VeilFarers project in Netlify and go to <strong>Project configuration → Identity → Users</strong>.</li>
       <li>Select the Identity user who should administer the portal.</li>
       <li>Choose <strong>Edit settings</strong>, add <code>admin</code> in <strong>Roles</strong>, and save.</li>
+      <li>Set the Functions-only environment variable <code>VF_ADMIN_EMAIL</code> to that same account email.</li>
       <li>Ask the user to log out and log in again so Netlify issues a new JWT containing the role.</li>
     </ol>
     <p class="vf-muted"><strong>Important:</strong> this is a Netlify Identity application role, not the Owner/Developer role used for access to the Netlify team dashboard.</p>
   </section>
   <p id="admin-status" class="vf-status">Checking administrator role…</p>
   <section id="admin-content" hidden>
-    <div class="vf-sheet-grid" style="margin:18px 0"><div class="vf-sheet-block"><h3>Portal version</h3><p id="admin-portal-version">—</p></div><div class="vf-sheet-block"><h3>Canonical release</h3><p id="admin-release">—</p></div><div class="vf-sheet-block"><h3>Firebase runtime</h3><p id="firebase-health">Checking…</p></div><div class="vf-sheet-block"><h3>Authentication</h3><p>Netlify Identity · role <code>admin</code></p></div></div>
+    <div class="vf-sheet-grid" style="margin:18px 0"><div class="vf-sheet-block"><h3>Portal version</h3><p id="admin-portal-version">—</p></div><div class="vf-sheet-block"><h3>Canonical release</h3><p id="admin-release">—</p></div><div class="vf-sheet-block"><h3>Firebase runtime</h3><p id="firebase-health">Checking…</p></div><div class="vf-sheet-block"><h3>Authentication</h3><p>Netlify Identity · role <code>admin</code> + configured email</p></div></div>
+    <div class="vf-panel vf-content" style="margin-bottom:18px">
+      <div class="vf-section-heading"><div><div class="vf-eyebrow">Private playtest group</div><h2>Protected-tool access</h2></div><span class="vf-badge">Invite only</span></div>
+      <p>Invite an Identity account and choose exactly which protected tools it may use. The <code>admin</code> role cannot be assigned here.</p>
+      <form id="identity-invite-form" class="vf-sheet-block">
+        <label for="identity-invite-email"><strong>Email</strong></label>
+        <input id="identity-invite-email" class="vf-input" type="email" autocomplete="email" placeholder="player@example.com" required>
+        <div class="vf-actions" style="margin-top:10px">
+          <button class="vf-button vf-role-toggle" type="button" data-invite-role="player" aria-pressed="false">Player Tool</button>
+          <button class="vf-button vf-role-toggle" type="button" data-invite-role="keeper" aria-pressed="false">Keeper Tool</button>
+          <button class="vf-button primary" type="submit" id="identity-invite-submit">Send invitation</button>
+        </div>
+      </form>
+      <p id="identity-admin-status" class="vf-status" role="status" aria-live="polite"></p>
+      <div id="identity-user-list"><div class="vf-empty">Loading Identity users…</div></div>
+    </div>
     <div class="vf-panel vf-content"><h2>Change log</h2><div id="changelog"></div></div>
   </section>
 </main>

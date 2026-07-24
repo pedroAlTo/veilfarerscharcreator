@@ -5,6 +5,28 @@ Active full baseline: v59.79
 Patch type: incremental overlay  
 Patch package: `VeilFarers_Portal_v59.79_Character_Picker_PATCH.zip`
 
+## Visibility correction after the initial patch
+
+The first Character Picker patch rendered the dropdown as a child of the
+sticky navigation. Although it was outside the horizontally scrolling track,
+the navigation's own `overflow: hidden` and `backdrop-filter` still formed a
+clipping/containing block. The menu opened, but only a thin strip of its panel
+was visible below the navigation.
+
+The corrected `portal.js` moves the floating menu element to `document.body`
+immediately after creating the navigation. The trigger remains inside the
+navigation and remains connected to the menu through `aria-controls`.
+
+This preserves fixed positioning and the existing high z-index without
+weakening navigation overflow handling.
+
+If the initial Character Picker patch is already installed, the visibility fix
+requires replacing only:
+
+- `portal.js`
+
+Use `VeilFarers_Portal_v59.79_Character_Picker_MENU_FIX.zip`.
+
 ## Direct instruction for the next chat
 
 Use the complete v59.79 portal as the active baseline and apply this patch on
@@ -71,6 +93,8 @@ uses the established VeilFarers navigation styling.
 - Changes the active character through the existing Registry contract.
 - Synchronizes the component with Registry, Vault and storage events.
 - Positions the menu independently of navigation overflow.
+- Mounts the floating menu under `document.body` so the sticky navigation
+  cannot clip it.
 
 ### `portal.css`
 
@@ -171,8 +195,9 @@ Do not delete any other portal files.
 6. Open Inventory and confirm transfers target the newly selected character.
 7. Refresh the page and confirm the selected character remains active.
 8. Confirm the dropdown is not clipped by horizontal navigation.
-9. Repeat at mobile width.
-10. Confirm Log-in, Admin visibility and navigation scrolling still work.
+9. Confirm the dropdown panel is mounted outside `.vf-portal-nav`.
+10. Repeat at mobile width.
+11. Confirm Log-in, Admin visibility and navigation scrolling still work.
 
 Final cross-device behavior should be checked in a Deploy Preview with real
 Netlify Identity and Firebase data.

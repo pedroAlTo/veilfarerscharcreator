@@ -1,16 +1,16 @@
 {
   "schema": "veilfarers.deploy/1",
-  "version": "v59.79",
-  "packageVersion": "59.79.0",
-  "date": "2026-07-23",
+  "version": "v59.81",
+  "packageVersion": "59.81.0",
+  "date": "2026-07-24",
   "cspProfile": "wasm-3d-dice-v2",
   "requiredScriptSource": "'wasm-unsafe-eval'",
   "expectedResponseHeaders": {
-    "X-VeilFarers-Release": "v59.79",
+    "X-VeilFarers-Release": "v59.81",
     "X-VeilFarers-CSP-Profile": "wasm-3d-dice-v2"
   },
   "accessibilityProfile": "WCAG-2.2-AA-target",
-  "generatedAt": "2026-07-23",
-  "release": "v59.79",
-  "notes": "Closed tables now require their password on every connection, including owners and existing members. Table owners can permanently delete current or claimed legacy tables together with their linked secrets, invitations and handouts."
+  "generatedAt": "2026-07-24",
+  "release": "v59.81",
+  "notes": "Adds bilingual privacy and device-data controls, structured GDPR information and a storage inventory while preserving explicit private-tool roles, cloud-data deletion and the current standalone Hearts in the Void line."
 }

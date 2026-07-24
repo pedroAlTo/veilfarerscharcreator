@@ -56,3 +56,11 @@ Tailwind CSS and Babel are used only during the release build to generate `asset
 - `@netlify/functions` 5.3.0 — MIT — https://github.com/netlify/primitives
 
 VeilFarers uses these packages for authenticated server access and typed Identity lifecycle event handlers. They do not ship browser-visible service credentials.
+
+## Daggerheart System Reference Document 1.0 and community logo
+
+This product includes materials from the Daggerheart System Reference Document 1.0, © Critical Role, LLC. under the terms of the Darrington Press Community Gaming (DPCGL) License. More information can be found at https://www.daggerheart.com. There are no previous modifications by others.
+
+Darrington Press™ and the Darrington Press authorized work logo are trademarks of Critical Role, LLC and used with permission.
+
+VeilFarers modifies and expands that material with original science-fiction rules, setting material and digital tools. The unmodified Daggerheart-compatible community logo in `assets/legal/daggerheart-compatible-community-logo.png` comes from the official Darrington Press Community Content Logos package at https://darringtonpress.com/license/.

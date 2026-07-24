@@ -1,7 +1,33 @@
 {
   "schema": "veilfarers.changelog/1",
-  "currentVersion": "v59.79",
+  "currentVersion": "v59.81",
   "entries": [
+    {
+      "version": "v59.81",
+      "date": "2026-07-24",
+      "title": "Privacy controls and structured GDPR information",
+      "changes": [
+        "Adds a bilingual global Privacy & device data panel with a live local/session storage summary and no misleading accept-all banner.",
+        "Adds two-step confirmed deletion for this origin's local storage, session storage, caches, IndexedDB databases, service workers and Netlify Identity session.",
+        "Separates device clearing from account and synchronized cloud-data deletion to prevent accidental loss of shared or remote data.",
+        "Structures the Article 13 notice by purpose, data, legal basis and retention and identifies processors, transfer safeguards, rights and UODO.",
+        "Adds an inventory of essential storage and explicitly keeps analytics, advertising and behavioural tracking disabled.",
+        "Adds a pre-link privacy notice for the external Google Forms questionnaires and preserves the requirement for an Article 13 notice inside every form."
+      ]
+    },
+    {
+      "version": "v59.80",
+      "date": "2026-07-24",
+      "title": "Private Identity roles, data deletion and current books",
+      "changes": [
+        "Removes protected-tool access from the base member role and requires explicit player, keeper or admin roles.",
+        "Rechecks protected roles inside the tool-access, table and Firebase-session APIs instead of relying on browser UI or redirects alone.",
+        "Adds an administrator-only Identity panel for email invitations, Player/Keeper role assignment, revocation and confirmed user deletion.",
+        "Requires the administrator role and the Functions-only VF_ADMIN_EMAIL allowlist; the portal cannot grant or delete administrator accounts.",
+        "Adds self-service account deletion and an Identity deletion hook that remove Character Vault data, memberships and invitations while transferring shared tables where possible.",
+        "Updates Downloads to Keeper's Companion 11.4 and publishes Hearts in the Void 1.0 as a standalone adventure alongside the retained valid Corebook 11.35."
+      ]
+    },
     {
       "version": "v59.79",
       "date": "2026-07-23",
@@ -802,5 +828,5 @@
       ]
     }
   ],
-  "version": "59.79.0"
+  "version": "59.81.0"
 }

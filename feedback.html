@@ -1,13 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="veilfarers-release" content="v59.79">
+  <meta name="veilfarers-release" content="v59.81">
   <script src="local-runtime.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Feedback · VeilFarers</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="portal.css">
   <link rel="stylesheet" href="module.css">
   <script src="veilfarers-theme.js"></script>
@@ -23,7 +21,7 @@
       <h1>Feedback</h1>
       <p class="vf-lead">Send a quick issue directly or open the structured questionnaire that matches the session. Direct reports use Netlify Forms; playtest questionnaires use the original VeilFarers Google Forms.</p>
     </div>
-    <div class="vf-release">Portal build<strong>v59.79</strong></div>
+    <div class="vf-release">Portal build<strong>v59.81</strong></div>
   </header>
 
   <section class="vf-feedback-switch" aria-label="Feedback type">
@@ -57,7 +55,8 @@
         </fieldset>
         <div class="vf-field"><label for="feedback-email">Email (optional)</label><input id="feedback-email" name="email" type="email" autocomplete="email"></div>
         <div class="vf-field"><label for="feedback-message">Details</label><textarea id="feedback-message" name="message" required placeholder="Describe what happened, what you expected, and the relevant rule or tool section."></textarea></div>
-        <div class="vf-field"><label for="feedback-version">Version / page</label><input id="feedback-version" name="version" value="11.35 Editorial · v59.79"></div>
+        <div class="vf-field"><label for="feedback-version">Version / page</label><input id="feedback-version" name="version" value="11.35 Editorial · v59.81"></div>
+        <p>Direct feedback is processed to answer and improve VeilFarers and should normally be deleted within 12 months after resolution. Do not include sensitive personal data. See the <a href="/legal.html#privacy">Privacy Notice</a>.</p>
         <div class="vf-actions"><button class="vf-button primary" type="submit">Submit feedback</button></div>
       </form>
       <p class="vf-status vf-hidden" id="feedback-success">Feedback submitted. Thank you.</p>
@@ -71,6 +70,10 @@
         <span class="vf-badge">Original forms restored</span>
       </div>
       <p class="vf-muted">Keeper questionnaires focus on pacing, onboarding, encounter structure and campaign diagnostics. The Player questionnaire focuses on clarity, table experience, fun and emotional beats.</p>
+      <div class="vf-sheet-block">
+        <strong>External Google Forms privacy notice</strong>
+        <p>Opening a questionnaire takes you to Google Forms, where Google may process technical request and account data under its own policies. Pedro Almagro Torrecillas remains responsible for the VeilFarers responses collected through these forms. Responses are used only for playtest analysis and should normally be deleted within 12 months after resolution. Do not include sensitive personal data. Each form must display its own Article 13 notice before public use; see the <a href="/legal.html#privacy">VeilFarers Privacy Notice</a>.</p>
+      </div>
       <div class="vf-questionnaire-groups">
         <section>
           <h3 class="vf-questionnaire-heading">Keeper questionnaires</h3>

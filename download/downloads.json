@@ -1,7 +1,7 @@
 {
   "schema": "veilfarers.downloads/2",
-  "release": "11.35 Editorial Line",
-  "generatedAt": "2026-07-20",
+  "release": "Corebook 11.35 · Keeper's Companion 11.4 · Hearts in the Void 1.0",
+  "generatedAt": "2026-07-24",
   "items": [
     {
       "id": "corebook",
@@ -18,13 +18,25 @@
     {
       "id": "keepers-companion",
       "title": "VeilFarers Keeper's Companion",
-      "version": "11.33",
+      "version": "11.4",
       "type": "rulebook",
-      "file": "/download/VeilFarers_Keepers_Companion_11.33-PDF-Candidate.pdf",
-      "bytes": 3574612,
-      "sha256": "1862c56a85b611cd9b8ee127774f10d06a1f2f561af48ef2d844792eb0cae663",
+      "file": "/download/VeilFarers_Keepers_Companion_11.4-PDF-Candidate.pdf",
+      "bytes": 3294107,
+      "sha256": "12c5395428b88e5d0bf1250b70a92b1b04767cc94d577d81f30878949f193242",
       "status": "PDF Candidate",
-      "description": "Editorial 11.33 PDF candidate for Keepers, session preparation and running VeilFarers.",
+      "description": "Editorial 11.4 PDF candidate for Keepers, session preparation and running VeilFarers. Hearts in the Void is now maintained as a separate adventure.",
+      "current": true
+    },
+    {
+      "id": "hearts-in-the-void",
+      "title": "Hearts in the Void",
+      "version": "1.0",
+      "type": "standalone adventure",
+      "file": "/download/Hearts_in_the_Void_1.0-PDF-Candidate.pdf",
+      "bytes": 15656266,
+      "sha256": "0e14b937e669c9540758e6a3e569382f674a1dc83d7a513d44fbfe6679c82613",
+      "status": "PDF Candidate",
+      "description": "Standalone VeilFarers adventure 1.0. This deliverable is independent from the Keeper's Companion.",
       "current": true
     },
     {
@@ -65,6 +77,6 @@
       "current": true
     }
   ],
-  "pdfCandidateStatus": "Current editorial line: Corebook 11.35; Keeper's Companion, Rust & Steel and Alien Species 11.33; fillable character sheet retained.",
+  "pdfCandidateStatus": "Current editorial line: Corebook 11.35; Keeper's Companion 11.4; Rust & Steel and Alien Species 11.33; Hearts in the Void 1.0 as a standalone adventure; fillable character sheet retained.",
   "currentOnly": true
 }

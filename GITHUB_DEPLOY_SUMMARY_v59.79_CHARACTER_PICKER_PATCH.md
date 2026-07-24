@@ -7,6 +7,18 @@ active character's name and turns it into a custom character selector.
 
 It is an overlay for the complete v59.79 portal, not a full release package.
 
+## Follow-up visibility fix
+
+The initial picker panel was still a descendant of the sticky navigation.
+The navigation's `overflow: hidden` and `backdrop-filter` clipped the fixed
+panel, leaving only a thin strip visible.
+
+The corrected `portal.js` mounts the menu under `document.body`. The trigger
+remains in the navigation and retains its `aria-controls` relationship.
+
+If the initial patch is already installed, deploy only the corrected
+`portal.js` from `VeilFarers_Portal_v59.79_Character_Picker_MENU_FIX.zip`.
+
 ## Runtime files
 
 - `portal.js`
@@ -40,6 +52,9 @@ No other production files need to be changed for this patch.
   `character-registry.js`.
 - A DOM interaction test passed for name rendering, three-character listing,
   trashed-character exclusion, selection persistence and menu closure.
+- A dedicated regression test confirmed that the menu is attached directly to
+  `document.body`, is not contained by `.vf-portal-nav`, opens and lists its
+  character options.
 - The three existing table security/contract test suites passed.
 - The picker uses the existing Character Registry storage keys and event
   contract.
