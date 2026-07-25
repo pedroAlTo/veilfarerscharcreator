@@ -1,0 +1,54 @@
+/* Cover art on the download cards. Additive only: cards without a
+   cover in the manifest keep their previous appearance. */
+
+.vf-downloads{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+
+.vf-download-card.has-cover{display:flex;flex-direction:column;padding-top:20px}
+
+.vf-cover{
+  margin:-4px 0 14px;
+  border:1px solid var(--vf-line);
+  border-radius:10px;
+  overflow:hidden;
+  background:#0b0a08;
+  line-height:0;
+}
+
+.vf-cover img{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:600/776;
+  object-fit:cover;
+}
+
+/* The download button stays flush with the bottom of every card so a
+   row of cards with different description lengths still lines up. */
+.vf-download-card.has-cover .vf-download-meta{margin-top:auto}
+
+@media (prefers-reduced-motion:no-preference){
+  .vf-cover img{transition:transform .35s ease}
+  .vf-download-card.has-cover:hover .vf-cover img{transform:scale(1.03)}
+}
+
+@media (max-width:520px){
+  .vf-downloads{grid-template-columns:1fr}
+  .vf-download-card.has-cover{
+    display:grid;
+    grid-template-columns:96px minmax(0,1fr);
+    grid-template-areas:
+      "cover eyebrow"
+      "cover title"
+      "cover desc"
+      "meta  meta"
+      "cta   cta";
+    column-gap:14px;
+    align-items:start;
+  }
+  .vf-download-card.has-cover .vf-cover{grid-area:cover;margin:0}
+  .vf-download-card.has-cover .vf-eyebrow{grid-area:eyebrow}
+  .vf-download-card.has-cover h2{grid-area:title}
+  .vf-download-card.has-cover p{grid-area:desc}
+  .vf-download-card.has-cover .vf-download-meta{grid-area:meta;margin-top:14px}
+  .vf-download-card.has-cover .vf-button{grid-area:cta}
+}
