@@ -76,3 +76,11 @@ body.vf-keeper-page .fear-label{color:#f87171!important}
 body.vf-keeper-page .fear-count{color:#ef4444!important;text-shadow:0 0 8px rgba(239,68,68,.28)!important}
 body.vf-keeper-page .fear-tokens-container .btn-token{border:1px solid rgba(239,68,68,.46)!important;background:rgba(127,29,29,.18)!important;color:#fecaca!important;border-radius:3px!important;box-shadow:none!important}
 body.vf-keeper-page .fear-tokens-container .btn-token:hover{background:rgba(185,28,28,.34)!important;border-color:#ef4444!important}
+
+/* Mail action sitting inside .nav-tabs after the Notes tab. Deliberately not
+   a .tab-btn, which is bound to tab switching. */
+.vf-note-compose-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border:1px solid #78350f;border-radius:8px;background:#1c1207;color:#fbbf24;cursor:pointer}
+.vf-note-compose-btn:hover:not(:disabled){border-color:#b45309;background:#2a1a08;color:#fde68a}
+.vf-note-compose-btn:focus-visible{outline:2px solid #fbbf24;outline-offset:2px}
+.vf-note-compose-btn:disabled{opacity:.35;cursor:not-allowed}
+#vf-note-console-hint{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em}

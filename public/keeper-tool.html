@@ -310,6 +310,17 @@
             <button class="tab-btn" data-tab="clocks">Clocks</button>
             <button class="tab-btn" data-tab="dice">Dice</button>
             <button class="tab-btn" data-tab="notes">Notes</button>
+            <!-- Not a .tab-btn: that class is wired to switchTab(dataset.tab)
+                 and this is an action, not a tab. -->
+            <button id="vf-compose-note-menu" class="vf-note-compose-btn" type="button"
+                    title="Compose a note for connected players"
+                    aria-label="Compose player note" disabled>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m2 7 10 6 10-6"></path>
+              </svg>
+            </button>
           </div>
         </div>
       </header>
@@ -986,7 +997,7 @@
     <section id="vf-note-console-dock" aria-label="Keeper player notes">
       <div class="vf-note-console-head">
         <div><span>PLAYER NOTES</span><small id="vf-note-console-state">Connect to a table to send notes.</small></div>
-        <button id="vf-send-note" type="button">Compose Note</button>
+        <span id="vf-note-console-hint">Compose from the mail icon in the main menu.</span>
       </div>
       <div id="vf-sent-notes-wrap" style="display:none;">
         <div class="vf-note-console-subhead">Sent handouts</div>
@@ -1117,7 +1128,21 @@
   }
   async function tableWrite(action, payload) { if(!currentSessionId) throw new Error('Connect to the table first.'); return window.VFTableAccess.api(action, Object.assign({tableId:currentSessionId}, payload||{})); }
   function stopPollingForAuth(error){authSyncBlocked=true;if(sessionPollTimer){clearInterval(sessionPollTimer);sessionPollTimer=null;}setStatus((error&&error.message)||'Login expired. Sign in again to reconnect the table.');}
-  function patchLive(changes) { if(!currentSessionId||authSyncBlocked)return Promise.resolve(null); return tableWrite('patchSession',{changes:changes}).catch(function(e){if(window.VFTableAccess&&window.VFTableAccess.isAuthError&&window.VFTableAccess.isAuthError(e)){stopPollingForAuth(e);}else{console.error('keeper live update',e);setStatus('Table update failed: '+e.message);}throw e;}); }
+  // --- Keeper write barrier -------------------------------------------
+  // The session poll runs every 1250ms. A poll that leaves before one of
+  // our own writes lands comes back holding the pre-write snapshot, so
+  // applying it reverts the edit AND rebuilds __sessionCharsRaw from stale
+  // data, which means the next write ships the reverted values. We track
+  // the updatedAt the server confirmed for our last write and ignore any
+  // snapshot older than it, plus anything arriving while a write is still
+  // in flight. Deterministic, unlike the old 2500ms timing guess.
+  var keeperWritesInFlight = 0, keeperAckedUpdatedAt = 0;
+  window.__keeperSnapshotIsStale = function (data) {
+    if (keeperWritesInFlight > 0) return true;
+    var incoming = Number((data && data.updatedAt) || 0);
+    return !!(keeperAckedUpdatedAt && incoming < keeperAckedUpdatedAt);
+  };
+  function patchLive(changes) { if(!currentSessionId||authSyncBlocked)return Promise.resolve(null); keeperWritesInFlight++; return tableWrite('patchSession',{changes:changes}).then(function(out){if(out&&out.updatedAt)keeperAckedUpdatedAt=Math.max(keeperAckedUpdatedAt,Number(out.updatedAt)||0);return out;}).finally(function(){keeperWritesInFlight=Math.max(0,keeperWritesInFlight-1);}).catch(function(e){if(window.VFTableAccess&&window.VFTableAccess.isAuthError&&window.VFTableAccess.isAuthError(e)){stopPollingForAuth(e);}else{console.error('keeper live update',e);setStatus('Table update failed: '+e.message);}throw e;}); }
   function setSpotlight(name) { if (typeof state !== 'undefined') state.spotlight = name || ''; patchLive({spotlight:name||''}).catch(function(){}); if (typeof renderAll === 'function') { try { renderAll(); } catch(e){} } renderSpotlight(name || ''); }
   function toggleSpotlight(name) { var cur = (typeof state !== 'undefined' ? state.spotlight : ''); setSpotlight(cur === name ? '' : name); }
   function rollDmg(str) { if (!str) return null; var m = String(str).match(/(\d*)d(\d+)\s*([+-]\s*\d+)?/i); if (!m) return null; var count = parseInt(m[1] || '1', 10) || 1; var sides = parseInt(m[2], 10); var mod = m[3] ? parseInt(m[3].replace(/\s/g, ''), 10) : 0; var sum = 0, rolls = []; for (var k = 0; k < count; k++) { var r = Math.floor(Math.random() * sides) + 1; rolls.push(r); sum += r; } return { total: sum + mod, detail: rolls.join('+') + (mod ? (mod > 0 ? '+' + mod : mod) : ''), dice: count + 'd' + sides, rolls: rolls, modifier: mod, base: String(str) }; }
@@ -1171,12 +1196,16 @@
   function applySessionData(data,sid){
     data=data||{};
     try{
-      if(data.characters&&typeof state!=='undefined'){
+      if(data.characters&&typeof state!=='undefined'&&!window.__keeperSnapshotIsStale(data)){
+        // __sessionCharsRaw is the payload every characters write is rebuilt
+        // from, so it must be refreshed under the same barrier as the rendered
+        // state. Refreshing it unconditionally was what silently reverted
+        // Keeper edits and dropped per-character keeperNotes.
         window.__sessionCharsRaw=JSON.parse(JSON.stringify(data.characters));
-        if(!(window.__keeperLastEdit&&(Date.now()-window.__keeperLastEdit<2500))){state.players=data.characters.reduce(function(list,entity,originalIndex){if(entity&&entity.entityType!=='drone')list.push(toPlayer(entity,originalIndex));return list;},[]);}
+        state.players=data.characters.reduce(function(list,entity,originalIndex){if(entity&&entity.entityType!=='drone')list.push(toPlayer(entity,originalIndex));return list;},[]);
       }
       if(typeof data.fearTokens==='number'&&typeof state!=='undefined')state.fearTokens=data.fearTokens;
-      if(typeof state!=='undefined'){state.spotlight=data.spotlight||'';state.notes=data.keeperNotes||data.notes||'';if(data.sessionName)state.sessionName=data.sessionName;}
+      if(typeof state!=='undefined'){state.spotlight=data.spotlight||'';if(!window.__keeperSnapshotIsStale(data))state.notes=data.keeperNotes||data.notes||'';if(data.sessionName)state.sessionName=data.sessionName;}
       if(typeof renderAll==='function')renderAll();
       var noteEl=$id('notesTextarea');if(noteEl&&document.activeElement!==noteEl)noteEl.value=(data.keeperNotes||data.notes||'');
       var sessionEl=$id('sessionNameInput');if(sessionEl&&document.activeElement!==sessionEl&&data.sessionName)sessionEl.value=data.sessionName;
@@ -1293,7 +1322,19 @@
     var select=$id('vf-note-target-one'); if(!select)return;
     var players=(typeof state!=='undefined'&&state.players)?state.players:[];
     var current=select.value;
-    var seen={};var options=players.map(function(p,i){var key=p.memberUid||p.syncId||p.characterId||p.name;if(!key||seen[key])return '';seen[key]=true;return '<option value="'+esc(key)+'">'+esc(p.name||('Player '+(i+1)))+'</option>';}).join('');select.innerHTML='<option value="">Select a connected player</option>'+options;
+    // The server only accepts a target listed among a character's own
+    // identifiers, and it delivers to whoever that character is linked to.
+    // Addressing by member first meant two characters belonging to the same
+    // player collapsed into one entry, and characters with no id at all fell
+    // back to their name, which the server rejects outright.
+    var seen={};var options=players.map(function(p,i){
+      var label=esc(p.name||('Player '+(i+1)));
+      var key=p.syncId||p.memberUid||null;
+      if(!key)return '<option value="" disabled>'+label+' \u2014 no linked account</option>';
+      if(seen[key])return '';
+      seen[key]=true;
+      return '<option value="'+esc(key)+'">'+label+'</option>';
+    }).join('');select.innerHTML='<option value="">Select a connected player</option>'+options;
     if(Array.prototype.some.call(select.options,function(option){return option.value===current;}))select.value=current;
   }
   function openNoteModal() {
@@ -1310,7 +1351,7 @@
     if (wrap) wrap.style.display = arr.length ? 'block' : 'none';
     var stateLabel=$id('vf-note-console-state');
     var canSend=!!SESSION&&(!SESSION.role||SESSION.role==='owner');
-    var compose=$id('vf-send-note');if(compose){compose.disabled=!canSend;compose.title=canSend?'Compose a note for connected players':'Only the table owner can send Keeper Notes.';}
+    var compose=$id('vf-compose-note-menu');if(compose){compose.disabled=!canSend;compose.title=canSend?'Compose a note for connected players':'Only the table owner can send Keeper Notes.';}
     if(stateLabel)stateLabel.textContent=!SESSION?'Connect to a table to send notes.':(!canSend?'Only the table owner can send notes.':(arr.length?(arr.length+' sent note'+(arr.length===1?'':'s')+' · newest first'):'Ready to send a note to this table.'));
     box.innerHTML = arr.slice(0,8).map(function (n) {
       var d = new Date(n.sentAt || 0);
@@ -1365,7 +1406,7 @@
     var st = e.target && e.target.closest ? e.target.closest('.vf-spot-toggle') : null; if (st && st.getAttribute('data-spot-id') != null) { e.stopPropagation(); toggleSpotlight(st.getAttribute('data-spot-id')); }
     var visibilityButton=e.target&&e.target.closest?e.target.closest('[data-roll-visibility]'):null;if(visibilityButton){document.querySelectorAll('[data-roll-visibility]').forEach(function(btn){btn.classList.toggle('active',btn===visibilityButton);});var value=visibilityButton.getAttribute('data-roll-visibility');if($id('vf-roll-visibility'))$id('vf-roll-visibility').value=value;localStorage.setItem('veilfarers.keeper.rollVisibility.v1',value);var help=$id('vf-roll-visibility-help');if(help)help.textContent=value==='broadcast'?'Rolls will be sent only to players connected to this table.':'Hidden rolls stay only in this Keeper browser.';}
     if (e.target && e.target.id === 'vf-send-roll') { sendRoll(true); }
-    if (e.target && e.target.id === 'vf-send-note') { openNoteModal(); }
+    if (e.target && e.target.closest && e.target.closest('#vf-compose-note-menu')) { openNoteModal(); }
     if (e.target && (e.target.id === 'vf-note-cancel' || e.target.id === 'vf-note-cancel2')) { closeNoteModal(); }
     if (e.target && e.target.id === 'vf-note-send') { sendHandout(); }
     var rmn = e.target && e.target.closest ? e.target.closest('[data-remove-note]') : null;

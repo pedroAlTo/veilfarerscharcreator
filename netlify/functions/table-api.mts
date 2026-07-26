@@ -5,7 +5,6 @@ import {
   patchDoc, putDoc, queryDocsAt, responseHeaders, safeTableId, tokenHash,
 } from './_firebase-admin.mts'
 import { SERVER_LOCK_MARKER, tablePasswordGate } from './_table-security.mts'
-import { sessionCharactersFor } from './_table-visibility.mts'
 import { requireAnyToolAccess } from './_role-access.mts'
 
 const appId = 'default-app-id'
@@ -17,6 +16,7 @@ const secrets = `${base}/tableSecrets`
 const now = () => Date.now()
 const cleanString=(value:any,max=500)=>String(value||'').slice(0,max)
 const sessionPatchKeys=new Set(['characters','fearTokens','spotlight','keeperNotes','sessionName'])
+const keeperOwnedPatchKeys=new Set(['characters','keeperNotes','sessionName'])
 const profile = (user: any, role = 'member') => ({
   email: user.email || '',
   name: user.userMetadata?.full_name || user.email || 'VeilFarer',
@@ -275,10 +275,17 @@ export default async (req: Request, _ctx: Context) => {
       const byId=new Map<string,any>()
       ;[...legacyNotes,...storedNotes].forEach((item:any)=>{if(item&&(!item.tableId||item.tableId===tableId)){const id=cleanString(item.id,120);if(id)byId.set(id,item)}})
       const visibleNotes=[...byId.values()].filter((item:any)=>canReceiveHandout(item,source,user,isOwner)).sort((a:any,b:any)=>Number(a?.sentAt||0)-Number(b?.sentAt||0)).slice(-50).map(handoutForClient)
-      const allCharacters = Array.isArray(source.characters) ? source.characters : []
+      const rawCharacters = Array.isArray(source.characters) ? source.characters : []
+      // Members must not receive hidden entities or per-character Keeper notes.
+      // The owner always gets the unfiltered array: the Keeper tool addresses
+      // entries by their index in it, so filtering for the owner too would
+      // shift every index and write stats onto the wrong character.
+      const visibleCharacters = isOwner ? rawCharacters : rawCharacters
+        .filter((item: any) => !(item && item.hidden))
+        .map((item: any) => { const { keeperNotes, ...rest } = item || {}; return rest })
       const safeSession = {
         name: cleanString(source.name || tableId, 160),
-        characters: sessionCharactersFor(allCharacters, isOwner),
+        characters: visibleCharacters,
         fearTokens: Math.max(0, Math.min(99, Number(source.fearTokens) || 0)),
         spotlight: cleanString(source.spotlight, 160),
         keeperNotes: isOwner ? cleanString(source.keeperNotes || source.notes, 100000) : '',
@@ -297,6 +304,13 @@ export default async (req: Request, _ctx: Context) => {
       const changes: Record<string, any> = {}
       for (const [key, value] of Object.entries(rawChanges)) {
         if (!sessionPatchKeys.has(key)) continue
+        // The roster, the session notes and the session name belong to the
+        // Keeper. Without this check any member could replace the whole
+        // characters array, which erased every per-character keeperNotes it
+        // had never been sent in the first place.
+        if (keeperOwnedPatchKeys.has(key) && !isOwner) {
+          return json({ error: 'Only the table owner can change that part of the live table.' }, 403)
+        }
         if (key === 'characters') {
           if (!Array.isArray(value) || value.length > 250) return json({ error: 'The character update is not valid.' }, 400)
           changes.characters = value
