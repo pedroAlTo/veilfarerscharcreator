@@ -2,6 +2,11 @@
   "name": "veilfarers-portal",
   "private": true,
   "version": "59.81.0",
+  "scripts": {
+    "test": "node --test \"tests/*.mjs\" && node --test --experimental-strip-types \"tests/*.mts\"",
+    "verify": "node scripts/verify-deploy.mjs",
+    "check": "npm run verify && npm test"
+  },
   "dependencies": {
     "@netlify/identity": "^1.1.0"
   },

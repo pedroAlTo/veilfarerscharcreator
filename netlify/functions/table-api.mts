@@ -5,6 +5,7 @@ import {
   patchDoc, putDoc, queryDocsAt, responseHeaders, safeTableId, tokenHash,
 } from './_firebase-admin.mts'
 import { SERVER_LOCK_MARKER, tablePasswordGate } from './_table-security.mts'
+import { sessionCharactersFor } from './_table-visibility.mts'
 import { requireAnyToolAccess } from './_role-access.mts'
 
 const appId = 'default-app-id'
@@ -274,12 +275,13 @@ export default async (req: Request, _ctx: Context) => {
       const byId=new Map<string,any>()
       ;[...legacyNotes,...storedNotes].forEach((item:any)=>{if(item&&(!item.tableId||item.tableId===tableId)){const id=cleanString(item.id,120);if(id)byId.set(id,item)}})
       const visibleNotes=[...byId.values()].filter((item:any)=>canReceiveHandout(item,source,user,isOwner)).sort((a:any,b:any)=>Number(a?.sentAt||0)-Number(b?.sentAt||0)).slice(-50).map(handoutForClient)
+      const allCharacters = Array.isArray(source.characters) ? source.characters : []
       const safeSession = {
         name: cleanString(source.name || tableId, 160),
-        characters: Array.isArray(source.characters) ? source.characters : [],
+        characters: sessionCharactersFor(allCharacters, isOwner),
         fearTokens: Math.max(0, Math.min(99, Number(source.fearTokens) || 0)),
         spotlight: cleanString(source.spotlight, 160),
-        keeperNotes: cleanString(source.keeperNotes || source.notes, 100000),
+        keeperNotes: isOwner ? cleanString(source.keeperNotes || source.notes, 100000) : '',
         sessionName: cleanString(source.sessionName, 120),
         handouts: visibleNotes,
         rollHistory: Array.isArray(source.rollHistory) ? source.rollHistory.filter((item:any) => item && (!item.tableId || item.tableId === tableId) && (!item.visibility || item.visibility === 'public')).slice(-200) : [],

@@ -1,0 +1,87 @@
+{
+  "schema": "veilfarers.downloads/2",
+  "release": "Corebook 11.35 · Keeper's Companion 11.4 · Hearts in the Void 1.0",
+  "generatedAt": "2026-07-24",
+  "items": [
+    {
+      "id": "corebook",
+      "title": "VeilFarers Corebook",
+      "version": "11.35",
+      "type": "rulebook",
+      "file": "/download/VeilFarers_Corebook_11.35-PDF-Candidate.pdf",
+      "cover": "/img/covers/corebook.webp",
+      "bytes": 9088507,
+      "sha256": "d7f55052b0eb9d66095a23d461163fcc9bd02253aff8868dc650847bef28be9b",
+      "status": "PDF Candidate",
+      "description": "Editorial 11.35 PDF candidate with the approved general, Awakened and Sleeping page system. This is the authoritative downloadable Corebook for the current portal release.",
+      "current": true
+    },
+    {
+      "id": "keepers-companion",
+      "title": "VeilFarers Keeper's Companion",
+      "version": "11.4",
+      "type": "rulebook",
+      "file": "/download/VeilFarers_Keepers_Companion_11.4-PDF-Candidate.pdf",
+      "cover": "/img/covers/keepers-companion.webp",
+      "bytes": 3294107,
+      "sha256": "12c5395428b88e5d0bf1250b70a92b1b04767cc94d577d81f30878949f193242",
+      "status": "PDF Candidate",
+      "description": "Editorial 11.4 PDF candidate for Keepers, session preparation and running VeilFarers. Hearts in the Void is now maintained as a separate adventure.",
+      "current": true
+    },
+    {
+      "id": "hearts-in-the-void",
+      "title": "Hearts in the Void",
+      "version": "1.0",
+      "type": "standalone adventure",
+      "file": "/download/Hearts_in_the_Void_1.0-PDF-Candidate.pdf",
+      "cover": "/img/covers/hearts-in-the-void.webp",
+      "bytes": 15656266,
+      "sha256": "0e14b937e669c9540758e6a3e569382f674a1dc83d7a513d44fbfe6679c82613",
+      "status": "PDF Candidate",
+      "description": "Standalone VeilFarers adventure 1.0. This deliverable is independent from the Keeper's Companion.",
+      "current": true
+    },
+    {
+      "id": "rust-and-steel",
+      "title": "VeilFarers: Rust & Steel",
+      "version": "11.33",
+      "type": "supplement",
+      "file": "/download/VeilFarers_Rust_and_Steel_11.33-PDF-Candidate.pdf",
+      "cover": "/img/covers/rust-and-steel.webp",
+      "bytes": 10010451,
+      "sha256": "f378fca1a312286d0ebc897161bf9e6be6ad97d1817f3866342840a206edcde1",
+      "status": "PDF Candidate",
+      "description": "Editorial 11.33 equipment and technology supplement.",
+      "current": true
+    },
+    {
+      "id": "alien-species",
+      "title": "VeilFarers: Alien Species",
+      "version": "11.33",
+      "type": "supplement",
+      "file": "/download/VeilFarers_Alien_Species_11.33-PDF-Candidate.pdf",
+      "cover": "/img/covers/alien-species.webp",
+      "bytes": 2736437,
+      "sha256": "c8807e858b85c2844921f0f0d9a2eacd4e456af1a3c582a7ab40263d48098051",
+      "status": "PDF Candidate",
+      "description": "Editorial 11.33 alien species and Keeper-facing lore supplement.",
+      "current": true
+    },
+    {
+      "id": "fillable-character-sheet",
+      "title": "VeilFarers Fillable Character Sheet",
+      "version": "11.35 compatible",
+      "type": "character sheet",
+      "file": "/download/veilfarers_charsheet_fillable.pdf",
+      "bytes": 3968281,
+      "sha256": "35d93825059584a9366f649c1bd4d6e9e891687f80904cf50fd6089c189921cd",
+      "status": "Fillable PDF",
+      "description": "Editable two-page physical character sheet with 186 fillable form fields.",
+      "downloadLabel": "Download fillable PDF",
+      "current": true
+    }
+  ],
+  "pdfCandidateStatus": "Current editorial line: Corebook 11.35; Keeper's Companion 11.4; Rust & Steel and Alien Species 11.33; Hearts in the Void 1.0 as a standalone adventure; fillable character sheet retained.",
+  "currentOnly": true
+}
