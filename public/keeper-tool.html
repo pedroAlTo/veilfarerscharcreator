@@ -1073,7 +1073,7 @@
       subtitle: ((c.heritage || '') + ' ' + (c.class || '')).trim() || 'Adventurer',
       hp: (hp.current) || 0, maxHp: (hp.max) || 6, stress: (st.current) || 0, maxStress: (st.max) || 6,
       hope: isSleeper ? ((c.effort && c.effort.current) || 0) : ((c.hope && c.hope.current) || 0),
-      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.armorMax != null ? c.armorMax : c.shields)||0, armorMarked: [],
+      armor: parseInt(c.shields)||0, armorSlots: parseInt(c.armorMax != null ? c.armorMax : c.shields)||0, armorMarked: Array.isArray(c.armorMarked) ? c.armorMarked.slice() : [],
       effort: (c.effort && c.effort.current) || 0, maxEffort: (c.effort && c.effort.max) || 6,
       resolve: (c.resolve && c.resolve.current) || 0, maxResolve: (c.resolve && c.resolve.max) || 6, path: c.path || 'awakened',
       armorMinor: (thr.major) || 0, armorSevere: (thr.severe) || 0, evasion: c.evasion || 0,
@@ -1260,6 +1260,7 @@
     else if (stat === 'effort') { c.effort = c.effort || {}; c.effort.current = value; }
     else if (stat === 'resolve') { c.resolve = c.resolve || {}; c.resolve.current = value; }
     else if (stat === 'shields') { c.shields = value; }
+    else if (stat === 'armor') { c.armorMarked = Array.isArray(value && value.marked) ? value.marked.slice() : []; c.shields = Math.max(0, Number(value && value.shields) || 0); }
     patchLive({characters:chars}).catch(function(){});
   };
   function renderDroneSignals(chars) {

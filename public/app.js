@@ -477,7 +477,15 @@ function toggleArmorSlot(charId, slotIndex, type) {
   }
   
   char.armorMarked = currentMarked;
-  if (char._syncIndex != null && window.keeperWriteCharStat) { window.keeperWriteCharStat(char._syncIndex, 'shields', Math.max(0, (char.armorSlots||0) - (char.armorMarked||[]).length)); }
+  // Publish which slots are marked, not just how many remain. Sending only the
+  // remaining count left armorMarked unsaved, so the next snapshot rebuilt the
+  // character with an empty mark list and the slots visibly refilled.
+  if (char._syncIndex != null && window.keeperWriteCharStat) {
+    window.keeperWriteCharStat(char._syncIndex, 'armor', {
+      marked: (char.armorMarked || []).slice(),
+      shields: Math.max(0, (char.armorSlots || 0) - (char.armorMarked || []).length)
+    });
+  }
   renderAll();
 }
 
@@ -2949,6 +2957,10 @@ function clearNotes() {
 function adjustFear(delta) {
   state.fearTokens = Math.max(0, Math.min(12, state.fearTokens + delta));
   updateFearDisplay();
+  // Spending Fear through an ability already pushed the new total to the
+  // table; the manual +/- control did not, so hand-adjusted Fear never left
+  // this browser.
+  if (window.keeperPushFear) window.keeperPushFear();
 }
 
 // ==================== EMBEDDED CAMPAIGN TEMPLATES ====================
