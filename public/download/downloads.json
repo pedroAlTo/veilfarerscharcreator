@@ -1,6 +1,6 @@
 {
   "schema": "veilfarers.downloads/2",
-  "release": "12.00 Editorial Line",
+  "release": "Editorial Line 12.00 · Hearts in the Void 1.0",
   "generatedAt": "2026-08-16",
   "items": [
     {
@@ -9,6 +9,7 @@
       "version": "12.00",
       "type": "rulebook",
       "file": "/download/VeilFarers_Corebook_12.00-Editorial-Release.pdf",
+      "cover": "/img/covers/corebook.webp",
       "bytes": 11039683,
       "sha256": "b005df892cf8f50cc4e7668703a947c60a0efb9e50bd63fc70b8570c0f8f0495",
       "status": "PDF Candidate",
@@ -21,10 +22,24 @@
       "version": "12.00",
       "type": "rulebook",
       "file": "/download/VeilFarers_Keepers_Companion_12.00-Editorial-Release.pdf",
+      "cover": "/img/covers/keepers-companion.webp",
       "bytes": 3551223,
       "sha256": "943af1185051c84ef4ab09562200ac3cd35047cfb7c74ce777105d2acf076512",
       "status": "PDF Candidate",
-      "description": "Editorial 12.00 release for Keepers: session preparation, running VeilFarers, and the Keeper-facing consent-based Severance Event.",
+      "description": "Editorial 12.00 PDF candidate for Keepers, session preparation and running VeilFarers, including the Keeper-facing consent-based Severance Event. Hearts in the Void is maintained as a separate adventure.",
+      "current": true
+    },
+    {
+      "id": "hearts-in-the-void",
+      "title": "Hearts in the Void",
+      "version": "1.0",
+      "type": "standalone adventure",
+      "file": "/download/Hearts_in_the_Void_1.0-PDF-Candidate.pdf",
+      "cover": "/img/covers/hearts-in-the-void.webp",
+      "bytes": 15656266,
+      "sha256": "0e14b937e669c9540758e6a3e569382f674a1dc83d7a513d44fbfe6679c82613",
+      "status": "PDF Candidate",
+      "description": "Standalone VeilFarers adventure 1.0. This deliverable is independent from the Keeper's Companion.",
       "current": true
     },
     {
@@ -33,6 +48,7 @@
       "version": "12.00",
       "type": "supplement",
       "file": "/download/VeilFarers_Rust_and_Steel_12.00-Editorial-Release.pdf",
+      "cover": "/img/covers/rust-and-steel.webp",
       "bytes": 10320913,
       "sha256": "edbf3824fd192efc46d1b301c42b78e7c882655481927939ef6ac201eea8c954",
       "status": "PDF Candidate",
@@ -45,22 +61,11 @@
       "version": "12.00",
       "type": "supplement",
       "file": "/download/VeilFarers_Alien_Species_12.00-Editorial-Release.pdf",
+      "cover": "/img/covers/alien-species.webp",
       "bytes": 2970814,
       "sha256": "07be38fdbe15c54efa1b942a741ed69fbf0ca8dcd8d728aa16147fcb6e40b602",
       "status": "PDF Candidate",
       "description": "Editorial 12.00 alien species and Keeper-facing lore supplement, with a new dynamic Contents page.",
-      "current": true
-    },
-    {
-      "id": "hearts-in-the-void",
-      "title": "VeilFarers: Hearts in the Void",
-      "version": "1.0",
-      "type": "adventure",
-      "file": "/download/Hearts_in_the_Void_1.0-PDF-Candidate.pdf",
-      "bytes": 15656266,
-      "sha256": "0e14b937e669c9540758e6a3e569382f674a1dc83d7a513d44fbfe6679c82613",
-      "status": "PDF Candidate",
-      "description": "A standalone VeilFarers adventure: a full campaign arc with pregenerated characters, quick reference, and seven map plates in line and colour.",
       "current": true
     },
     {
@@ -69,6 +74,7 @@
       "version": "12.00 compatible",
       "type": "character sheet",
       "file": "/download/veilfarers_charsheet_fillable.pdf",
+      "cover": "/img/covers/corebook.webp",
       "bytes": 3968281,
       "sha256": "35d93825059584a9366f649c1bd4d6e9e891687f80904cf50fd6089c189921cd",
       "status": "Fillable PDF",
@@ -77,6 +83,6 @@
       "current": true
     }
   ],
-  "pdfCandidateStatus": "Current editorial line: all four core books at 12.00; Hearts in the Void adventure at 1.0; fillable character sheet retained.",
+  "pdfCandidateStatus": "Current editorial line: all four core books at 12.00; Hearts in the Void 1.0 as a standalone adventure; fillable character sheet retained.",
   "currentOnly": true
 }
