@@ -20,6 +20,8 @@ let vaultError='';
 let vaultLoaded=false;
 let selectedVaultId='';
 let pendingTrashId='';
+let pendingRestoreIndex=-1;
+let pendingAwaken=false;
 let plan=freshPlan();
 
 function freshPlan(){
@@ -94,6 +96,7 @@ function ensureState(){
   if(!Array.isArray(state.resolveMoves))state.resolveMoves=[];
   if(!Array.isArray(state.vaultPowers))state.vaultPowers=[];
   if(!Array.isArray(state.advancementHistory))state.advancementHistory=[];
+  if(!Array.isArray(state.restorePoints))state.restorePoints=[];
   if(!state.traitAdvances||typeof state.traitAdvances!=='object')state.traitAdvances={};
   state.subclassRank=['Foundation','Specialization','Mastery'].includes(state.subclassRank)?state.subclassRank:'Foundation';
   if(!state.traits||typeof state.traits!=='object')state.traits={};
@@ -172,7 +175,7 @@ function ownedPowerKeys(){
 }
 function availablePowers(target){
   const primary=new Set((typeof getCharDomains==='function'?getCharDomains():classDomains(currentClass())).filter(Boolean));
-  const multi=state.multiclass&&state.multiclass.domain;
+  const multi=state.multiclass&&!state.multiclass.dormant&&state.multiclass.domain;
   const owned=ownedPowerKeys();
   return (canonicalPowers.length?canonicalPowers:(typeof POWERS147!=='undefined'?POWERS147:[])).filter(power=>{
     const domain=power.d||power.domain;
@@ -298,7 +301,12 @@ function configMulticlass(target){
   const existing=new Set(currentDomains().map(lower));
   const domains=classDomains(cls).filter(domain=>!existing.has(lower(domain)));
   const feature=rules&&rules.classFeature;
-  return `<div class="levelup-config"><div class="levelup-section-kicker">Choose second Class</div>${chipButtons(multiclassOptions(),data.classId,`VFLevelUp.detail.bind(null,'multiclass','classId')`)}${cls?`<div class="levelup-note"><strong>${safe(feature?.name||'Class Feature')}</strong> — ${safe(feature?.text||'No canonical path-specific Class Feature was found.')}</div><div class="levelup-section-kicker" style="margin-top:14px">Choose genuinely new Domain</div>${chipButtons(domains.map(domain=>({value:domain,label:domain,meta:`Effective Domain level ${Math.ceil(target/2)}`})),data.domain,`VFLevelUp.detail.bind(null,'multiclass','domain')`)}<label>${safe(rules?.bgQuestion||cls.bgQuestion||'Background Question')}<textarea oninput="VFLevelUp.detail('multiclass','answer',this.value)">${safe(data.answer||'')}</textarea></label>`:''}</div>`;
+  const isSleeping=state.path==='Sleeping';
+  const domainMeta=isSleeping?'Registered as Dormant until Awakening':`Effective Domain level ${Math.ceil(target/2)}`;
+  const secondClassMoves=cls?(resolveMoves||[]).filter(move=>lower(move.class||move.className||'')===lower(cls.name)&&!(move.subclass)):[];
+  const movePicker=isSleeping&&cls?`<div class="levelup-section-kicker" style="margin-top:14px">Take one Class Resolve Move</div>${chipButtons(secondClassMoves.map(move=>({value:move.id,label:move.name,meta:move.cost})),data.moveId,`VFLevelUp.detail.bind(null,'multiclass','moveId')`)||'<p class="levelup-note">No eligible Class Resolve Move was found for this Class.</p>'}`:'';
+  const dormantNote=isSleeping?`<p class="levelup-note">Sleeping multiclass: the second Domain is registered <strong>Dormant</strong> — its Powers become selectable only after Awakening. You take a Class Resolve Move now instead.</p>`:'';
+  return `<div class="levelup-config"><div class="levelup-section-kicker">Choose second Class</div>${chipButtons(multiclassOptions(),data.classId,`VFLevelUp.detail.bind(null,'multiclass','classId')`)}${cls?`<div class="levelup-note"><strong>${safe(feature?.name||'Class Feature')}</strong> — ${safe(feature?.text||'No canonical path-specific Class Feature was found.')}</div>${dormantNote}<div class="levelup-section-kicker" style="margin-top:14px">Choose genuinely new Domain</div>${chipButtons(domains.map(domain=>({value:domain,label:domain,meta:domainMeta})),data.domain,`VFLevelUp.detail.bind(null,'multiclass','domain')`)}${movePicker}<label>${safe(rules?.bgQuestion||cls.bgQuestion||'Background Question')}<textarea oninput="VFLevelUp.detail('multiclass','answer',this.value)">${safe(data.answer||'')}</textarea></label>`:''}</div>`;
 }
 function configSubclass(){
   const next=subclassNext();
@@ -400,6 +408,7 @@ function validate(target){
       if(!cls)throw Error('Choose a second Class.');
       if(!classDomains(cls).includes(data.domain)||currentDomains().map(lower).includes(lower(data.domain)))throw Error('Choose a genuinely new Domain from the second Class.');
       if(!String(data.answer||'').trim())throw Error('Answer the second Class Background Question.');
+      if(state.path==='Sleeping'&&!resolveMoveById(data.moveId))throw Error('A Sleeping multiclass must take one eligible Class Resolve Move.');
     }
   }
 }
@@ -477,7 +486,16 @@ async function apply(){
       }
       if(id==='multiclass'){
         const cls=classCatalogue().find(item=>item.id===data.classId);const rules=classRules(cls);const feature=rules?.classFeature||null;
-        state.multiclass={classId:cls.id,className:cls.name,domain:data.domain,effectiveDomainLevel:Math.ceil(target/2),classFeature:feature?copy(feature):null,backgroundQuestion:rules?.bgQuestion||cls.bgQuestion||'',backgroundAnswer:String(data.answer||'').trim()};
+        const isSleeping=state.path==='Sleeping';
+        state.multiclass={classId:cls.id,className:cls.name,domain:data.domain,effectiveDomainLevel:Math.ceil(target/2),classFeature:feature?copy(feature):null,backgroundQuestion:rules?.bgQuestion||cls.bgQuestion||'',backgroundAnswer:String(data.answer||'').trim(),dormant:isSleeping,acquiredPath:state.path};
+        // A Sleeping character registers the second Domain as DORMANT (its Powers
+        // are not selectable until Awakening) and instead takes one eligible Class
+        // Resolve Move from the second Class, chosen in this same step.
+        if(isSleeping&&data.moveId){
+          const move=resolveMoveById(data.moveId);
+          if(move&&!state.resolveMoves.map(lower).includes(lower(move.name))){state.resolveMoves.push(move.name);}
+          state.multiclass.resolveMove=move?{id:move.id,name:move.name}:null;
+        }
       }
       if(id==='subclass')state.subclassRank=subclassNext().target;
       if(id==='tempered'){state.resolveDie='d6';state.temperedResolve=true;}
@@ -485,6 +503,11 @@ async function apply(){
     }
     const history={level:target,tier:tierFor(target),at:new Date().toISOString(),characterId:state.characterId,options:entries.map(entry=>entry.label),entries,traits,before:{level:before.level,proficiency:before.proficiency},after:{level:state.level,proficiency:state.proficiency}};
     state.advancementHistory.push(history);
+    // Restore point: a full snapshot of the character as it was BEFORE this
+    // level was applied. Strip the nested restore/advancement arrays from the
+    // snapshot so points don't accumulate recursively.
+    const snapshot=copy(before);delete snapshot.restorePoints;
+    state.restorePoints.push({at:new Date().toISOString(),label:`Before Level ${target}`,fromLevel:before.level,toLevel:target,kind:'level-up',state:snapshot});
     canonicalizeLevelState();autosave();syncFieldsFromState();
     const id=await ensureCharacterId();
     let out=null;
@@ -500,7 +523,13 @@ async function apply(){
 
 function renderHistory(){
   const history=(state.advancementHistory||[]).slice().reverse();
-  return `<section class="levelup-card"><h3>Advancement History</h3>${history.map(entry=>`<div class="levelup-summary-row"><span><strong>Level ${safe(entry.level)}</strong><br>${safe((entry.options||[]).join(' · '))}</span><span>${safe(String(entry.at||'').slice(0,10))}</span></div>`).join('')||'<p>No Level Ups recorded.</p>'}</section>`;
+  const points=(state.restorePoints||[]);
+  const restoreRows=points.map((point,i)=>{
+    const confirming=pendingRestoreIndex===i;
+    return `<div class="levelup-summary-row"><span><strong>${safe(point.label||('Restore point '+(i+1)))}</strong><br>${safe(point.kind==='awaken'?'Before Awakening':`Level ${point.fromLevel} → ${point.toLevel}`)} · ${safe(String(point.at||'').slice(0,10))}</span>${confirming?`<span class="levelup-inline-actions"><span class="levelup-error" style="padding:6px 8px">Revert here? Later changes are discarded.</span><span class="btn btn-primary levelup-mini" role="button" onclick="VFLevelUp.restore(${i})">Confirm</span><span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.cancelRestore()">Cancel</span></span>`:`<span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.restore(${i})">Revert to here</span>`}</div>`;
+  }).reverse().join('');
+  const restoreSection=points.length?`<section class="levelup-card"><h3>Restore Points</h3><p class="levelup-note">Revert this character to an earlier state. Reverting discards changes made after the chosen point.</p>${restoreRows}</section>`:'';
+  return `<section class="levelup-card"><h3>Advancement History</h3>${history.map(entry=>`<div class="levelup-summary-row"><span><strong>Level ${safe(entry.level)}</strong><br>${safe((entry.options||[]).join(' · '))}</span><span>${safe(String(entry.at||'').slice(0,10))}</span></div>`).join('')||'<p>No Level Ups recorded.</p>'}</section>${restoreSection}`;
 }
 
 
@@ -539,12 +568,72 @@ function activateLevelUpCards(root){
   if(window.VFNormalizeCardDeck&&optionGrid)window.VFNormalizeCardDeck(optionGrid);
 }
 
+async function restoreTo(index){
+  const points=state.restorePoints||[];
+  const point=points[index];
+  if(!point||!point.state){plan.message='That restore point is unavailable.';render();return;}
+  if(pendingRestoreIndex!==index){pendingRestoreIndex=index;render();return;}
+  pendingRestoreIndex=-1;
+  // Preserve identity and the restore log across the revert. Trim any restore
+  // points created AFTER the one we're returning to — you can't "redo" past a
+  // revert, and keeping them would let you jump forward into a discarded future.
+  const keptId=state.characterId;
+  const trimmedPoints=points.slice(0,index);
+  const restored=copy(point.state);
+  restored.characterId=keptId;
+  restored.restorePoints=trimmedPoints;
+  state=restored;ensureState();
+  canonicalizeLevelState();autosave();syncFieldsFromState();plan=freshPlan();
+  try{
+    const registry=window.VeilFarersCharacterRegistry;
+    if(registry&&keptId){
+      let out=null;
+      if(window.VeilFarersSheetBridge){out=await window.VeilFarersSheetBridge.convert(state);window.VeilFarersSheetBridge.saveOutput(out,state);}
+      const payload=out?{app:'Veilfarers Character Sheet',version:'2.84-RC3.2',schema:'veilfarers.character/2',characterId:keptId,fields:{...out.fields,character_id:keptId},tracks:out.tracks,advancementHistory:state.advancementHistory}:null;
+      const record=registry.saveLocalData(keptId,{creatorState:copy(state),sheetPayload:payload,advancementHistory:copy(state.advancementHistory||[])},{source:'level-up-restore',status:'active',completedAt:registry.get(keptId)?.completedAt||new Date().toISOString()});
+      await registry.sync(record,{source:'level-up-restore'});
+    }
+    plan.message=`Restored to “${point.label}” (Level ${restored.level}). Vault, Charsheet and Player Tool were updated.`;
+  }catch(error){plan.message='Restored locally; cloud sync pending: '+(error.message||String(error));}
+  render();
+}
+function cancelRestore(){pendingRestoreIndex=-1;render();}
+
+async function awaken(){
+  if(state.path!=='Sleeping'){plan.message='Only a Sleeping character can Awaken.';render();return;}
+  const mc=state.multiclass&&typeof state.multiclass==='object'?state.multiclass:null;
+  const hasDormant=!!(mc&&mc.dormant&&mc.domain);
+  if(pendingAwaken!==true){pendingAwaken=true;render();return;}
+  pendingAwaken=false;
+  // Snapshot BEFORE awakening so it can be undone from the same restore list.
+  ensureState();
+  const snapshot=copy(state);delete snapshot.restorePoints;
+  state.restorePoints.push({at:new Date().toISOString(),label:'Before Awakening',fromLevel:state.level,toLevel:state.level,kind:'awaken',state:snapshot});
+  // Awaken: Sleeping -> Awakened, activating a dormant multiclass Domain.
+  state.path='Awakened';
+  if(hasDormant){state.multiclass.dormant=false;state.multiclass.awakenedAt=new Date().toISOString();}
+  canonicalizeLevelState();autosave();syncFieldsFromState();plan=freshPlan();
+  try{
+    const registry=window.VeilFarersCharacterRegistry;const keptId=state.characterId;
+    if(registry&&keptId){
+      let out=null;
+      if(window.VeilFarersSheetBridge){out=await window.VeilFarersSheetBridge.convert(state);window.VeilFarersSheetBridge.saveOutput(out,state);}
+      const payload=out?{app:'Veilfarers Character Sheet',version:'2.84-RC3.2',schema:'veilfarers.character/2',characterId:keptId,fields:{...out.fields,character_id:keptId},tracks:out.tracks,advancementHistory:state.advancementHistory}:null;
+      const record=registry.saveLocalData(keptId,{creatorState:copy(state),sheetPayload:payload,advancementHistory:copy(state.advancementHistory||[])},{source:'level-up-awaken',status:'active',completedAt:registry.get(keptId)?.completedAt||new Date().toISOString()});
+      await registry.sync(record,{source:'level-up-awaken'});
+    }
+    plan.message=hasDormant?`Awakened. The ${mc.domain} Domain is now active. Use Restore Points to undo.`:'Awakened. Use Restore Points to undo.';
+  }catch(error){plan.message='Awakened locally; cloud sync pending: '+(error.message||String(error));}
+  render();
+}
+function cancelAwaken(){pendingAwaken=false;render();}
+
 function render(){
   injectStyles();ensureState();
   const root=document.getElementById('levelup-root');if(!root)return;
   const target=Math.min(10,state.level+1);const used=state.level<10?slotsUsed(target):0;
   const current=window.VeilFarersCharacterRegistry?.get(state.characterId);const summary=current?recordSummary(current):{name:state.name||'Current draft',characterId:state.characterId||'No saved ID',level:state.level,path:state.path,className:className(),subclass:state.subclass};
-  root.innerHTML=`<div class="levelup-shell">${renderVault()}<section class="levelup-card"><div class="levelup-section-kicker">Selected build</div><h3>${safe(summary.name)}</h3><div class="levelup-badges"><span class="levelup-badge">${safe(summary.characterId||'No saved ID')}</span><span class="levelup-badge">Level ${state.level}</span><span class="levelup-badge">Tier ${tierFor(state.level)}</span><span class="levelup-badge">${safe([state.path,className(),state.subclass].filter(Boolean).join(' · '))}</span></div>${!state.characterId?'<div class="levelup-error" style="margin-top:12px">Choose a completed character from Character Vault. Level Up will not create a second copy.</div>':''}</section>${state.level>=10?'<section class="levelup-card"><h3>Maximum Level</h3><p>The Core rules stop at Level 10.</p></section>':`${tierConfig(target)}<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Advancement menu</div><h3>Level ${state.level} → ${target}</h3></div><span class="levelup-badge">${used}/2 slots selected</span></div><p>All Corebook options remain visible. Unavailable options explain why they are locked.</p><div class="levelup-grid">${definitions(target).map(def=>levelOptionCard(def,target)).join('')}</div></section><section id="levelup-apply-summary" class="levelup-card levelup-apply-summary ${plan.applied?'vf-reward-active':''}">${plan.applied?'<div class="levelup-reward-flash" aria-hidden="true"></div>'+rewardParticles():''}<div class="levelup-section-kicker">${plan.applied?`Reward secured · Level ${plan.appliedLevel}`:'Review before applying'}</div><h3>${plan.applied?'Changes applied':'Build changes'}</h3><div class="levelup-summary">${(plan.applied&&plan.appliedSummary.length?plan.appliedSummary:previewRows(target)).map((row,index)=>`<div class="levelup-summary-row" style="--row:${index}"><strong>${safe(row[0])}</strong><span><span>${safe(row[1])}</span> <span class="levelup-delta">→ ${safe(row[2])}</span></span></div>`).join('')}</div>${plan.message?`<div class="${plan.applied?'levelup-success':'levelup-error'}" style="margin-top:12px">${safe(plan.message)}</div>`:''}<div class="levelup-actions"><button class="btn btn-primary" onclick="VFLevelUp.apply()" ${!state.characterId||used===0?'disabled':''}>Apply Level ${target}</button><a class="btn btn-secondary" href="/charsheet.html">Open Charsheet</a><a class="btn btn-secondary" href="/player-tool.html">Open Player Tool</a><a class="btn btn-secondary" href="#creator">Return to Creator</a></div><p class="levelup-note">Level Up changes the character build. Current HP, Stress, Hope/Effort, Resolve, Armor marks and Conditions in Player Tool are preserved when the same Character ID is updated.</p></section>`}${renderHistory()}</div>${pickerMarkup(target)}`;
+  root.innerHTML=`<div class="levelup-shell">${renderVault()}<section class="levelup-card"><div class="levelup-section-kicker">Selected build</div><h3>${safe(summary.name)}</h3><div class="levelup-badges"><span class="levelup-badge">${safe(summary.characterId||'No saved ID')}</span><span class="levelup-badge">Level ${state.level}</span><span class="levelup-badge">Tier ${tierFor(state.level)}</span><span class="levelup-badge">${safe([state.path,className(),state.subclass].filter(Boolean).join(' · '))}</span></div>${!state.characterId?'<div class="levelup-error" style="margin-top:12px">Choose a completed character from Character Vault. Level Up will not create a second copy.</div>':''}${state.characterId&&state.path==='Sleeping'?`<div class="levelup-inline-actions" style="margin-top:12px">${pendingAwaken?`<span class="levelup-note">Awaken permanently?${state.multiclass&&state.multiclass.dormant&&state.multiclass.domain?` Activates the ${safe(state.multiclass.domain)} Domain.`:''} You can undo it from Restore Points.</span><span class="btn btn-primary levelup-mini" role="button" onclick="VFLevelUp.awaken()">Confirm Awaken</span><span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.cancelAwaken()">Cancel</span>`:`<span class="btn btn-secondary levelup-mini" role="button" onclick="VFLevelUp.awaken()">Awaken (Sleeping → Awakened)</span>`}</div>`:''}</section>${state.level>=10?'<section class="levelup-card"><h3>Maximum Level</h3><p>The Core rules stop at Level 10.</p></section>':`${tierConfig(target)}<section class="levelup-card"><div class="levelup-inline-actions" style="justify-content:space-between"><div><div class="levelup-section-kicker">Advancement menu</div><h3>Level ${state.level} → ${target}</h3></div><span class="levelup-badge">${used}/2 slots selected</span></div><p>All Corebook options remain visible. Unavailable options explain why they are locked.</p><div class="levelup-grid">${definitions(target).map(def=>levelOptionCard(def,target)).join('')}</div></section><section id="levelup-apply-summary" class="levelup-card levelup-apply-summary ${plan.applied?'vf-reward-active':''}">${plan.applied?'<div class="levelup-reward-flash" aria-hidden="true"></div>'+rewardParticles():''}<div class="levelup-section-kicker">${plan.applied?`Reward secured · Level ${plan.appliedLevel}`:'Review before applying'}</div><h3>${plan.applied?'Changes applied':'Build changes'}</h3><div class="levelup-summary">${(plan.applied&&plan.appliedSummary.length?plan.appliedSummary:previewRows(target)).map((row,index)=>`<div class="levelup-summary-row" style="--row:${index}"><strong>${safe(row[0])}</strong><span><span>${safe(row[1])}</span> <span class="levelup-delta">→ ${safe(row[2])}</span></span></div>`).join('')}</div>${plan.message?`<div class="${plan.applied?'levelup-success':'levelup-error'}" style="margin-top:12px">${safe(plan.message)}</div>`:''}<div class="levelup-actions"><button class="btn btn-primary" onclick="VFLevelUp.apply()" ${!state.characterId||used===0?'disabled':''}>Apply Level ${target}</button><a class="btn btn-secondary" href="/charsheet.html">Open Charsheet</a><a class="btn btn-secondary" href="/player-tool.html">Open Player Tool</a><a class="btn btn-secondary" href="#creator">Return to Creator</a></div><p class="levelup-note">Level Up changes the character build. Current HP, Stress, Hope/Effort, Resolve, Armor marks and Conditions in Player Tool are preserved when the same Character ID is updated.</p></section>`}${renderHistory()}</div>${pickerMarkup(target)}`;
   activateLevelUpCards(root);
   if(plan.applied){requestAnimationFrame(()=>document.getElementById('levelup-apply-summary')?.scrollIntoView({behavior:'smooth',block:'center'}));setTimeout(()=>{document.body.classList.remove('vf-level-page-glow');void document.body.offsetWidth;document.body.classList.add('vf-level-page-glow');setTimeout(()=>document.body.classList.remove('vf-level-page-glow'),900);},1950);}
   if(!vaultLoaded&&!vaultLoading&&window.VeilFarersCharacterRegistry){vaultLoaded=true;setTimeout(()=>refreshVault(),0);}
@@ -566,7 +655,8 @@ async function loadCanonicalLevelUpData(){
 window.VFLevelUp={
   render,refreshVault,select:selectCharacter,trash:trashCharacter,toggle:toggleOption,
   detail:(id,key,value)=>setDetail(id,key,value),tier:setTier,cancelTrash,apply,chooseImport:chooseImportFile,importFile:importLevelUpFile,
-  openPicker:type=>{plan.picker=type;render();},choosePicker,closePicker
+  openPicker:type=>{plan.picker=type;render();},choosePicker,closePicker,
+  restore:restoreTo,cancelRestore,awaken,cancelAwaken
 };
 
 loadCanonicalLevelUpData().finally(render);
