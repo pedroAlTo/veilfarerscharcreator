@@ -25,7 +25,7 @@
       "cover": "/img/covers/keepers-companion.webp",
       "bytes": 3551223,
       "sha256": "943af1185051c84ef4ab09562200ac3cd35047cfb7c74ce777105d2acf076512",
-      "status": "PDF Candidate",
+      "status": "PDF Release Candidate",
       "description": "Editorial 12.00 PDF candidate for Keepers, session preparation and running VeilFarers, including the Keeper-facing consent-based Severance Event. Hearts in the Void is maintained as a separate adventure.",
       "current": true
     },
@@ -34,11 +34,11 @@
       "title": "Hearts in the Void",
       "version": "1.0",
       "type": "standalone adventure",
-      "file": "/download/Hearts_in_the_Void_1.0-PDF-Candidate.pdf",
+      "file": "/download/VeilFarers_Hearts_in_the_Void_1.0_Editorial_Release.pdf",
       "cover": "/img/covers/hearts-in-the-void.webp",
       "bytes": 15656266,
       "sha256": "0e14b937e669c9540758e6a3e569382f674a1dc83d7a513d44fbfe6679c82613",
-      "status": "PDF Candidate",
+      "status": "PDF Release Candidate",
       "description": "Standalone VeilFarers adventure 1.0. This deliverable is independent from the Keeper's Companion.",
       "current": true
     },
@@ -51,7 +51,7 @@
       "cover": "/img/covers/rust-and-steel.webp",
       "bytes": 10320913,
       "sha256": "edbf3824fd192efc46d1b301c42b78e7c882655481927939ef6ac201eea8c954",
-      "status": "PDF Candidate",
+      "status": "PDF Release Candidate",
       "description": "Editorial 12.00 equipment and technology supplement.",
       "current": true
     },
@@ -64,7 +64,7 @@
       "cover": "/img/covers/alien-species.webp",
       "bytes": 2970814,
       "sha256": "07be38fdbe15c54efa1b942a741ed69fbf0ca8dcd8d728aa16147fcb6e40b602",
-      "status": "PDF Candidate",
+      "status": "PDF Release Candidate",
       "description": "Editorial 12.00 alien species and Keeper-facing lore supplement, with a new dynamic Contents page.",
       "current": true
     },
