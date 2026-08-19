@@ -41,7 +41,16 @@
   }
   function signed(v){const n=Number(v||0);return n>=0?`+${n}`:String(n);}
   function tierLabel(item){const t=item&&item.tier;return clean(typeof t==='object'?(t.code||t.name):t);}
-  function currentDraft(){try{return JSON.parse(localStorage.getItem(CREATOR_KEY)||'null');}catch(_){return null;}}
+  function currentDraft(){
+    try{
+      var creator=JSON.parse(localStorage.getItem(CREATOR_KEY)||'null');
+      if(creator&&(creator.name||creator.ancestry||creator.cls||creator.fields||creator.creatorState||creator.state))return creator;
+    }catch(_){/* fall through to sheet payload */}
+    // No usable Creator draft: fall back to the sheet's own latest payload,
+    // which is what the in-sheet Random Character generator writes. It already
+    // carries {fields,tracks}, so unwrapInput() treats it as kind:'sheet'.
+    try{return JSON.parse(localStorage.getItem(LATEST_SHEET_KEY)||'null');}catch(_){return null;}
+  }
   function proficiencyFloor(level){level=Math.max(1,Math.min(10,Number(level)||1));return level>=8?4:level>=5?3:level>=2?2:1;}
   function featureText(feature){return feature?text(feature.name,feature.text||feature.desc):'';}
   const compactRule=(value,label)=>window.VFCompactRules?window.VFCompactRules.compactBundle(value,label):clean(value);

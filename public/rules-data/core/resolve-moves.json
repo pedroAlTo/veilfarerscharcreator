@@ -194,8 +194,8 @@
     "cost": "spend 1",
     "rollResolve": false,
     "variableResolve": false,
-    "text": "When a maneuver is called impossible or the odds are quoted, declare a permanent quirk of the hull that makes it possible. Roll with Advantage; on a roll with Fear, the ship pays, not the crew.",
-    "status": "canonical-11.1-rc2"
+    "text": "When a maneuver is called impossible or the odds are quoted, do it anyway: declare a quirk of this hull that makes it possible (a blind spot, a rattle before the stall, a tolerance the specs missed). The quirk is true and permanent. Roll with Advantage; on a roll with Fear, the ship pays, not the crew.",
+    "status": "canonical"
   },
   {
     "id": "vf.core.resolve.pilot.class.hold-together",
@@ -447,7 +447,7 @@
     "cost": "spend and roll 1+",
     "rollResolve": true,
     "variableResolve": true,
-    "text": "Your next Melee hit adds the rolled total to its damage. Then move the target one range band directly away from you or apply Prone.",
+    "text": "Your next Melee hit adds the rolled total to its damage. Then choose one: move the target one range band directly away from you, or apply Prone.",
     "status": "canonical"
   },
   {
