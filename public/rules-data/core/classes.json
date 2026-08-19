@@ -13,8 +13,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -46,11 +46,11 @@
       "desc": "Diplomats weave peace in a galaxy of shattered trust. They read tiny expressions, broker treaties, and know when to flatter and when to threaten. Charm is their armor. Words are their weapons.",
       "hopeFeature": {
         "name": "The Power of Suggestion (3 Hope)",
-        "text": "Spend 3 Hope to choose one: Plant an Idea (the next Presence, Knowledge, or Finesse roll made by an ally has Advantage); Create an Opening (the next attack or Finesse roll made by an ally to sneak or hide has Advantage); or Gather Intelligence (gain a secret Clue from the Keeper relevant to the current scene)."
+        "text": "You can spend 3 Hope to choose one of three powerful effects:\n\n- **Plant an Idea. **The next Presence, Knowledge, or Finesse roll made by an ally has Advantage.\n\n- **Create an Opening. **The next attack or Finesse roll made by an ally to sneak or hide has Advantage.\n\n- **Gather Intelligence. **Gain a secret *Clue* from the Keeper. This could be a motive, a weakness, or a hidden fact relevant to the current scene.\n\n> **INFLUENCE SCALES WITH THE ROLL.** Success: those present, this scene. With Hope: it holds after you leave. Critical: it spreads beyond the room. With Fear: it turns on you."
       },
       "classFeature": {
         "name": "Cultural Lens",
-        "text": "You have Advantage on all Social tests. Begin each session with 2 Favor Tokens and hold a maximum of 4. Gain 1 Favor Token when you succeed on a Persuasion or Deception roll and 1 during every long rest. Spend Favor Tokens through subclass abilities, faction contacts, institutional tasks, or 5 at once to raise Reputation with one faction by 1 RP. Protocol: you know the correct form for cultures in common knowledge; for isolated or unknown cultures, roll Knowledge to read their norms."
+        "text": "**Cultural Lens.** Gain **+2** on **Presence Rolls** made to negotiate, persuade, deceive, or read a social situation.\n\nYou begin each session with **2 Favor Tokens** and hold a maximum of **4**, increased only by Features or backgrounds that explicitly raise the cap. When you succeed on a Persuasion or Deception Roll, gain 1 Favor Token. During every Long Rest, gain 1 Favor Token.\n\nSpend Favor Tokens through your subclass abilities, House and Free Fleet contacts, or to automatically succeed on an institutional task for 1 Favor. You may spend 5 Favor Tokens at once to raise your Reputation with one faction by 1 RP, subject to Chapter 16.\n\n---"
       },
       "bgQuestion": "What secret compelled you to trust words over weapons?",
       "subclasses": [
@@ -276,11 +276,11 @@
         "desc": "Diplomats weave peace in a galaxy of shattered trust. They read tiny expressions, broker treaties, and know when to flatter and when to threaten. Charm is their armor. Words are their weapons.",
         "effortFeature": {
           "name": "THE PREPARED MIND (2 EFFORT)",
-          "text": "You can spend 2 Effort to choose one of three powerful effects. Where the Awakened Diplomat's Power of Suggestion runs on charisma and the universe's quiet cooperation, the Prepared Mind runs on the work you have already done before the scene began. - Cite the File. Declare you have read about this person, this house, this faction, or this situation in advance. The Keeper provides one true and useful fact about them, a vulnerability, a recent event, a relationship, a stated position, that you may not have learned yet but that fits what your character could reasonably have prepared. - Anticipated Move. When the next NPC in the scene takes a social or political action, you may declare that you anticipated it. You take a Reaction now, before the action resolves, to counter or complicate it, and you have Advantage on that Reaction; the Keeper sets its scope. Foresight sharpens the response; it does not guarantee it. - The Quiet Word. You speak privately to one NPC currently in the scene. Whatever you say, the NPC takes seriously, not necessarily favorably, but seriously. They consider it as a credible signal. Where this leads is between you, them, and the table. > INFLUENCE SCALES WITH THE ROLL. Success: those present, this scene. With Hope: it holds after you leave. Critical: it spreads beyond the room. With Fear: it turns on you."
+          "text": "You can spend 2 Effort to choose one of three powerful effects. Where the Awakened Diplomat's *Power of Suggestion* runs on charisma and the universe's quiet cooperation, the Prepared Mind runs on the work you have already done before the scene began.\n\n- **Cite the File.** Declare you have read about this person, this house, this faction, or this situation in advance. The Keeper provides one true and useful fact about them, a vulnerability, a recent event, a relationship, a stated position, that you may not have learned yet but that fits what your character could reasonably have prepared.\n\n- **Anticipated Move.** When the next NPC in the scene takes a social or political action, you may declare that you anticipated it. You take a Reaction now, before the action resolves, to counter or complicate it, and you have **Advantage** on that Reaction; the Keeper sets its scope. Foresight sharpens the response; it does not guarantee it.\n\n- **The Quiet Word.** You speak privately to one NPC currently in the scene. Whatever you say, the NPC takes seriously, not necessarily favorably, but seriously. They consider it as a credible signal. Where this leads is between you, them, and the table.\n\n> **INFLUENCE SCALES WITH THE ROLL.** Success: those present, this scene. With Hope: it holds after you leave. Critical: it spreads beyond the room. With Fear: it turns on you."
         },
         "classFeature": {
           "name": "STANDING REPUTATION",
-          "text": "Sleeping Diplomats build influence the slow way, by being reliable, but they spend the same currency every Diplomat does: Favor Tokens. The pool, the cap, the way they are earned, and the way they are spent are identical to the Awakened Diplomat's Cultural Lens (Chapter 6), so a character who Awakens or who came up Sleeping never has to relearn how their social capital works. The path changes how you fight and rest, through Effort and Resolve; it does not change how you trade in favors. You begin each session with 2 Favor Tokens and hold a maximum of 4 (raised cumulatively by background and subclass, so a Core World Sleeping Diplomat holds up to 6). You gain 1 when you succeed on a Persuasion or Deception roll, and 1 on every long rest. You spend them through your subclass abilities, through House and Free Fleet contacts (Chapter 5), to automatically succeed on an institutional task (1 Favor), or by spending 5 at once to raise your Reputation with one faction by 1 RP (Chapter 16), bought standing that can be lost again by how you act. What \"Standing Reputation\" names is not a separate resource but the Sleeping Diplomat's reading of the same one: every Favor is a debt of trust earned by being dependable where it was witnessed, not by performance or spectacle. Favor Tokens are not Effort. They are the slower, longer-running currency of the Diplomat's career, the same on either path. Protocol. You always know the correct form (title, gift, taboo, precedence) for any culture in common knowledge; no roll. For isolated or unknown cultures, roll Knowledge (DC set by how removed they are) to read their norms from behavior alone. Once you know the protocol, you cannot offend by accident, only by choice."
+          "text": "Sleeping Diplomats build influence the slow way, by being reliable, but they spend the same currency every Diplomat does: **Favor Tokens**. The pool, the cap, the way they are earned, and the way they are spent are identical to the Awakened Diplomat's Cultural Lens (Chapter 6), so a character who Awakens or who came up Sleeping never has to relearn how their social capital works. The path changes how you fight and rest, through Effort and Resolve; it does not change how you trade in favors.\n\nYou begin each session with **2 Favor Tokens** and hold a maximum of **4** (raised cumulatively by background and subclass, so a Core World Sleeping Diplomat holds up to 6). You gain 1 when you succeed on a Persuasion or Deception roll, and 1 on every long rest. You spend them through your subclass abilities, through House and Free Fleet contacts (Chapter 5), to automatically succeed on an institutional task (1 Favor), or by spending 5 at once to raise your Reputation with one faction by 1 RP (Chapter 16), bought standing that can be lost again by how you act.\n\nWhat \"Standing Reputation\" names is not a separate resource but the Sleeping Diplomat's reading of the same one: every Favor is a debt of trust earned by being dependable where it was witnessed, not by performance or spectacle. Favor Tokens are not Effort. They are the slower, longer-running currency of the Diplomat's career, the same on either path.\n\n**Protocol.** You always know the correct form (title, gift, taboo, precedence) for any culture in common knowledge; no roll. For isolated or unknown cultures, roll Knowledge (DC set by how removed they are) to read their norms from behavior alone. Once you know the protocol, you cannot offend by accident, only by choice."
         },
         "subclasses": [
           {
@@ -425,8 +425,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -458,11 +458,11 @@
       "desc": "Engineers thrive in chaos. Whether hacking rogue AIs or grafting cybernetics onto wounded crewmates, their genius turns duct tape and guts into miracles — just long enough.",
       "hopeFeature": {
         "name": "Scrap Genius (3 Hope)",
-        "text": "Spend 3 Hope to create one temporary device with a single plausible function. It works flawlessly for one scene, then disassembles itself or burns out beyond use. The Keeper has final say on what is plausible."
+        "text": "You can spend 3 Hope to create one temporary device. This could be a shield generator, a medical scanner, an emergency comms relay, or something else the situation demands. Describe the device and its single function. The device works flawlessly for one scene, then disassembles itself or burns out beyond use. The Keeper has final say on what is plausible."
       },
       "classFeature": {
         "name": "Technical Intuition",
-        "text": "You have Advantage on all repair and diagnosis tests. Once per session, when a system fails, spend 1 Stress to improvise a perfect fix. The fix lasts until your next long rest."
+        "text": "- You have **Advantage on all repair and diagnosis** **tests.**\n\n- Once per session, when a system fails, you can spend **1 Stress **to improvise a perfect fix. This fix lasts until your next long rest.\n\nThe Engineer's intuition is the table's emergency button, the resource that turns a campaign-ending system failure into a campaign-changing improvisation."
       },
       "bgQuestion": "What machine do you carry guilt for building — or for failing to build?",
       "subclasses": [
@@ -688,11 +688,11 @@
         "desc": "Engineers thrive in chaos. Whether hacking rogue AIs or grafting cybernetics onto wounded crewmates, their genius turns duct tape and guts into miracles — just long enough.",
         "effortFeature": {
           "name": "BRUTE-FORCE DIAGNOSTIC (2 EFFORT)",
-          "text": "You can spend 2 Effort to choose one of three effects. The Sleeping Engineer's signature is not inspiration but thoroughness. You have ruled out everything else; what remains is the answer. - Find the Failure. Spend 1 minute of in-fiction time examining a malfunctioning system. The Keeper tells you exactly what is wrong with it, in detail, including any concealed sabotage. (You still need parts, time, and tools to fix it.) - Never Rated For This. Push a machine past specification: it performs one tier above its grade for the scene, then breaks. You describe how it fails; the Keeper decides what the failure costs. - The Field Manual. You produce, from memory, a procedure for handling a specific technical situation, the procedure is one your character has practiced or read, not improvised. The Keeper grants advantage on the next four rolls related to executing it, by you or by an ally you instruct."
+          "text": "You can spend 2 Effort to choose one of three effects. The Sleeping Engineer's signature is not inspiration but *thoroughness*. You have ruled out everything else; what remains is the answer.\n\n- **Find the Failure.** Spend 1 minute of in-fiction time examining a malfunctioning system. The Keeper tells you exactly what is wrong with it, in detail, including any concealed sabotage. (You still need parts, time, and tools to fix it.)\n\n- **Never Rated For This.** Choose one non-Precursor machine, vehicle subsystem, or piece of equipment you can touch. Until the end of the scene, it ignores one penalty caused by damage or the environment, **or** it completes one task in half the normal fictional time. At the end of the scene, it is disabled and cannot be used until repaired during downtime. This is ordinary descriptive language, not a Condition. It cannot increase damage, Armor Slots, Evasion, thresholds, Power level, or access Tier.\n\n- **The Field Manual.** You produce, from memory, a procedure for handling a specific technical situation, the procedure is one your character has practiced or read, not improvised. The Keeper grants advantage on the next four rolls related to executing it, by you or by an ally you instruct."
         },
         "classFeature": {
           "name": "LOGGED TOOLS",
-          "text": "Sleeping Engineers do not jury-rig from cosmic confidence; they jury-rig from kit. You maintain, at all times, a Logged Inventory, a private list of three components, parts, or improvised tools that you have salvaged or pre-assembled. At any time, you may declare that you have one of those items on hand and apply it to a problem. The Keeper may rule that the Inventory needs to be restocked between missions; this is its own downtime activity."
+          "text": "Sleeping Engineers do not jury-rig from cosmic confidence; they jury-rig from *kit.* Record three tool types: `cutting`, `diagnostic`, `medical`, `security`, `signal`, or `fabrication`. Once per scene, when one recorded type is relevant to a technical Roll, gain **+2** to that Roll. A Logged Tool supplies what is needed to attempt the task; it never solves the task automatically or creates Tiered gear. The Keeper may require you to restock a depleted or consumed tool type between missions as a downtime activity."
         },
         "subclasses": [
           {
@@ -841,8 +841,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -874,11 +874,11 @@
       "desc": "Explorers are the eyes and ears of post-Silence civilization, pushing boundaries of what is known and turning whispers of legend into tangible truths.",
       "hopeFeature": {
         "name": "Pathfinder's Insight (3 Hope)",
-        "text": "When making a Travel or Scan the Area roll during a Void Crawl, spend 3 Hope to roll 1 Fear die and 2 Hope dice. Choose which Hope die you keep, then resolve the roll normally."
+        "text": "When making a **Travel** or **Scan the Area** roll during a Void Crawl, you can spend 3 Hope. If you do, you roll 1 Fear die as normal and roll **2 Hope dice**. Choose which Hope die you keep (typically the higher); then resolve the roll normally, including success/failure and Hope/Fear dominance. This replaces the normal single Hope die."
       },
       "classFeature": {
         "name": "Foremost Survivor",
-        "text": "You have Advantage on all Survival tests. Once per session, spend 1 Stress to gain temporary immunity to an environmental hazard for the scene. Once per Exploration Turn, spend 1 Stress to prevent one segment from being ticked on the Supplies Running Low or Attention Drawn clock."
+        "text": "**Foremost Survivor.** Gain **+2** on **Instinct Rolls** made to navigate, track, forage, or endure a natural hazard. Once per session, when facing an environmental hazard, you may mark **1 Stress** to gain temporary immunity to that hazard’s effects for the scene.\n\n---"
       },
       "bgQuestion": "What is the one place you have not gone back to — and why haven't you?",
       "subclasses": [
@@ -1104,7 +1104,7 @@
         "desc": "Explorers are the eyes and ears of post-Silence civilization, pushing boundaries of what is known and turning whispers of legend into tangible truths.",
         "effortFeature": {
           "name": "METHODICAL RECONNAISSANCE (2 EFFORT)",
-          "text": "You spend 2 Effort to choose one: - The Margin Note. Declare one physical feature of your surroundings that your logbook recorded: a culvert, a ledge, a hatch the deck plans forgot. It is there. The Keeper may attach one complication, and no note rewrites a scene's premise. - The Trail. Examine ground or wreckage. The Keeper tells you who came through, in what numbers, in what direction, and approximately when. Sleeping Explorers track by sign, not by sense. - The Charted Route. Declare that you have, in your logbook, a route through a difficult environment. The route is real and useful, though the Keeper may add complications appropriate to the difficulty."
+          "text": "You spend 2 Effort to choose one:\n\n- **The Margin Note.** Declare one physical feature of your surroundings that your logbook recorded: a culvert, a ledge, a hatch the deck plans forgot. It is there. The Keeper may attach one complication, but the Feature cannot create an exit in a sealed area, resolve a Clock, negate a revealed danger, or contradict an established fact.\n\n- **The Trail.** Examine ground or wreckage. The Keeper tells you who came through, in what numbers, in what direction, and approximately when. Sleeping Explorers track by sign, not by sense.\n\n- **The Charted Route.** Declare that you have, in your logbook, a route through a difficult environment. The route is real and useful, though the Keeper may add complications appropriate to the difficulty. It cannot create an exit in a sealed area, resolve a Clock, negate a revealed danger, or contradict an established fact."
         },
         "classFeature": {
           "name": "THE LOGBOOK",
@@ -1252,8 +1252,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -1287,11 +1287,11 @@
       "desc": "Mystics walk through realities where physics crumbles. Caution defines them — one wrong step in the Veil might unravel their mind. They feel the room's substrate shift before anyone else.",
       "hopeFeature": {
         "name": "Reality Unfold (3 Hope)",
-        "text": "Spend 3 Hope to roll with Advantage on all rolls. The effect lasts until you roll with Fear. When it ends, take 1d4 Stress."
+        "text": "You can spend 3 Hope to roll with **Advantage on all rolls**. This effect lasts until you roll with Fear. When the effect ends, you take **1d4 Stress**.\n\nThe Mystic's Hope Feature is a sustained alteration of the substrate around them, the universe briefly becomes slightly more cooperative, and the cost is always paid at the end, when reality reasserts itself."
       },
       "classFeature": {
         "name": "Psychic Resonance & Veil Alignment",
-        "text": "Psychic Resonance: once per round, when you roll for a Mystic feature, reroll one die; if the new result is lower, gain 1 Stress. Veil Alignment: choose Lux or Void at creation as your second Domain. You may only equip Powers from that alignment. At Levels 2, 5, and 8, you may switch alignment during level-up; cards from the previous alignment become dormant until you realign."
+        "text": "**Psychic Resonance (once per scene).** Before making a **Spellcast Roll** for a Mystic Power or a **Duality Roll** explicitly called for by a Mystic Feature, you may mark **1 Stress** to add **+2** to that Roll. This bonus does not apply to damage, Hope, Stress, a Reaction Roll, or a Roll that does not use the stated Mystic Power or Feature.\n\nThe bonus may turn a Failure into a Success, but it does not change whether Hope or Fear is higher and cannot create a Critical Success.\n\n---\n\n**Veil Alignment (Lux / Void).** At character creation, the Mystic chooses a **Veil Alignment**: Lux (the burnished gold of the Hope Frequency) or Void (the deep black of substrate entropy). This determines your second Domain. You may only equip Domain Cards from your chosen alignment, never both. At each Tier threshold (Levels 2, 5, and 8), you may switch your alignment during the level-up process. When you switch, all cards from your previous alignment become **dormant** (inaccessible until you realign), and you gain immediate access to the new domain's card list up to your current level, subject to normal Loadout and Vault limits. The Keeper should narrate the transition, switching from Void to Lux, or the reverse, is not a casual decision.\n\n> **GEAR 1, MYSTIC VEIL ALIGNMENT** **AT A GLANCE ***(REFERENCE TABLE)*\n\n| IF YOU ALIGN TO... | YOUR SECOND |\n| --- | --- |\n\n**IF YOU ALIGN TO...YOUR SECOND DOMAIN BECOMES... POWER FLAVOR**\n\nLux (gold sun)LuxDefense, illumination, anti-Void work Void (black spiral)VoidStealth, displacement, probability manipulation\n\n|  |  | POWER FLAVOR |\n| --- | --- | --- |\n| **Lux *(gold sun)*** | Lux | Defense, illumination, anti-Void work |\n| **Void *(black spiral)*** | Void | Stealth, displacement, probability manipulation |\n\nA Mystic can only ever equip Powers from one alignment at a time. The dormant alignment's Powers do not vanish from the character's history, they remain in the Mystic's Vault, but cannot be slotted into the active Loadout until the Mystic realigns. The Keeper should make alignment switches into scenes; the friction is part of the Mystic's identity."
       },
       "bgQuestion": "What have you perceived in the Veil that you cannot tell anyone?",
       "subclasses": [
@@ -1518,11 +1518,11 @@
         "desc": "Mystics walk through realities where physics crumbles. Caution defines them — one wrong step in the Veil might unravel their mind. They feel the room's substrate shift before anyone else.",
         "effortFeature": {
           "name": "THE READING (2 EFFORT)",
-          "text": "Spend 2 Effort and study a person, place, object, active Power, or Veil phenomenon with instruments and notes. Ask one question about its Veil exposure, Domain signature, history, instability, likely behavior, or the procedure required to interact with it. The Keeper answers truthfully with the deepest information your current evidence can support."
+          "text": "Spend 2 Effort and study a person, place, object, active Power, or Veil phenomenon with your instruments and notes. Ask one question about its Veil exposure, Domain signature, history, instability, likely behavior, or the procedure required to interact with it. The Keeper answers with one fact, uncertainty, lead, or limitation supported by the evidence. You did not perceive this truth. You reconstructed it."
         },
         "classFeature": {
           "name": "UNCANNY ARCHIVE",
-          "text": "Your Archive records complete procedural patterns rather than prepared Powers. It has no Loadout and no Vault. At creation, choose two different Domains and unlock Level 1 in both. Every Power in an unlocked Domain Path is available through Uncanny Power, subject to its access roll. New Domain Paths are unlocked through Study Projects during Long Rests; higher-level study requires breadth at the previous level."
+          "text": "Your Archive records complete procedural patterns rather than prepared Powers. It has no Loadout and no Vault. Every Power in an unlocked Domain Path is available through **Uncanny Power**, subject to its access roll.\n\n**Starting Archive.** At character creation, choose two different Domains and unlock Level 1 in both. Unlocking a Domain at a specific level gives you every Power from that Domain at exactly that level.\n\n**Domain Study Project.** To unlock a new Domain Path, begin a Study Project with a clock equal to:\n\n> **4 + the selected Domain level**\n\nThe selected level cannot exceed your character level. During a Long Rest, you may choose **Study the Archive** as one of your two Long Rest moves to mark 1 segment on one active Domain Study Project. Downtime, recovered texts, teachers, artifacts, or direct exposure may provide additional progress when the Keeper judges it appropriate.\n\n**Breadth requirement.** To begin research at Level 2 or higher, you must already have at least two different Domains unlocked at the immediately preceding level. The new research does not need to continue either of those Domains.\n\nFor example, Lux 1 and Neural 1 allow you to research Void 2 and Synthesis 2. Once both are complete, those two Level 2 Paths allow research into any Level 3 Domain, even a Domain you have never studied before.\n\nCompleting the clock unlocks every Power in the selected Domain at that level. Your Archive is intentionally irregular. You might know Lux 1, Neural 1, Void 2, Synthesis 2, Kinetic 3, and Social 3 without knowing the missing levels between them."
         },
         "subclasses": [
           {
@@ -1786,8 +1786,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -1819,11 +1819,11 @@
       "desc": "Pilots are not just button-pushers. They dance with stardust. Whether chasing Void routes or outmaneuvering pirates, they blend gut instinct with sharp reflexes.",
       "hopeFeature": {
         "name": "Veil Surge (3 Hope)",
-        "text": "Spend 3 Hope to gain Advantage on all piloting tests. You also ignore one instance of Severe Damage to your ship until your next rest."
+        "text": "You can spend 3 Hope to gain **Advantage on all piloting tests**. You also **ignore one instance of Severe Damage** to your ship until your next rest."
       },
       "classFeature": {
         "name": "Stellar Instinct",
-        "text": "You have Advantage on all piloting and navigation tests. Once per session, reroll one failed Void-related test. If you spend Hope on a Finesse (Pilot/Navigate) Roll, add an additional +1d8 to the result."
+        "text": "**Stellar Instinct.** Gain **+2** on **Finesse (Pilot/Navigate) Rolls** made to pilot a vessel, plot a course, dock, evade a hazard, or execute a ship maneuver. Once per session, after you fail one of those Rolls, reroll one of its two Duality dice and use the new result.\n\n**Pilot Surge Die.** Your Pilot Surge Die is **1d6 at Tier 1, 1d8 at Tier 2, and 1d10 at Tier 3**. When you spend Hope to activate a Pilot Class Feature or Pilot Subclass Feature that calls for a Finesse (Pilot/Navigate) Roll, roll the Pilot Surge Die and add its result to that Roll. This die represents a risky surge of instinct: it does not create a Critical Success and cannot be added twice to the same Roll.\n\n---"
       },
       "bgQuestion": "What ship did you lose, and how do you carry that loss?",
       "subclasses": [
@@ -2049,11 +2049,11 @@
         "desc": "Pilots are not just button-pushers. They dance with stardust. Whether chasing Void routes or outmaneuvering pirates, they blend gut instinct with sharp reflexes.",
         "effortFeature": {
           "name": "STICK TIME (2 EFFORT)",
-          "text": "You can spend 2 Effort to choose one effect: - Hands on the Stick. You have flown this lane, this approach, this maneuver before, and the ship is an extension of you. Choose one as you act: ignore one environmental penalty on your next piloting maneuver (a storm, a debris field, a failing instrument), or turn a Failure with Fear on a piloting roll into an ordinary Failure, riding out the slip instead of crashing on it. Nobody flies this hull the way you do. - The Read. Spend 1 minute studying a vessel, friendly or hostile, at standard Engagement range. The Keeper tells you its likely behavior over the next round, including any move it is about to make. - The Veteran's Burst. During a starship combat, declare that you and the ship execute a maneuver from your cumulative experience together. Gain advantage on the next maneuver roll, and the ship clears 1 Hull Stress."
+          "text": "You can spend 2 Effort to choose one effect:\n\n- **Hands on the Stick.** You have flown this lane, this approach, this maneuver before, and the ship is an extension of you. Choose one as you act: ignore one environmental penalty on your next piloting maneuver (a storm, a debris field, a failing instrument), **or** turn a Failure with Fear on a Finesse (Pilot/Navigate) Roll into an ordinary Failure, riding out the slip instead of crashing on it. Nobody flies this hull the way you do.\n\n- **The Read.** Spend 1 minute studying a vessel, friendly or hostile, at standard Engagement range. The Keeper tells you its likely behavior over the next round, including any move it is about to make.\n\n- **The Veteran's Burst.** During a starship combat, declare that you and the ship execute a maneuver from your cumulative experience together. Gain **+2** on your next Finesse (Pilot/Navigate) Roll this scene; after resolving it, clear 1 Hull Stress. This flat bonus does not create or stack with Advantage."
         },
         "classFeature": {
           "name": "THE SHIP KNOWS YOU",
-          "text": "A Sleeping Pilot's relationship with their primary vessel is non-mystical but profound. As long as you fly the same ship for at least one full mission arc, you and the ship gain the Practiced Pair condition: any roll involving the ship gains advantage when the maneuver is one you have practiced before. The Keeper and you maintain a list of practiced maneuvers; the list grows with mission downtime."
+          "text": "After you have flown the same vessel through one full mission arc, name **three** practiced maneuvers with the Keeper, such as threading debris, docking under pressure, holding a pursuit line, running silent, or emergency landing. When you make a **Finesse (Pilot/Navigate) Roll** for one of those maneuvers aboard that vessel, gain **+2**. During downtime after a mission, replace one named maneuver or add one until you know a maximum of **five**. This Feature never applies to weapon attacks, repairs, social Rolls, or Powers."
         },
         "subclasses": [
           {
@@ -2203,8 +2203,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -2236,11 +2236,11 @@
       "desc": "Scholars are the crew's lens onto everything the Pearl Era did not preserve. Where others see anomalies, they see breakthroughs. Knowledge is oxygen in the post-Silence galaxy.",
       "hopeFeature": {
         "name": "Eureka Moment (3 Hope)",
-        "text": "Spend 3 Hope to automatically succeed on one research or analysis test. You also uncover a hidden connection related to your research; the Keeper provides one piece of information that links your current work to something larger in the campaign."
+        "text": "You can spend 3 Hope to **automatically succeed** on one research or analysis test. When you do, you also **uncover a hidden connection** related to your research, the Keeper provides one piece of information that links your current work to something larger in the campaign."
       },
       "classFeature": {
         "name": "Pattern Weaver",
-        "text": "You have Advantage on all Knowledge analysis tests. Once per session, spend 1 Stress to consult your mental archive; the Keeper reveals one hidden truth or key vulnerability relevant to the current scene. During a long rest, you may work on a research project, making Knowledge rolls against its complexity to gain substantial benefits when completed."
+        "text": "**Pattern Weaver.** Gain **+2** on **Knowledge Rolls** made to analyse a document, object, creature, location, system, or recorded evidence. Once per session, mark **1 Stress** to ask the Keeper one question: *What is the most important hidden connection here?* or *What is the most exploitable vulnerability here?* The answer is truthful but cannot reveal information that does not yet exist in the fiction.\n\nDuring a Long Rest, you may work on one recorded Research Project. After **three successful Knowledge Rolls** made during different Long Rests, the project is complete. A Critical Success counts as one successful Roll for this Feature. When you begin the project, choose its reward: a named Contact, a verified lead, a Tier-appropriate schematic, or permission to attempt a specific project-related action without needing new research.\n\n---"
       },
       "bgQuestion": "What piece of knowledge are you looking for — and what will you do when you find it?",
       "subclasses": [
@@ -2466,11 +2466,11 @@
         "desc": "Scholars are the crew's lens onto everything the Pearl Era did not preserve. Where others see anomalies, they see breakthroughs. Knowledge is oxygen in the post-Silence galaxy.",
         "effortFeature": {
           "name": "APPLIED SCIENCE (2 EFFORT)",
-          "text": "You spend 2 Effort to choose one effect: - The Countdown. Facing a process in motion (a poison, an overload, a collapse), state how much time truly remains and what speeds or slows it. The Keeper adopts your numbers; the table now plays against that clock. - The Improvised Reaction. From materials in the scene, produce one immediate chemical effect: smoke, corrosion, adhesive, flash. One use, scene-length, never a weapon of war. - The Lost Source. Declare that you have located, through patient archival work, a source on a topic everyone else thought was lost. The Keeper helps you decide what it says, with an emphasis on partial and complicating, rather than total and clarifying, revelations."
+          "text": "You spend 2 Effort to choose one effect:\n\n- **The Countdown.** When you study an ongoing poison, overload, collapse, pursuit, or similar process, the Keeper tells you how much time remains and one action that can slow it. If the process has no Clock, create a **four-segment Clock**; the Keeper states the consequence when it fills. This Feature reveals the process but does not remove segments itself.\n\n- **The Improvised Reaction.** From materials in the scene, produce one immediate chemical effect: smoke, corrosion, adhesive, flash. One use, scene-length, never a weapon of war.\n\n- **The Lost Source.** Declare one source relevant to the current investigation. It provides one partial answer, one named lead, or one complication that reframes known evidence. It cannot solve an active Clock, create equipment, or reveal an antagonist’s complete plan."
         },
         "classFeature": {
           "name": "THE OPEN QUESTION",
-          "text": "You maintain, throughout the campaign, an Open Question, a research project of your own design. The Question is recorded in your notes and on the Keeper tracking sheet. Every Long Rest, you may make a Knowledge roll (DC 15) to advance your research. On success, gain one new piece of information; on Critical Success, the Keeper provides a substantive lead. Completing the Question is a major life event and grants a permanent campaign-wide advancement agreed with the Keeper."
+          "text": "Record one Question. During a Long Rest, you may work on it and make one Knowledge Roll using the normal Corebook difficulty procedure. After **three successful Knowledge Rolls** made during different Long Rests, the Question is answered. A Critical Success counts as one successful Roll for this Feature. When you record it, choose one reward: a named Contact, a verified lead, a Tier-appropriate schematic, or permission to attempt one project-related action without further research. It cannot grant a Domain, Power, Class Feature, permanent numeric bonus, or automatic success."
         },
         "subclasses": [
           {
@@ -2612,8 +2612,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -2645,11 +2645,11 @@
       "desc": "Scoundrels are the rats in the walls — always listening, stealing, surviving. Charm is their lockpick. Paranoia is their armor. The crew's professional liars.",
       "hopeFeature": {
         "name": "Vanishing Act (3 Hope)",
-        "text": "Spend 3 Hope to disappear from sight and sound for 1 minute. During this time, you are immune to all forms of tracking: visual, audio, thermal, network, and psionic."
+        "text": "You can spend 3 Hope to **disappear from sight and sound for 1 minute**. During this time, you are immune to all forms of tracking, visual, audio, thermal, network, psionic."
       },
       "classFeature": {
         "name": "Shadow Operative",
-        "text": "You have Advantage on all Stealth tests and may reroll one failed Evasion roll. When you have Advantage on an attack, deal an extra +1d6 damage as Sneak Attack; this increases to +2d6 at Tier 2 and +3d6 at Tier 3."
+        "text": "**Shadow Operative.** Gain Advantage on Stealth Rolls. Once per session, you may reroll one failed Agility Roll made to evade an immediate danger and use the new result.\n\n**Sneak Attack.** When an Attack Roll with Advantage hits, add **1d6 damage** once to that attack. Add **2d6** at Tier 2 and **3d6** at Tier 3 instead. Any source of Advantage can arm Sneak Attack, but additional sources of Advantage do not increase its damage.\n\n---"
       },
       "bgQuestion": "Who are you running from — and do they know you're running?",
       "subclasses": [
@@ -2875,11 +2875,11 @@
         "desc": "Scoundrels are the rats in the walls — always listening, stealing, surviving. Charm is their lockpick. Paranoia is their armor. The crew's professional liars.",
         "effortFeature": {
           "name": "HANDS THAT KNOW (2 EFFORT)",
-          "text": "You spend 2 Effort to choose one effect: - Cased the Joint. Declare that you, or a previous version of yourself, has worked a job like this before. Name the target of a theft, a lock, or a mark; the Keeper tells you one concrete weakness, the guard's rhythm, the make of the lock, where the camera does not reach. You do not steal it for free, but you go in prepared: you have Advantage on the roll to pull the job, and the take is cleaner for knowing the way in. - The False Face. Adopt one of your established alternate identities. NPCs who do not specifically know you under your true name accept the alternate identity for the duration of the scene. - The Backup Plan. Declare that you anticipated this exact failure. You produce a contingency item, ally, or piece of information that cleanly resolves the immediate problem. Once per scene."
+          "text": "You spend 2 Effort to choose one effect:\n\n- **Cased the Joint.** Declare that you, or a previous version of yourself, has worked a job like *this* before. Name the target of a theft, a lock, or a mark; the Keeper tells you one concrete weakness, the guard's rhythm, the make of the lock, where the camera does not reach. You do not steal it for free, but you go in prepared: you have **Advantage** on the roll to pull the job, and the take is cleaner for knowing the way in.\n\n- **The False Face.** Adopt one of your established alternate identities. NPCs who do not specifically know you under your true name accept the alternate identity for the duration of the scene.\n\n- **The Backup Plan (once per scene).** After a plan fails or an obstacle is revealed, declare one prepared contingency: a common tool, a plausible exit or hiding place, a single useful fact, or one willing minor ally. The contingency gives **+2** to the crew’s next relevant Roll or permits one otherwise plausible approach. It cannot end a combat, erase a filled Clock, undo damage, produce Tiered gear, reveal a villain’s full plan, or force an NPC’s choice."
         },
         "classFeature": {
           "name": "THE QUIET NETWORK",
-          "text": "Sneak Attack. When you have Advantage on an attack, you deal an extra 1d6 damage. This is the Scoundrel's stock in trade, the hit that lands because the target never saw you set for it, and it grows as you advance: +2d6 at Tier 2, +3d6 at Tier 3. (Catching a target who does not know where you are is the usual way to earn that Advantage, but any source of Advantage on the attack arms it.) The Network. You maintain, throughout the campaign, a personal network of contacts, fences, smugglers, old crewmates, bartenders, dock supervisors. Once per session, you may declare that you know someone in the current city, station, or region. The Keeper helps you describe the contact briefly and decides what they will and will not do. Contacts have memories; they remember favors and they remember betrayals."
+          "text": "**Sneak Attack.** When an Attack Roll with Advantage hits, add **1d6 damage** once to that attack. Add **2d6** at Tier 2 and **3d6** at Tier 3 instead. Any source of Advantage can arm Sneak Attack, but additional sources of Advantage do not increase its damage.\n\n**The Quiet Network (once per session).** In a city, station, or region, declare one local contact. Choose one service: arrange a meeting, provide a safe place for one scene, identify a local opportunity or threat, or provide access to a routine local service. The contact may ask for payment or a future favor. They cannot provide Tiered gear, erase Heat, bypass major security, or solve an active Clock."
         },
         "subclasses": [
           {
@@ -3026,8 +3026,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -3059,11 +3059,11 @@
       "desc": "A Soldier's expertise is not just in fighting — it is in reading threats before they strike, turning a panicked crowd into a disciplined unit, knowing when to break bones to save lives.",
       "hopeFeature": {
         "name": "Combat Surge (2 Hope)",
-        "text": "After you hit with an attack, spend 2 Hope to deal an additional 1d6 damage."
+        "text": "**Combat Surge (2 Hope).** After you hit with an attack, spend **2 Hope** to deal an additional **1d6 damage** to that attack. You may use Combat Surge once per attack.\n\n---"
       },
       "classFeature": {
         "name": "Combat Focus",
-        "text": "Use a d4 Focus die, starting at 1. While in a Focus state, you may reroll one weapon damage die per attack; add the Focus die to damage or an attack roll; or give Advantage to one ally action or +2 Evasion, losing the spotlight to that ally."
+        "text": "**Combat Focus (once per scene, voluntary after a hit).** After you hit with a weapon attack, you may enter **Focus** and set your **Focus Die** to **1**. Your Focus Die is **1d4 at Tier 1, 1d6 at Tier 2, and 1d8 at Tier 3**. The Focus Die is a step track, not a die you roll: its current value starts at 1 and cannot exceed the highest face of its current Tier.\n\nFocus lasts until the scene ends, you become Dazed or Stunned, or the Focus Die would increase above its maximum. While Focused, before each weapon attack, choose **one** benefit: reroll one weapon damage die for that attack, **or** add the current value of your Focus Die to that attack’s damage if it hits. You cannot add the Focus Die to the Attack Roll.\n\nAt the end of each Spotlight you take while Focused, if you dealt damage during that Spotlight, increase the Focus Die by 1. When the Focus Die would increase above its Tier maximum, end Focus and reset the die to 1. Once per Focus, while you hold Spotlight, you may give one ally **+2** on their next Roll or **+2 Evasion** until they next hold Spotlight; then yield Spotlight to that ally. The +2 bonus is a flat bonus and does not create or stack with Advantage.\n\n---"
       },
       "bgQuestion": "What order did you follow — or refuse to follow — that you still think about?",
       "subclasses": [
@@ -3289,11 +3289,11 @@
         "desc": "A Soldier's expertise is not just in fighting — it is in reading threats before they strike, turning a panicked crowd into a disciplined unit, knowing when to break bones to save lives.",
         "effortFeature": {
           "name": "THE HELD LINE (1 EFFORT)",
-          "text": "Spend 1 Effort after you successfully hit with an attack to deal an additional 1d6 damage. The Soldier uses Effort in small, constant, reliable increments."
+          "text": "Spend 1 Effort after you successfully hit with an attack to deal an additional **1d6 damage**.\n\nThis is the smallest Effort cost among the Sleeping Class Features. The Soldier's discipline is meant to be used often rather than saved for a single decisive window: small, constant, and reliable."
         },
         "classFeature": {
           "name": "THE DRILL",
-          "text": "You know all four Common Drills and unlock one subclass Drill at Foundation, Specialization, and Mastery. At the beginning of each session, prepare four. Action and Reaction Drills are usable once per scene; Passive Drills remain active while prepared."
+          "text": "Sleeping Soldiers turn repeated tactical procedures into reflex.\n\nYou automatically know all four **Common Drills**. Your subclass adds one Drill to your known repertoire at each subclass tier:\n\n- **Foundation:** unlock its Foundation Drill.\n- **Specialization:** unlock its Specialization Drill.\n- **Mastery:** unlock its Mastery Drill.\n\nAt the beginning of each session, prepare **four Drills** from those you know.\n\n**Using Drills.** An **Action** or **Reaction** Drill can be used once per scene while prepared. A **Passive** Drill is always active while prepared and does not track uses. Drills cost no resource unless their text says otherwise. Drills refresh when the scene ends. Unlocking more Drills does not increase the four prepared slots.\n\nThe subclass Drills are additional to the Soldier's existing subclass features.\n\n#### COMMON DRILLS\n\n**Covering Fire — Action.** Choose one ally within Close range and one visible enemy within Far range. The ally immediately moves one range band toward cover. Until the movement ends, the Keeper may still spend Fear to take the Spotlight and attack that ally, but the Attack Roll has Disadvantage. This Drill deals no damage.\n\n**Breach and Clear — Action.** Open an ordinary door, hatch, window, or light barrier within Very Close range, then move through it. One willing ally within Very Close range may follow. You both gain Advantage on your next attack or Instinct Roll before your next Spotlight. A reinforced or secured barrier requires a Strength or Finesse Roll.\n\n**Controlled Withdrawal — Action.** Choose one willing ally within Close range. You and that ally immediately move one range band away from the current threat. The ally does not use their Spotlight for this movement.\n\n**Weapon Transition — Passive.** Switching to another equipped weapon does not use your Action. If your current action has not resolved, you may complete it with the new weapon."
         },
         "subclasses": [
           {
@@ -3629,8 +3629,8 @@
       {
         "pack": "core",
         "book": "VeilFarers Corebook",
-        "version": "11.1-RC3.2",
-        "sourceFile": "VeilFarers_Corebook_11.1-RC3.2-PDF-Candidate.pdf",
+        "version": "12.00",
+        "sourceFile": "VeilFarers_Corebook_12.00-Editorial-Release_FULL_SOURCE.md",
         "collection": "classes"
       }
     ],
@@ -3661,11 +3661,11 @@
       "desc": "Vanguards use their minds to anticipate movements, augment kinetic reflexes, and project will onto the battlefield. The crew's centered presence whose stillness in a crisis steadies everyone.",
       "hopeFeature": {
         "name": "Path to Nirvana (3 Hope)",
-        "text": "Spend 3 Hope to enter the Nirvana State for rounds equal to your Proficiency. Choose Agility, Instinct, or Strength and gain Advantage on rolls using it. You are immune to Stunned and Dazed. Your first Melee attack against an enemy in this state deals an additional 2d6 Void damage."
+        "text": "**Path to Nirvana (3 Hope).** Spend 3 Hope to enter the **Nirvana State**. It lasts until the scene ends or you have taken a number of Spotlights equal to your Proficiency, whichever occurs first. Choose **Agility, Instinct, or Strength** as you enter. For the duration:\n\n- You have Advantage on Rolls using the chosen Trait.\n- You are immune to the Stunned and Dazed conditions.\n- Your first Melee attack against an enemy during the state deals an additional **2d6** damage of your subclass branch type.\n\nThe state does not grant an additional Action, Spotlight, Reaction, or automatic success.\n\n---"
       },
       "classFeature": {
         "name": "Unbroken Focus",
-        "text": "While not wearing Heavy or Very Heavy armor, gain +1 Evasion. Unarmed attacks and attacks with Lightweight Melee weapons count as possessing the Energy Tag (Void damage). Once per turn, spend 1 Stress to ignore negative modifiers to Evasion for 1 round."
+        "text": "Your mental discipline allows you to channel psionic energy into movement and combat.\n\n- While not wearing **Heavy **or **Very Heavy **armor, you gain **+1 Evasion**.\n\n- Your unarmed attacks (or attacks with **Melee** weapons that possess the *Lightweight* feature) count as possessing the **Energy Tag **(Void damage).\n\n- **Internal Alignment (Passive). **Once per turn, you may spend **1 Stress **to ignore any negative modifiers to your Evasion score for 1 round.\n\n> **GEAR 1, VANGUARD SUBCLASS** **BRANCHES AT A GLANCE ***(REFERENCE * *TABLE)*\n\n| BRANCH | SECOND DOMAIN | BRANCH |\n| --- | --- | --- |\n\n**BRANCHSECOND DOMAINBRANCH ORNAMENT TACTICAL ROLE**\n\nGhost Blade (Finesse) Voidblack spiralstealth-and-strike, deflection, vanish-into-engagement Kinetic Echo (Instinct) Kineticcrimson cascade precognitive dodge, force-resonant strike Pure Conduit (Knowledge) Luxgold sunforce projection, ally shielding, declared barrier\n\n|  |  |  | TACTICAL ROLE |\n| --- | --- | --- | --- |\n| **Ghost Blade *(Finesse)*** | Void | black spiral | stealth-and-strike, deflection, vanish-into-engagement |\n| **Kinetic Echo *(Instinct)*** | Kinetic | crimson cascade | precognitive dodge, force-resonant strike |\n| **Pure Conduit *(Knowledge)*** | Lux | gold sun | force projection, ally shielding, declared barrier |\n\nThe branch is fixed at character creation. Unlike a Mystic's Veil Alignment, a Vanguard's branch does not switch across the campaign."
       },
       "bgQuestion": "What moment taught you that the mind could do what the body could not?",
       "subclasses": [
@@ -3891,11 +3891,11 @@
         "desc": "Vanguards use their minds to anticipate movements, augment kinetic reflexes, and project will onto the battlefield. The crew's centered presence whose stillness in a crisis steadies everyone.",
         "effortFeature": {
           "name": "THE REFUSED PATH (2 EFFORT)",
-          "text": "Spend 2 Effort to enter the Disciplined State for rounds equal to Proficiency + Presence. Choose Agility, Instinct, or Strength: gain Advantage with it and add its modifier to Melee and unarmed damage. You are immune to Stunned and Dazed, your first Melee hit deals +2d6 branch damage, and subsequent Melee attacks after the first each round have Disadvantage while at least two enemies are in Melee."
+          "text": "Spend 2 Effort to enter the **Disciplined State**. It lasts until the scene ends or you have taken a number of Spotlights equal to your Proficiency, whichever occurs first.\n\nChoose **Agility, Instinct, or Strength** as you enter. For the duration:\n\n- You have Advantage on rolls using the chosen Trait.\n- Add the chosen Trait's modifier to your Melee and unarmed damage rolls.\n- You are immune to Stunned and Dazed.\n- Your first Melee attack against an enemy during the state deals an additional **2d6 damage** of your subclass branch type: Void, Kinetic, or Lux.\n- After the first Melee attack made against you each round, subsequent Melee attacks against you that round have Disadvantage while at least two enemies are within Melee range of you.\n\nThe discipline is a focus, not total superiority: you sharpen one line of your craft and hold it. The substrate does not become more cooperative; you become more present."
         },
         "classFeature": {
           "name": "UNBROKEN FOCUS",
-          "text": "Trained Body: choose Strength or Agility for unarmed strikes; they deal d6 physical damage, increasing to d8 at Level 5 and d10 at Level 8. Unbroken Focus: +1 Evasion without Heavy or Very Heavy armor; once per scene spend 1 Effort to prevent Stress without using your Action. The Refusal: once per scene spend 1 Effort to impose Disadvantage on a Domain/Veil attack or Spellcast Roll, or grant Advantage on an allowed Reaction Roll."
+          "text": "**Trained Body.** Your unarmed strikes are Melee weapons using Strength or Agility, chosen at character creation, and deal **d6 physical damage**. They cannot be disarmed or confiscated. At the Tier 2 Achievement, Level 5, the damage die becomes **d8**. At the Tier 3 Achievement, Level 8, it becomes **d10**. Proficiency applies normally.\n\nIf your ancestry grants natural weapons or alters your unarmed damage type, retain that damage type and treat results of 1 or 2 on your unarmed damage dice as 3.\n\n**Unbroken Focus.** Your mental discipline channels internal force into movement, combat, and refusal.\n\n- While not wearing Heavy or Very Heavy armor, gain **+1 Evasion**.\n- Once per scene, when you would mark Stress, spend 1 Effort and briefly meditate. The Stress is not marked. This does not use your Action.\n\n**The Refusal — Reaction.** Once per scene, when you or an ally within Close range would be affected by a Domain Power or Veil phenomenon that calls for an attack or Spellcast Roll, or allows a Reaction Roll, spend 1 Effort. Apply Disadvantage to the attack or Spellcast Roll, or grant Advantage on the Reaction Roll."
         },
         "subclasses": [
           {

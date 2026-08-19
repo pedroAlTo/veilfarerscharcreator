@@ -1,7 +1,7 @@
 {
   "schema": "veilfarers.data.manifest/2",
-  "release": "11.1-RC3",
-  "generatedAt": "2026-07-16",
+  "release": "12.00",
+  "generatedAt": "2026-08-16",
   "brand": "VeilFarers",
   "sourceOfTruth": "Markdown books and approved decision register; JSON is generated/normalized.",
   "sourceBooks": [
@@ -38,7 +38,7 @@
     {
       "id": "core",
       "name": "Core",
-      "version": "11.1-RC3",
+      "version": "12.00",
       "required": true,
       "default": true,
       "requires": [],
@@ -243,7 +243,7 @@
       "voidlight_characters_v1"
     ]
   },
-  "version": "11.1-RC3",
+  "version": "12.00",
   "rules": "rules.json",
   "featureRegistry": "features-registry.json",
   "featureAliases": "feature-aliases.json",
