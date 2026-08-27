@@ -149,16 +149,19 @@ for = "/*.html"
 for = "/player-tool.html"
   [headers.values]
   Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
 
 [[headers]]
 for = "/keeper-tool.html"
   [headers.values]
   Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
 
 [[headers]]
 for = "/admin.html"
   [headers.values]
   Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
 
 [[headers]]
 for = "/api/*"
@@ -176,3 +179,33 @@ for = "/assets/3d-dice/assets/ammo/*.wasm"
   Content-Type = "application/wasm"
   Cache-Control = "public, max-age=31536000, immutable"
   Cross-Origin-Resource-Policy = "same-origin"
+
+[[headers]]
+for = "/creator.html"
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
+
+[[headers]]
+for = "/charsheet.html"
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
+
+[[headers]]
+for = "/armory.html"
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
+
+[[headers]]
+for = "/items.html"
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
+
+[[headers]]
+for = "/encyclopedia.html"
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"

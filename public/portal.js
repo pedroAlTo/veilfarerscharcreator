@@ -44,6 +44,47 @@
     </button>`;
   document.body.prepend(nav);
 
+  // Private-tool visibility. Keep links hidden by default and reveal according to existing roles.
+  (function gatePrivateNav(){
+    const privateLinks = nav.querySelectorAll('a[data-vf-private]');
+    function apply(roles){
+      const r = new Set((roles||[]).map(x=>String(x).toLowerCase()));
+      const isAdmin = r.has('admin');
+      const isFriend = r.has('friend');
+      const isPlayer = r.has('player');
+      const isKeeper = r.has('keeper');
+      privateLinks.forEach(a=>{
+        const href = (a.getAttribute('href')||'').toLowerCase();
+        let show = false;
+        if(isAdmin){
+          show = true; // admin sees everything
+        } else {
+          // player/keeper special-case visibility preserved
+          if(href.includes('/player-tool') && isPlayer) show = true;
+          else if(href.includes('/keeper-tool') && isKeeper) show = true;
+          else if(isFriend){
+            // friend sees general private campaign tools but NOT keeper or admin links
+            // Allow access to creator, charsheet, armory, items, encyclopedia
+            if(href.includes('/creator') || href.includes('/charsheet') || href.includes('/armory') || href.includes('/items') || href.includes('/encyclopedia')) show = true;
+          }
+        }
+        a.hidden = !show;
+        a.setAttribute('aria-hidden', String(!show));
+        if(show){ a.style.display=''; a.style.visibility=''; } else { a.style.display='none'; a.style.visibility='hidden'; }
+      });
+      try{ if(typeof updateScroller==='function') updateScroller(); }catch(e){}
+    }
+    apply([]);
+    function rolesFromUser(u){ return (u && u.app_metadata && u.app_metadata.roles) || []; }
+    if(window.netlifyIdentity){
+      const id = window.netlifyIdentity;
+      if(id.on){ id.on('init', u=>apply(rolesFromUser(u))); id.on('login', u=>apply(rolesFromUser(u))); id.on('logout', ()=>apply([])); }
+      try{ apply(rolesFromUser(id.currentUser && id.currentUser())); }catch(_){ }
+    } else {
+      window.addEventListener('vf:identity', e=>apply((e && e.detail && e.detail.roles) || []));
+    }
+  })();
+
   const track=nav.querySelector('.vf-portal-nav-track');
   const prev=nav.querySelector('.vf-nav-scroll-prev');
   const next=nav.querySelector('.vf-nav-scroll-next');
