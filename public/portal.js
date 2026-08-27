@@ -44,19 +44,30 @@
     </button>`;
   document.body.prepend(nav);
 
-  // Private-tool visibility. Under DPCGL private-play scope, the digital tools
-  // are hidden from public users and public navigation. Netlify enforces the same
-  // policy at the redirect layer; this filter keeps the nav honest so links do not
-  // appear at all until the user is signed in as a friend or admin.
+  // Private-tool visibility. Links stay hidden until Identity resolves.
+  // Keep a callable role-applier so pages that load the Netlify Identity widget
+  // after portal.js can reveal the correct navigation once the user is known.
+  let applyPrivateNavRoles=()=>{};
   (function gatePrivateNav(){
     const privateLinks=nav.querySelectorAll('a[data-vf-private]');
     function apply(roles){
       const r=new Set((roles||[]).map(x=>String(x).toLowerCase()));
-      const allowed=r.has('friend')||r.has('admin');
-      privateLinks.forEach(a=>{a.hidden=!allowed;a.setAttribute('aria-hidden',String(!allowed));});
-      nav.classList.toggle('vf-private-visible',allowed);
+      const isAdmin=r.has('admin');
+      const isFriend=r.has('friend');
+      const isPlayer=r.has('player');
+      const isKeeper=r.has('keeper');
+      privateLinks.forEach(a=>{
+        const href=(a.getAttribute('href')||'').toLowerCase();
+        let show=isAdmin||isFriend;
+        if(!show && href.includes('/player-tool')) show=isPlayer;
+        if(!show && href.includes('/keeper-tool')) show=isKeeper;
+        a.hidden=!show;
+        a.setAttribute('aria-hidden',String(!show));
+      });
+      nav.classList.toggle('vf-private-visible',isAdmin||isFriend||isPlayer||isKeeper);
       if(typeof updateScroller==='function') try{updateScroller();}catch(e){}
     }
+    applyPrivateNavRoles=apply;
     apply([]);
     function fromUser(u){return (u&&u.app_metadata&&u.app_metadata.roles)||[];}
     if(window.netlifyIdentity){
@@ -281,11 +292,13 @@
   function rolesOf(user){ return user&&user.app_metadata&&Array.isArray(user.app_metadata.roles)?user.app_metadata.roles:[]; }
   function renderAccount(user){
     const signedIn=!!user;
+    const roles=rolesOf(user);
     account.classList.toggle('is-authenticated',signedIn);
     account.classList.toggle('is-guest',!signedIn);
     accountLabel.textContent=signedIn?'Logged in':'Log-in';
     account.title=signedIn?(user.email||'Signed in with Netlify Identity'):'Log in with Netlify Identity';
-    if(adminLink) adminLink.hidden=!rolesOf(user).includes('admin');
+    if(adminLink) adminLink.hidden=!roles.includes('admin');
+    applyPrivateNavRoles(roles);
   }
   function refreshSelectableCharacters(){
     const registry=window.VeilFarersCharacterRegistry;
