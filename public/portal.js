@@ -10,15 +10,16 @@
     <div class="vf-portal-nav-track">
       <a class="brand" href="/">VEILFARERS</a>
       <a href="/" data-page="home">Home</a>
-      <a href="/creator.html" data-creator-mode="creator">Character Creator</a>
-      <a href="/creator.html#cards" data-creator-mode="cards">Card Library</a>
-      <a href="/creator.html#level-up" data-creator-mode="level-up">Level Up</a>
-      <a href="/charsheet.html">Charsheet & PDF</a>
-      <a href="/player-tool.html">Player Tool</a>
-      <a href="/keeper-tool.html">Keeper Tool</a>
-      <a href="/armory.html">Weapon & Armory</a>
-      <a href="/items.html">Item Inventory</a>
+      <a href="/creator.html" data-vf-private="1" data-creator-mode="creator">Character Creator</a>
+      <a href="/creator.html#cards" data-vf-private="1" data-creator-mode="cards">Card Library</a>
+      <a href="/creator.html#level-up" data-vf-private="1" data-creator-mode="level-up">Level Up</a>
+      <a href="/charsheet.html" data-vf-private="1">Charsheet & PDF</a>
+      <a href="/player-tool.html" data-vf-private="1">Player Tool</a>
+      <a href="/keeper-tool.html" data-vf-private="1">Keeper Tool</a>
+      <a href="/armory.html" data-vf-private="1">Weapon & Armory</a>
+      <a href="/items.html" data-vf-private="1">Item Inventory</a>
       <a href="/downloads.html">Downloads</a>
+      <a href="/encyclopedia.html" data-vf-private="1">Stellar Encyclopedia</a>
       <a href="/feedback.html">Feedback</a>
       <span class="spacer"></span>
       <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
@@ -36,6 +37,32 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
     </button>`;
   document.body.prepend(nav);
+
+  // Private-tool visibility. Under DPCGL private-play scope, the digital tools
+  // are hidden from public users and public navigation. Netlify enforces the same
+  // policy at the redirect layer; this filter keeps the nav honest so links do not
+  // appear at all until the user is signed in as a friend or admin.
+  (function gatePrivateNav(){
+    const privateLinks=nav.querySelectorAll('a[data-vf-private]');
+    function apply(roles){
+      const r=new Set((roles||[]).map(x=>String(x).toLowerCase()));
+      const allowed=r.has('friend')||r.has('admin');
+      privateLinks.forEach(a=>{a.hidden=!allowed;a.setAttribute('aria-hidden',String(!allowed));});
+      nav.classList.toggle('vf-private-visible',allowed);
+      if(typeof updateScroller==='function') try{updateScroller();}catch(e){}
+    }
+    apply([]);
+    function fromUser(u){return (u&&u.app_metadata&&u.app_metadata.roles)||[];}
+    if(window.netlifyIdentity){
+      const id=window.netlifyIdentity;
+      const boot=()=>apply(fromUser(id.currentUser()));
+      if(id.on){id.on('init',u=>apply(fromUser(u)));id.on('login',u=>apply(fromUser(u)));id.on('logout',()=>apply([]));}
+      if(id.currentUser) boot();
+    } else {
+      window.addEventListener('vf:identity',e=>apply((e&&e.detail&&e.detail.roles)||[]));
+    }
+  })();
+
 
   const track=nav.querySelector('.vf-portal-nav-track');
   const prev=nav.querySelector('.vf-nav-scroll-prev');
