@@ -48,12 +48,12 @@
       "title": "VeilFarers: Rust & Steel",
       "version": "12.04",
       "type": "supplement",
-      "file": "/download/VeilFarers_Rust_and_Steel_12.04-Editorial-Release.pdf",
+      "file": "/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf",
       "cover": "/img/covers/rust-and-steel.webp",
       "bytes": 9825170,
       "sha256": "39a2485281e29c32d3f3eb106312ec880945afeebc5c468c430822c45090136f",
       "status": "Editorial Release",
-      "description": "Editorial 12.04 equipment and technology supplement.",
+      "description": "Editorial 12.05 equipment and technology supplement.",
       "current": true
     },
     {
@@ -98,6 +98,6 @@
       "current": true
     }
   ],
-  "pdfCandidateStatus": "Current editorial line: all four core books at 12.04 Editorial Release; Hearts in the Void 1.0 as a standalone adventure; starship sheet and fillable character sheet included.",
+  "pdfCandidateStatus": "Current editorial line: two core books at 12.04 Editorial Release and two 12.05; Hearts in the Void 1.0 as a standalone adventure; starship sheet and fillable character sheet included.",
   "currentOnly": true
 }
