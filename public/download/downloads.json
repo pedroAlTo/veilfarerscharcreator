@@ -11,8 +11,8 @@
       "type": "rulebook",
       "file": "/download/VeilFarers_Corebook_12.05-Editorial-Release.pdf",
       "cover": "/img/covers/corebook.webp",
-      "bytes": 9241374,
-      "sha256": "a1301284bfefc40857386fb3239ce21a3f5cf617e5b9a51b5d64d3e096a64c41",
+      "bytes": 9274722,
+      "sha256": "aec33379d643f1c9759e5eb6ee6658598567141f43a7cfcdb6e03eff2dfb3d78",
       "status": "Editorial Release",
       "description": "Editorial 12.05 release. The authoritative downloadable Corebook for the current portal release, with the unified two-Slot multiclass model, the Sleeping Dormant Domain, and corrected navigation.",
       "current": true
@@ -24,8 +24,8 @@
       "type": "rulebook",
       "file": "/download/VeilFarers_Keepers_Companion_12.04-Editorial-Release.pdf",
       "cover": "/img/covers/keepers-companion.webp",
-      "bytes": 3405561,
-      "sha256": "4fc92d0ac6e8e78f934f5395e436218d638393b6bbc66a25b9f9dada64208c65",
+      "bytes": 3406585,
+      "sha256": "0ad1068944711148f50980757f49ffc9b519b3d6c1f7599f80cc6178b95299aa",
       "status": "Editorial Release",
       "description": "Editorial 12.04 release for Keepers: session preparation, running VeilFarers, and the Keeper-facing consent-based Severance Event. Hearts in the Void is maintained as a separate adventure.",
       "current": true
@@ -37,8 +37,8 @@
       "type": "standalone adventure",
       "file": "/download/VeilFarers_Hearts_in_the_Void_1.0-Editorial-Release.pdf",
       "cover": "/img/covers/hearts-in-the-void.webp",
-      "bytes": 10616851,
-      "sha256": "61694223dba7dbc15bc3c327dd7dc0f267f54ae90a56017ff0a7bdb364422a48",
+      "bytes": 10617392,
+      "sha256": "62aa8f59539d6dccf8527b9505203c1b80255d55a432e2fdab1b31459b67c98b",
       "status": "Editorial Release",
       "description": "Standalone VeilFarers adventure 1.0, aligned to the 12.04 canon. This deliverable is independent from the Keeper's Companion.",
       "current": true
@@ -46,14 +46,14 @@
     {
       "id": "rust-and-steel",
       "title": "VeilFarers: Rust & Steel",
-      "version": "12.04",
+      "version": "12.05",
       "type": "supplement",
-      "file": "/download/VeilFarers_Rust_and_Steel_12.04-Editorial-Release.pdf",
+      "file": "/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf",
       "cover": "/img/covers/rust-and-steel.webp",
-      "bytes": 9825170,
-      "sha256": "39a2485281e29c32d3f3eb106312ec880945afeebc5c468c430822c45090136f",
+      "bytes": 9856986,
+      "sha256": "295d4167b058b0ef111590bf2287bfe23433529101d665a9c21de8739cc9b17d",
       "status": "Editorial Release",
-      "description": "Editorial 12.04 equipment and technology supplement.",
+      "description": "Editorial 12.05 equipment and technology supplement.",
       "current": true
     },
     {
@@ -63,8 +63,8 @@
       "type": "supplement",
       "file": "/download/VeilFarers_Alien_Species_12.04-Editorial-Release.pdf",
       "cover": "/img/covers/alien-species.webp",
-      "bytes": 2722574,
-      "sha256": "662edc9929225bad7a5f0d4b1a79a0d784d4b411b0a8df4987cbe3139be29bd5",
+      "bytes": 2723541,
+      "sha256": "9992ff1a10a2ea6b078d258bc7f9540a71a3c76bad413759cb3bd4b1c80d1818",
       "status": "Editorial Release",
       "description": "Editorial 12.04 alien species and Keeper-facing lore supplement, with a dynamic Contents page.",
       "current": true
@@ -98,6 +98,6 @@
       "current": true
     }
   ],
-  "pdfCandidateStatus": "Current editorial line: Core book is at 12.05 the other three books at 12.04 Editorial Release; Hearts in the Void 1.0 as a standalone adventure; starship sheet and fillable character sheet included.",
+  "pdfCandidateStatus": "Current editorial line: Corebook and Rust & Steel 12.05; Keeper's Companion and Alien Species 12.04; Hearts in the Void 1.0; starship sheet and fillable character sheet included.",
   "currentOnly": true
 }
