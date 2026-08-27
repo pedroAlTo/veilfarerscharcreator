@@ -47,7 +47,7 @@ routes for compliant crawlers.
     /login.html             (sign-in surface)
 
 The homepage was rewritten so it no longer announces the private tools. The
-hero, the tools grid and the final call-to-action now point to Books &
+hero, the tools grid and the final call-to-action now point to Books \u0026
 Downloads, Feedback and License.
 
 ## What still needs your hand in Netlify
@@ -55,18 +55,18 @@ Downloads, Feedback and License.
 **Two things you have to do in the Netlify dashboard**, because they are
 Identity settings and not repository files:
 
-1. **Identity -> Registration -> Invite only.** This is the switch that
+1. **Identity -\u003e Registration -\u003e Invite only.** This is the switch that
    prevents anyone from signing up on their own. Without this, the redirects
    still hold, but someone could create an account with no role, land on
    `/login.html`, and see it as a "public registration" surface.
 
-2. **Identity -> Users -> assign the `friend` role manually** to each person at
+2. **Identity -\u003e Users -\u003e assign the `friend` role manually** to each person at
    your table. Only accounts you invite get the role, and the role is the only
    thing that opens the private pages.
 
 ## How the nav behaves
 
-`portal.js` marks the private links with `data-vf-private="1"` and hides them
+`portal.js` marks the private links with `data-vf-private=\"1\"` and hides them
 by default. It listens for `netlifyIdentity` and only reveals them when the
 current user has the `friend` or `admin` role. Signed-out and role-less users
 never see the tools in the top bar.

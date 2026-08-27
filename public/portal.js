@@ -1,5 +1,11 @@
 (function(){
   'use strict';
+  // Hide private links by default to avoid flashing them before identity initializes.
+  try{
+    const _s=document.createElement('style');
+    _s.textContent='a[data-vf-private]{display:none!important;visibility:hidden;}';
+    (document.head||document.documentElement).appendChild(_s);
+  }catch(_){/* best-effort */}
   const nav=document.createElement('nav');
   nav.className='vf-portal-nav';
   nav.setAttribute('aria-label','VeilFarers portal');
@@ -38,31 +44,46 @@
     </button>`;
   document.body.prepend(nav);
 
-  // Private-tool visibility. Under DPCGL private-play scope, the digital tools
-  // are hidden from public users and public navigation. Netlify enforces the same
-  // policy at the redirect layer; this filter keeps the nav honest so links do not
-  // appear at all until the user is signed in as a friend or admin.
+  // Private-tool visibility. Keep links hidden by default and reveal according to existing roles.
   (function gatePrivateNav(){
-    const privateLinks=nav.querySelectorAll('a[data-vf-private]');
+    const privateLinks = nav.querySelectorAll('a[data-vf-private]');
     function apply(roles){
-      const r=new Set((roles||[]).map(x=>String(x).toLowerCase()));
-      const allowed=r.has('friend')||r.has('admin');
-      privateLinks.forEach(a=>{a.hidden=!allowed;a.setAttribute('aria-hidden',String(!allowed));});
-      nav.classList.toggle('vf-private-visible',allowed);
-      if(typeof updateScroller==='function') try{updateScroller();}catch(e){}
+      const r = new Set((roles||[]).map(x=>String(x).toLowerCase()));
+      const isAdmin = r.has('admin');
+      const isFriend = r.has('friend');
+      const isPlayer = r.has('player');
+      const isKeeper = r.has('keeper');
+      privateLinks.forEach(a=>{
+        const href = (a.getAttribute('href')||'').toLowerCase();
+        let show = false;
+        if(isAdmin){
+          show = true; // admin sees everything
+        } else {
+          // player/keeper special-case visibility preserved
+          if(href.includes('/player-tool') && isPlayer) show = true;
+          else if(href.includes('/keeper-tool') && isKeeper) show = true;
+          else if(isFriend){
+            // friend sees general private campaign tools but NOT keeper or admin links
+            // Allow access to creator, charsheet, armory, items, encyclopedia
+            if(href.includes('/creator') || href.includes('/charsheet') || href.includes('/armory') || href.includes('/items') || href.includes('/encyclopedia')) show = true;
+          }
+        }
+        a.hidden = !show;
+        a.setAttribute('aria-hidden', String(!show));
+        if(show){ a.style.display=''; a.style.visibility=''; } else { a.style.display='none'; a.style.visibility='hidden'; }
+      });
+      try{ if(typeof updateScroller==='function') updateScroller(); }catch(e){}
     }
     apply([]);
-    function fromUser(u){return (u&&u.app_metadata&&u.app_metadata.roles)||[];}
+    function rolesFromUser(u){ return (u && u.app_metadata && u.app_metadata.roles) || []; }
     if(window.netlifyIdentity){
-      const id=window.netlifyIdentity;
-      const boot=()=>apply(fromUser(id.currentUser()));
-      if(id.on){id.on('init',u=>apply(fromUser(u)));id.on('login',u=>apply(fromUser(u)));id.on('logout',()=>apply([]));}
-      if(id.currentUser) boot();
+      const id = window.netlifyIdentity;
+      if(id.on){ id.on('init', u=>apply(rolesFromUser(u))); id.on('login', u=>apply(rolesFromUser(u))); id.on('logout', ()=>apply([])); }
+      try{ apply(rolesFromUser(id.currentUser && id.currentUser())); }catch(_){ }
     } else {
-      window.addEventListener('vf:identity',e=>apply((e&&e.detail&&e.detail.roles)||[]));
+      window.addEventListener('vf:identity', e=>apply((e && e.detail && e.detail.roles) || []));
     }
   })();
-
 
   const track=nav.querySelector('.vf-portal-nav-track');
   const prev=nav.querySelector('.vf-nav-scroll-prev');
@@ -83,13 +104,13 @@
 
   function normalPath(value){
     const normalized=(value||'/').replace(/\/+/g,'/');
-    return normalized==='/'?'/':normalized.replace(/\/$/,'');
+    return normalized==='/'?'/':normalized.replace(/\/$/, '');
   }
   const path=normalPath(location.pathname);
   nav.querySelectorAll('a').forEach(a=>{
     const href=new URL(a.href,location.origin);
     const hrefPath=normalPath(href.pathname);
-    if(a.dataset.page==='home' && path==='/') a.classList.add('active');
+    if(a.dataset.page==='home' && path==='/' ) a.classList.add('active');
     else if(a.dataset.creatorMode && path==='/creator.html' && a.dataset.creatorMode===(location.hash==='#cards'?'cards':(location.hash==='#level-up'?'level-up':'creator'))) a.classList.add('active');
     else if(!a.classList.contains('brand') && !a.dataset.page && !a.dataset.creatorMode && hrefPath===path) a.classList.add('active');
   });
@@ -261,7 +282,7 @@
     closeCharacterMenu();
   });
   document.addEventListener('keydown',event=>{
-    if(event.key==='Escape'&&!characterMenu.hidden){event.preventDefault();closeCharacterMenu(true);}
+    if(event.key==='Escape'&&!characterMenu.hidden){event.preventDefault();closeCharacterMenu(true);} 
     if(event.key==='ArrowDown'&&document.activeElement===characterTrigger){
       event.preventDefault();
       if(characterMenu.hidden)characterTrigger.click();
@@ -320,7 +341,7 @@
   }
   const footer=document.createElement('footer');
   footer.className='vf-legal-footer';
-  footer.innerHTML=`<span>© ${new Date().getFullYear()} Pedro Almagro Torrecillas</span><span class="vf-legal-footer-links"><a href="/legal.html#legal-notice">Legal</a><a href="/legal.html#privacy">Privacy</a><button id="vf-storage-control" type="button">Privacy & device data</button><a href="/legal.html#terms">Terms</a><a href="/legal.html#daggerheart">Daggerheart attribution</a><a href="mailto:pedro.alm.to@gmail.com">Contact</a></span>`;
+  footer.innerHTML=`<span>© ${new Date().getFullYear()} Pedro Almagro Torrecillas</span><span class="vf-legal-footer-links"><a href="/legal.html#legal-notice">Legal</a><a href="/legal.html#privacy">Privacy</a></span>`;
   document.body.appendChild(footer);
 
   const storageButton=footer.querySelector('#vf-storage-control');
@@ -449,7 +470,8 @@
     privacyDialog=document.createElement('div');
     privacyDialog.className='vf-privacy-layer';
     privacyDialog.innerHTML=`<section class="vf-privacy-dialog" role="dialog" aria-modal="true" aria-labelledby="vf-privacy-title">
-      <div class="vf-privacy-head"><div><div class="vf-privacy-kicker">VEILFARERS · ESSENTIAL STORAGE</div><h2 id="vf-privacy-title">${text.title}</h2></div><button class="vf-privacy-close" type="button" aria-label="${text.close}">×</button></div>
+      <div class="vf-privacy-head"><div><div class="vf-privacy-kicker">VEILFARERS · ESSENTIAL STORAGE</div><h2 id="vf-privacy-title">${text.title}</h2></div><button class="vf-privacy-close" type
+      ><span aria-hidden="true">✕</span><span class="vf-sr">${text.close}</span></button></div>
       <p>${text.intro}</p>
       <h3>${text.inventory}</h3>
       <div class="vf-privacy-inventory">
