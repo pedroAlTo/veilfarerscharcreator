@@ -109,6 +109,154 @@ to = "/login.html"
 status = 302
 force = true
 
+# General private-campaign tools. These pages are available only to explicitly
+# authorised friend/admin accounts. Client-side navigation hiding is UX only;
+# these redirects are the actual Netlify access gate.
+[[redirects]]
+from = "/creator"
+to = "/creator.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/creator"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/creator.html"
+to = "/creator.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/creator.html"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/charsheet"
+to = "/charsheet.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/charsheet"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/charsheet.html"
+to = "/charsheet.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/charsheet.html"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/armory"
+to = "/armory.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/armory"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/armory.html"
+to = "/armory.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/armory.html"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/items"
+to = "/items.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/items"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/items.html"
+to = "/items.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/items.html"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/encyclopedia"
+to = "/encyclopedia.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/encyclopedia"
+to = "/login.html"
+status = 302
+force = true
+
+[[redirects]]
+from = "/encyclopedia.html"
+to = "/encyclopedia.html"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/encyclopedia.html"
+to = "/login.html"
+status = 302
+force = true
+
+# The encyclopedia rules data is private too; otherwise the JSON could still be
+# fetched directly even when the HTML page is protected.
+[[redirects]]
+from = "/reference-data/*"
+to = "/reference-data/:splat"
+status = 200
+force = true
+conditions = {Role = ["friend", "admin"]}
+
+[[redirects]]
+from = "/reference-data/*"
+to = "/login.html"
+status = 302
+force = true
+
 # The Hearts in the Void source text is consumed by the Keeper Tool. It is not
 # public reading material, so it carries the same role condition as the tool.
 [[redirects]]
@@ -206,6 +354,12 @@ for = "/items.html"
 
 [[headers]]
 for = "/encyclopedia.html"
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow, noarchive"
+
+[[headers]]
+for = "/reference-data/*"
   [headers.values]
   Cache-Control = "private, no-store"
   X-Robots-Tag = "noindex, nofollow, noarchive"
