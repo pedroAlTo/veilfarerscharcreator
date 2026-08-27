@@ -14,7 +14,7 @@
       "bytes": 9241374,
       "sha256": "a1301284bfefc40857386fb3239ce21a3f5cf617e5b9a51b5d64d3e096a64c41",
       "status": "Editorial Release",
-      "description": "Editorial 12.05 release. The authoritative downloadable Corebook for the current portal release, with the unified two-Slot multiclass model, the Sleeping Dormant Domain, and other 12.05 updates.",
+      "description": "Editorial 12.05 release. The authoritative downloadable Corebook for the current portal release, with the unified two-Slot multiclass model, the Sleeping Dormant Domain, and corrected navigation.",
       "current": true
     },
     {
@@ -27,7 +27,7 @@
       "bytes": 3405561,
       "sha256": "4fc92d0ac6e8e78f934f5395e436218d638393b6bbc66a25b9f9dada64208c65",
       "status": "Editorial Release",
-      "description": "Editorial 12.04 release for Keepers: session preparation, running VeilFarers, and the Keeper-facing consent-based Severance Event.",
+      "description": "Editorial 12.04 release for Keepers: session preparation, running VeilFarers, and the Keeper-facing consent-based Severance Event. Hearts in the Void is maintained as a separate adventure.",
       "current": true
     },
     {
@@ -40,20 +40,20 @@
       "bytes": 10616851,
       "sha256": "61694223dba7dbc15bc3c327dd7dc0f267f54ae90a56017ff0a7bdb364422a48",
       "status": "Editorial Release",
-      "description": "Standalone VeilFarers adventure 1.0, aligned to the current canon.",
+      "description": "Standalone VeilFarers adventure 1.0, aligned to the 12.04 canon. This deliverable is independent from the Keeper's Companion.",
       "current": true
     },
     {
       "id": "rust-and-steel",
       "title": "VeilFarers: Rust & Steel",
-      "version": "12.05",
+      "version": "12.04",
       "type": "supplement",
-      "file": "/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf",
+      "file": "/download/VeilFarers_Rust_and_Steel_12.04-Editorial-Release.pdf",
       "cover": "/img/covers/rust-and-steel.webp",
       "bytes": 9825170,
       "sha256": "39a2485281e29c32d3f3eb106312ec880945afeebc5c468c430822c45090136f",
       "status": "Editorial Release",
-      "description": "Editorial 12.05 equipment and technology supplement.",
+      "description": "Editorial 12.04 equipment and technology supplement.",
       "current": true
     },
     {
@@ -98,6 +98,6 @@
       "current": true
     }
   ],
-  "pdfCandidateStatus": "Current editorial line: two core books at 12.04 Editorial Release and two 12.05; Hearts in the Void 1.0 as a standalone adventure; starship sheet and fillable character sheet included.",
+  "pdfCandidateStatus": "Current editorial line: Core book is at 12.05 the other three books at 12.04 Editorial Release; Hearts in the Void 1.0 as a standalone adventure; starship sheet and fillable character sheet included.",
   "currentOnly": true
 }

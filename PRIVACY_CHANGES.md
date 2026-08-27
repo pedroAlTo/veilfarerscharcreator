@@ -85,8 +85,8 @@ never see the tools in the top bar.
 
 - Public visitor: goes to `/`, sees only Downloads / Feedback / License. Nav
   shows Home, Downloads, Feedback, Log-in.
-- `curl -I https://<site>/creator.html` returns 302 to `/login.html`.
-- `curl -I https://<site>/reference-data/encyclopedia-quick.json` returns 404.
+- `curl -I https://\u003csite\u003e/creator.html` returns 302 to `/login.html`.
+- `curl -I https://\u003csite\u003e/reference-data/encyclopedia-quick.json` returns 404.
 - Search a private route in a fresh incognito window: nothing indexes.
 - Sign in as a `friend` account: the tool links appear in the nav.
 
