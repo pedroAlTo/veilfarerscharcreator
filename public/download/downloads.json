@@ -1,20 +1,20 @@
 {
   "schema": "veilfarers.downloads/2",
-  "release": "12.04",
-  "releaseLine": "Editorial Line 12.04 · Hearts in the Void 1.0",
-  "generatedAt": "2026-08-19",
+  "release": "12.05",
+  "releaseLine": "Editorial Line 12.05 · Hearts in the Void 1.0",
+  "generatedAt": "2026-08-27",
   "items": [
     {
       "id": "corebook",
       "title": "VeilFarers Corebook",
-      "version": "12.04",
+      "version": "12.05",
       "type": "rulebook",
-      "file": "/download/VeilFarers_Corebook_12.04-Editorial-Release.pdf",
+      "file": "/download/VeilFarers_Corebook_12.05-Editorial-Release.pdf",
       "cover": "/img/covers/corebook.webp",
       "bytes": 9241374,
       "sha256": "a1301284bfefc40857386fb3239ce21a3f5cf617e5b9a51b5d64d3e096a64c41",
       "status": "Editorial Release",
-      "description": "Editorial 12.04 release. The authoritative downloadable Corebook for the current portal release, with the unified two-Slot multiclass model, the Sleeping Dormant Domain, and corrected navigation.",
+      "description": "Editorial 12.05 release. The authoritative downloadable Corebook for the current portal release, with the unified two-Slot multiclass model, the Sleeping Dormant Domain, and corrected navigation.",
       "current": true
     },
     {
@@ -72,7 +72,7 @@
     {
       "id": "ship-sheet",
       "title": "VeilFarers Starship Sheet",
-      "version": "12.04",
+      "version": "12.05",
       "type": "ship sheet",
       "file": "/download/VeilFarers_Starship_Sheet.pdf",
       "cover": "/img/covers/corebook.webp",
@@ -98,6 +98,6 @@
       "current": true
     }
   ],
-  "pdfCandidateStatus": "Current editorial line: all four core books at 12.04 Editorial Release; Hearts in the Void 1.0 as a standalone adventure; starship sheet and fillable character sheet included.",
+  "pdfCandidateStatus": "Current editorial line: Core book is at 12.05 the other three books at 12.04 Editorial Release; Hearts in the Void 1.0 as a standalone adventure; starship sheet and fillable character sheet included.",
   "currentOnly": true
 }
