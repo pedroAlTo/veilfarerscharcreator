@@ -1,5 +1,11 @@
 (function(){
   'use strict';
+  // Hide private links by default to avoid flashing them before identity initializes.
+  try{
+    const _s=document.createElement('style');
+    _s.textContent='a[data-vf-private]{display:none!important;visibility:hidden;}';
+    (document.head||document.documentElement).appendChild(_s);
+  }catch(_){/* best-effort */}
   const nav=document.createElement('nav');
   nav.className='vf-portal-nav';
   nav.setAttribute('aria-label','VeilFarers portal');
@@ -10,16 +16,16 @@
     <div class="vf-portal-nav-track">
       <a class="brand" href="/">VEILFARERS</a>
       <a href="/" data-page="home">Home</a>
-      <a href="/creator.html" data-creator-mode="creator">Character Creator</a>
-      <a href="/creator.html#cards" data-creator-mode="cards">Card Library</a>
-      <a href="/creator.html#level-up" data-creator-mode="level-up">Level Up</a>
-      <a href="/charsheet.html">Charsheet & PDF</a>
-      <a href="/player-tool.html">Player Tool</a>
-      <a href="/keeper-tool.html">Keeper Tool</a>
-      <a href="/armory.html">Weapon & Armory</a>
-      <a href="/items.html">Item Inventory</a>
+      <a href="/creator.html" data-vf-private="1" data-creator-mode="creator">Character Creator</a>
+      <a href="/creator.html#cards" data-vf-private="1" data-creator-mode="cards">Card Library</a>
+      <a href="/creator.html#level-up" data-vf-private="1" data-creator-mode="level-up">Level Up</a>
+      <a href="/charsheet.html" data-vf-private="1">Charsheet & PDF</a>
+      <a href="/player-tool.html" data-vf-private="1">Player Tool</a>
+      <a href="/keeper-tool.html" data-vf-private="1">Keeper Tool</a>
+      <a href="/armory.html" data-vf-private="1">Weapon & Armory</a>
+      <a href="/items.html" data-vf-private="1">Item Inventory</a>
       <a href="/downloads.html">Downloads</a>
-      <a href="/encyclopedia.html">Stellar Encyclopedia</a>
+      <a href="/encyclopedia.html" data-vf-private="1">Stellar Encyclopedia</a>
       <a href="/feedback.html">Feedback</a>
       <span class="spacer"></span>
       <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
@@ -57,13 +63,13 @@
 
   function normalPath(value){
     const normalized=(value||'/').replace(/\/+/g,'/');
-    return normalized==='/'?'/':normalized.replace(/\/$/,'');
+    return normalized==='/'?'/':normalized.replace(/\/$/, '');
   }
   const path=normalPath(location.pathname);
   nav.querySelectorAll('a').forEach(a=>{
     const href=new URL(a.href,location.origin);
     const hrefPath=normalPath(href.pathname);
-    if(a.dataset.page==='home' && path==='/') a.classList.add('active');
+    if(a.dataset.page==='home' && path==='/' ) a.classList.add('active');
     else if(a.dataset.creatorMode && path==='/creator.html' && a.dataset.creatorMode===(location.hash==='#cards'?'cards':(location.hash==='#level-up'?'level-up':'creator'))) a.classList.add('active');
     else if(!a.classList.contains('brand') && !a.dataset.page && !a.dataset.creatorMode && hrefPath===path) a.classList.add('active');
   });
@@ -235,7 +241,7 @@
     closeCharacterMenu();
   });
   document.addEventListener('keydown',event=>{
-    if(event.key==='Escape'&&!characterMenu.hidden){event.preventDefault();closeCharacterMenu(true);}
+    if(event.key==='Escape'&&!characterMenu.hidden){event.preventDefault();closeCharacterMenu(true);} 
     if(event.key==='ArrowDown'&&document.activeElement===characterTrigger){
       event.preventDefault();
       if(characterMenu.hidden)characterTrigger.click();
@@ -294,7 +300,7 @@
   }
   const footer=document.createElement('footer');
   footer.className='vf-legal-footer';
-  footer.innerHTML=`<span>© ${new Date().getFullYear()} Pedro Almagro Torrecillas</span><span class="vf-legal-footer-links"><a href="/legal.html#legal-notice">Legal</a><a href="/legal.html#privacy">Privacy</a><button id="vf-storage-control" type="button">Privacy & device data</button><a href="/legal.html#terms">Terms</a><a href="/legal.html#daggerheart">Daggerheart attribution</a><a href="mailto:pedro.alm.to@gmail.com">Contact</a></span>`;
+  footer.innerHTML=`<span>© ${new Date().getFullYear()} Pedro Almagro Torrecillas</span><span class="vf-legal-footer-links"><a href="/legal.html#legal-notice">Legal</a><a href="/legal.html#privacy">Privacy</a></span>`;
   document.body.appendChild(footer);
 
   const storageButton=footer.querySelector('#vf-storage-control');
@@ -423,7 +429,8 @@
     privacyDialog=document.createElement('div');
     privacyDialog.className='vf-privacy-layer';
     privacyDialog.innerHTML=`<section class="vf-privacy-dialog" role="dialog" aria-modal="true" aria-labelledby="vf-privacy-title">
-      <div class="vf-privacy-head"><div><div class="vf-privacy-kicker">VEILFARERS · ESSENTIAL STORAGE</div><h2 id="vf-privacy-title">${text.title}</h2></div><button class="vf-privacy-close" type="button" aria-label="${text.close}">×</button></div>
+      <div class="vf-privacy-head"><div><div class="vf-privacy-kicker">VEILFARERS · ESSENTIAL STORAGE</div><h2 id="vf-privacy-title">${text.title}</h2></div><button class="vf-privacy-close" type
+      ><span aria-hidden="true">✕</span><span class="vf-sr">${text.close}</span></button></div>
       <p>${text.intro}</p>
       <h3>${text.inventory}</h3>
       <div class="vf-privacy-inventory">
