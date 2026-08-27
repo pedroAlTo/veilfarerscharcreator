@@ -19,6 +19,7 @@
       <a href="/armory.html">Weapon & Armory</a>
       <a href="/items.html">Item Inventory</a>
       <a href="/downloads.html">Downloads</a>
+      <a href="/encyclopedia.html">Stellar Encyclopedia</a>
       <a href="/feedback.html">Feedback</a>
       <span class="spacer"></span>
       <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
