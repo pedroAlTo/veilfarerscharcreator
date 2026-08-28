@@ -204,12 +204,12 @@ class SpaceJourneyController {
     this.camera = new T.PerspectiveCamera(43, 1, 0.1, 240);
     this.camera.position.set(0, 0, 14);
 
-    this.scene.add(new T.AmbientLight(0x526473, 0.055));
-    const key = new T.DirectionalLight(0xffe6b3, 3.5);
-    key.position.set(-8, 4, 3);
+    this.scene.add(new T.AmbientLight(0x526473, 0));
+    const key = new T.DirectionalLight(0xd8eeff, 7);
+    key.position.set(-4, 2, -30);
     this.scene.add(key);
-    const rim = new T.DirectionalLight(0x79c8ee, 0.65);
-    rim.position.set(7, -2, 1);
+    const rim = new T.DirectionalLight(0x79c8ee, 0.02);
+    rim.position.set(6, -3, -12);
     this.scene.add(rim);
 
     const countScale = window.innerWidth < 1100 ? 0.58 : 1;
@@ -309,7 +309,7 @@ class SpaceJourneyController {
   createPlanet() {
     const T = this.THREE;
     const group = new T.Group();
-    const surface = this.createPlanetTexture();
+    const surface = this.loadTexture('/assets/books/core-planet-albedo.webp');
     const clouds = this.createCloudTexture();
     const geometry = new T.SphereGeometry(4.2, 72, 52);
     const surfaceMaterial = new T.MeshStandardMaterial({
@@ -347,8 +347,8 @@ class SpaceJourneyController {
     group.add(atmosphere);
 
     const moonMaterial = new T.MeshStandardMaterial({
-      map: this.createMoonTexture(),
-      color: 0xb9b5ad,
+      map: this.loadTexture('/assets/books/core-moon-albedo.webp'),
+      color: 0xf2f1ed,
       roughness: 1,
       metalness: 0,
       transparent: true,
@@ -403,6 +403,18 @@ class SpaceJourneyController {
     context.putImageData(image, 0, 0);
     const texture = new T.CanvasTexture(canvas);
     texture.colorSpace = T.SRGBColorSpace;
+    return texture;
+  }
+
+  loadTexture(path) {
+    const T = this.THREE;
+    const texture = new T.TextureLoader().load(path, undefined, undefined, () => {
+      console.warn('[VeilFarers] Planet texture unavailable; retaining the cinematic fallback.');
+    });
+    texture.colorSpace = T.SRGBColorSpace;
+    texture.wrapS = T.RepeatWrapping;
+    texture.wrapT = T.ClampToEdgeWrapping;
+    texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
     return texture;
   }
 
@@ -493,10 +505,12 @@ class SpaceJourneyController {
     const image = context.createImageData(canvas.width, canvas.height);
     for (let y = 0; y < canvas.height; y += 1) {
       for (let x = 0; x < canvas.width; x += 1) {
-        const n = Math.sin(x * 0.035 + Math.sin(y * 0.029) * 4.1) * 0.6 +
-          Math.sin(x * 0.094 - y * 0.061) * 0.34 +
-          Math.cos(y * 0.071 + Math.sin(x * 0.018)) * 0.28 +
-          Math.sin(x * 0.19 + y * 0.13) * 0.13;
+        const u = x / canvas.width * Math.PI * 2;
+        const v = y / canvas.height * Math.PI * 2;
+        const n = Math.sin(u * 3 + Math.sin(v * 2) * 2.1) * 0.48 +
+          Math.sin(u * 7 - v * 3) * 0.31 +
+          Math.cos(v * 5 + Math.sin(u * 2) * 1.4) * 0.25 +
+          Math.sin(u * 13 + v * 7) * 0.12;
         const alpha = Math.max(0, Math.min(88, (n - 0.48) * 82));
         const index = (y * canvas.width + x) * 4;
         image.data[index] = 220;
@@ -508,6 +522,9 @@ class SpaceJourneyController {
     context.putImageData(image, 0, 0);
     const texture = new T.CanvasTexture(canvas);
     texture.colorSpace = T.SRGBColorSpace;
+    texture.wrapS = T.RepeatWrapping;
+    texture.wrapT = T.ClampToEdgeWrapping;
+    texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
     return texture;
   }
 

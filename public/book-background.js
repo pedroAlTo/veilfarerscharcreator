@@ -38,6 +38,7 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = selectedTheme === 'core' ? 1.02 : 1.2;
+    document.body.classList.add('book-cinematic-ready');
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(43, 1, .1, 100);
@@ -99,10 +100,11 @@
 
   function createPlanetScene(THREE, scene, camera, animated) {
     const group = new THREE.Group();
+    const planetRadius = 5.55;
     const surface = loadPlanetTexture(THREE);
     const cloudTexture = createCloudTexture(THREE);
     const planet = new THREE.Mesh(
-      new THREE.SphereGeometry(4.2, innerWidth < 760 ? 52 : 72, innerWidth < 760 ? 36 : 52),
+      new THREE.SphereGeometry(planetRadius, innerWidth < 760 ? 52 : 72, innerWidth < 760 ? 36 : 52),
       new THREE.MeshStandardMaterial({
         map: surface,
         roughness: .92,
@@ -121,7 +123,7 @@
       const clusterLatitude = Math.sin(cluster * 1.71) * .86;
       const longitude = clusterLongitude + (Math.random() - .5) * .28;
       const latitude = clusterLatitude + (Math.random() - .5) * .15;
-      const radius = 4.214;
+      const radius = planetRadius + .014;
       const offset = index * 3;
       cityPositions[offset] = radius * Math.cos(latitude) * Math.cos(longitude);
       cityPositions[offset + 1] = radius * Math.sin(latitude);
@@ -136,7 +138,7 @@
     cityGeometry.setAttribute('color', new THREE.BufferAttribute(cityColors, 3));
     const cityMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        uLightDirection: { value: new THREE.Vector3(-8, 4, 3).normalize() },
+        uLightDirection: { value: new THREE.Vector3(-4, 4, -14).normalize() },
         uPointSize: { value: innerWidth < 760 ? 2.25 : 2.7 }
       },
       transparent: true,
@@ -158,13 +160,13 @@
       roughness: 1
     });
     const clouds = new THREE.Mesh(
-      new THREE.SphereGeometry(4.225, innerWidth < 760 ? 48 : 64, innerWidth < 760 ? 34 : 44),
+      new THREE.SphereGeometry(planetRadius + .028, innerWidth < 760 ? 48 : 64, innerWidth < 760 ? 34 : 44),
       cloudMaterial
     );
     clouds.rotation.z = -.15;
     group.add(clouds);
     const highClouds = new THREE.Mesh(
-      new THREE.SphereGeometry(4.248, innerWidth < 760 ? 44 : 60, innerWidth < 760 ? 30 : 40),
+      new THREE.SphereGeometry(planetRadius + .054, innerWidth < 760 ? 44 : 60, innerWidth < 760 ? 30 : 40),
       new THREE.MeshStandardMaterial({
         map: cloudTexture,
         transparent: true,
@@ -186,7 +188,7 @@
       fragmentShader: 'varying vec3 vNormal;uniform float uOpacity;void main(){float rim=pow(1.0-abs(vNormal.z),5.6);vec3 c=mix(vec3(.12,.48,.72),vec3(1.0,.84,.5),rim*.16);gl_FragColor=vec4(c,rim*uOpacity);}'
     });
     const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(4.31, innerWidth < 760 ? 48 : 64, innerWidth < 760 ? 34 : 44),
+      new THREE.SphereGeometry(planetRadius + .12, innerWidth < 760 ? 48 : 64, innerWidth < 760 ? 34 : 44),
       atmosphereMaterial
     );
     group.add(atmosphere);
@@ -200,20 +202,20 @@
         metalness: 0
       })
     );
-    moon.position.set(6.7, 1.1, .35);
+    moon.position.set(7.85, 1.1, .35);
     const moonPivot = new THREE.Group();
     moonPivot.rotation.z = -.22;
     moonPivot.add(moon);
     group.add(moonPivot);
 
-    group.position.set(0, 1.5, -1.1);
+    group.position.set(0, 1.15, -1.1);
     scene.add(group);
-    scene.add(new THREE.AmbientLight(0x526473, .055));
-    const key = new THREE.DirectionalLight(0xffe6b3, 3.5);
-    key.position.set(-8, 4, 3);
+    scene.add(new THREE.AmbientLight(0x526473, .002));
+    const key = new THREE.DirectionalLight(0xd8eeff, 6.2);
+    key.position.set(-4, 4, -14);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0x79c8ee, .65);
-    rim.position.set(7, -2, 1);
+    const rim = new THREE.DirectionalLight(0x79c8ee, .035);
+    rim.position.set(6, -3, -10);
     scene.add(rim);
 
     animated.push((time) => {
@@ -226,7 +228,7 @@
       highClouds.rotation.y = 1.7 - time * .019;
       moon.rotation.y = time * .018;
       moonPivot.rotation.y = time * .085;
-      group.position.y = 1.5 + Math.sin(time * .1) * .08;
+      group.position.y = 1.15 + Math.sin(time * .1) * .08;
     });
   }
 
@@ -301,7 +303,7 @@
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     const material = new THREE.PointsMaterial({
-      size: innerWidth < 760 ? .055 : .042,
+      size: innerWidth < 760 ? .062 : .052,
       map: createStarSprite(THREE),
       vertexColors: true,
       transparent: true,
@@ -311,57 +313,114 @@
       alphaTest: .015
     });
     const galaxy = new THREE.Points(geometry, material);
-    galaxy.position.set(innerWidth < 760 ? .3 : -3.1, 1.5, -5.5);
-    galaxy.rotation.set(1.08, -.08, -.18);
-    galaxy.scale.setScalar(1.18);
+    galaxy.position.set(innerWidth < 760 ? .3 : 3.2, .6, -6.5);
+    galaxy.rotation.set(1.38, -.04, -.12);
+    galaxy.scale.setScalar(innerWidth < 760 ? .72 : .82);
     scene.add(galaxy);
 
-    const streamCount = innerWidth < 760 ? 1800 : 5600;
+    const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: createStarSprite(THREE),
+      color: 0xffd49a,
+      transparent: true,
+      opacity: .7,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    }));
+    coreGlow.position.copy(galaxy.position);
+    coreGlow.scale.setScalar(innerWidth < 760 ? 2.4 : 3.2);
+    coreGlow.renderOrder = 1;
+    scene.add(coreGlow);
+
+    const streamCount = innerWidth < 760 ? 2600 : 8200;
     const streamPositions = new Float32Array(streamCount * 3);
     const streamColors = new Float32Array(streamCount * 3);
+    const streamPhases = new Float32Array(streamCount);
     for (let index = 0; index < streamCount; index += 1) {
       const offset = index * 3;
-      const radius = 5.8 + Math.pow(Math.random(), .72) * 9.8;
       const arm = index % 5;
-      const angle = arm / 5 * Math.PI * 2 + radius * .79 + (Math.random() - .5) * (.18 + radius * .04);
-      const drift = (Math.random() - .5) * (.3 + radius * .08);
+      const pointAlongArm = Math.floor(index / 5) / Math.max(1, Math.floor(streamCount / 5) - 1);
+      const radius = 1.15 + Math.pow(pointAlongArm, .84) * 11.4;
+      const angle = arm / 5 * Math.PI * 2 + radius * .88 + (Math.random() - .5) * (.07 + radius * .016);
+      const drift = (Math.random() - .5) * (.08 + radius * .022);
       streamPositions[offset] = Math.cos(angle) * radius + drift;
-      streamPositions[offset + 1] = (Math.random() - .5) * (.25 + radius * .055);
+      streamPositions[offset + 1] = (Math.random() - .5) * (.12 + radius * .022);
       streamPositions[offset + 2] = Math.sin(angle) * radius + drift;
       const warm = Math.random() < .24;
       streamColors[offset] = warm ? 1 : .48 + Math.random() * .2;
       streamColors[offset + 1] = warm ? .71 + Math.random() * .18 : .67 + Math.random() * .2;
       streamColors[offset + 2] = warm ? .36 + Math.random() * .25 : .95;
+      streamPhases[index] = (1 - pointAlongArm + arm * .137) % 1;
     }
     const streamGeometry = new THREE.BufferGeometry();
     streamGeometry.setAttribute('position', new THREE.BufferAttribute(streamPositions, 3));
     streamGeometry.setAttribute('color', new THREE.BufferAttribute(streamColors, 3));
-    const streamMaterial = new THREE.PointsMaterial({
-      size: innerWidth < 760 ? .085 : .07,
-      map: createStarSprite(THREE),
-      vertexColors: true,
+    streamGeometry.setAttribute('aPhase', new THREE.BufferAttribute(streamPhases, 1));
+    const streamMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uOpacity: { value: .9 },
+        uSize: { value: innerWidth < 760 ? .82 : .76 }
+      },
+      vertexShader: `
+        attribute vec3 color;
+        attribute float aPhase;
+        uniform float uTime;
+        uniform float uSize;
+        varying vec3 vColor;
+        varying float vLife;
+        void main(){
+          float life=fract(aPhase+uTime*.034);
+          float turn=life*.44;
+          float c=cos(turn),s=sin(turn);
+          mat2 rotation=mat2(c,-s,s,c);
+          vec3 animatedPosition=position;
+          animatedPosition.xz=rotation*animatedPosition.xz*(1.0+life*.14);
+          animatedPosition.y+=sin(aPhase*31.4159+uTime*.7)*.09;
+          vec4 mvPosition=modelViewMatrix*vec4(animatedPosition,1.0);
+          gl_Position=projectionMatrix*mvPosition;
+          gl_PointSize=clamp(uSize*(150.0/-mvPosition.z),1.0,4.4);
+          vColor=color;
+          vLife=sin(life*3.14159265);
+        }
+      `,
+      fragmentShader: `
+        uniform float uOpacity;
+        varying vec3 vColor;
+        varying float vLife;
+        void main(){
+          vec2 point=gl_PointCoord-vec2(.5);
+          float distanceFromCenter=length(point);
+          float star=smoothstep(.5,.04,distanceFromCenter);
+          float core=smoothstep(.16,0.0,distanceFromCenter);
+          float alpha=(star*.64+core*.42)*(.22+.78*vLife)*uOpacity;
+          if(alpha<.018)discard;
+          gl_FragColor=vec4(vColor*(1.08+core*.55),alpha);
+        }
+      `,
       transparent: true,
-      opacity: .58,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
-      alphaTest: .012
+      depthTest: true
     });
     const streams = new THREE.Points(streamGeometry, streamMaterial);
     streams.position.copy(galaxy.position);
     streams.rotation.copy(galaxy.rotation);
     streams.scale.copy(galaxy.scale);
+    streams.renderOrder = 2;
     scene.add(streams);
 
     const coreLight = new THREE.PointLight(0xf5c477, 5, 18, 1.65);
-    coreLight.position.set(-3.1, 1.2, -3.5);
+    coreLight.position.set(innerWidth < 760 ? .3 : 3.2, .6, -4.5);
     scene.add(coreLight);
     animated.push((time) => {
-      galaxy.rotation.z = -.18 + time * .008;
-      galaxy.rotation.y = -.08 + Math.sin(time * .035) * .025;
+      galaxy.rotation.z = -.12 + time * .008;
+      galaxy.rotation.y = -.04 + Math.sin(time * .035) * .025;
       material.opacity = .84 + Math.sin(time * .31) * .04;
-      streams.rotation.z = -.22 + time * .014;
-      streams.rotation.y = -.08 + Math.sin(time * .027) * .04;
-      streamMaterial.opacity = .5 + Math.sin(time * .23) * .08;
+      streams.rotation.z = -.16 + time * .014;
+      streams.rotation.y = -.04 + Math.sin(time * .027) * .04;
+      streamMaterial.uniforms.uTime.value = time;
+      streamMaterial.uniforms.uOpacity.value = .86 + Math.sin(time * .23) * .06;
+      coreGlow.material.opacity = .64 + Math.sin(time * .19) * .06;
     });
   }
 
