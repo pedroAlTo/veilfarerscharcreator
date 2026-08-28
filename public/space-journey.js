@@ -4,6 +4,7 @@ const mount = document.getElementById('space-webgl');
 const announcer = document.querySelector('[data-visual-announcer]');
 const visualButtons = [...document.querySelectorAll('[data-visual-choice]')];
 const sceneLabels = [...document.querySelectorAll('[data-scene]')];
+const journeyScroll = document.querySelector('[data-journey-scroll]');
 const header = document.querySelector('[data-site-header]');
 const navToggle = document.querySelector('[data-nav-toggle]');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -153,12 +154,11 @@ class SpaceJourneyController {
     this.options = options;
     this.running = false;
     this.raf = 0;
-    this.elapsed = {
-      planet: 16,
-      'black-hole': 38,
-      galaxy: 58,
-      hyperspace: 0
-    }[new URLSearchParams(location.search).get('vf-scene')] || 0;
+    this.elapsed = 0;
+    this.debugScene = new URLSearchParams(location.search).get('vf-scene');
+    this.debugProgress = { starfield: 0.08, planet: 0.92 }[this.debugScene];
+    this.targetProgress = typeof this.debugProgress === 'number' ? this.debugProgress : 0;
+    this.currentProgress = this.targetProgress;
     this.lastFrame = performance.now();
     this.performanceStart = this.lastFrame;
     this.performanceFrames = 0;
@@ -169,6 +169,7 @@ class SpaceJourneyController {
     this.cameraOffset = { x: 0, y: 0 };
     this.currentScene = '';
     this.onResize = this.resize.bind(this);
+    this.onScroll = this.syncScrollProgress.bind(this);
     this.onPointerMove = this.pointerMove.bind(this);
     this.onVisibility = this.visibilityChange.bind(this);
     this.onContextLost = this.contextLost.bind(this);
@@ -203,28 +204,28 @@ class SpaceJourneyController {
     this.camera = new T.PerspectiveCamera(43, 1, 0.1, 240);
     this.camera.position.set(0, 0, 14);
 
-    this.scene.add(new T.AmbientLight(0x526473, 0.055));
-    const key = new T.DirectionalLight(0xffe6b3, 3.5);
-    key.position.set(-8, 4, 3);
+    this.scene.add(new T.AmbientLight(0x526473, 0));
+    const key = new T.DirectionalLight(0xd8eeff, 7);
+    key.position.set(-4, 2, -30);
     this.scene.add(key);
-    const rim = new T.DirectionalLight(0x79c8ee, 0.65);
-    rim.position.set(7, -2, 1);
+    const rim = new T.DirectionalLight(0x79c8ee, 0.02);
+    rim.position.set(6, -3, -12);
     this.scene.add(rim);
 
     const countScale = window.innerWidth < 1100 ? 0.58 : 1;
     this.starField = this.createStarField(Math.round(6200 * countScale));
     this.hyperspace = this.createHyperspace(Math.round(780 * countScale));
     this.planet = this.createPlanet();
-    this.blackHole = this.createBlackHole();
-    this.galaxy = this.createGalaxy(Math.round(13000 * countScale));
-    this.scene.add(this.starField.points, this.hyperspace.group, this.planet.group, this.blackHole.group, this.galaxy.group);
+    this.scene.add(this.starField.points, this.hyperspace.group, this.planet.group);
 
     this.resize();
     this.renderer.render(this.scene, this.camera);
     window.addEventListener('resize', this.onResize, { passive: true });
+    window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('pointermove', this.onPointerMove, { passive: true });
     document.addEventListener('visibilitychange', this.onVisibility);
     canvas.addEventListener('webglcontextlost', this.onContextLost, false);
+    this.syncScrollProgress();
   }
 
   createStarField(count) {
@@ -308,7 +309,7 @@ class SpaceJourneyController {
   createPlanet() {
     const T = this.THREE;
     const group = new T.Group();
-    const surface = this.createPlanetTexture();
+    const surface = this.loadTexture('/assets/books/core-planet-albedo.webp');
     const clouds = this.createCloudTexture();
     const geometry = new T.SphereGeometry(4.2, 72, 52);
     const surfaceMaterial = new T.MeshStandardMaterial({
@@ -344,13 +345,77 @@ class SpaceJourneyController {
     });
     const atmosphere = new T.Mesh(new T.SphereGeometry(4.31, 64, 44), atmosphereMaterial);
     group.add(atmosphere);
+
+    const moonMaterial = new T.MeshStandardMaterial({
+      map: this.loadTexture('/assets/books/core-moon-albedo.webp'),
+      color: 0xf2f1ed,
+      roughness: 1,
+      metalness: 0,
+      transparent: true,
+      opacity: 0
+    });
+    const moonPivot = new T.Group();
+    moonPivot.rotation.z = -0.22;
+    const moon = new T.Mesh(new T.SphereGeometry(0.372, 36, 24), moonMaterial);
+    moon.position.set(6.7, 1.1, 0.35);
+    moonPivot.add(moon);
+    group.add(moonPivot);
     group.position.set(-4.75, 1.5, -1.1);
     group.userData.fade = [
       { material: surfaceMaterial, base: 1 },
       { material: cloudMaterial, base: 0.34 },
-      { material: atmosphereMaterial, base: 0.42, uniform: true }
+      { material: atmosphereMaterial, base: 0.42, uniform: true },
+      { material: moonMaterial, base: 1 }
     ];
-    return { group, planet, cloudLayer };
+    return { group, planet, cloudLayer, moon, moonPivot };
+  }
+
+  createMoonTexture() {
+    const T = this.THREE;
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 128;
+    const context = canvas.getContext('2d');
+    const image = context.createImageData(canvas.width, canvas.height);
+    const random = seededRandom(62114);
+    const craters = Array.from({ length: 34 }, () => ({
+      x: random() * canvas.width,
+      y: random() * canvas.height,
+      radius: 3 + random() * 16,
+      depth: 0.12 + random() * 0.28
+    }));
+    for (let y = 0; y < canvas.height; y += 1) {
+      for (let x = 0; x < canvas.width; x += 1) {
+        let shade = 0.52 + 0.1 * Math.sin(x * 0.13) * Math.cos(y * 0.09);
+        craters.forEach((crater) => {
+          const dx = Math.min(Math.abs(x - crater.x), canvas.width - Math.abs(x - crater.x));
+          const distance = Math.hypot(dx, y - crater.y);
+          if (distance < crater.radius) shade -= (1 - distance / crater.radius) * crater.depth;
+        });
+        const value = Math.max(48, Math.min(194, 86 + shade * 95));
+        const index = (y * canvas.width + x) * 4;
+        image.data[index] = value * 0.98;
+        image.data[index + 1] = value * 0.96;
+        image.data[index + 2] = value;
+        image.data[index + 3] = 255;
+      }
+    }
+    context.putImageData(image, 0, 0);
+    const texture = new T.CanvasTexture(canvas);
+    texture.colorSpace = T.SRGBColorSpace;
+    return texture;
+  }
+
+  loadTexture(path) {
+    const T = this.THREE;
+    const texture = new T.TextureLoader().load(path, undefined, undefined, () => {
+      console.warn('[VeilFarers] Planet texture unavailable; retaining the cinematic fallback.');
+    });
+    texture.colorSpace = T.SRGBColorSpace;
+    texture.wrapS = T.RepeatWrapping;
+    texture.wrapT = T.ClampToEdgeWrapping;
+    texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
+    return texture;
   }
 
   createPlanetTexture() {
@@ -440,10 +505,12 @@ class SpaceJourneyController {
     const image = context.createImageData(canvas.width, canvas.height);
     for (let y = 0; y < canvas.height; y += 1) {
       for (let x = 0; x < canvas.width; x += 1) {
-        const n = Math.sin(x * 0.035 + Math.sin(y * 0.029) * 4.1) * 0.6 +
-          Math.sin(x * 0.094 - y * 0.061) * 0.34 +
-          Math.cos(y * 0.071 + Math.sin(x * 0.018)) * 0.28 +
-          Math.sin(x * 0.19 + y * 0.13) * 0.13;
+        const u = x / canvas.width * Math.PI * 2;
+        const v = y / canvas.height * Math.PI * 2;
+        const n = Math.sin(u * 3 + Math.sin(v * 2) * 2.1) * 0.48 +
+          Math.sin(u * 7 - v * 3) * 0.31 +
+          Math.cos(v * 5 + Math.sin(u * 2) * 1.4) * 0.25 +
+          Math.sin(u * 13 + v * 7) * 0.12;
         const alpha = Math.max(0, Math.min(88, (n - 0.48) * 82));
         const index = (y * canvas.width + x) * 4;
         image.data[index] = 220;
@@ -455,162 +522,16 @@ class SpaceJourneyController {
     context.putImageData(image, 0, 0);
     const texture = new T.CanvasTexture(canvas);
     texture.colorSpace = T.SRGBColorSpace;
-    return texture;
-  }
-
-  createBlackHole() {
-    const T = this.THREE;
-    const group = new T.Group();
-    const coreMaterial = new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 });
-    const core = new T.Mesh(new T.SphereGeometry(1.76, 64, 48), coreMaterial);
-    group.add(core);
-
-    const diskMaterial = new T.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      side: T.DoubleSide,
-      blending: T.AdditiveBlending,
-      uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
-      vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
-      fragmentShader: [
-        'varying vec2 vUv;uniform float uTime;uniform float uOpacity;',
-        'void main(){',
-        ' vec2 p=(vUv-.5)*2.0;float r=length(p);float a=atan(p.y,p.x);',
-        ' float edge=smoothstep(.22,.31,r)*(1.0-smoothstep(.9,1.0,r));',
-        ' float lanes=.32+.68*pow(.5+.5*sin(a*17.0-r*42.0-uTime*1.45),5.0);',
-        ' float hot=pow(1.0-r,2.1);',
-        ' vec3 color=mix(vec3(.31,.09,.018),vec3(.92,.55,.18),hot+lanes*.28);',
-        ' gl_FragColor=vec4(color,edge*(.18+lanes*.72)*uOpacity);',
-        '}'
-      ].join('\n')
-    });
-    const disk = new T.Mesh(new T.RingGeometry(1.7, 5.8, 160, 6), diskMaterial);
-    disk.rotation.x = 1.28;
-    disk.rotation.z = -0.13;
-    group.add(disk);
-
-    const innerMaterial = new T.MeshBasicMaterial({ color: 0xb96f25, transparent: true, opacity: 0, depthWrite: false, side: T.DoubleSide, blending: T.AdditiveBlending, toneMapped: false });
-    const inner = new T.Mesh(new T.TorusGeometry(1.83, 0.055, 10, 128), innerMaterial);
-    inner.rotation.x = 1.28;
-    inner.rotation.z = -0.13;
-    group.add(inner);
-
-    const lensMaterial = new T.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      side: T.BackSide,
-      blending: T.AdditiveBlending,
-      uniforms: { uOpacity: { value: 0 } },
-      vertexShader: 'varying vec3 vNormal;void main(){vNormal=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
-      fragmentShader: 'varying vec3 vNormal;uniform float uOpacity;void main(){float r=pow(1.0-abs(vNormal.z),6.5);gl_FragColor=vec4(vec3(.7,.3,.055),r*uOpacity);}'
-    });
-    const lens = new T.Mesh(new T.SphereGeometry(1.98, 64, 40), lensMaterial);
-    group.add(lens);
-    group.position.set(1.6, 3.35, -1.1);
-    group.userData.fade = [
-      { material: coreMaterial, base: 1 },
-      { material: diskMaterial, base: 1, uniform: true },
-      { material: innerMaterial, base: 0.5 },
-      { material: lensMaterial, base: 0.14, uniform: true }
-    ];
-    return { group, disk, diskMaterial };
-  }
-
-  createGalaxy(count) {
-    const T = this.THREE;
-    const random = seededRandom(77913);
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
-    const coreColor = new T.Color(0xffdf9b);
-    const armColor = new T.Color(0xaedbff);
-    const edgeColor = new T.Color(0x5f7fa8);
-    for (let i = 0; i < count; i += 1) {
-      const radius = Math.pow(random(), 0.58) * 7.7;
-      const arm = i % 5;
-      const scatter = (random() - 0.5) * (0.35 + radius * 0.085);
-      const angle = arm * Math.PI * 0.4 + radius * 1.1 + scatter;
-      positions[i * 3] = Math.cos(angle) * radius + (random() - 0.5) * 0.28;
-      positions[i * 3 + 1] = Math.sin(angle) * radius + (random() - 0.5) * 0.28;
-      positions[i * 3 + 2] = (random() - 0.5) * (0.22 + (7.7 - radius) * 0.09);
-      const color = radius < 1.8 ? coreColor : (random() > 0.38 ? armColor : edgeColor);
-      colors.set([color.r, color.g, color.b], i * 3);
-      sizes[i] = radius < 1.7 ? 2.1 + random() * 2.5 : 0.65 + random() * 1.7;
-    }
-    const geometry = new T.BufferGeometry();
-    geometry.setAttribute('position', new T.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new T.BufferAttribute(colors, 3));
-    geometry.setAttribute('aSize', new T.BufferAttribute(sizes, 1));
-    const material = new T.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      vertexColors: true,
-      blending: T.AdditiveBlending,
-      uniforms: { uOpacity: { value: 0 } },
-      vertexShader: [
-        'attribute float aSize;varying vec3 vColor;uniform float uOpacity;varying float vOpacity;',
-        'void main(){vColor=color;vOpacity=uOpacity;vec4 mv=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(aSize*(34.0/-mv.z),.45,2.8);}'
-      ].join('\n'),
-      fragmentShader: [
-        'varying vec3 vColor;varying float vOpacity;void main(){vec2 p=gl_PointCoord-.5;float d=length(p);if(d>.5)discard;float a=smoothstep(.5,.02,d)*vOpacity;gl_FragColor=vec4(vColor,a);}'
-      ].join('\n')
-    });
-    const group = new T.Group();
-    const points = new T.Points(geometry, material);
-    group.add(points);
-
-    const coreTexture = this.createGalaxyTexture();
-    const spriteMaterial = new T.SpriteMaterial({ map: coreTexture, color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending });
-    const core = new T.Sprite(spriteMaterial);
-    core.scale.set(16.5, 10.8, 1);
-    group.add(core);
-    group.rotation.x = 1.02;
-    group.rotation.z = -0.28;
-    group.position.set(0.8, 3.0, -2.2);
-    group.userData.fade = [
-      { material, base: 0.76, uniform: true },
-      { material: spriteMaterial, base: 0.62 }
-    ];
-    return { group, points, spriteMaterial };
-  }
-
-  createGalaxyTexture() {
-    const T = this.THREE;
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const context = canvas.getContext('2d');
-    const gradient = context.createRadialGradient(256, 256, 0, 256, 256, 170);
-    gradient.addColorStop(0, 'rgba(255,246,213,.96)');
-    gradient.addColorStop(0.08, 'rgba(255,215,137,.78)');
-    gradient.addColorStop(0.28, 'rgba(218,154,69,.22)');
-    gradient.addColorStop(1, 'rgba(0,0,0,0)');
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, 512, 512);
-    context.globalCompositeOperation = 'lighter';
-    const random = seededRandom(88619);
-    for (let i = 0; i < 5200; i += 1) {
-      const radius = Math.pow(random(), 0.68) * 235;
-      const arm = i % 5;
-      const angle = arm * Math.PI * 0.4 + radius * 0.039 + (random() - 0.5) * (0.18 + radius * 0.0016);
-      const flatten = 0.61;
-      const x = 256 + Math.cos(angle) * radius + (random() - 0.5) * (2 + radius * 0.026);
-      const y = 256 + Math.sin(angle) * radius * flatten + (random() - 0.5) * (2 + radius * 0.02);
-      const alpha = Math.max(0.025, (1 - radius / 260) * (0.1 + random() * 0.3));
-      const size = radius < 55 ? 0.8 + random() * 1.9 : 0.35 + random() * 1.15;
-      context.fillStyle = random() > 0.24 ? 'rgba(164,207,241,' + alpha + ')' : 'rgba(241,191,103,' + alpha + ')';
-      context.beginPath();
-      context.arc(x, y, size, 0, Math.PI * 2);
-      context.fill();
-    }
-    const texture = new T.CanvasTexture(canvas);
-    texture.colorSpace = T.SRGBColorSpace;
+    texture.wrapS = T.RepeatWrapping;
+    texture.wrapT = T.ClampToEdgeWrapping;
+    texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
     return texture;
   }
 
   start() {
     if (this.running) return;
     this.running = true;
+    this.syncScrollProgress();
     this.lastFrame = performance.now();
     this.raf = requestAnimationFrame(this.frame);
   }
@@ -627,16 +548,10 @@ class SpaceJourneyController {
   }
 
   update(time, delta) {
-    const cycle = time % 76;
-    const planetWeight = windowWeight(cycle, 7, 13, 26, 32);
-    const blackWeight = windowWeight(cycle, 29, 35, 45, 51);
-    const galaxyWeight = windowWeight(cycle, 48, 54, 68, 75.8);
-    const hyperspaceWeight = Math.max(
-      cycle < 13 ? 1 - smoothstep(7, 13, cycle) : 0,
-      pulse(cycle, 25.5, 35.5),
-      pulse(cycle, 44.5, 54.5),
-      smoothstep(67.5, 76, cycle)
-    );
+    this.currentProgress += (this.targetProgress - this.currentProgress) * Math.min(1, delta * 5.2);
+    const progress = this.currentProgress;
+    const planetWeight = smoothstep(0.53, 0.74, progress);
+    const hyperspaceWeight = pulse(progress, 0.4, 0.7);
 
     this.starField.material.uniforms.uTime.value = time;
     this.starField.material.uniforms.uSpeed.value = 1 + hyperspaceWeight * 15;
@@ -647,19 +562,12 @@ class SpaceJourneyController {
     this.hyperspace.group.position.z = Math.sin(time * 0.8) * 2;
 
     fadeGroup(this.planet.group, planetWeight);
-    fadeGroup(this.blackHole.group, blackWeight);
-    fadeGroup(this.galaxy.group, galaxyWeight);
 
     this.planet.planet.rotation.y += delta * 0.035;
     this.planet.cloudLayer.rotation.y += delta * 0.047;
+    this.planet.moon.rotation.y += delta * 0.018;
+    this.planet.moonPivot.rotation.y = time * 0.085 + progress * 0.42;
     this.planet.group.position.y = 1.5 + Math.sin(time * 0.1) * 0.08;
-    this.blackHole.diskMaterial.uniforms.uTime.value = time;
-    this.blackHole.disk.rotation.z = -0.13 + time * 0.018;
-    this.blackHole.group.rotation.z = Math.sin(time * 0.075) * 0.045;
-    this.blackHole.group.position.x = 1.6 + Math.sin(time * 0.08) * 0.18;
-    this.galaxy.group.rotation.z = -0.28 + time * 0.012;
-    this.galaxy.group.position.y = 3.0 + Math.sin(time * 0.055) * 0.13;
-    this.galaxy.spriteMaterial.rotation = -0.16 + time * 0.006;
 
     this.cameraOffset.x += (this.pointer.x * 0.16 - this.cameraOffset.x) * 0.018;
     this.cameraOffset.y += (-this.pointer.y * 0.1 - this.cameraOffset.y) * 0.018;
@@ -667,16 +575,27 @@ class SpaceJourneyController {
     this.camera.position.y = this.cameraOffset.y;
     this.camera.lookAt(0, 0, 0);
 
-    const weights = [
-      ['hyperspace', hyperspaceWeight],
-      ['planet', planetWeight],
-      ['black-hole', blackWeight],
-      ['galaxy', galaxyWeight]
-    ].sort((a, b) => b[1] - a[1]);
+    body.style.setProperty('--vf-journey-progress', progress.toFixed(4));
+    const weights = [['planet', planetWeight], ['starfield', 1 - planetWeight]].sort((a, b) => b[1] - a[1]);
     if (weights[0][0] !== this.currentScene) {
       this.currentScene = weights[0][0];
+      body.dataset.visualScene = this.currentScene;
       this.options.onScene(this.currentScene);
     }
+  }
+
+  syncScrollProgress() {
+    if (typeof this.debugProgress === 'number') {
+      this.targetProgress = this.debugProgress;
+      return;
+    }
+    if (!journeyScroll) {
+      this.targetProgress = 0;
+      return;
+    }
+    const bounds = journeyScroll.getBoundingClientRect();
+    const distance = Math.max(1, journeyScroll.offsetHeight - window.innerHeight);
+    this.targetProgress = Math.max(0, Math.min(1, -bounds.top / distance));
   }
 
   measurePerformance(now) {
@@ -725,6 +644,7 @@ class SpaceJourneyController {
     this.running = false;
     cancelAnimationFrame(this.raf);
     window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('pointermove', this.onPointerMove);
     document.removeEventListener('visibilitychange', this.onVisibility);
     if (this.canvas) this.canvas.removeEventListener('webglcontextlost', this.onContextLost);

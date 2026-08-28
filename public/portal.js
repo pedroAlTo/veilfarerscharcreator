@@ -1,15 +1,10 @@
 (function(){
   'use strict';
-  if(!document.getElementById('vf-canonical-public-nav-style')){
-    const publicNavStyle=document.createElement('style');
-    publicNavStyle.id='vf-canonical-public-nav-style';
-    publicNavStyle.textContent=`
-      .vf-portal-nav{background:linear-gradient(90deg,rgba(3,8,13,.94),rgba(2,7,12,.78),rgba(3,8,13,.94))!important;border-color:rgba(226,188,111,.35)!important;box-shadow:0 12px 35px rgba(0,0,0,.32),inset 0 1px rgba(255,237,196,.05)!important;backdrop-filter:blur(14px)!important}
-      .vf-portal-nav a{border-color:rgba(225,189,109,.11)!important;border-radius:0!important;background:transparent!important;color:#e9dcc0!important;font-family:Inter,"Segoe UI",Arial,sans-serif!important;letter-spacing:.07em!important}
-      .vf-portal-nav a:hover,.vf-portal-nav a.active{border-color:rgba(225,189,109,.16)!important;background:linear-gradient(180deg,rgba(225,189,109,.13),rgba(225,189,109,.025))!important;color:#fff4d8!important;box-shadow:inset 0 -1px #ddb86d!important}
-      .vf-portal-nav .brand{background:transparent!important;color:#f3ddb0!important;border-color:transparent!important}
-      .vf-portal-nav .vf-nav-account{background:linear-gradient(180deg,rgba(225,189,109,.12),rgba(225,189,109,.035))!important;color:#f3ddb0!important}`;
-    document.head.appendChild(publicNavStyle);
+  if(!document.querySelector('link[href^="/public-navigation.css"]')){
+    const publicNavigation=document.createElement('link');
+    publicNavigation.rel='stylesheet';
+    publicNavigation.href='/public-navigation.css?v=20260829-1';
+    document.head.appendChild(publicNavigation);
   }
   // Hide private links before identity resolves; removing [hidden] reveals them normally.
   try{
@@ -17,15 +12,16 @@
     _s.textContent='a[data-vf-private][hidden]{display:none!important;visibility:hidden!important;}';
     (document.head||document.documentElement).appendChild(_s);
   }catch(_){/* best-effort */}
-  const nav=document.createElement('nav');
-  nav.className='vf-portal-nav';
+  const nav=document.createElement('header');
+  nav.className='vf-site-header vf-portal-nav';
+  nav.dataset.siteHeader='';
   nav.setAttribute('aria-label','VeilFarers portal');
   nav.innerHTML=`
-    <button class="vf-nav-scroll vf-nav-scroll-prev" type="button" aria-label="Scroll portal navigation left" title="Previous portal links">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    <a class="brand vf-wordmark" href="/" aria-label="VeilFarers home"><span class="vf-wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>VEILFARERS</span></a>
+    <button class="vf-nav-toggle vf-portal-menu" type="button" aria-expanded="false" aria-controls="public-navigation">
+      <span>Menu</span><i aria-hidden="true"></i>
     </button>
-    <div class="vf-portal-nav-track">
-      <a class="brand" href="/" aria-label="VeilFarers home"><span class="vf-wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>VEILFARERS</span></a>
+    <nav class="vf-public-nav vf-portal-nav-track" id="public-navigation" aria-label="Public navigation" data-public-nav>
       <a href="/" data-page="home">Home</a>
       <a href="/#explore">Setting</a>
       <a href="/books/corebook.html">Core</a>
@@ -46,8 +42,11 @@
       </div>
       <a id="vf-nav-account" class="vf-nav-account" href="/login.html"><span class="vf-account-dot" aria-hidden="true"></span><span class="vf-account-label">Log in</span></a>
       <a id="vf-nav-admin" href="/admin.html" hidden>Admin</a>
-    </div>
+    </nav>
     <div id="vf-nav-character-menu" class="vf-nav-character-menu" role="listbox" aria-label="Select active character" hidden></div>
+    <button class="vf-nav-scroll vf-nav-scroll-prev" type="button" aria-label="Scroll portal navigation left" title="Previous portal links">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
     <button class="vf-nav-scroll vf-nav-scroll-next" type="button" aria-label="Scroll portal navigation right" title="More portal links">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
     </button>`;
@@ -102,6 +101,16 @@
   const track=nav.querySelector('.vf-portal-nav-track');
   const prev=nav.querySelector('.vf-nav-scroll-prev');
   const next=nav.querySelector('.vf-nav-scroll-next');
+  const portalMenu=nav.querySelector('.vf-portal-menu');
+  function closePortalMenu(){
+    nav.classList.remove('is-open');
+    portalMenu.setAttribute('aria-expanded','false');
+  }
+  portalMenu.addEventListener('click',()=>{
+    const open=nav.classList.toggle('is-open');
+    portalMenu.setAttribute('aria-expanded',String(open));
+  });
+  track.querySelectorAll('a').forEach(link=>link.addEventListener('click',closePortalMenu));
   function updateScroller(){
     const overflow=track.scrollWidth>track.clientWidth+2;
     nav.classList.toggle('has-overflow',overflow);
