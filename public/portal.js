@@ -14,18 +14,16 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
     </button>
     <div class="vf-portal-nav-track">
-      <a class="brand" href="/">VEILFARERS</a>
+      <a class="brand" href="/" aria-label="VeilFarers home"><span class="vf-wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>VEILFARERS</span></a>
       <a href="/" data-page="home">Home</a>
-      <a href="/creator.html" data-vf-private="1" hidden aria-hidden="true" data-creator-mode="creator">Character Creator</a>
-      <a href="/creator.html#cards" data-vf-private="1" hidden aria-hidden="true" data-creator-mode="cards">Card Library</a>
-      <a href="/creator.html#level-up" data-vf-private="1" hidden aria-hidden="true" data-creator-mode="level-up">Level Up</a>
-      <a href="/charsheet.html" data-vf-private="1" hidden aria-hidden="true">Charsheet & PDF</a>
-      <a href="/player-tool.html" data-vf-private="1" hidden aria-hidden="true">Player Tool</a>
-      <a href="/keeper-tool.html" data-vf-private="1" hidden aria-hidden="true">Keeper Tool</a>
-      <a href="/armory.html" data-vf-private="1" hidden aria-hidden="true">Weapon & Armory</a>
-      <a href="/items.html" data-vf-private="1" hidden aria-hidden="true">Item Inventory</a>
+      <a href="/#explore">Setting</a>
+      <a href="/books/corebook.html">Core</a>
+      <a href="/books/keepers-companion.html">Keeper</a>
+      <a href="/books/rust-and-steel.html">Rust &amp; Steel</a>
+      <a href="/books/hearts-in-the-void.html">Hearts in the Void</a>
+      <a href="/#gallery">Gallery</a>
       <a href="/downloads.html">Downloads</a>
-      <a href="/encyclopedia.html" data-vf-private="1" hidden aria-hidden="true">Stellar Encyclopedia</a>
+      <a href="/#features">Features</a>
       <a href="/feedback.html">Feedback</a>
       <span class="spacer"></span>
       <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
@@ -43,6 +41,14 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
     </button>`;
   document.body.prepend(nav);
+
+  if(!window.__vfFriendNavigationRequested){
+    window.__vfFriendNavigationRequested=true;
+    const friendNavigation=document.createElement('script');
+    friendNavigation.src='/friend-navigation.js';
+    friendNavigation.defer=true;
+    document.head.appendChild(friendNavigation);
+  }
 
   // Private-tool visibility. Links stay hidden until Identity resolves.
   // Keep a callable role-applier so pages that load the Netlify Identity widget

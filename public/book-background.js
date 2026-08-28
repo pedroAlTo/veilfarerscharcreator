@@ -47,7 +47,7 @@
     let frameId = 0;
 
     scene.add(createStarfield(THREE, selectedTheme === 'keeper' ? 5200 : 3300));
-    if (selectedTheme === 'core') createPlanetScene(THREE, scene, animated);
+    if (selectedTheme === 'core') createPlanetScene(THREE, scene, camera, animated);
     else createGalaxyScene(THREE, scene, animated);
 
     function resize() {
@@ -97,10 +97,9 @@
     return new THREE.Points(geometry, material);
   }
 
-  function createPlanetScene(THREE, scene, animated) {
+  function createPlanetScene(THREE, scene, camera, animated) {
     const group = new THREE.Group();
     const surface = loadPlanetTexture(THREE);
-    const cityMap = loadTexture(THREE, '/assets/books/core-planet-city-lights.webp', false);
     const cloudTexture = createCloudTexture(THREE);
     const planet = new THREE.Mesh(
       new THREE.SphereGeometry(4.2, innerWidth < 760 ? 52 : 72, innerWidth < 760 ? 36 : 52),
@@ -113,21 +112,41 @@
     planet.rotation.z = -.15;
     group.add(planet);
 
+    const cityCount = innerWidth < 760 ? 430 : 1050;
+    const cityPositions = new Float32Array(cityCount * 3);
+    const cityColors = new Float32Array(cityCount * 3);
+    for (let index = 0; index < cityCount; index += 1) {
+      const cluster = index % 26;
+      const clusterLongitude = ((cluster * 2.399963) % (Math.PI * 2)) - Math.PI;
+      const clusterLatitude = Math.sin(cluster * 1.71) * .86;
+      const longitude = clusterLongitude + (Math.random() - .5) * .28;
+      const latitude = clusterLatitude + (Math.random() - .5) * .15;
+      const radius = 4.214;
+      const offset = index * 3;
+      cityPositions[offset] = radius * Math.cos(latitude) * Math.cos(longitude);
+      cityPositions[offset + 1] = radius * Math.sin(latitude);
+      cityPositions[offset + 2] = radius * Math.cos(latitude) * Math.sin(longitude);
+      const warm = Math.random();
+      cityColors[offset] = 1;
+      cityColors[offset + 1] = .58 + warm * .34;
+      cityColors[offset + 2] = .2 + warm * .5;
+    }
+    const cityGeometry = new THREE.BufferGeometry();
+    cityGeometry.setAttribute('position', new THREE.BufferAttribute(cityPositions, 3));
+    cityGeometry.setAttribute('color', new THREE.BufferAttribute(cityColors, 3));
     const cityMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        uMap: { value: cityMap },
-        uLightDirection: { value: new THREE.Vector3(-8, 4, 3).normalize() }
+        uLightDirection: { value: new THREE.Vector3(-8, 4, 3).normalize() },
+        uPointSize: { value: innerWidth < 760 ? 2.25 : 2.7 }
       },
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
-      vertexShader: 'varying vec2 vUv;varying vec3 vWorldNormal;void main(){vUv=uv;vWorldNormal=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
-      fragmentShader: 'uniform sampler2D uMap;uniform vec3 uLightDirection;varying vec2 vUv;varying vec3 vWorldNormal;void main(){float lights=texture2D(uMap,vUv).r;float night=1.0-smoothstep(-.12,.24,dot(normalize(vWorldNormal),uLightDirection));float strength=lights*night;vec3 city=mix(vec3(1.0,.49,.12),vec3(1.0,.91,.62),lights);gl_FragColor=vec4(city*strength*1.35,strength*.9);}'
+      vertexColors: true,
+      vertexShader: 'uniform float uPointSize;uniform vec3 uLightDirection;varying vec3 vColor;varying float vNight;void main(){vec4 world=modelMatrix*vec4(position,1.0);vec3 worldNormal=normalize(mat3(modelMatrix)*normalize(position));vNight=1.0-smoothstep(-.04,.2,dot(worldNormal,uLightDirection));vColor=color;vec4 mv=modelViewMatrix*vec4(position,1.0);gl_PointSize=uPointSize*(18.0/-mv.z);gl_Position=projectionMatrix*mv;}',
+      fragmentShader: 'varying vec3 vColor;varying float vNight;void main(){vec2 p=gl_PointCoord-.5;float glow=smoothstep(.5,0.0,length(p));float core=smoothstep(.18,0.0,length(p));float alpha=(glow*.62+core)*vNight;if(alpha<.025)discard;gl_FragColor=vec4(vColor*(.75+core*1.8),alpha);}'
     });
-    const cityLights = new THREE.Mesh(
-      new THREE.SphereGeometry(4.207, innerWidth < 760 ? 52 : 72, innerWidth < 760 ? 36 : 52),
-      cityMaterial
-    );
+    const cityLights = new THREE.Points(cityGeometry, cityMaterial);
     cityLights.rotation.z = -.15;
     group.add(cityLights);
 
@@ -187,7 +206,7 @@
     moonPivot.add(moon);
     group.add(moonPivot);
 
-    group.position.set(innerWidth < 760 ? 2.2 : 4.75, 1.5, -1.1);
+    group.position.set(0, 1.5, -1.1);
     scene.add(group);
     scene.add(new THREE.AmbientLight(0x526473, .055));
     const key = new THREE.DirectionalLight(0xffe6b3, 3.5);
@@ -198,6 +217,9 @@
     scene.add(rim);
 
     animated.push((time) => {
+      const cameraDistance = camera.position.z - group.position.z;
+      const visibleHalfWidth = Math.tan(THREE.MathUtils.degToRad(camera.fov * .5)) * cameraDistance * camera.aspect;
+      group.position.x = visibleHalfWidth + (innerWidth < 760 ? .18 : .35);
       planet.rotation.y = time * .035;
       cityLights.rotation.y = time * .035;
       clouds.rotation.y = time * .047;
@@ -231,10 +253,12 @@
     const image = context.createImageData(canvas.width, canvas.height);
     for (let y = 0; y < canvas.height; y += 1) {
       for (let x = 0; x < canvas.width; x += 1) {
-        const n = Math.sin(x * .035 + Math.sin(y * .029) * 4.1) * .6 +
-          Math.sin(x * .094 - y * .061) * .34 +
-          Math.cos(y * .071 + Math.sin(x * .018)) * .28 +
-          Math.sin(x * .19 + y * .13) * .13;
+        const u = x / canvas.width * Math.PI * 2;
+        const v = y / canvas.height * Math.PI * 2;
+        const n = Math.sin(u * 3 + Math.sin(v * 2) * 2.1) * .48 +
+          Math.sin(u * 7 - v * 3) * .31 +
+          Math.cos(v * 5 + Math.sin(u * 2) * 1.4) * .25 +
+          Math.sin(u * 13 + v * 7) * .12;
         const alpha = Math.max(0, Math.min(148, (n - .18) * 118));
         const offset = (y * canvas.width + x) * 4;
         image.data[offset] = 220;
@@ -246,6 +270,9 @@
     context.putImageData(image, 0, 0);
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+    texture.anisotropy = 4;
     return texture;
   }
 
