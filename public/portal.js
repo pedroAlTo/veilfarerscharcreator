@@ -3,7 +3,7 @@
   if(!document.querySelector('link[href^="/public-navigation.css"]')){
     const publicNavigation=document.createElement('link');
     publicNavigation.rel='stylesheet';
-    publicNavigation.href='/public-navigation.css?v=20260829-1';
+    publicNavigation.href='/public-navigation.css?v=20260829-2';
     document.head.appendChild(publicNavigation);
   }
   // Hide private links before identity resolves; removing [hidden] reveals them normally.
@@ -32,17 +32,15 @@
       <a href="/downloads.html">Downloads</a>
       <a href="/#features">Features</a>
       <a href="/feedback.html">Feedback</a>
-      <span class="spacer"></span>
-      <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
-        <button id="vf-nav-character-trigger" class="vf-nav-character-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="vf-nav-character-menu">
-          <span class="vf-nav-character-kicker">Character</span>
-          <strong class="vf-nav-character-name"></strong>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
-        </button>
-      </div>
       <a id="vf-nav-account" class="vf-nav-account" href="/login.html"><span class="vf-account-dot" aria-hidden="true"></span><span class="vf-account-label">Log in</span></a>
-      <a id="vf-nav-admin" href="/admin.html" hidden>Admin</a>
     </nav>
+    <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
+      <button id="vf-nav-character-trigger" class="vf-nav-character-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="vf-nav-character-menu">
+        <span class="vf-nav-character-kicker">Character</span>
+        <strong class="vf-nav-character-name"></strong>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+      </button>
+    </div>
     <div id="vf-nav-character-menu" class="vf-nav-character-menu" role="listbox" aria-label="Select active character" hidden></div>
     <button class="vf-nav-scroll vf-nav-scroll-prev" type="button" aria-label="Scroll portal navigation left" title="Previous portal links">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
@@ -56,7 +54,7 @@
   if(!window.__vfFriendNavigationRequested){
     window.__vfFriendNavigationRequested=true;
     const friendNavigation=document.createElement('script');
-    friendNavigation.src='/friend-navigation.js';
+    friendNavigation.src='/friend-navigation.js?v=20260829-2';
     friendNavigation.defer=true;
     document.head.appendChild(friendNavigation);
   }
@@ -163,6 +161,14 @@
   const characterTrigger=nav.querySelector('#vf-nav-character-trigger');
   const characterBadgeValue=characterBadge&&characterBadge.querySelector('.vf-nav-character-name');
   const characterMenu=nav.querySelector('#vf-nav-character-menu');
+  function placeCharacterPicker(){
+    const friendNavigation=document.querySelector('[data-vf-friend-navigation]');
+    if(!friendNavigation||!characterBadge)return;
+    if(characterBadge.parentElement!==friendNavigation)friendNavigation.appendChild(characterBadge);
+    friendNavigation.classList.add('has-character-picker');
+  }
+  window.addEventListener('vf:friend-navigation-ready',placeCharacterPicker);
+  placeCharacterPicker();
   // Keep the floating picker outside the sticky navigation's clipping and
   // backdrop-filter containing block. It remains linked through aria-controls.
   document.body.appendChild(characterMenu);
@@ -315,16 +321,14 @@
 
   const account=nav.querySelector('#vf-nav-account');
   const accountLabel=account.querySelector('.vf-account-label');
-  const adminLink=nav.querySelector('#vf-nav-admin');
   function rolesOf(user){ return user&&user.app_metadata&&Array.isArray(user.app_metadata.roles)?user.app_metadata.roles:[]; }
   function renderAccount(user){
     const signedIn=!!user;
     const roles=rolesOf(user);
     account.classList.toggle('is-authenticated',signedIn);
     account.classList.toggle('is-guest',!signedIn);
-    accountLabel.textContent=signedIn?'Logged in':'Log in';
+    accountLabel.textContent='Log in';
     account.title=signedIn?(user.email||'Signed in with Netlify Identity'):'Log in with Netlify Identity';
-    if(adminLink) adminLink.hidden=!roles.includes('admin');
     applyPrivateNavRoles(roles);
   }
   function refreshSelectableCharacters(){

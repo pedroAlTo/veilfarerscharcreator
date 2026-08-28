@@ -6,7 +6,7 @@
   if (!document.querySelector('link[data-vf-friend-nav-style]')) {
     const stylesheet = document.createElement('link');
     stylesheet.rel = 'stylesheet';
-    stylesheet.href = '/friend-navigation.css';
+    stylesheet.href = '/friend-navigation.css?v=20260829-2';
     stylesheet.dataset.vfFriendNavStyle = '';
     document.head.appendChild(stylesheet);
   }
@@ -58,6 +58,7 @@
 
   const navigation = createNavigation();
   if (!navigation) return;
+  window.dispatchEvent(new CustomEvent('vf:friend-navigation-ready', { detail: { navigation } }));
 
   function applyRoles(roles) {
     const friend = roles.has('friend');
