@@ -3,8 +3,9 @@
 .vf-friend-nav::before{content:"FRIEND ACCESS";position:sticky;left:0;align-self:stretch;display:flex;align-items:center;flex:0 0 auto;padding:0 16px;border-right:1px solid rgba(225,189,109,.22);background:#07111a;color:#dbb867;font-size:8px;font-weight:700;letter-spacing:.18em;white-space:nowrap}
 .vf-friend-nav a{position:relative;display:flex;align-items:center;align-self:stretch;flex:0 0 auto;min-height:36px;padding:0 15px;border-right:1px solid rgba(225,189,109,.1);color:#c9c5bb;font:600 9px/1 Arial,sans-serif;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;white-space:nowrap}
 .vf-friend-nav a:hover,.vf-friend-nav a:focus-visible,.vf-friend-nav a.active{background:rgba(225,189,109,.09);color:#fff3d2}.vf-friend-nav a.active{box-shadow:inset 0 -1px #ddb86d}
-.vf-friend-nav.is-portal-nav{position:sticky;top:58px;z-index:59999;right:auto;left:auto;border-right:0;border-left:0}
+.vf-friend-nav.is-portal-nav{position:fixed;top:66px;z-index:59999;right:12px;left:12px}
 html[data-vf-friend-nav="true"] .vf-home .vf-hero-stage{padding-top:126px}
 html[data-vf-friend-nav="true"] .vf-book-page .book-hero{padding-top:156px}
+html[data-vf-friend-nav="true"] body.vf-has-portal-nav{padding-top:108px}
 @media(max-width:1020px){.vf-friend-nav{top:63px}.vf-friend-nav::before{padding:0 11px}.vf-friend-nav a{padding:0 12px}}
-@media(max-width:680px){.vf-friend-nav{top:59px;right:7px;left:7px}.vf-friend-nav.is-portal-nav{top:55px;right:auto;left:auto}.vf-friend-nav::before{font-size:7px}.vf-friend-nav a{font-size:8px}}
+@media(max-width:680px){.vf-friend-nav{top:59px;right:7px;left:7px}.vf-friend-nav.is-portal-nav{top:59px;right:7px;left:7px}.vf-friend-nav::before{font-size:7px}.vf-friend-nav a{font-size:8px}}

@@ -90,3 +90,16 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-legal-footer{position:relative;z-index:20;display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 20px;background:#07111d;color:#aeb9c5;border-top:1px solid rgba(216,173,79,.28);font:12px/1.4 Inter,system-ui,sans-serif}
 .vf-legal-footer-links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .vf-legal-footer a{color:#e8c96f;text-decoration:none}.vf-legal-footer a:hover,.vf-legal-footer a:focus-visible{text-decoration:underline}
+
+/* Canonical public navigation: identical frame, spacing and wordmark across the site. */
+body.vf-has-portal-nav{padding-top:70px}
+.vf-portal-nav{position:fixed;z-index:60000;top:10px;right:12px;left:12px;min-height:50px;padding:0;border:1px solid rgba(226,188,111,.35);background:linear-gradient(90deg,rgba(3,8,13,.94),rgba(2,7,12,.78),rgba(3,8,13,.94));box-shadow:0 12px 35px rgba(0,0,0,.32),inset 0 1px rgba(255,237,196,.05);backdrop-filter:blur(14px);clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px)}
+.vf-portal-nav-track{align-self:stretch;gap:0;padding:0;border:0}
+.vf-portal-nav a{min-height:48px;padding:0 15px;border:0;border-right:1px solid rgba(225,189,109,.11);border-radius:0;background:transparent;color:#e9dcc0;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
+.vf-portal-nav a:hover,.vf-portal-nav a.active{background:linear-gradient(180deg,rgba(225,189,109,.13),rgba(225,189,109,.025));color:#fff4d8;box-shadow:inset 0 -1px #ddb86d}
+.vf-portal-nav .brand{min-width:240px;gap:14px;padding:0 22px;color:#f3ddb0;font:700 22px/1 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:.08em;text-shadow:0 0 18px rgba(224,184,104,.2)}
+.vf-portal-nav .vf-nav-account{min-width:76px;border-left:1px solid rgba(225,189,109,.11);background:linear-gradient(180deg,rgba(225,189,109,.12),rgba(225,189,109,.035));box-shadow:inset 0 0 0 1px rgba(225,189,109,.18)}
+.vf-portal-nav .spacer{min-width:0;flex:1 0 10px}
+.vf-nav-scroll{width:34px;height:48px;border:0;border-radius:0;background:rgba(7,17,26,.92);box-shadow:none}
+@media(max-width:1320px){.vf-portal-nav .brand{min-width:205px;padding:0 17px;font-size:18px}.vf-portal-nav a{padding:0 11px;font-size:9px}}
+@media(max-width:700px){body.vf-has-portal-nav{padding-top:66px}.vf-portal-nav{top:7px;right:7px;left:7px}.vf-portal-nav .brand{min-width:auto;padding:0 12px;font-size:15px}.vf-portal-nav a{min-height:46px}}

@@ -56,3 +56,11 @@ body.vf-public-section::after{content:"";position:fixed;z-index:-2;inset:0;backg
   .vf-public-section .vf-portal-nav .brand{min-width:auto;gap:8px;font-size:14px}.vf-public-section .vf-portal-nav .vf-wordmark-mark{flex-basis:20px;width:20px}
 }
 @media(prefers-reduced-motion:reduce){.vf-public-section .vf-download-card{transition:none}}
+
+/* Keep public utility pages inside the same inset cinematic navigation frame. */
+.vf-public-section .vf-portal-nav{position:fixed;top:10px;right:12px;left:12px;min-height:50px;padding:0;border:1px solid rgba(226,188,111,.35);background:linear-gradient(90deg,rgba(3,8,13,.94),rgba(2,7,12,.78),rgba(3,8,13,.94));clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px)}
+.vf-public-section .vf-portal-nav-track{border:0}
+.vf-public-section .vf-portal-nav a{min-height:48px;padding:0 15px;font-size:11px;letter-spacing:.07em}
+.vf-public-section .vf-portal-nav .brand{min-width:240px;padding:0 22px;font-size:22px}
+@media(max-width:1320px){.vf-public-section .vf-portal-nav .brand{min-width:205px;padding:0 17px;font-size:18px}.vf-public-section .vf-portal-nav a{padding:0 11px;font-size:9px}}
+@media(max-width:700px){.vf-public-section .vf-portal-nav{top:7px;right:7px;left:7px}.vf-public-section .vf-portal-nav .brand{min-width:auto;padding:0 12px;font-size:15px}.vf-public-section .vf-portal-nav a{min-height:46px}}
