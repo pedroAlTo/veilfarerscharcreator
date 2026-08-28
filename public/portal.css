@@ -62,6 +62,18 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-nav-character-id.is-open .vf-nav-character-trigger svg{transform:rotate(180deg)}
 .vf-nav-character-menu{position:fixed;z-index:60020;display:grid;gap:5px;max-height:min(420px,calc(100vh - 70px));overflow:auto;padding:8px;border:1px solid rgba(233,192,104,.42);border-radius:14px;background:linear-gradient(180deg,rgba(31,27,20,.99),rgba(13,12,10,.99));box-shadow:0 18px 50px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,239,194,.05);backdrop-filter:blur(14px)}
 .vf-nav-character-menu[hidden]{display:none!important}
+
+/* Shared public navigation language: matches the cinematic homepage. */
+.vf-portal-nav{min-height:58px;padding:7px 12px;border:0;border-bottom:1px solid rgba(221,184,109,.3);background:rgba(2,8,13,.93);box-shadow:0 15px 40px rgba(0,0,0,.3);backdrop-filter:blur(18px)}
+.vf-portal-nav-track{gap:0;align-self:stretch;padding:0;border:1px solid rgba(221,184,109,.14)}
+.vf-portal-nav a{min-height:42px;padding:0 15px;border:0;border-right:1px solid rgba(221,184,109,.1);border-radius:0;background:transparent;color:#d9d2c1;font-size:9px;letter-spacing:.11em;text-transform:uppercase}
+.vf-portal-nav a:hover,.vf-portal-nav a.active{border-color:rgba(221,184,109,.16);background:linear-gradient(180deg,rgba(221,184,109,.13),rgba(221,184,109,.035));color:#fff4d8;box-shadow:inset 0 -1px #ddb86d}
+.vf-portal-nav .brand{min-width:205px;justify-content:flex-start;gap:14px;padding:0 20px;color:#f3ddb0;font:700 19px/1 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:.08em}
+.vf-portal-nav .vf-wordmark-mark{position:relative;display:block;flex:0 0 27px;width:27px;height:22px}
+.vf-portal-nav .vf-wordmark-mark i{position:absolute;top:10px;right:0;width:27px;height:2px;background:linear-gradient(90deg,transparent,#ddb86d,#ddb86d);transform-origin:right center}
+.vf-portal-nav .vf-wordmark-mark i:first-child{transform:rotate(28deg)}
+.vf-portal-nav .vf-wordmark-mark i:last-child{transform:rotate(-28deg)}
+@media(max-width:700px){.vf-portal-nav{padding:7px}.vf-portal-nav .brand{min-width:auto;gap:8px;padding:0 12px;font-size:15px}.vf-portal-nav .vf-wordmark-mark{flex-basis:20px;width:20px}}
 .vf-nav-character-option{position:relative;display:grid;gap:4px;width:100%;padding:10px 34px 10px 11px;border:1px solid rgba(233,192,104,.14);border-radius:10px;background:rgba(255,255,255,.025);color:#e8dcc0;font:inherit;text-align:left;cursor:pointer;transition:border-color .14s ease,background .14s ease,color .14s ease}
 .vf-nav-character-option:hover,.vf-nav-character-option:focus-visible{outline:none;border-color:rgba(233,192,104,.7);background:rgba(233,192,104,.10);color:#fff7dd}
 .vf-nav-character-option strong{overflow:hidden;text-overflow:ellipsis;font-size:11px;letter-spacing:.025em}
@@ -78,3 +90,16 @@ body{--vf-portal-surface:rgba(12,11,9,.975);--vf-portal-border:rgba(233,192,104,
 .vf-legal-footer{position:relative;z-index:20;display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 20px;background:#07111d;color:#aeb9c5;border-top:1px solid rgba(216,173,79,.28);font:12px/1.4 Inter,system-ui,sans-serif}
 .vf-legal-footer-links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .vf-legal-footer a{color:#e8c96f;text-decoration:none}.vf-legal-footer a:hover,.vf-legal-footer a:focus-visible{text-decoration:underline}
+
+/* Canonical public navigation: identical frame, spacing and wordmark across the site. */
+body.vf-has-portal-nav{padding-top:70px}
+.vf-portal-nav{position:fixed;z-index:60000;top:10px;right:12px;left:12px;min-height:50px;padding:0;border:1px solid rgba(226,188,111,.35);background:linear-gradient(90deg,rgba(3,8,13,.94),rgba(2,7,12,.78),rgba(3,8,13,.94));box-shadow:0 12px 35px rgba(0,0,0,.32),inset 0 1px rgba(255,237,196,.05);backdrop-filter:blur(14px);clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px)}
+.vf-portal-nav-track{align-self:stretch;gap:0;padding:0;border:0}
+.vf-portal-nav a{min-height:48px;padding:0 15px;border:0;border-right:1px solid rgba(225,189,109,.11);border-radius:0;background:transparent;color:#e9dcc0;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
+.vf-portal-nav a:hover,.vf-portal-nav a.active{background:linear-gradient(180deg,rgba(225,189,109,.13),rgba(225,189,109,.025));color:#fff4d8;box-shadow:inset 0 -1px #ddb86d}
+.vf-portal-nav .brand{min-width:240px;gap:14px;padding:0 22px;color:#f3ddb0;font:700 22px/1 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:.08em;text-shadow:0 0 18px rgba(224,184,104,.2)}
+.vf-portal-nav .vf-nav-account{min-width:76px;border-left:1px solid rgba(225,189,109,.11);background:linear-gradient(180deg,rgba(225,189,109,.12),rgba(225,189,109,.035));box-shadow:inset 0 0 0 1px rgba(225,189,109,.18)}
+.vf-portal-nav .spacer{min-width:0;flex:1 0 10px}
+.vf-nav-scroll{width:34px;height:48px;border:0;border-radius:0;background:rgba(7,17,26,.92);box-shadow:none}
+@media(max-width:1320px){.vf-portal-nav .brand{min-width:205px;padding:0 17px;font-size:18px}.vf-portal-nav a{padding:0 11px;font-size:9px}}
+@media(max-width:700px){body.vf-has-portal-nav{padding-top:66px}.vf-portal-nav{top:7px;right:7px;left:7px}.vf-portal-nav .brand{min-width:auto;padding:0 12px;font-size:15px}.vf-portal-nav a{min-height:46px}}

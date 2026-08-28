@@ -17,10 +17,40 @@
   const signedOut=el('signed-out-actions');
   const signedIn=el('signed-in-actions');
   const dangerZone=el('account-danger-zone');
+  const vaultControls=el('vault-controls');
+  const vaultPanel=el('vault-panel');
+  const protectedControlIds=['new-character','import-character','vault-import-input','refresh-vault','sync-current','toggle-trash'];
 
   function setStatus(text,type=''){
     accountStatus.textContent=text;
     accountStatus.className='vf-status'+(type?` ${type}`:'');
+  }
+  function userRoles(user){
+    const values=[
+      ...(Array.isArray(user?.roles)?user.roles:[]),
+      ...(Array.isArray(user?.appMetadata?.roles)?user.appMetadata.roles:[]),
+      ...(Array.isArray(user?.app_metadata?.roles)?user.app_metadata.roles:[])
+    ];
+    return new Set(values.map(role=>String(role||'').trim().toLowerCase()).filter(Boolean));
+  }
+  function hasFriendAccess(user=activeUser){return !!user&&userRoles(user).has('friend');}
+  function requireFriendAccess(){
+    if(hasFriendAccess())return true;
+    setStatus(activeUser?'This account is signed in, but the friend role is required for Character Vault and creator access.':'Sign in with an account tagged as friend to access Character Vault and creator tools.','bad');
+    return false;
+  }
+  function setFriendUi(allowed){
+    [vaultControls,vaultPanel].forEach(node=>{
+      if(!node)return;
+      node.hidden=!allowed;
+      node.classList.toggle('vf-hidden',!allowed);
+      node.setAttribute('aria-hidden',String(!allowed));
+    });
+    protectedControlIds.forEach(id=>{const node=el(id);if(node)node.disabled=!allowed;});
+    if(!allowed){
+      showTrash=false;pendingTrashId='';pendingRestoreId='';
+      list.innerHTML='<div class="vf-empty">Friend access is required to open the Character Vault.</div>';
+    }
   }
   function summary(record){return REGISTRY?.summary(record)||{characterId:record?.characterId||'',name:'Unnamed Veilfarer',level:1,path:'',className:'',subclass:'',status:record?.status||'active',cloudState:record?.cloudState||'local',updatedAt:record?.updatedAt||''};}
   function allRecords(){return REGISTRY?(REGISTRY.listForCurrentUser?REGISTRY.listForCurrentUser({includeDeleted:true,includeUnowned:true,completedOnly:true}):REGISTRY.list({includeDeleted:true})):[];}
@@ -28,14 +58,16 @@
   function dateText(value){try{return value?new Date(value).toLocaleString():'—';}catch(_){return '—';}}
 
   async function makeCurrent(record,source){
-    if(!record)return;
+    if(!requireFriendAccess()||!record)return false;
     const creator=record.characterData?.creatorState;
     if(creator)localStorage.setItem(CREATOR_KEY,JSON.stringify({...creator,characterId:record.characterId}));
     REGISTRY?.replaceLocalRecord(record,{select:true,source:source||'account-vault-open'});
     if(REGISTRY?.setActive)await REGISTRY.setActive(record.characterId,{strict:false});
+    return true;
   }
-  async function openRecord(record,destination){await makeCurrent(record,`account-open-${destination}`);location.href=destination;}
+  async function openRecord(record,destination){if(await makeCurrent(record,`account-open-${destination}`))location.href=destination;}
   function exportRecord(record){
+    if(!requireFriendAccess())return;
     const item=summary(record);
     const blob=new Blob([JSON.stringify(record,null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob);const a=document.createElement('a');
@@ -44,6 +76,10 @@
   }
 
   function renderVault(){
+    if(!hasFriendAccess()){
+      list.innerHTML='<div class="vf-empty">Friend access is required to open the Character Vault.</div>';
+      return;
+    }
     const records=visibleRecords();
     el('vault-mode').textContent=showTrash?'Trash':'Characters · one active';
     el('toggle-trash').textContent=showTrash?'Show characters':'Open Trash';
@@ -66,17 +102,18 @@
   }
 
   async function refreshVault(){
-    if(!REGISTRY||vaultBusy)return;
+    if(!requireFriendAccess()||!REGISTRY||vaultBusy)return;
     vaultBusy=true;el('refresh-vault').disabled=true;setStatus(activeUser?'Refreshing your Character Vault…':'Loading local character records…');
     try{
       if(activeUser&&window.VF_IS_LOCAL_TEST!==true)await REGISTRY.refreshVault({force:true});
       renderVault();setStatus(activeUser?'Character Vault synchronized.':'Local character records loaded.','ok');
     }catch(error){
       renderVault();setStatus(`Cloud Vault unavailable: ${error.message||error}. Local saved records remain available.`,'bad');
-    }finally{vaultBusy=false;el('refresh-vault').disabled=false;}
+    }finally{vaultBusy=false;el('refresh-vault').disabled=!hasFriendAccess();}
   }
 
   async function syncCurrent(){
+    if(!requireFriendAccess())return;
     const record=REGISTRY?.get();
     if(!record){setStatus('No current completed character is selected.','bad');return;}
     setStatus(`Synchronizing ${summary(record).name}…`);
@@ -86,21 +123,24 @@
   }
 
   function renderUser(user){
-    activeUser=user||null;const logged=!!activeUser;
+    activeUser=user||null;const logged=!!activeUser;const friend=hasFriendAccess(activeUser);
     signedOut.classList.toggle('vf-hidden',logged);signedIn.classList.toggle('vf-hidden',!logged);
     dangerZone?.classList.toggle('vf-hidden',!logged);
+    setFriendUi(friend);
     if(logged){
       el('account-email').textContent=activeUser.email||activeUser.id;
-      const roles=activeUser.app_metadata?.roles||activeUser.appMetadata?.roles||[];
+      const roles=[...userRoles(activeUser)];
       el('account-role').textContent=roles.length?roles.join(', '):'member pending refresh';
-      setStatus('Signed in. Loading the Firebase-backed Character Vault…');refreshVault();
+      if(friend){setStatus('Friend access confirmed. Loading the Firebase-backed Character Vault…');refreshVault();}
+      else{setStatus('Signed in, but this account is not tagged as friend. Character Vault and creator tools remain locked.','bad');renderVault();}
     }else{
       el('account-email').textContent='Guest';el('account-role').textContent='—';
-      setStatus('Sign in to synchronize your Character Vault. Local and exported backups remain available.');renderVault();
+      setStatus('Sign in with an account tagged as friend to access Character Vault and creator tools.');renderVault();
     }
   }
 
   list.addEventListener('click',async event=>{
+    if(!requireFriendAccess())return;
     const row=event.target.closest('[data-id]'),button=event.target.closest('[data-action]');if(!row||!button)return;
     const record=REGISTRY?.get(row.dataset.id);if(!record)return;
     const action=button.dataset.action;
@@ -120,12 +160,13 @@
     }
   });
 
-  el('toggle-trash').addEventListener('click',()=>{showTrash=!showTrash;pendingTrashId='';pendingRestoreId='';renderVault();});
-  el('refresh-vault').addEventListener('click',refreshVault);
-  el('sync-current').addEventListener('click',()=>syncCurrent().catch(error=>setStatus(error.message||String(error),'bad')));
-  el('new-character').addEventListener('click',()=>location.href='/creator.html');
-  el('import-character').addEventListener('click',()=>{const input=el('vault-import-input');if(input){input.value='';input.click();}});
+  el('toggle-trash').addEventListener('click',()=>{if(!requireFriendAccess())return;showTrash=!showTrash;pendingTrashId='';pendingRestoreId='';renderVault();});
+  el('refresh-vault').addEventListener('click',()=>{if(requireFriendAccess())refreshVault();});
+  el('sync-current').addEventListener('click',()=>{if(requireFriendAccess())syncCurrent().catch(error=>setStatus(error.message||String(error),'bad'));});
+  el('new-character').addEventListener('click',()=>{if(requireFriendAccess())location.href='/creator.html';});
+  el('import-character').addEventListener('click',()=>{if(!requireFriendAccess())return;const input=el('vault-import-input');if(input){input.value='';input.click();}});
   el('vault-import-input').addEventListener('change',event=>{
+    if(!requireFriendAccess()){event.target.value='';return;}
     const file=event.target.files&&event.target.files[0];if(!file)return;
     const reader=new FileReader();
     reader.onload=()=>{try{const raw=JSON.parse(reader.result);localStorage.setItem('veilfarers.character.pendingImport.v1',JSON.stringify(raw));location.href='/creator.html?import=vault';}catch(error){setStatus(`Import failed: ${error.message||error}`,'bad');}};
@@ -159,12 +200,12 @@
   });
 
   window.addEventListener('veilfarers:active-character-changed',renderVault);
+  setFriendUi(false);
   renderVault();
   if(window.VF_IS_LOCAL_TEST===true){
-    signedOut.classList.add('vf-hidden');signedIn.classList.remove('vf-hidden');
-    el('logout-button').classList.add('vf-hidden');el('account-email').textContent='Local test';el('account-role').textContent='offline';
+    renderUser(null);
     dangerZone?.classList.add('vf-hidden');
-    setStatus('Local test mode. The same Character Vault UI uses local records; cloud synchronization requires the deployed authenticated site.');
+    setStatus('Local test mode does not bypass friend authorization. Use the deployed Identity flow to verify friend access.','bad');
     return;
   }
   if(!ID){setStatus('Netlify Identity did not load. Open this page from the deployed Netlify site.','bad');return;}
