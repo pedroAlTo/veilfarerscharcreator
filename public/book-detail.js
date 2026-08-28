@@ -6,15 +6,23 @@ compatibilityBadge.innerHTML = '<img src="/assets/legal/daggerheart-compatible-w
 document.body.append(compatibilityBadge);
 
 const bookThemes = {
-  '/books/corebook.html': 'core',
-  '/books/keepers-companion.html': 'keeper',
-  '/books/rust-and-steel.html': 'rust',
-  '/books/hearts-in-the-void.html': 'hearts'
+  corebook: 'core',
+  'keepers-companion': 'keeper',
+  'rust-and-steel': 'rust',
+  'hearts-in-the-void': 'hearts'
 };
-document.body.dataset.bookTheme = bookThemes[location.pathname] || 'core';
-const atmosphereScript = document.createElement('script');
-atmosphereScript.src = '/book-background.js';
-document.head.append(atmosphereScript);
+const routeName = decodeURIComponent(location.pathname)
+  .replace(/\/+$/, '')
+  .split('/')
+  .pop()
+  .replace(/\.html$/i, '');
+const bookTheme = document.body.dataset.bookTheme || bookThemes[routeName] || '';
+if (bookTheme) {
+  document.body.dataset.bookTheme = bookTheme;
+  const atmosphereScript = document.createElement('script');
+  atmosphereScript.src = '/book-background.js';
+  document.head.append(atmosphereScript);
+}
 
 const nav = document.querySelector('[data-book-nav]');
 const toggle = document.querySelector('[data-book-menu]');

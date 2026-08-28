@@ -49,3 +49,30 @@ test('public navigation keeps the cinematic wordmark and complete link sequence'
     assert.ok(!navigation.includes('>Gallery<'), 'obsolete Gallery navigation item remains')
   }
 })
+
+test('each public book declares its cinematic theme without relying on the deployed URL shape', () => {
+  const books = [
+    ['../public/books/corebook.html', 'core'],
+    ['../public/books/keepers-companion.html', 'keeper'],
+    ['../public/books/rust-and-steel.html', 'rust'],
+    ['../public/books/hearts-in-the-void.html', 'hearts']
+  ]
+  for (const [path, theme] of books) {
+    assert.match(read(path), new RegExp(`data-book-theme="${theme}"`))
+  }
+  const detail = read('../public/book-detail.js')
+  assert.match(detail, /document\.body\.dataset\.bookTheme \|\| bookThemes\[routeName\] \|\| ''/)
+  assert.doesNotMatch(detail, /\|\| 'core'/)
+})
+
+test('all public surfaces use the same fixed navigation contract without revealing role links', () => {
+  const home = read('../public/index.html')
+  const portal = read('../public/portal.js')
+  const navigation = read('../public/public-navigation.css')
+  assert.match(home, /public-navigation\.css\?v=20260829-1/)
+  assert.match(portal, /vf-site-header vf-portal-nav/)
+  assert.match(portal, /public-navigation\.css\?v=20260829-1/)
+  assert.match(navigation, /position:fixed!important/)
+  assert.match(navigation, /\.vf-portal-nav-track>\[hidden\]\{display:none!important;visibility:hidden!important\}/)
+  assert.match(navigation, /\.vf-portal-nav-track>a:hover::after/)
+})
