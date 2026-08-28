@@ -4,85 +4,112 @@
   <meta name="veilfarers-release" content="v59.81">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="VeilFarers is a science-fiction tabletop roleplaying game about crews crossing fractured space and living with the consequences.">
-  <title>VeilFarers · Cross the dark</title>
-  <link rel="stylesheet" href="portal.css">
-  <link rel="stylesheet" href="welcome.css">
-  <script src="veilfarers-theme.js"></script>
-  <link rel="stylesheet" href="veilfarers-theme.css">
-  <link rel="stylesheet" href="veilfarers-accessibility.css">
-  <script defer src="veilfarers-accessibility.js"></script>
+  <meta name="description" content="Explore VeilFarers, a science-fiction expansion of new ancestries, starship combat, augmentations, factions, powers, lore and adventures.">
+  <meta name="theme-color" content="#03060a">
+  <meta property="og:title" content="VeilFarers · Adventure among the stars">
+  <meta property="og:description" content="A science-fiction expansion built for adventure among the stars.">
+  <meta property="og:type" content="website">
+  <title>VeilFarers · Adventure among the stars</title>
+  <link rel="preload" href="/assets/homepage/space-journey-static.webp" as="image" type="image/webp" fetchpriority="high">
+  <link rel="stylesheet" href="/home-cinematic.css">
 </head>
-<body class="vf-welcome-page">
-  <main>
-    <section class="vf-welcome-hero" aria-labelledby="welcome-title">
-      <div class="vf-welcome-stars" aria-hidden="true"></div>
-      <div class="vf-welcome-led-stream is-left" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span><span></span>
-      </div>
-      <div class="vf-welcome-led-stream is-right" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span><span></span>
-      </div>
-      <div class="vf-welcome-hero-content">
-        <p class="vf-welcome-kicker">A game of distant stars across a broken universe</p>
-        <h1 id="welcome-title">VeilFarers</h1>
-        <p class="vf-welcome-deck">Cross the dark. Carry what matters.</p>
-        <p class="vf-welcome-intro">VeilFarers is a science-fiction tabletop roleplaying game about a crew travelling through fractured space, deciding who they become under pressure, and surviving the consequences that follow them between the stars.</p>
-        <div class="vf-welcome-actions">
-          <a class="vf-welcome-button is-primary" href="/downloads.html">Read the books</a>
-          <a class="vf-welcome-button" href="/legal.html">License &amp; credits</a>
+<body class="vf-home" data-visual-mode="static" data-visual-reason="initial">
+  <a class="vf-skip-link" href="#main-content">Skip to content</a>
+
+  <div class="vf-space" id="space-journey" aria-hidden="true">
+    <div class="vf-space-static"></div>
+    <div class="vf-space-webgl" id="space-webgl"></div>
+    <div class="vf-space-veil"></div>
+    <div class="vf-space-grain"></div>
+  </div>
+
+  <header class="vf-site-header" data-site-header>
+    <a class="vf-wordmark" href="#home" aria-label="VeilFarers home"><span class="vf-wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>VEILFARERS</span></a>
+    <button class="vf-nav-toggle" type="button" aria-expanded="false" aria-controls="public-navigation" data-nav-toggle><span>Menu</span><i aria-hidden="true"></i></button>
+    <nav class="vf-public-nav" id="public-navigation" aria-label="Public navigation" data-public-nav>
+      <a href="#home">Home</a><a href="#explore">Setting</a><a href="#corebook">Core</a><a href="#keepers-companion">Keeper</a><a href="#rust-steel">Rust &amp; Steel</a><a href="#hearts-void">Hearts in the Void</a><a href="#gallery">Gallery</a><a href="/downloads.html">Downloads</a><a href="#features">Features</a><a href="/feedback.html">Feedback</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="vf-hero" id="home" aria-labelledby="hero-title">
+      <div class="vf-hero-orbit" aria-hidden="true"></div>
+      <div class="vf-hud">
+        <span class="vf-hud-corner is-tl" aria-hidden="true"></span><span class="vf-hud-corner is-tr" aria-hidden="true"></span><span class="vf-hud-corner is-bl" aria-hidden="true"></span><span class="vf-hud-corner is-br" aria-hidden="true"></span>
+        <div class="vf-hud-topline">
+          <p><span class="vf-status-pulse" aria-hidden="true"></span> Public transmission · VF–01</p>
+          <div class="vf-visual-control" aria-label="Visual preference"><span>Visuals</span><div role="group" aria-label="Visuals"><button type="button" data-visual-choice="cinematic" aria-pressed="false">Cinematic</button><button type="button" data-visual-choice="static" aria-pressed="true">Static</button></div></div>
+        </div>
+        <div class="vf-hero-copy">
+          <p class="vf-eyebrow">Beyond the Veil · An interstellar expansion</p>
+          <h1 id="hero-title">WHAT <span>VEILFARERS</span> ADDS</h1>
+          <p class="vf-hero-deck">A science-fiction expansion built for adventure among the stars.</p>
+        </div>
+
+        <div class="vf-feature-grid" id="features">
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-ancestry"></use></svg><div><h2>New Ancestries</h2><p>Original playable species built for a rich interstellar setting.</p></div></article>
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-ship"></use></svg><div><h2>Naval Combat</h2><p>Cinematic starship battles from fighter duels to capital-ship warfare.</p></div></article>
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-augmentation"></use></svg><div><h2>Augmentations</h2><p>Cybernetics, biotech and advanced enhancements.</p></div></article>
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-economy"></use></svg><div><h2>Economy System</h2><p>Wealth, credits, lifestyle, savings and access to advanced technology.</p></div></article>
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-power"></use></svg><div><h2>New Powers</h2><p>Expanded science-fiction abilities and character options.</p></div></article>
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-factions"></use></svg><div><h2>Reputation &amp; Factions</h2><p>Influence, alliances and consequences that evolve across the galaxy.</p></div></article>
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-lore"></use></svg><div><h2>Expanded Lore</h2><p>Worlds, cultures, history, politics and conflicts built for long campaigns.</p></div></article>
+          <article class="vf-feature-card"><svg class="vf-feature-icon" aria-hidden="true"><use href="#icon-adventure"></use></svg><div><h2>Adventures</h2><p>Story-driven scenarios including <em>Hearts in the Void</em>.</p></div></article>
+        </div>
+        <div class="vf-hud-footer">
+          <p>Built for epic science-fiction campaigns.</p>
+          <div class="vf-journey-readout" aria-hidden="true"><span data-scene="hyperspace" class="is-active">01 HYPERSPACE</span><span data-scene="planet">02 PLANET</span><span data-scene="black-hole">03 BLACK HOLE</span><span data-scene="galaxy">04 GALAXY</span></div>
         </div>
       </div>
-      <aside class="vf-welcome-signal" aria-label="VeilFarers play pillars">
-        <span>01 · A CREW, NOT A CHOSEN ONE</span>
-        <strong>Your bonds, debts and decisions travel with you.</strong>
-        <span>02 · HOPE AND FEAR SHARE THE ROLL</span>
-        <strong>Success is never the only thing a die decides.</strong>
-        <span>03 · THE UNIVERSE REMEMBERS</span>
-        <strong>Every crossing leaves a wake.</strong>
-      </aside>
+      <a class="vf-scroll-cue" href="#explore"><span>Explore the galaxy</span><i aria-hidden="true"></i></a>
     </section>
 
-    <section class="vf-welcome-section" aria-labelledby="what-is-veilfarers">
-      <div class="vf-welcome-section-head">
-        <p class="vf-welcome-kicker">What is VeilFarers?</p>
-        <h2 id="what-is-veilfarers">A shared story built for distant stars</h2>
-      </div>
-      <div class="vf-welcome-copy-grid">
-        <p>Players create travellers shaped by ancestry, community, class and the choices they make together. One player becomes the Keeper, presenting a living universe, its dangers, and the people caught inside it.</p>
-        <p>The rules turn uncertainty into momentum. Hope opens opportunities. Fear gives the Keeper leverage. The story advances through victories, compromises and the costs the crew is willing to carry.</p>
-      </div>
+    <section class="vf-editorial vf-explore" id="explore" aria-labelledby="explore-title">
+      <div class="vf-section-index" aria-hidden="true">01 / 04</div>
+      <div class="vf-section-copy"><p class="vf-eyebrow">Explore the galaxy</p><h2 id="explore-title">Every world leaves a mark.</h2><p>Discover original ancestries, cultures and rival powers shaped by the long silence between stars. Reputation turns every alliance, debt and hard choice into a force that follows the crew across the galaxy.</p><ul class="vf-detail-list"><li><span>01</span> New civilizations</li><li><span>02</span> Living factions</li><li><span>03</span> Consequential reputation</li><li><span>04</span> Campaign-scale lore</li></ul></div>
+      <div class="vf-art-mosaic" id="gallery" aria-label="VeilFarers ancestry and faction artwork"><figure class="vf-art-main"><img src="/img/ancestry/03a.png" alt="VeilFarers alien ancestry character in a science-fiction setting" loading="lazy" decoding="async"></figure><figure class="vf-art-small"><img src="/img/ancestry/08.png" alt="VeilFarers playable ancestry character" loading="lazy" decoding="async"></figure><figure class="vf-crest"><img src="/img/affiliation/solara-compact.webp" alt="Solara Compact faction crest" loading="lazy" decoding="async"></figure></div>
     </section>
 
-    <section class="vf-welcome-tools" aria-labelledby="portal-tools">
-      <div class="vf-welcome-section-head">
-        <p class="vf-welcome-kicker">The public shelf</p>
-        <h2 id="portal-tools">Read, download, share</h2>
-      </div>
-      <div class="vf-welcome-card-grid">
-        <a class="vf-welcome-card is-featured" href="/downloads.html">
-          <span class="vf-welcome-card-index">01</span><h3>Books &amp; Downloads</h3>
-          <p>The complete VeilFarers line as PDFs: Corebook, Rust &amp; Steel, Keeper's Companion, The Alien Species, Hearts in the Void, plus the fillable character sheet.</p><b>View downloads &rarr;</b>
-        </a>
-        <a class="vf-welcome-card" href="/feedback.html">
-          <span class="vf-welcome-card-index">02</span><h3>Feedback</h3>
-          <p>Errata, questions, table stories. Everything the line has learned came from readers writing back.</p><b>Send a note &rarr;</b>
-        </a>
-        <a class="vf-welcome-card" href="/legal.html">
-          <span class="vf-welcome-card-index">03</span><h3>License &amp; credits</h3>
-          <p>VeilFarers is an independent work compatible with Daggerheart, released under the Darrington Press Community Gaming License.</p><b>Read the notice &rarr;</b>
-        </a>
+    <section class="vf-editorial vf-stars-section" aria-labelledby="stars-title">
+      <div class="vf-section-index" aria-hidden="true">02 / 04</div>
+      <div class="vf-cinematic-panel"><img src="/img/covers/rust-and-steel.webp" alt="Rust and Steel book cover" loading="lazy" decoding="async"><span class="vf-panel-orbit" aria-hidden="true"></span><div class="vf-panel-data" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>
+      <div class="vf-section-copy"><p class="vf-eyebrow">Take to the stars</p><h2 id="stars-title">From fighter duels to fleet warfare.</h2><p>Starships are more than transport. They are a home, a promise and a weapon—tested in cinematic naval combat where scale stretches from close pursuit to the thunder of capital ships.</p><div class="vf-stat-line" aria-label="Starship experience highlights"><div><strong>VAST</strong><span>Exploration</span></div><div><strong>TACTICAL</strong><span>Naval combat</span></div><div><strong>ADVANCED</strong><span>Technology</span></div></div></div>
+    </section>
+
+    <section class="vf-editorial vf-character-section" aria-labelledby="character-title">
+      <div class="vf-section-index" aria-hidden="true">03 / 04</div>
+      <div class="vf-section-copy"><p class="vf-eyebrow">Shape your character</p><h2 id="character-title">Who will you become beyond the next crossing?</h2><p>Build travellers defined by new powers, advanced augmentations, remarkable equipment and the economic realities of life among the stars. Every option belongs to the setting—and every choice says something.</p><div class="vf-tag-row" aria-label="Character expansion topics"><span>New powers</span><span>Augmentations</span><span>Equipment</span><span>Economy</span><span>Character options</span></div></div>
+      <div class="vf-character-art" aria-label="VeilFarers character artwork"><figure><img src="/img/class/03.png" alt="VeilFarers explorer in an alien wilderness" loading="lazy" decoding="async"></figure><figure><img src="/img/class/08.png" alt="VeilFarers science-fiction character" loading="lazy" decoding="async"></figure><figure><img src="/img/ancestry/01.png" alt="VeilFarers feline ancestry character" loading="lazy" decoding="async"></figure></div>
+    </section>
+
+    <section class="vf-books" id="books" aria-labelledby="books-title">
+      <div class="vf-section-index" aria-hidden="true">04 / 04</div>
+      <header class="vf-books-header"><div><p class="vf-eyebrow">The books</p><h2 id="books-title">Chart your own course.</h2></div><p>The current VeilFarers line—from the foundations of the setting to ships, species and a story waiting in the dark.</p></header>
+      <div class="vf-book-shelf">
+        <a class="vf-book" id="corebook" href="/downloads.html"><span class="vf-book-number">I</span><img src="/img/covers/corebook.webp" alt="VeilFarers Corebook cover" loading="lazy" decoding="async"><span><strong>Corebook</strong><small>Begin the crossing</small></span></a>
+        <a class="vf-book" id="keepers-companion" href="/downloads.html"><span class="vf-book-number">II</span><img src="/img/covers/keepers-companion.webp" alt="VeilFarers Keeper's Companion cover" loading="lazy" decoding="async"><span><strong>Keeper's Companion</strong><small>Shape the unknown</small></span></a>
+        <a class="vf-book" id="rust-steel" href="/downloads.html"><span class="vf-book-number">III</span><img src="/img/covers/rust-and-steel.webp" alt="VeilFarers Rust and Steel cover" loading="lazy" decoding="async"><span><strong>Rust &amp; Steel</strong><small>Command the stars</small></span></a>
+        <a class="vf-book" id="hearts-void" href="/downloads.html"><span class="vf-book-number">IV</span><img src="/img/covers/hearts-in-the-void.webp" alt="VeilFarers Hearts in the Void cover" loading="lazy" decoding="async"><span><strong>Hearts in the Void</strong><small>Answer the signal</small></span></a>
+        <a class="vf-book" id="alien-species" href="/downloads.html"><span class="vf-book-number">V</span><img src="/img/covers/alien-species.webp" alt="VeilFarers Alien Species cover" loading="lazy" decoding="async"><span><strong>Alien Species</strong><small>Become something new</small></span></a>
       </div>
     </section>
 
-    <section class="vf-welcome-final">
-      <p class="vf-welcome-kicker">Your ship is waiting</p>
-      <h2>Who will you become beyond the next crossing?</h2>
-      <a class="vf-welcome-button is-primary" href="/downloads.html">Read the books</a>
-    </section>
+    <section class="vf-final-cta" aria-labelledby="final-title"><p class="vf-eyebrow">The next crossing begins here</p><h2 id="final-title">Explore VeilFarers</h2><div class="vf-final-links"><a href="#explore">Setting</a><a href="/downloads.html">Downloads</a><a href="#gallery">Gallery</a><a href="#books">Books</a></div></section>
   </main>
-  <footer class="vf-welcome-footer"><span>VEILFARERS</span><span>Portal release v59.81</span></footer>
-  <script src="local-runtime.js"></script>
-  <script src="portal.js"></script>
+
+  <footer class="vf-site-footer"><a class="vf-wordmark" href="#home"><span>VEILFARERS</span></a><p>Cross the dark. Carry what matters.</p><nav aria-label="Footer"><a href="/downloads.html">Downloads</a><a href="/feedback.html">Feedback</a><a href="/legal.html">License &amp; credits</a></nav></footer>
+  <p class="vf-visual-announcer" role="status" aria-live="polite" data-visual-announcer></p>
+
+  <svg class="vf-icon-defs" aria-hidden="true">
+    <symbol id="icon-ancestry" viewBox="0 0 32 32"><path d="M16 3.5 24 8v9c0 5.4-3.4 9.1-8 11.5C11.4 26.1 8 22.4 8 17V8l8-4.5Z"/><path d="M11.5 16c2-3.6 7-4.8 9.7-1.5M13 11.5l2 2m5-4-1 3m-5 7c1.2 1.2 3.2 1.2 4.4 0"/></symbol>
+    <symbol id="icon-ship" viewBox="0 0 32 32"><path d="m4 19 10-6 4-8 2 8 8 5-8 1-4 8-2-7-10-1Z"/><path d="m7 9 4 3m12 10 4 2M3 25l6-3"/></symbol>
+    <symbol id="icon-augmentation" viewBox="0 0 32 32"><path d="M12 5h8v6l4 3v8l-4 5h-8l-4-5v-8l4-3V5Z"/><path d="M12 11h8M8 17h5l3-3 3 5h5M16 5V2m0 23v5"/></symbol>
+    <symbol id="icon-economy" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11"/><path d="M20.5 11.5c-1-1-2.3-1.5-4-1.5-2.2 0-4 1-4 2.8 0 4.2 8 1.8 8 6.2 0 1.8-1.9 3-4.4 3-1.9 0-3.5-.6-4.6-1.8M16 7v18"/></symbol>
+    <symbol id="icon-power" viewBox="0 0 32 32"><path d="m18 3-9 14h7l-2 12 9-15h-7l2-11Z"/><path d="M5 9 2 7m24 18 4 2M26 7l3-3M5 25l-3 3"/></symbol>
+    <symbol id="icon-factions" viewBox="0 0 32 32"><circle cx="9" cy="10" r="4"/><circle cx="23" cy="10" r="4"/><circle cx="16" cy="23" r="4"/><path d="m12.5 12 2.2 7m4.8-7-2.3 7M13 10h6"/></symbol>
+    <symbol id="icon-lore" viewBox="0 0 32 32"><path d="M5 7.5c4-1.7 7.7-1 11 1.5v18c-3.3-2.5-7-3.2-11-1.5v-18Zm22 0c-4-1.7-7.7-1-11 1.5v18c3.3-2.5 7-3.2 11-1.5v-18Z"/><path d="M8 12c2-.5 3.8-.1 5.5 1m-5.5 4c2-.5 3.8-.1 5.5 1m10.5-6c-2-.5-3.8-.1-5.5 1"/></symbol>
+    <symbol id="icon-adventure" viewBox="0 0 32 32"><path d="M6 5h16l4 4v18H6V5Z"/><path d="M22 5v5h4M11 15h10m-10 5h7"/><circle cx="23" cy="23" r="5"/><path d="m26.5 26.5 3 3"/></symbol>
+  </svg>
+  <script type="module" src="/space-journey.js"></script>
 </body>
 </html>
