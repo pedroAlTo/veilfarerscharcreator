@@ -1,5 +1,16 @@
 (function(){
   'use strict';
+  if(!document.getElementById('vf-canonical-public-nav-style')){
+    const publicNavStyle=document.createElement('style');
+    publicNavStyle.id='vf-canonical-public-nav-style';
+    publicNavStyle.textContent=`
+      .vf-portal-nav{background:linear-gradient(90deg,rgba(3,8,13,.94),rgba(2,7,12,.78),rgba(3,8,13,.94))!important;border-color:rgba(226,188,111,.35)!important;box-shadow:0 12px 35px rgba(0,0,0,.32),inset 0 1px rgba(255,237,196,.05)!important;backdrop-filter:blur(14px)!important}
+      .vf-portal-nav a{border-color:rgba(225,189,109,.11)!important;border-radius:0!important;background:transparent!important;color:#e9dcc0!important;font-family:Inter,"Segoe UI",Arial,sans-serif!important;letter-spacing:.07em!important}
+      .vf-portal-nav a:hover,.vf-portal-nav a.active{border-color:rgba(225,189,109,.16)!important;background:linear-gradient(180deg,rgba(225,189,109,.13),rgba(225,189,109,.025))!important;color:#fff4d8!important;box-shadow:inset 0 -1px #ddb86d!important}
+      .vf-portal-nav .brand{background:transparent!important;color:#f3ddb0!important;border-color:transparent!important}
+      .vf-portal-nav .vf-nav-account{background:linear-gradient(180deg,rgba(225,189,109,.12),rgba(225,189,109,.035))!important;color:#f3ddb0!important}`;
+    document.head.appendChild(publicNavStyle);
+  }
   // Hide private links before identity resolves; removing [hidden] reveals them normally.
   try{
     const _s=document.createElement('style');
@@ -14,18 +25,16 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
     </button>
     <div class="vf-portal-nav-track">
-      <a class="brand" href="/">VEILFARERS</a>
+      <a class="brand" href="/" aria-label="VeilFarers home"><span class="vf-wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>VEILFARERS</span></a>
       <a href="/" data-page="home">Home</a>
-      <a href="/creator.html" data-vf-private="1" hidden aria-hidden="true" data-creator-mode="creator">Character Creator</a>
-      <a href="/creator.html#cards" data-vf-private="1" hidden aria-hidden="true" data-creator-mode="cards">Card Library</a>
-      <a href="/creator.html#level-up" data-vf-private="1" hidden aria-hidden="true" data-creator-mode="level-up">Level Up</a>
-      <a href="/charsheet.html" data-vf-private="1" hidden aria-hidden="true">Charsheet & PDF</a>
-      <a href="/player-tool.html" data-vf-private="1" hidden aria-hidden="true">Player Tool</a>
-      <a href="/keeper-tool.html" data-vf-private="1" hidden aria-hidden="true">Keeper Tool</a>
-      <a href="/armory.html" data-vf-private="1" hidden aria-hidden="true">Weapon & Armory</a>
-      <a href="/items.html" data-vf-private="1" hidden aria-hidden="true">Item Inventory</a>
+      <a href="/#explore">Setting</a>
+      <a href="/books/corebook.html">Core</a>
+      <a href="/books/keepers-companion.html">Keeper</a>
+      <a href="/books/rust-and-steel.html">Rust &amp; Steel</a>
+      <a href="/books/hearts-in-the-void.html">Hearts in the Void</a>
+      <a href="/#alien-species">Alien Archives</a>
       <a href="/downloads.html">Downloads</a>
-      <a href="/encyclopedia.html" data-vf-private="1" hidden aria-hidden="true">Stellar Encyclopedia</a>
+      <a href="/#features">Features</a>
       <a href="/feedback.html">Feedback</a>
       <span class="spacer"></span>
       <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
@@ -35,7 +44,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
         </button>
       </div>
-      <a id="vf-nav-account" class="vf-nav-account" href="/login.html"><span class="vf-account-dot" aria-hidden="true"></span><span class="vf-account-label">Log-in</span></a>
+      <a id="vf-nav-account" class="vf-nav-account" href="/login.html"><span class="vf-account-dot" aria-hidden="true"></span><span class="vf-account-label">Log in</span></a>
       <a id="vf-nav-admin" href="/admin.html" hidden>Admin</a>
     </div>
     <div id="vf-nav-character-menu" class="vf-nav-character-menu" role="listbox" aria-label="Select active character" hidden></div>
@@ -43,6 +52,15 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
     </button>`;
   document.body.prepend(nav);
+  document.body.classList.add('vf-has-portal-nav');
+
+  if(!window.__vfFriendNavigationRequested){
+    window.__vfFriendNavigationRequested=true;
+    const friendNavigation=document.createElement('script');
+    friendNavigation.src='/friend-navigation.js';
+    friendNavigation.defer=true;
+    document.head.appendChild(friendNavigation);
+  }
 
   // Private-tool visibility. Links stay hidden until Identity resolves.
   // Keep a callable role-applier so pages that load the Netlify Identity widget
@@ -295,7 +313,7 @@
     const roles=rolesOf(user);
     account.classList.toggle('is-authenticated',signedIn);
     account.classList.toggle('is-guest',!signedIn);
-    accountLabel.textContent=signedIn?'Logged in':'Log-in';
+    accountLabel.textContent=signedIn?'Logged in':'Log in';
     account.title=signedIn?(user.email||'Signed in with Netlify Identity'):'Log in with Netlify Identity';
     if(adminLink) adminLink.hidden=!roles.includes('admin');
     applyPrivateNavRoles(roles);
