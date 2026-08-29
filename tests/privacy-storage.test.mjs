@@ -5,6 +5,11 @@ import { readFileSync } from 'node:fs'
 const portal=readFileSync(new URL('../public/portal.js',import.meta.url),'utf8')
 const legal=readFileSync(new URL('../public/legal.html',import.meta.url),'utf8')
 const feedback=readFileSync(new URL('../public/feedback.html',import.meta.url),'utf8')
+const downloadsPage=readFileSync(new URL('../public/downloads.html',import.meta.url),'utf8')
+const downloadsRuntime=readFileSync(new URL('../public/downloads.js',import.meta.url),'utf8')
+const analyticsRuntime=readFileSync(new URL('../public/simple-analytics.js',import.meta.url),'utf8')
+const headers=readFileSync(new URL('../public/_headers',import.meta.url),'utf8')
+const netlify=readFileSync(new URL('../netlify.toml',import.meta.url),'utf8')
 
 test('privacy control is global, custom and separates local from cloud deletion',()=>{
   assert.match(portal,/Privacy & device data/)
@@ -18,12 +23,13 @@ test('privacy control is global, custom and separates local from cloud deletion'
   assert.doesNotMatch(portal,/\b(?:alert|confirm|prompt)\s*\(/)
 })
 
-test('legal notice inventories essential storage and keeps optional tracking disabled',()=>{
+test('legal notice inventories essential storage and discloses limited public analytics',()=>{
   assert.match(legal,/first-party local storage/)
   assert.match(legal,/Netlify Identity · technical session storage\/cookies/)
   assert.match(legal,/Firebase · technical authentication persistence/)
-  assert.match(legal,/Optional analytics, advertising or tracking/)
-  assert.match(legal,/Not active/)
+  assert.match(legal,/Simple Analytics · public Downloads page only/)
+  assert.match(legal,/No cookies, local storage or persistent visitor ID/)
+  assert.match(legal,/No account, character, email or private-tool data is sent/)
   assert.match(legal,/UODO/)
   assert.match(legal,/Google Cloud Data Processing Addendum/)
 })
@@ -35,7 +41,25 @@ test('feedback is collected in-house, with no external form processor',()=>{
   assert.match(feedback,/\/legal\.html#privacy/)
 })
 
-test('no analytics or behavioural tracking runtime is present',()=>{
+test('no behavioural advertising or invasive tracking runtime is present',()=>{
   const runtime=[portal,legal,feedback].join('\n')
   assert.doesNotMatch(runtime,/getAnalytics\s*\(|gtag\s*\(|googletagmanager|hotjar|clarity\s*\(|posthog|mixpanel/i)
+})
+
+test('downloads use privacy-focused analytics without changing native link behaviour',()=>{
+  assert.match(downloadsPage,/src="simple-analytics\.js\?v=\d+-\d+"/)
+  assert.match(analyticsRuntime,/https:\/\/scripts\.simpleanalyticscdn\.com\/latest\.js/)
+  assert.match(downloadsRuntime,/data-vf-download/)
+  assert.match(downloadsRuntime,/sa_event\('download_pdf'/)
+  assert.match(downloadsRuntime,/title: link\.dataset\.vfDownloadTitle/)
+  assert.match(downloadsRuntime,/version: link\.dataset\.vfDownloadVersion/)
+  assert.doesNotMatch(downloadsRuntime,/preventDefault\s*\(/)
+})
+
+test('deployment CSP permits only the Simple Analytics script and collection endpoint',()=>{
+  for (const policy of [headers,netlify]) {
+    assert.match(policy,/script-src[^\n"]*https:\/\/scripts\.simpleanalyticscdn\.com/)
+    assert.match(policy,/connect-src[^\n"]*https:\/\/queue\.simpleanalyticscdn\.com/)
+    assert.match(policy,/img-src[^\n"]*https:\/\/queue\.simpleanalyticscdn\.com/)
+  }
 })
