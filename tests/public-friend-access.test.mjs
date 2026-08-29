@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
@@ -215,4 +215,35 @@ test('Hearts background emits a denser twinkling particle field from the heart c
   assert.match(background, /const sourceX = width \* \.247/)
   assert.match(background, /const sourceY = height \* \.605/)
   assert.match(background, /particle\.twinkle/)
+})
+
+test('public editorial pages publish the complete VeilFarers favicon set', () => {
+  const pages = [
+    '../public/index.html',
+    '../public/downloads.html',
+    '../public/feedback.html',
+    '../public/login.html',
+    '../public/legal.html',
+    '../public/books/corebook.html',
+    '../public/books/keepers-companion.html',
+    '../public/books/rust-and-steel.html',
+    '../public/books/hearts-in-the-void.html',
+    '../public/books/alien-archives.html'
+  ]
+
+  for (const page of pages) {
+    const source = read(page)
+    assert.match(source, /rel="icon" href="\/favicon\.ico"/)
+    assert.match(source, /rel="icon" href="\/favicon\.svg" type="image\/svg\+xml"/)
+    assert.match(source, /rel="apple-touch-icon" href="\/apple-touch-icon\.png"/)
+    assert.match(source, /rel="manifest" href="\/site\.webmanifest"/)
+  }
+
+  for (const asset of ['favicon.ico', 'favicon.svg', 'favicon-96x96.png', 'apple-touch-icon.png', 'web-app-manifest-192x192.png', 'web-app-manifest-512x512.png']) {
+    assert.equal(existsSync(new URL(`../public/${asset}`, import.meta.url)), true)
+  }
+
+  const manifest = JSON.parse(read('../public/site.webmanifest'))
+  assert.equal(manifest.name, 'VeilFarers')
+  assert.equal(manifest.theme_color, '#03060a')
 })
