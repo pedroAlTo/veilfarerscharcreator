@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
@@ -246,4 +246,38 @@ test('public editorial pages publish the complete VeilFarers favicon set', () =>
   const manifest = JSON.parse(read('../public/site.webmanifest'))
   assert.equal(manifest.name, 'VeilFarers')
   assert.equal(manifest.theme_color, '#03060a')
+})
+
+test('high-bandwidth transparent artwork uses AVIF with original fallbacks', () => {
+  const home = read('../public/index.html')
+  const core = read('../public/books/corebook.html')
+  const alien = read('../public/books/alien-archives.html')
+
+  assert.match(home, /<source srcset="\/assets\/homepage\/art\/solara-compact-transparent\.avif" type="image\/avif">/)
+  assert.match(home, /<img src="\/assets\/homepage\/art\/solara-compact-transparent\.png"/)
+  assert.match(core, /<source srcset="\/assets\/optimized\/affiliation\/house-amaranth\.avif" type="image\/avif">/)
+  for (let index = 1; index <= 9; index += 1) {
+    const name = String(index).padStart(2, '0')
+    assert.match(alien, new RegExp(`<source srcset="/assets/optimized/ancestry/${name}\\.avif" type="image/avif">`))
+    assert.match(alien, new RegExp(`<img src="/img/ancestry/${name}\\.png"`))
+  }
+
+  const pairs = [
+    ['../public/assets/homepage/art/solara-compact-transparent.png', '../public/assets/homepage/art/solara-compact-transparent.avif'],
+    ['../public/img/affiliation/house-amaranth.webp', '../public/assets/optimized/affiliation/house-amaranth.avif'],
+    ...Array.from({ length: 9 }, (_, offset) => {
+      const name = String(offset + 1).padStart(2, '0')
+      return [`../public/img/ancestry/${name}.png`, `../public/assets/optimized/ancestry/${name}.avif`]
+    })
+  ]
+  const totals = pairs.reduce((result, [fallback, optimized]) => {
+    const fallbackUrl = new URL(fallback, import.meta.url)
+    const optimizedUrl = new URL(optimized, import.meta.url)
+    assert.equal(existsSync(optimizedUrl), true)
+    result.fallback += statSync(fallbackUrl).size
+    result.optimized += statSync(optimizedUrl).size
+    return result
+  }, { fallback: 0, optimized: 0 })
+
+  assert.ok(totals.optimized < totals.fallback * 0.25)
 })
