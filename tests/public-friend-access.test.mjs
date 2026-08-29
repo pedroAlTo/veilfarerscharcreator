@@ -34,7 +34,7 @@ test('public navigation keeps the cinematic wordmark and complete link sequence'
   const rust = read('../public/books/rust-and-steel.html')
   const hearts = read('../public/books/hearts-in-the-void.html')
   const alien = read('../public/books/alien-archives.html')
-  const labels = ['Home', 'Setting', 'Core', 'Keeper', 'Rust &amp; Steel', 'Hearts in the Void', 'Alien Archives', 'Downloads', 'Features', 'Feedback']
+  const labels = ['Home', 'Setting', 'Core', 'Keeper', 'Rust &amp; Steel', 'Hearts in the Void', 'Alien Species', 'Downloads', 'Features', 'Feedback']
   for (const source of [home, portal, core, keeper, rust, hearts, alien]) {
     assert.match(source, /vf-wordmark-mark/)
     const publicMarker = source.indexOf('Public navigation')
@@ -67,7 +67,7 @@ test('each public book declares its cinematic theme without relying on the deplo
   assert.doesNotMatch(detail, /\|\| 'core'/)
 })
 
-test('Alien Archives presents the book features, nine peoples and a reduced-motion-safe DNA backdrop', () => {
+test('Alien Species presents the book features, nine peoples and a reduced-motion-safe DNA backdrop', () => {
   const page = read('../public/books/alien-archives.html')
   const styles = read('../public/book-detail.css')
   const background = read('../public/book-background.js')

@@ -472,7 +472,16 @@
     function makeParticle(initial = false) {
       if (selectedTheme === 'alien') {
         const index = particles.length;
-        return { progress: index / Math.max(1, width < 720 ? 90 : 170), strand: index % 2, bridge: index % 9 === 0, size: .65 + Math.random() * 1.35, phase: Math.random() * .18 };
+        const total = width < 720 ? 90 : 170;
+        const pair = Math.floor(index / 2);
+        const pairCount = Math.floor(total / 2);
+        return {
+          progress: pair / Math.max(1, pairCount - 1),
+          strand: index % 2,
+          bridge: pair % 7 === 0 || pair % 7 === 2 || pair % 7 === 5,
+          size: .65 + Math.random() * 1.35,
+          phase: Math.sin(pair * 12.9898) * .028
+        };
       }
       if (selectedTheme === 'rust') {
         const edge = Math.random() < .62;
@@ -535,45 +544,96 @@
       const helixHeight = Math.min(height * .82, 790);
       const radius = Math.min(width * .075, 116);
       const rotation = time * .00016;
+      const tilt = Math.tan(5 * Math.PI / 180);
       const projected = [];
       for (const particle of particles) {
         const y = centerY - helixHeight * .5 + particle.progress * helixHeight;
         const angle = particle.progress * Math.PI * 8 + rotation + particle.strand * Math.PI + particle.phase;
         const depth = Math.sin(angle);
         projected.push({
-          x: centerX + Math.cos(angle) * radius * (.62 + (depth + 1) * .18),
+          x: centerX + (y - centerY) * tilt + Math.cos(angle) * radius * (.62 + (depth + 1) * .18),
           y,
           depth,
           bridge: particle.bridge,
           strand: particle.strand,
+          progress: particle.progress,
           size: particle.size
         });
       }
       context.globalCompositeOperation = 'lighter';
-      context.lineWidth = .7;
+
+      const railGradient = context.createLinearGradient(0, centerY - helixHeight * .5, 0, centerY + helixHeight * .5);
+      railGradient.addColorStop(0, 'rgba(244,211,139,.12)');
+      railGradient.addColorStop(.5, 'rgba(255,225,153,.5)');
+      railGradient.addColorStop(1, 'rgba(202,145,54,.13)');
+      for (let strand = 0; strand < 2; strand += 1) {
+        const rail = projected.filter((point) => point.strand === strand).sort((a, b) => a.progress - b.progress);
+        const segments = [];
+        let cursor = 1 + strand * 2;
+        while (cursor < rail.length - 1) {
+          const gap = 2 + Math.floor(Math.abs(Math.sin(cursor * 4.173 + strand * 2.41)) * 8);
+          cursor += gap;
+          const length = 5 + Math.floor(Math.abs(Math.sin(cursor * 7.917 + strand * 1.73)) * 18);
+          const end = Math.min(rail.length - 1, cursor + length);
+          if (end > cursor) segments.push(rail.slice(cursor, end + 1));
+          cursor = end;
+        }
+        for (const segment of segments) {
+          context.beginPath();
+          segment.forEach((point, index) => index ? context.lineTo(point.x, point.y) : context.moveTo(point.x, point.y));
+          context.strokeStyle = 'rgba(214,157,66,.13)';
+          context.lineWidth = width < 720 ? 3 : 4;
+          context.stroke();
+          context.strokeStyle = railGradient;
+          context.lineWidth = width < 720 ? .75 : 1;
+          context.stroke();
+        }
+      }
+
+      const bridgeFlow = time * .00022;
       for (let index = 0; index < projected.length; index += 2) {
         const first = projected[index];
         const second = projected[index + 1];
         if (!first || !second || !first.bridge) continue;
-        const alpha = .11 + (first.depth + 1) * .07;
-        context.strokeStyle = `rgba(229,190,108,${alpha})`;
-        context.beginPath();
-        context.moveTo(first.x, first.y);
-        context.lineTo(second.x, second.y);
-        context.stroke();
+        const alpha = .28 + (first.depth + 1) * .11;
+        let bridgeCursor = 0;
+        let bridgePart = 0;
+        while (bridgeCursor < 1) {
+          const gapWave = .5 + Math.sin(index * 3.17 + bridgePart * 5.83 + bridgeFlow) * .5;
+          const lengthWave = .5 + Math.sin(index * 7.11 + bridgePart * 2.47 - bridgeFlow * .83) * .5;
+          bridgeCursor += .025 + gapWave * .075;
+          const bridgeEnd = Math.min(1, bridgeCursor + .035 + lengthWave * .14);
+          if (bridgeEnd <= bridgeCursor) break;
+          const startX = first.x + (second.x - first.x) * bridgeCursor;
+          const startY = first.y + (second.y - first.y) * bridgeCursor;
+          const endX = first.x + (second.x - first.x) * bridgeEnd;
+          const endY = first.y + (second.y - first.y) * bridgeEnd;
+          context.beginPath();
+          context.moveTo(startX, startY);
+          context.lineTo(endX, endY);
+          context.strokeStyle = `rgba(198,135,40,${alpha * .28})`;
+          context.lineWidth = width < 720 ? 2.5 : 3.5;
+          context.stroke();
+          context.strokeStyle = `rgba(244,210,137,${alpha})`;
+          context.lineWidth = width < 720 ? .7 : .9;
+          context.stroke();
+          bridgeCursor = bridgeEnd;
+          bridgePart += 1;
+        }
       }
       projected.sort((a, b) => a.depth - b.depth);
       for (const point of projected) {
         const front = (point.depth + 1) * .5;
         const alpha = .24 + front * .68;
         const size = point.size * (.75 + front * 1.35);
-        const glow = context.createRadialGradient(point.x, point.y, 0, point.x, point.y, size * 4.2);
+        const glowRadius = size * 4.2;
+        const glow = context.createRadialGradient(point.x, point.y, 0, point.x, point.y, glowRadius);
         glow.addColorStop(0, `rgba(255,247,215,${alpha})`);
         glow.addColorStop(.2, `rgba(242,202,118,${alpha * .82})`);
         glow.addColorStop(1, 'rgba(198,137,42,0)');
         context.fillStyle = glow;
         context.beginPath();
-        context.arc(point.x, point.y, size * 4.2, 0, Math.PI * 2);
+        context.arc(point.x, point.y, glowRadius, 0, Math.PI * 2);
         context.fill();
       }
       context.globalCompositeOperation = 'source-over';
