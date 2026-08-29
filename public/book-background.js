@@ -10,7 +10,7 @@
     return;
   }
 
-  if (theme === 'rust' || theme === 'hearts') startParticleBackground(theme);
+  if (theme === 'rust' || theme === 'hearts' || theme === 'alien') startParticleBackground(theme);
 
   function startCinematicBackground(THREE, selectedTheme) {
     const canvas = document.createElement('canvas');
@@ -465,11 +465,15 @@
 
     function seed() {
       particles.length = 0;
-      const count = width < 720 ? 62 : 115;
+      const count = selectedTheme === 'alien' ? (width < 720 ? 90 : 170) : (width < 720 ? 62 : 115);
       for (let index = 0; index < count; index += 1) particles.push(makeParticle(true));
     }
 
     function makeParticle(initial = false) {
+      if (selectedTheme === 'alien') {
+        const index = particles.length;
+        return { progress: index / Math.max(1, width < 720 ? 90 : 170), strand: index % 2, bridge: index % 9 === 0, size: .65 + Math.random() * 1.35, phase: Math.random() * .18 };
+      }
       if (selectedTheme === 'rust') {
         const edge = Math.random() < .62;
         return { x: edge ? (Math.random() < .5 ? Math.random() * width * .16 : width * (.84 + Math.random() * .16)) : Math.random() * width, y: initial ? Math.random() * height : height + 12, vx: (Math.random() - .5) * .42, vy: -(.42 + Math.random() * 1.45), life: Math.random(), size: .7 + Math.random() * 2.2 };
@@ -525,10 +529,61 @@
       context.globalCompositeOperation = 'source-over';
     }
 
+    function drawAlienDNA(time) {
+      const centerX = width < 720 ? width * .72 : width * .76;
+      const centerY = height * .5;
+      const helixHeight = Math.min(height * .82, 790);
+      const radius = Math.min(width * .075, 116);
+      const rotation = time * .00016;
+      const projected = [];
+      for (const particle of particles) {
+        const y = centerY - helixHeight * .5 + particle.progress * helixHeight;
+        const angle = particle.progress * Math.PI * 8 + rotation + particle.strand * Math.PI + particle.phase;
+        const depth = Math.sin(angle);
+        projected.push({
+          x: centerX + Math.cos(angle) * radius * (.62 + (depth + 1) * .18),
+          y,
+          depth,
+          bridge: particle.bridge,
+          strand: particle.strand,
+          size: particle.size
+        });
+      }
+      context.globalCompositeOperation = 'lighter';
+      context.lineWidth = .7;
+      for (let index = 0; index < projected.length; index += 2) {
+        const first = projected[index];
+        const second = projected[index + 1];
+        if (!first || !second || !first.bridge) continue;
+        const alpha = .11 + (first.depth + 1) * .07;
+        context.strokeStyle = `rgba(229,190,108,${alpha})`;
+        context.beginPath();
+        context.moveTo(first.x, first.y);
+        context.lineTo(second.x, second.y);
+        context.stroke();
+      }
+      projected.sort((a, b) => a.depth - b.depth);
+      for (const point of projected) {
+        const front = (point.depth + 1) * .5;
+        const alpha = .24 + front * .68;
+        const size = point.size * (.75 + front * 1.35);
+        const glow = context.createRadialGradient(point.x, point.y, 0, point.x, point.y, size * 4.2);
+        glow.addColorStop(0, `rgba(255,247,215,${alpha})`);
+        glow.addColorStop(.2, `rgba(242,202,118,${alpha * .82})`);
+        glow.addColorStop(1, 'rgba(198,137,42,0)');
+        context.fillStyle = glow;
+        context.beginPath();
+        context.arc(point.x, point.y, size * 4.2, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.globalCompositeOperation = 'source-over';
+    }
+
     function frame(time) {
       context.clearRect(0, 0, width, height);
       if (selectedTheme === 'rust') drawRust();
-      else drawHearts(time);
+      else if (selectedTheme === 'hearts') drawHearts(time);
+      else drawAlienDNA(time);
       frameId = requestAnimationFrame(frame);
     }
 

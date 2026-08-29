@@ -33,8 +33,9 @@ test('public navigation keeps the cinematic wordmark and complete link sequence'
   const keeper = read('../public/books/keepers-companion.html')
   const rust = read('../public/books/rust-and-steel.html')
   const hearts = read('../public/books/hearts-in-the-void.html')
+  const alien = read('../public/books/alien-archives.html')
   const labels = ['Home', 'Setting', 'Core', 'Keeper', 'Rust &amp; Steel', 'Hearts in the Void', 'Alien Archives', 'Downloads', 'Features', 'Feedback']
-  for (const source of [home, portal, core, keeper, rust, hearts]) {
+  for (const source of [home, portal, core, keeper, rust, hearts, alien]) {
     assert.match(source, /vf-wordmark-mark/)
     const publicMarker = source.indexOf('Public navigation')
     const portalMarker = source.indexOf('<div class="vf-portal-nav-track">')
@@ -55,7 +56,8 @@ test('each public book declares its cinematic theme without relying on the deplo
     ['../public/books/corebook.html', 'core'],
     ['../public/books/keepers-companion.html', 'keeper'],
     ['../public/books/rust-and-steel.html', 'rust'],
-    ['../public/books/hearts-in-the-void.html', 'hearts']
+    ['../public/books/hearts-in-the-void.html', 'hearts'],
+    ['../public/books/alien-archives.html', 'alien']
   ]
   for (const [path, theme] of books) {
     assert.match(read(path), new RegExp(`data-book-theme="${theme}"`))
@@ -63,6 +65,19 @@ test('each public book declares its cinematic theme without relying on the deplo
   const detail = read('../public/book-detail.js')
   assert.match(detail, /document\.body\.dataset\.bookTheme \|\| bookThemes\[routeName\] \|\| ''/)
   assert.doesNotMatch(detail, /\|\| 'core'/)
+})
+
+test('Alien Archives presents the book features, nine peoples and a reduced-motion-safe DNA backdrop', () => {
+  const page = read('../public/books/alien-archives.html')
+  const styles = read('../public/book-detail.css')
+  const background = read('../public/book-background.js')
+  assert.match(page, /alien-archives-lab-v1\.webp/)
+  assert.equal((page.match(/class="species-card"/g) || []).length, 9)
+  assert.equal((page.match(/class="feature-panel"/g) || []).length, 9)
+  assert.match(styles, /data-book-theme="alien"/)
+  assert.match(background, /theme === 'alien'/)
+  assert.match(background, /drawAlienDNA/)
+  assert.match(background, /prefers-reduced-motion: reduce/)
 })
 
 test('all public surfaces use the same fixed navigation contract without revealing role links', () => {

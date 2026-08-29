@@ -28,7 +28,7 @@
       <a href="/books/keepers-companion.html">Keeper</a>
       <a href="/books/rust-and-steel.html">Rust &amp; Steel</a>
       <a href="/books/hearts-in-the-void.html">Hearts in the Void</a>
-      <a href="/#alien-species">Alien Archives</a>
+      <a href="/books/alien-archives.html">Alien Archives</a>
       <a href="/downloads.html">Downloads</a>
       <a href="/#features">Features</a>
       <a href="/feedback.html">Feedback</a>

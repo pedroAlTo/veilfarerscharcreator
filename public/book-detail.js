@@ -9,7 +9,8 @@ const bookThemes = {
   corebook: 'core',
   'keepers-companion': 'keeper',
   'rust-and-steel': 'rust',
-  'hearts-in-the-void': 'hearts'
+  'hearts-in-the-void': 'hearts',
+  'alien-archives': 'alien'
 };
 const routeName = decodeURIComponent(location.pathname)
   .replace(/\/+$/, '')
