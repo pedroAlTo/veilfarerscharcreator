@@ -25,15 +25,3 @@ if (bookTheme) {
   document.head.append(atmosphereScript);
 }
 
-const nav = document.querySelector('[data-book-nav]');
-const toggle = document.querySelector('[data-book-menu]');
-if (nav && toggle) {
-  toggle.addEventListener('click', () => {
-    const open = nav.classList.toggle('is-open');
-    toggle.setAttribute('aria-expanded', String(open));
-  });
-  nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-    nav.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
-  }));
-}

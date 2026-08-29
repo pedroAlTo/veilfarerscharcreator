@@ -3,7 +3,7 @@
   if(!document.querySelector('link[href^="/public-navigation.css"]')){
     const publicNavigation=document.createElement('link');
     publicNavigation.rel='stylesheet';
-    publicNavigation.href='/public-navigation.css?v=20260829-2';
+    publicNavigation.href='/public-navigation.css?v=20260829-7';
     document.head.appendChild(publicNavigation);
   }
   // Hide private links before identity resolves; removing [hidden] reveals them normally.
@@ -109,6 +109,18 @@
     portalMenu.setAttribute('aria-expanded',String(open));
   });
   track.querySelectorAll('a').forEach(link=>link.addEventListener('click',closePortalMenu));
+  document.addEventListener('click',event=>{
+    if(!nav.contains(event.target)) closePortalMenu();
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape' && nav.classList.contains('is-open')){
+      closePortalMenu();
+      portalMenu.focus();
+    }
+  });
+  window.addEventListener('resize',()=>{
+    if(window.innerWidth>1050) closePortalMenu();
+  },{passive:true});
   function updateScroller(){
     const overflow=track.scrollWidth>track.clientWidth+2;
     nav.classList.toggle('has-overflow',overflow);

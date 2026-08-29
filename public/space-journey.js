@@ -1,53 +1,41 @@
-const STORAGE_KEY = 'vf-home-visuals';
 const body = document.body;
 const mount = document.getElementById('space-webgl');
 const announcer = document.querySelector('[data-visual-announcer]');
-const visualButtons = [...document.querySelectorAll('[data-visual-choice]')];
 const sceneLabels = [...document.querySelectorAll('[data-scene]')];
 const journeyScroll = document.querySelector('[data-journey-scroll]');
-const header = document.querySelector('[data-site-header]');
-const navToggle = document.querySelector('[data-nav-toggle]');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const forceReducedMotion = new URLSearchParams(location.search).get('vf-motion') === 'reduce';
 
 let controller = null;
 let effectiveMode = 'static';
-let storedChoice = readChoice();
 let requestToken = 0;
-
-function readChoice() {
-  try {
-    const value = localStorage.getItem(STORAGE_KEY);
-    return value === 'cinematic' || value === 'static' ? value : null;
-  } catch (_) {
-    return null;
-  }
-}
-
-function saveChoice(value) {
-  try { localStorage.setItem(STORAGE_KEY, value); } catch (_) { /* preference remains session-only */ }
-}
 
 function clearlyLowCapability() {
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   const veryLowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 2;
   const veryLowCpu = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 2;
-  return window.innerWidth < 700 || veryLowMemory || veryLowCpu || Boolean(connection && connection.saveData);
+  return veryLowMemory || veryLowCpu || Boolean(connection && connection.saveData);
+}
+
+function supportsWebGL() {
+  try {
+    const canvas = document.createElement('canvas');
+    const attributes = { failIfMajorPerformanceCaveat: true, powerPreference: 'high-performance' };
+    const context = canvas.getContext('webgl2', attributes) || canvas.getContext('webgl', attributes);
+    if (!context) return false;
+    const loseContext = context.getExtension('WEBGL_lose_context');
+    if (loseContext) loseContext.loseContext();
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 function initialPreference() {
-  if (storedChoice) return { mode: storedChoice, explicit: true, reason: 'saved-preference' };
-  if (forceReducedMotion || reduceMotion.matches) return { mode: 'static', explicit: false, reason: 'reduced-motion' };
-  if (clearlyLowCapability()) return { mode: 'static', explicit: false, reason: 'device-capability' };
-  return { mode: 'cinematic', explicit: false, reason: 'automatic' };
-}
-
-function setButtonState(mode, busy) {
-  visualButtons.forEach((button) => {
-    const selected = button.dataset.visualChoice === mode;
-    button.setAttribute('aria-pressed', String(selected));
-    button.disabled = Boolean(busy);
-  });
+  if (forceReducedMotion || reduceMotion.matches) return { mode: 'static', reason: 'reduced-motion' };
+  if (clearlyLowCapability()) return { mode: 'static', reason: 'device-capability' };
+  if (!supportsWebGL()) return { mode: 'static', reason: 'webgl-unavailable' };
+  return { mode: 'cinematic', reason: 'automatic' };
 }
 
 function announce(message) {
@@ -58,7 +46,6 @@ function publishMode(mode, reason) {
   effectiveMode = mode;
   body.dataset.visualMode = mode;
   body.dataset.visualReason = reason;
-  setButtonState(mode, false);
   window.dispatchEvent(new CustomEvent('vf:visual-mode', { detail: { mode, reason } }));
 }
 
@@ -75,9 +62,8 @@ function showStatic(reason, options) {
   if (!settings.silent) announce('Static visuals enabled.');
 }
 
-async function showCinematic(reason, explicit) {
+async function showCinematic(reason) {
   const token = ++requestToken;
-  setButtonState('cinematic', true);
   body.dataset.visualReason = 'loading';
   try {
     if (new URLSearchParams(location.search).get('vf-webgl') === 'fail') {
@@ -86,7 +72,6 @@ async function showCinematic(reason, explicit) {
     const THREE = await import('/assets/vendor/three.module.min.js');
     if (token !== requestToken) return;
     controller = new SpaceJourneyController(THREE, mount, {
-      explicit: Boolean(explicit),
       onScene: updateSceneReadout,
       onFallback: (fallbackReason) => {
         console.warn('[VeilFarers] Cinematic visuals unavailable; using Static mode.');
@@ -115,36 +100,13 @@ function updateSceneReadout(sceneName) {
   sceneLabels.forEach((label) => label.classList.toggle('is-active', label.dataset.scene === sceneName));
 }
 
-visualButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    const choice = button.dataset.visualChoice;
-    storedChoice = choice;
-    saveChoice(choice);
-    if (choice === 'static') showStatic('user-choice');
-    else showCinematic('user-choice', true);
-  });
-});
-
-if (navToggle && header) {
-  navToggle.addEventListener('click', () => {
-    const open = header.classList.toggle('is-open');
-    navToggle.setAttribute('aria-expanded', String(open));
-  });
-  document.querySelectorAll('[data-public-nav] a').forEach((link) => link.addEventListener('click', () => {
-    header.classList.remove('is-open');
-    navToggle.setAttribute('aria-expanded', 'false');
-  }));
-  document.addEventListener('click', (event) => {
-    if (!header.contains(event.target)) {
-      header.classList.remove('is-open');
-      navToggle.setAttribute('aria-expanded', 'false');
-    }
-  });
-}
-
 reduceMotion.addEventListener('change', (event) => {
-  if (!storedChoice && event.matches) showStatic('reduced-motion');
-  else if (!storedChoice && !event.matches && !clearlyLowCapability()) showCinematic('automatic', false);
+  if (event.matches) showStatic('reduced-motion');
+  else {
+    const preference = initialPreference();
+    if (preference.mode === 'cinematic') showCinematic(preference.reason);
+    else showStatic(preference.reason, { silent: true });
+  }
 });
 
 class SpaceJourneyController {
@@ -191,7 +153,7 @@ class SpaceJourneyController {
       depth: true,
       stencil: false,
       powerPreference: 'high-performance',
-      failIfMajorPerformanceCaveat: !this.options.explicit
+      failIfMajorPerformanceCaveat: true
     });
     this.renderer.setClearColor(0x010307, 1);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 1100 ? 1.2 : 1.5));
@@ -610,7 +572,7 @@ class SpaceJourneyController {
     else if (this.latestFps > 28) this.lowWindows = 0;
     this.performanceStart = now - 5000;
     this.performanceFrames = 0;
-    if (!this.options.explicit && this.performanceWindows >= 4 && this.lowWindows >= 4) {
+    if (this.performanceWindows >= 4 && this.lowWindows >= 4) {
       this.options.onFallback('sustained-low-fps');
     }
   }
@@ -713,13 +675,6 @@ window.VeilFarersVisuals = {
   getMode: () => effectiveMode,
   getReason: () => body.dataset.visualReason,
   getPerformance: () => controller ? { fps: controller.latestFps, lowWindows: controller.lowWindows } : null,
-  setMode: (mode) => {
-    if (mode !== 'cinematic' && mode !== 'static') return;
-    storedChoice = mode;
-    saveChoice(mode);
-    if (mode === 'cinematic') showCinematic('user-choice', true);
-    else showStatic('user-choice');
-  },
   simulateFailure: () => {
     if (controller) controller.options.onFallback('simulated-failure');
     else showStatic('simulated-failure');
@@ -727,5 +682,5 @@ window.VeilFarersVisuals = {
 };
 
 const preference = initialPreference();
-if (preference.mode === 'cinematic') showCinematic(preference.reason, preference.explicit);
+if (preference.mode === 'cinematic') showCinematic(preference.reason);
 else showStatic(preference.reason, { silent: true });
