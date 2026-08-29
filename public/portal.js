@@ -3,7 +3,7 @@
   if(!document.querySelector('link[href^="/public-navigation.css"]')){
     const publicNavigation=document.createElement('link');
     publicNavigation.rel='stylesheet';
-    publicNavigation.href='/public-navigation.css?v=20260829-7';
+    publicNavigation.href='/public-navigation.css?v=20260829-8';
     document.head.appendChild(publicNavigation);
   }
   // Hide private links before identity resolves; removing [hidden] reveals them normally.

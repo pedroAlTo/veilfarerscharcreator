@@ -38,22 +38,21 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = selectedTheme === 'core' ? 1.02 : 1.2;
-    document.body.classList.add('book-cinematic-ready');
-
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(43, 1, .1, 100);
     camera.position.set(0, 0, 15);
     const clock = new THREE.Clock();
     const animated = [];
     let frameId = 0;
+    let ready = false;
 
     scene.add(createStarfield(THREE, selectedTheme === 'keeper' ? 5200 : 3300));
     if (selectedTheme === 'core') createPlanetScene(THREE, scene, camera, animated);
     else createGalaxyScene(THREE, scene, animated);
 
     function resize() {
-      const width = innerWidth;
-      const height = innerHeight;
+      const width = canvas.clientWidth || innerWidth;
+      const height = canvas.clientHeight || innerHeight;
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();
@@ -63,6 +62,13 @@
       const elapsed = clock.getElapsedTime();
       for (const update of animated) update(elapsed);
       renderer.render(scene, camera);
+      if (!ready) {
+        ready = true;
+        requestAnimationFrame(() => {
+          canvas.classList.add('is-ready');
+          document.body.classList.add('book-cinematic-ready');
+        });
+      }
       frameId = requestAnimationFrame(render);
     }
 
@@ -450,10 +456,11 @@
     let height = 0;
     let ratio = 1;
     let frameId = 0;
+    let ready = false;
 
     function resize() {
-      width = innerWidth;
-      height = innerHeight;
+      width = canvas.clientWidth || innerWidth;
+      height = canvas.clientHeight || innerHeight;
       ratio = Math.min(devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
@@ -465,7 +472,7 @@
 
     function seed() {
       particles.length = 0;
-      const count = selectedTheme === 'alien' ? (width < 720 ? 90 : 170) : (width < 720 ? 62 : 115);
+      const count = selectedTheme === 'alien' ? (width < 720 ? 90 : 170) : selectedTheme === 'hearts' ? (width < 720 ? 96 : 180) : (width < 720 ? 62 : 115);
       for (let index = 0; index < count; index += 1) particles.push(makeParticle(true));
     }
 
@@ -487,7 +494,11 @@
         const edge = Math.random() < .62;
         return { x: edge ? (Math.random() < .5 ? Math.random() * width * .16 : width * (.84 + Math.random() * .16)) : Math.random() * width, y: initial ? Math.random() * height : height + 12, vx: (Math.random() - .5) * .42, vy: -(.42 + Math.random() * 1.45), life: Math.random(), size: .7 + Math.random() * 2.2 };
       }
-      return { x: initial ? Math.random() * width : width * (.19 + Math.random() * .08), y: initial ? Math.random() * height : height * (.44 + Math.random() * .17), vx: .16 + Math.random() * .48, vy: -.08 + (Math.random() - .5) * .2, life: Math.random(), size: .5 + Math.random() * 1.9, phase: Math.random() * Math.PI * 2 };
+      const life = initial ? Math.random() * 1.08 : 0;
+      const vx = .72 + Math.random() * 1.55;
+      const vy = -(.1 + Math.random() * .62);
+      const age = life / .00215;
+      return { x: width * (.235 + Math.random() * .025) + vx * age, y: height * (.585 + Math.random() * .035) + vy * age, vx, vy, life, size: .75 + Math.random() * 2.35, phase: Math.random() * Math.PI * 2, twinkle: Math.random() < .32 };
     }
 
     function reset(particle) { Object.assign(particle, makeParticle(false)); }
@@ -513,25 +524,38 @@
 
     function drawHearts(time) {
       context.globalCompositeOperation = 'lighter';
+      const sourceX = width * .247;
+      const sourceY = height * .605;
+      const sourcePulse = .72 + Math.sin(time * .0022) * .12;
+      const sourceGlow = context.createRadialGradient(sourceX, sourceY, 0, sourceX, sourceY, width < 720 ? 30 : 54);
+      sourceGlow.addColorStop(0, `rgba(255,244,211,${sourcePulse * .38})`);
+      sourceGlow.addColorStop(.35, `rgba(215,192,255,${sourcePulse * .16})`);
+      sourceGlow.addColorStop(1, 'rgba(181,149,255,0)');
+      context.fillStyle = sourceGlow;
+      context.beginPath();
+      context.arc(sourceX, sourceY, width < 720 ? 30 : 54, 0, Math.PI * 2);
+      context.fill();
       for (const particle of particles) {
-        particle.x += particle.vx;
-        particle.y += particle.vy + Math.sin(time * .001 + particle.phase) * .035;
-        particle.life += .0028;
-        if (particle.x > width + 15 || particle.y < -15 || particle.life > 1.25) reset(particle);
-        const becomingStar = Math.min(1, Math.max(0, (particle.x / width - .34) * 2.4));
-        const alpha = (.28 + becomingStar * .55) * Math.max(0, 1 - particle.life * .48);
+        const becomingStar = Math.min(1, Math.max(0, (particle.life - .28) * 1.7));
+        particle.x += particle.vx * (1 - becomingStar * .56);
+        particle.y += particle.vy * (1 - becomingStar * .5) + Math.sin(time * .0014 + particle.phase) * .07;
+        particle.life += .00215;
+        if (particle.x > width + 20 || particle.y < -20 || particle.life > 1.25) reset(particle);
+        const alpha = (.46 + becomingStar * .48) * Math.max(0, 1 - particle.life * .36);
         context.fillStyle = `rgba(${220 + Math.round(becomingStar * 35)},${205 + Math.round(becomingStar * 40)},${170 + Math.round(becomingStar * 80)},${alpha})`;
         context.beginPath();
         context.arc(particle.x, particle.y, particle.size * (1 - becomingStar * .35), 0, Math.PI * 2);
         context.fill();
-        if (becomingStar > .7 && particle.size > 1.1) {
-          context.strokeStyle = `rgba(238,226,196,${alpha * .45})`;
+        if (becomingStar > .55 && (particle.twinkle || particle.size > 2.25)) {
+          const twinkle = particle.twinkle ? .48 + Math.sin(time * .0032 + particle.phase) * .42 : .42;
+          const ray = 3 + Math.max(0, twinkle) * 7;
+          context.strokeStyle = `rgba(248,238,212,${alpha * (.28 + Math.max(0, twinkle) * .55)})`;
           context.lineWidth = .6;
           context.beginPath();
-          context.moveTo(particle.x - 4, particle.y);
-          context.lineTo(particle.x + 4, particle.y);
-          context.moveTo(particle.x, particle.y - 4);
-          context.lineTo(particle.x, particle.y + 4);
+          context.moveTo(particle.x - ray, particle.y);
+          context.lineTo(particle.x + ray, particle.y);
+          context.moveTo(particle.x, particle.y - ray);
+          context.lineTo(particle.x, particle.y + ray);
           context.stroke();
         }
       }
@@ -644,6 +668,10 @@
       if (selectedTheme === 'rust') drawRust();
       else if (selectedTheme === 'hearts') drawHearts(time);
       else drawAlienDNA(time);
+      if (!ready) {
+        ready = true;
+        requestAnimationFrame(() => canvas.classList.add('is-ready'));
+      }
       frameId = requestAnimationFrame(frame);
     }
 

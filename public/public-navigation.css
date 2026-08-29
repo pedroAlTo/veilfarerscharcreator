@@ -29,7 +29,7 @@ img,
 video,
 canvas{max-width:100%}
 
-html.vf-ftl-arriving body>*:not(.vf-ftl-transition){
+html.vf-ftl-arriving body>*:not(.vf-ftl-transition):not(.vf-space):not(.book-atmosphere){
   opacity:0;
   animation:vf-page-arrival 1.04s .08s cubic-bezier(.18,.66,.22,1) forwards;
 }
