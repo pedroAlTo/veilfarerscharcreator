@@ -21,7 +21,7 @@ const bookTheme = document.body.dataset.bookTheme || bookThemes[routeName] || ''
 if (bookTheme) {
   document.body.dataset.bookTheme = bookTheme;
   const atmosphereScript = document.createElement('script');
-  atmosphereScript.src = '/book-background.js?v=20260829-3';
+  atmosphereScript.src = '/book-background.js?v=20260831-1';
   document.head.append(atmosphereScript);
 }
 

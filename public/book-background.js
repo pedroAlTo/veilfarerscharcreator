@@ -19,13 +19,14 @@
     document.body.prepend(canvas);
 
     let renderer;
+    const compactMode = innerWidth < 900 || matchMedia('(pointer: coarse)').matches;
     try {
       renderer = new THREE.WebGLRenderer({
         canvas,
         alpha: true,
-        antialias: innerWidth > 760,
-        powerPreference: 'high-performance',
-        failIfMajorPerformanceCaveat: true
+        antialias: !compactMode,
+        powerPreference: compactMode ? 'default' : 'high-performance',
+        failIfMajorPerformanceCaveat: false
       });
     } catch (error) {
       canvas.remove();
@@ -34,7 +35,7 @@
     }
 
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.2 : 1.5));
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, compactMode ? 1 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = selectedTheme === 'core' ? 1.02 : 1.2;
@@ -45,6 +46,7 @@
     const animated = [];
     let frameId = 0;
     let ready = false;
+    let running = true;
 
     scene.add(createStarfield(THREE, selectedTheme === 'keeper' ? 5200 : 3300));
     if (selectedTheme === 'core') createPlanetScene(THREE, scene, camera, animated);
@@ -59,6 +61,7 @@
     }
 
     function render() {
+      if (!running) return;
       const elapsed = clock.getElapsedTime();
       for (const update of animated) update(elapsed);
       renderer.render(scene, camera);
@@ -73,9 +76,17 @@
     }
 
     addEventListener('resize', resize, { passive: true });
+    canvas.addEventListener('webglcontextlost', (event) => {
+      event.preventDefault();
+      running = false;
+      cancelAnimationFrame(frameId);
+      canvas.remove();
+      document.body.classList.remove('book-cinematic-ready');
+      console.warn('VeilFarers cinematic book background unavailable; using static artwork.');
+    }, false);
     document.addEventListener('visibilitychange', () => {
       cancelAnimationFrame(frameId);
-      if (!document.hidden) {
+      if (!document.hidden && running) {
         clock.getDelta();
         frameId = requestAnimationFrame(render);
       }
@@ -285,7 +296,7 @@
   }
 
   function createGalaxyScene(THREE, scene, animated) {
-    const count = innerWidth < 760 ? 12000 : 28000;
+    const count = innerWidth < 760 ? 7200 : 28000;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const color = new THREE.Color();
@@ -337,7 +348,7 @@
     coreGlow.renderOrder = 1;
     scene.add(coreGlow);
 
-    const streamCount = innerWidth < 760 ? 2600 : 8200;
+    const streamCount = innerWidth < 760 ? 1800 : 8200;
     const streamPositions = new Float32Array(streamCount * 3);
     const streamColors = new Float32Array(streamCount * 3);
     const streamPhases = new Float32Array(streamCount);
@@ -451,6 +462,11 @@
     canvas.setAttribute('aria-hidden', 'true');
     document.body.prepend(canvas);
     const context = canvas.getContext('2d', { alpha: true });
+    if (!context) {
+      canvas.remove();
+      console.warn('VeilFarers cinematic book background unavailable; using static artwork.');
+      return;
+    }
     const particles = [];
     let width = 0;
     let height = 0;

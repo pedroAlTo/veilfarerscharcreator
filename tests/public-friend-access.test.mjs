@@ -155,7 +155,10 @@ test('mobile navigation stays in the viewport and cinematic visuals select thems
   assert.doesNotMatch(home, /data-visual-choice|vf-visual-control/)
   assert.doesNotMatch(journey, /vf-home-visuals|storedChoice|saveChoice/)
   assert.match(journey, /function supportsWebGL\(\)/)
-  assert.match(journey, /failIfMajorPerformanceCaveat: true/)
+  assert.match(journey, /failIfMajorPerformanceCaveat: false/)
+  assert.match(journey, /powerPreference: this\.compactMode \? 'default' : 'high-performance'/)
+  assert.doesNotMatch(journey, /hardwareConcurrency/)
+  assert.match(journey, /reduceMotion\.addListener\(handleMotionPreference\)/)
   assert.match(journey, /sustained-low-fps/)
   assert.match(journey, /prefers-reduced-motion: reduce/)
   assert.match(navigation, /overflow-x:clip/)
@@ -206,7 +209,30 @@ test('cinematic backgrounds render once without first-scroll reframing', () => {
   assert.match(bookStyles, /book-cinematic-ready\[data-book-theme="core"\]::before[^}]*opacity:0/)
   assert.match(bookScript, /canvas\.clientHeight \|\| innerHeight/)
   assert.match(bookScript, /canvas\.classList\.add\('is-ready'\)/)
-  assert.match(detail, /book-background\.js\?v=20260829-3/)
+  assert.match(detail, /book-background\.js\?v=20260831-1/)
+})
+
+test('cinematic renderers use an iPhone and Safari compatible WebGL profile', () => {
+  const home = read('../public/index.html')
+  const journey = read('../public/space-journey.js')
+  const background = read('../public/book-background.js')
+  const books = [
+    '../public/books/corebook.html',
+    '../public/books/keepers-companion.html',
+    '../public/books/rust-and-steel.html',
+    '../public/books/hearts-in-the-void.html',
+    '../public/books/alien-archives.html'
+  ].map(read)
+
+  assert.match(home, /space-journey\.js\?v=20260831-1/)
+  assert.match(journey, /pointer: coarse/)
+  assert.match(journey, /this\.compactMode \? 1 : 1\.5/)
+  assert.doesNotMatch(journey, /WEBGL_lose_context/)
+  assert.match(background, /failIfMajorPerformanceCaveat: false/)
+  assert.match(background, /compactMode \? 'default' : 'high-performance'/)
+  assert.match(background, /webglcontextlost/)
+  assert.match(background, /if \(!context\)/)
+  for (const book of books) assert.match(book, /book-detail\.js\?v=20260831-1/)
 })
 
 test('Hearts background emits a denser twinkling particle field from the heart core', () => {

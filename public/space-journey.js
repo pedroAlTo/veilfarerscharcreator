@@ -12,23 +12,12 @@ let requestToken = 0;
 
 function clearlyLowCapability() {
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const veryLowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 2;
-  const veryLowCpu = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 2;
-  return veryLowMemory || veryLowCpu || Boolean(connection && connection.saveData);
+  const criticallyLowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 1;
+  return criticallyLowMemory || Boolean(connection && connection.saveData);
 }
 
 function supportsWebGL() {
-  try {
-    const canvas = document.createElement('canvas');
-    const attributes = { failIfMajorPerformanceCaveat: true, powerPreference: 'high-performance' };
-    const context = canvas.getContext('webgl2', attributes) || canvas.getContext('webgl', attributes);
-    if (!context) return false;
-    const loseContext = context.getExtension('WEBGL_lose_context');
-    if (loseContext) loseContext.loseContext();
-    return true;
-  } catch (_) {
-    return false;
-  }
+  return typeof window.WebGL2RenderingContext !== 'undefined' || typeof window.WebGLRenderingContext !== 'undefined';
 }
 
 function initialPreference() {
@@ -100,14 +89,17 @@ function updateSceneReadout(sceneName) {
   sceneLabels.forEach((label) => label.classList.toggle('is-active', label.dataset.scene === sceneName));
 }
 
-reduceMotion.addEventListener('change', (event) => {
+function handleMotionPreference(event) {
   if (event.matches) showStatic('reduced-motion');
   else {
     const preference = initialPreference();
     if (preference.mode === 'cinematic') showCinematic(preference.reason);
     else showStatic(preference.reason, { silent: true });
   }
-});
+}
+
+if (typeof reduceMotion.addEventListener === 'function') reduceMotion.addEventListener('change', handleMotionPreference);
+else if (typeof reduceMotion.addListener === 'function') reduceMotion.addListener(handleMotionPreference);
 
 class SpaceJourneyController {
   constructor(THREE, target, options) {
@@ -130,6 +122,7 @@ class SpaceJourneyController {
     this.pointer = { x: 0, y: 0 };
     this.cameraOffset = { x: 0, y: 0 };
     this.currentScene = '';
+    this.compactMode = window.innerWidth < 1100 || window.matchMedia('(pointer: coarse)').matches;
     this.onResize = this.resize.bind(this);
     this.onScroll = this.syncScrollProgress.bind(this);
     this.onPointerMove = this.pointerMove.bind(this);
@@ -148,15 +141,15 @@ class SpaceJourneyController {
 
     this.renderer = new T.WebGLRenderer({
       canvas,
-      antialias: window.innerWidth >= 900,
+      antialias: !this.compactMode,
       alpha: false,
       depth: true,
       stencil: false,
-      powerPreference: 'high-performance',
-      failIfMajorPerformanceCaveat: true
+      powerPreference: this.compactMode ? 'default' : 'high-performance',
+      failIfMajorPerformanceCaveat: false
     });
     this.renderer.setClearColor(0x010307, 1);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 1100 ? 1.2 : 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.compactMode ? 1 : 1.5));
     this.renderer.outputColorSpace = T.SRGBColorSpace;
     this.renderer.toneMapping = T.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.02;
@@ -174,7 +167,7 @@ class SpaceJourneyController {
     rim.position.set(6, -3, -12);
     this.scene.add(rim);
 
-    const countScale = window.innerWidth < 1100 ? 0.58 : 1;
+    const countScale = this.compactMode ? 0.46 : 1;
     this.starField = this.createStarField(Math.round(6200 * countScale));
     this.hyperspace = this.createHyperspace(Math.round(780 * countScale));
     this.planet = this.createPlanet();
@@ -273,7 +266,7 @@ class SpaceJourneyController {
     const group = new T.Group();
     const surface = this.loadTexture('/assets/books/core-planet-albedo.webp');
     const clouds = this.createCloudTexture();
-    const geometry = new T.SphereGeometry(4.2, 72, 52);
+    const geometry = new T.SphereGeometry(4.2, this.compactMode ? 48 : 72, this.compactMode ? 34 : 52);
     const surfaceMaterial = new T.MeshStandardMaterial({
       map: surface,
       roughness: 0.92,
@@ -293,7 +286,7 @@ class SpaceJourneyController {
       depthWrite: false,
       roughness: 1
     });
-    const cloudLayer = new T.Mesh(new T.SphereGeometry(4.225, 64, 44), cloudMaterial);
+    const cloudLayer = new T.Mesh(new T.SphereGeometry(4.225, this.compactMode ? 44 : 64, this.compactMode ? 30 : 44), cloudMaterial);
     group.add(cloudLayer);
 
     const atmosphereMaterial = new T.ShaderMaterial({
@@ -305,7 +298,7 @@ class SpaceJourneyController {
       vertexShader: 'varying vec3 vNormal;void main(){vNormal=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
       fragmentShader: 'varying vec3 vNormal;uniform float uOpacity;void main(){float rim=pow(1.0-abs(vNormal.z),5.6);vec3 c=mix(vec3(.12,.48,.72),vec3(1.0,.84,.5),rim*.16);gl_FragColor=vec4(c,rim*uOpacity);}'
     });
-    const atmosphere = new T.Mesh(new T.SphereGeometry(4.31, 64, 44), atmosphereMaterial);
+    const atmosphere = new T.Mesh(new T.SphereGeometry(4.31, this.compactMode ? 44 : 64, this.compactMode ? 30 : 44), atmosphereMaterial);
     group.add(atmosphere);
 
     const moonMaterial = new T.MeshStandardMaterial({
@@ -318,7 +311,7 @@ class SpaceJourneyController {
     });
     const moonPivot = new T.Group();
     moonPivot.rotation.z = -0.22;
-    const moon = new T.Mesh(new T.SphereGeometry(0.372, 36, 24), moonMaterial);
+    const moon = new T.Mesh(new T.SphereGeometry(0.372, this.compactMode ? 28 : 36, this.compactMode ? 18 : 24), moonMaterial);
     moon.position.set(6.7, 1.1, 0.35);
     moonPivot.add(moon);
     group.add(moonPivot);
@@ -585,6 +578,8 @@ class SpaceJourneyController {
 
   visibilityChange() {
     this.lastFrame = performance.now();
+    if (document.hidden) cancelAnimationFrame(this.raf);
+    else if (this.running) this.raf = requestAnimationFrame(this.frame);
   }
 
   contextLost(event) {
@@ -599,7 +594,7 @@ class SpaceJourneyController {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 1100 ? 1.2 : 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.compactMode ? 1 : 1.5));
   }
 
   dispose() {
