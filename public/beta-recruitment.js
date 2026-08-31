@@ -1,6 +1,6 @@
 (() => {
   const modal = document.querySelector('[data-beta-modal]');
-  const inbox = document.querySelector('[data-beta-inbox]');
+  const inbox = document.querySelector('[data-cta-inbox]');
   if (!(modal instanceof HTMLDialogElement) || !(inbox instanceof HTMLButtonElement)) return;
 
   const closeButton = modal.querySelector('[data-beta-close]');
@@ -15,6 +15,7 @@
   let closing = false;
   let closeTimer = 0;
   let closeMode = 'shelve';
+  let switchTarget = '';
   let smokeFrame = 0;
   let smokeWidth = 0;
   let smokeHeight = 0;
@@ -34,17 +35,11 @@
   function isDeleted() { return readStorage(localStorage, deletedKey); }
   function isShelved() { return readStorage(sessionStorage, shelvedKey); }
 
-  function setInbox(active, animate = false) {
+  function reportInbox(active, animate = false) {
     const deleted = isDeleted();
-    inbox.classList.toggle('is-active', active && !deleted);
-    inbox.disabled = deleted;
-    inbox.setAttribute('aria-disabled', deleted ? 'true' : 'false');
-    inbox.setAttribute('aria-expanded', modal.open ? 'true' : 'false');
-    inbox.setAttribute('aria-label', deleted ? 'Beta tester invitation permanently dismissed' : active ? 'Open saved beta tester invitation' : 'Beta tester invitation is open');
-    if (animate && active && !deleted) {
-      inbox.classList.remove('is-arriving');
-      requestAnimationFrame(() => inbox.classList.add('is-arriving'));
-    }
+    window.dispatchEvent(new CustomEvent('vf:cta-inbox-update', { detail: {
+      target: 'beta', active: active && !deleted, deleted, open: modal.open, animate
+    } }));
   }
 
   function rememberShelved() { writeStorage(sessionStorage, shelvedKey); }
@@ -53,6 +48,7 @@
     writeStorage(localStorage, deletedKey);
     try { sessionStorage.removeItem(shelvedKey); }
     catch { /* Nothing else is required. */ }
+    reportInbox(false);
   }
 
   function eyeAnchors() {
@@ -181,18 +177,25 @@
     stopEyeSmoke();
     modal.classList.remove('is-closing');
     if (modal.open) modal.close();
-    const shelved = closeMode === 'shelve' && !isDeleted();
-    setInbox(shelved, shelved);
-    if (shelved) inbox.focus({ preventScroll: true });
+    const switching = closeMode === 'switch';
+    const shelved = (closeMode === 'shelve' || switching) && !isDeleted();
+    reportInbox(shelved, shelved);
+    if (shelved && !switching) inbox.focus({ preventScroll: true });
     closing = false;
+    if (switching && switchTarget) {
+      const target = switchTarget;
+      switchTarget = '';
+      window.setTimeout(() => window.dispatchEvent(new CustomEvent('vf:cta-open', { detail: { target } })), 80);
+    }
   }
 
-  function closeInvitation(mode = 'shelve') {
+  function closeInvitation(mode = 'shelve', target = '') {
     if (closing || !modal.open) return;
     closing = true;
     closeMode = mode;
+    switchTarget = target;
     if (mode === 'delete') rememberDeleted();
-    else rememberShelved();
+    else if (mode === 'shelve') rememberShelved();
     if (reducedMotion.matches) {
       finishClose();
       return;
@@ -206,8 +209,7 @@
     if (isDeleted() || modal.open || closing) return;
     try { modal.showModal(); }
     catch { return; }
-    setInbox(false);
-    inbox.setAttribute('aria-expanded', 'true');
+    reportInbox(false);
     closeButton?.focus({ preventScroll: true });
     if (portraitImage?.complete) startEyeSmoke();
     else portraitImage?.addEventListener('load', startEyeSmoke, { once: true });
@@ -215,8 +217,14 @@
 
   closeButton?.addEventListener('click', () => closeInvitation('shelve'));
   deleteButton?.addEventListener('click', () => closeInvitation('delete'));
-  inbox.addEventListener('click', openInvitation);
-  inbox.addEventListener('animationend', () => inbox.classList.remove('is-arriving'));
+  window.addEventListener('vf:cta-switch-request', event => {
+    const { from, to } = event.detail || {};
+    if (from === 'beta' && to) closeInvitation('switch', to);
+  });
+  window.addEventListener('vf:cta-open', event => {
+    if (event.detail?.target === 'beta') openInvitation();
+  });
+  window.addEventListener('vf:cta-state-request', () => reportInbox(isShelved() && !modal.open));
   modal.addEventListener('cancel', (event) => {
     event.preventDefault();
     closeInvitation('shelve');
@@ -227,16 +235,23 @@
   action?.addEventListener('click', rememberShelved);
 
   if (isDeleted()) {
-    setInbox(false);
+    reportInbox(false);
     return;
   }
   if (isShelved()) {
-    setInbox(true);
+    reportInbox(true);
     return;
   }
 
-  setInbox(false);
+  reportInbox(false);
   const scheduleOpen = () => window.setTimeout(openInvitation, 900);
-  if (document.readyState === 'complete') scheduleOpen();
-  else window.addEventListener('load', scheduleOpen, { once: true });
+  const queueOpen = () => {
+    if (document.documentElement.dataset.vfReleaseNoticeBlocking === 'true') {
+      window.addEventListener('vf:release-notice-resolved', scheduleOpen, { once: true });
+      return;
+    }
+    scheduleOpen();
+  };
+  if (document.readyState === 'complete') queueOpen();
+  else window.addEventListener('load', queueOpen, { once: true });
 })();

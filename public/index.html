@@ -16,7 +16,7 @@
   <meta property="og:type" content="website">
   <title>VeilFarers · Adventure among the stars</title>
   <link rel="preload" href="/assets/homepage/space-journey-static.webp" as="image" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="/home-cinematic.css?v=20260829-11">
+  <link rel="stylesheet" href="/home-cinematic.css?v=20260901-2">
   <link rel="stylesheet" href="/public-navigation.css?v=20260829-8">
 </head>
 <body class="vf-home" data-visual-mode="static" data-visual-reason="initial">
@@ -37,7 +37,7 @@
       <a href="#home">Home</a><a href="#explore">Setting</a><a href="/books/corebook.html">Core</a><a href="/books/keepers-companion.html">Keeper</a><a href="/books/rust-and-steel.html">Rust &amp; Steel</a><a href="/books/hearts-in-the-void.html">Hearts in the Void</a><a href="/books/alien-archives.html">Alien Species</a><a href="/downloads.html">Downloads</a><a href="#features">Features</a><a href="/feedback.html">Feedback</a><a class="vf-login-link" href="/login.html">Log in</a>
     </nav>
   </header>
-  <button class="vf-beta-inbox" type="button" data-beta-inbox aria-label="Open beta tester invitation" aria-controls="beta-invitation" aria-expanded="false"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2.5 3.5h27v17h-27zM3.5 5l12.5 9L28.5 5M3.5 19l8.5-7m16.5 7L20 12"/></svg></button>
+  <button class="vf-beta-inbox vf-cta-inbox" type="button" data-cta-inbox aria-label="Open saved notifications" aria-controls="rust-download-correction beta-invitation" aria-expanded="false"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2.5 3.5h27v17h-27zM3.5 5l12.5 9L28.5 5M3.5 19l8.5-7m16.5 7L20 12"/></svg></button>
 
   <main id="main-content">
     <section class="vf-hero" id="home" aria-labelledby="hero-title" data-journey-scroll>
@@ -115,12 +115,33 @@
     <section class="vf-final-cta" aria-labelledby="final-title"><p class="vf-eyebrow">The next crossing begins here</p><h2 id="final-title">Explore VeilFarers</h2><div class="vf-final-links"><a href="#explore">Setting</a><a href="/downloads.html">Downloads</a><a href="/books/alien-archives.html">Alien Species</a><a href="/books/corebook.html">Books</a></div></section>
   </main>
 
+  <dialog class="vf-release-modal" id="rust-download-correction" data-release-modal aria-labelledby="release-correction-title" aria-describedby="release-correction-description">
+    <div class="vf-release-card">
+      <button class="vf-release-delete" type="button" data-release-delete aria-label="Permanently dismiss Rust and Steel correction"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+      <button class="vf-release-minimize" type="button" data-release-minimize aria-label="Minimize Rust and Steel correction"><span aria-hidden="true"></span></button>
+      <figure class="vf-release-portrait"><img src="/assets/homepage/kryllian-rust-repair-notice.png?v=20260901-1" alt="Colour sketch of Xirith's four-armed mechanic repairing a computer at the workbench" decoding="async"><canvas class="vf-release-sparks" data-release-sparks aria-hidden="true"></canvas></figure>
+      <div class="vf-release-copy">
+        <p class="vf-eyebrow">Workshop bulletin · Download repaired</p>
+        <h2 id="release-correction-title">Rust &amp; Steel is back in the forge.</h2>
+        <p class="vf-release-lead">For a short time, the Rust &amp; Steel download was serving the Corebook by mistake. The correct 12.05 PDF is now online.</p>
+        <p id="release-correction-description">Xirith's repair bay thanks the sharp-eyed VeilFarer who told us the file had been moonlighting as the Corebook. Your feedback let us catch it and hammer the right book back into place.</p>
+        <a class="vf-release-action" href="/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf" download>Download the repaired edition</a>
+        <nav class="vf-cta-pagination" data-cta-owner="release" aria-label="Homepage notices">
+          <button class="vf-cta-arrow" type="button" data-cta-target="beta" aria-label="Previous notice"><span aria-hidden="true">&#x2039;</span></button>
+          <button class="vf-cta-index is-current" type="button" data-cta-target="release" aria-current="page" aria-label="Notice 1: Rust and Steel correction">01</button>
+          <button class="vf-cta-index" type="button" data-cta-target="beta" aria-label="Notice 2: Beta tester invitation">02</button>
+          <button class="vf-cta-arrow" type="button" data-cta-target="beta" aria-label="Next notice"><span aria-hidden="true">&#x203a;</span></button>
+        </nav>
+      </div>
+    </div>
+  </dialog>
+
   <dialog class="vf-beta-modal" id="beta-invitation" data-beta-modal aria-labelledby="beta-title" aria-describedby="beta-description">
     <div class="vf-beta-card">
       <button class="vf-beta-delete" type="button" data-beta-delete aria-label="Permanently dismiss beta tester invitation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
       <button class="vf-beta-close" type="button" data-beta-close aria-label="Save beta tester invitation for later"><span aria-hidden="true"></span></button>
       <figure class="vf-beta-portrait"><img src="/assets/homepage/ethereal-beta-recruitment-v2.webp" alt="A smoky Ethereal in a constellation hat points toward the viewer" decoding="async"><canvas class="vf-beta-eye-smoke" data-beta-eye-smoke aria-hidden="true"></canvas></figure>
-      <div class="vf-beta-copy"><p class="vf-eyebrow">Beta signal · Recruitment open</p><h2 id="beta-title"><span>VeilFarers wants you</span><strong>as a beta tester!</strong></h2><p class="vf-beta-report">Report in at <a href="/feedback.html">veilfarers.com/feedback</a></p><p id="beta-description">Play the system, then be heard. Head to <a href="/feedback.html">Feedback</a> and tell us what works, what breaks, and what you'd change.</p><a class="vf-beta-action" href="/feedback.html">Answer the call</a></div>
+      <div class="vf-beta-copy"><p class="vf-eyebrow">Beta signal · Recruitment open</p><h2 id="beta-title"><span>VeilFarers wants you</span><strong>as a beta tester!</strong></h2><p class="vf-beta-report">Report in at <a href="/feedback.html">veilfarers.com/feedback</a></p><p id="beta-description">Play the system, then be heard. Head to <a href="/feedback.html">Feedback</a> and tell us what works, what breaks, and what you'd change.</p><a class="vf-beta-action" href="/feedback.html">Answer the call</a><nav class="vf-cta-pagination" data-cta-owner="beta" aria-label="Homepage notices"><button class="vf-cta-arrow" type="button" data-cta-target="release" aria-label="Previous notice"><span aria-hidden="true">&#x2039;</span></button><button class="vf-cta-index" type="button" data-cta-target="release" aria-label="Notice 1: Rust and Steel correction">01</button><button class="vf-cta-index is-current" type="button" data-cta-target="beta" aria-current="page" aria-label="Notice 2: Beta tester invitation">02</button><button class="vf-cta-arrow" type="button" data-cta-target="release" aria-label="Next notice"><span aria-hidden="true">&#x203a;</span></button></nav></div>
     </div>
   </dialog>
 
@@ -141,6 +162,8 @@
   <script src="/public-navigation.js?v=20260829-2" defer></script>
   <script type="module" src="/space-journey.js?v=20260831-1"></script>
   <script src="/friend-navigation.js?v=20260829-2" defer></script>
-  <script src="/beta-recruitment.js?v=20260829-3" defer></script>
+  <script src="/release-notice.js?v=20260901-6" defer></script>
+  <script src="/beta-recruitment.js?v=20260831-6" defer></script>
+  <script src="/cta-carousel.js?v=20260901-1" defer></script>
 </body>
 </html>
