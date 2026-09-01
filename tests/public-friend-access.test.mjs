@@ -107,6 +107,31 @@ test('home book shelf keeps the cover artwork unobstructed', () => {
   assert.doesNotMatch(styles, /vf-book-recommendation/)
 })
 
+test('home feature cards link their full surface to the matching section', () => {
+  const home = read('../public/index.html')
+  const styles = read('../public/home-cinematic.css')
+  const destinations = [
+    ['New Ancestries', '#explore'],
+    ['Naval Combat', '#stars'],
+    ['Augmentations', '#character'],
+    ['Economy System', '#character'],
+    ['New Powers', '#character'],
+    ['Reputation &amp; Factions', '#explore'],
+    ['Expanded Lore', '#explore'],
+    ['Adventures', '#books']
+  ]
+
+  for (const [title, destination] of destinations) {
+    assert.match(home, new RegExp(`<a class="vf-feature-card" href="${destination}">[\\s\\S]*?<h2>${title}</h2>`))
+  }
+
+  assert.equal((home.match(/<a class="vf-feature-card"/g) || []).length, 8)
+  assert.doesNotMatch(home, /<article class="vf-feature-card"/)
+  for (const id of ['explore', 'stars', 'character', 'books']) assert.match(home, new RegExp(`id="${id}"`))
+  assert.match(styles, /\.vf-feature-card:focus-visible/)
+  assert.match(styles, /cursor:pointer/)
+})
+
 test('home explains the recommended starting routes without covering book art', () => {
   const home = read('../public/index.html')
   assert.match(home, /Where to start/)
@@ -307,7 +332,7 @@ test('cinematic renderers use an iPhone and Safari compatible WebGL profile', ()
     '../public/books/alien-archives.html'
   ].map(read)
 
-  assert.match(home, /space-journey\.js\?v=20260831-1/)
+  assert.match(home, /space-journey\.js\?v=20260902-2/)
   assert.match(journey, /pointer: coarse/)
   assert.match(journey, /this\.compactMode \? 1 : 1\.5/)
   assert.doesNotMatch(journey, /WEBGL_lose_context/)
@@ -316,6 +341,68 @@ test('cinematic renderers use an iPhone and Safari compatible WebGL profile', ()
   assert.match(background, /webglcontextlost/)
   assert.match(background, /if \(!context\)/)
   for (const book of books) assert.match(book, /book-detail\.js\?v=20260901-1/)
+})
+
+test('home journey rotates lore destinations without trapping vertical scroll', () => {
+  const home = read('../public/index.html')
+  const styles = read('../public/home-cinematic.css')
+  const journey = read('../public/space-journey.js')
+
+  assert.match(home, /data-scene="destination" data-journey-destination>02 FIRST GARDEN/)
+  assert.doesNotMatch(home, />02 PLANET</)
+  assert.match(styles, /\.vf-hero\{[^}]*height:106svh/)
+  assert.match(styles, /@media\(max-width:1020px\)[\s\S]*?\.vf-hero\{height:104svh/)
+  assert.doesNotMatch(styles, /height:3(?:10|00)svh|height:285svh/)
+  assert.match(journey, /Math\.max\(0\.72, progress\)/)
+  assert.match(journey, /hyperspace\.material\.opacity = hyperspaceWeight \* 0\.28/)
+  assert.match(journey, /id: 'first-garden'/)
+  assert.match(journey, /id: 'kryxia'/)
+  assert.match(journey, /sessionStorage\.getItem\('vf-journey-destination-index'\)/)
+  assert.match(journey, /vf-destination/)
+  assert.match(journey, /this\.createPlanetTexture\(destination\)/)
+  assert.match(journey, /this\.createCityLights\(destination\)/)
+  assert.match(journey, /cityCount: 260/)
+  assert.match(journey, /cityCount: 72/)
+  assert.match(journey, /vNight=1\.0-smoothstep/)
+  assert.match(journey, /\.vf-journey-readout \[data-journey-destination\]/)
+  assert.match(journey, /\['destination', planetWeight\]/)
+  assert.match(styles, /data-journey-destination="first-garden"/)
+  assert.match(styles, /data-journey-destination="kryxia"/)
+})
+
+test('public discovery pages expose canonical, social and structured metadata', () => {
+  const canonicalPages = [
+    ['../public/index.html', 'https://veilfarers.com/'],
+    ['../public/books/corebook.html', 'https://veilfarers.com/books/corebook.html'],
+    ['../public/books/keepers-companion.html', 'https://veilfarers.com/books/keepers-companion.html'],
+    ['../public/books/rust-and-steel.html', 'https://veilfarers.com/books/rust-and-steel.html'],
+    ['../public/books/hearts-in-the-void.html', 'https://veilfarers.com/books/hearts-in-the-void.html'],
+    ['../public/books/alien-archives.html', 'https://veilfarers.com/books/alien-archives.html'],
+    ['../public/downloads.html', 'https://veilfarers.com/downloads.html'],
+    ['../public/feedback.html', 'https://veilfarers.com/feedback.html']
+  ]
+
+  for (const [file, canonical] of canonicalPages) {
+    const page = read(file)
+    assert.match(page, /<meta name="description" content="[^"]+">/)
+    assert.equal(page.includes(`<link rel="canonical" href="${canonical}">`), true)
+  }
+
+  for (const [file] of canonicalPages.slice(0, 7)) {
+    const page = read(file)
+    assert.match(page, /property="og:image" content="https:\/\/veilfarers\.com\//)
+    assert.match(page, /name="twitter:card" content="summary_large_image"/)
+    const blocks = [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+    assert.ok(blocks.length > 0)
+    for (const block of blocks) assert.doesNotThrow(() => JSON.parse(block[1]))
+  }
+
+  const robots = read('../public/robots.txt')
+  const sitemap = read('../public/sitemap.xml')
+  assert.match(robots, /Sitemap: https:\/\/veilfarers\.com\/sitemap\.xml/)
+  for (const [, canonical] of canonicalPages) assert.equal(sitemap.includes(`<loc>${canonical}</loc>`), true)
+  assert.doesNotMatch(sitemap, /login|creator|charsheet|keeper-tool|player-tool|admin/)
+  assert.match(read('../public/login.html'), /<meta name="robots" content="noindex,follow">/)
 })
 
 test('every book page offers its own tracked direct PDF download', () => {

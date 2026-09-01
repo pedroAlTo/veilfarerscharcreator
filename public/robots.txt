@@ -24,3 +24,5 @@ Allow: /legal.html
 Allow: /login.html
 Allow: /feedback.html
 Allow: /download/
+
+Sitemap: https://veilfarers.com/sitemap.xml

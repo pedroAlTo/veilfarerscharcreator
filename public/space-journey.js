@@ -6,6 +6,70 @@ const journeyScroll = document.querySelector('[data-journey-scroll]');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const forceReducedMotion = new URLSearchParams(location.search).get('vf-motion') === 'reduce';
 
+const LORE_DESTINATIONS = [
+  {
+    id: 'first-garden',
+    label: 'FIRST GARDEN',
+    texture: 'garden',
+    textureSeed: 41721,
+    surfaceColor: 0xc6e0cf,
+    emissive: 0x03120b,
+    emissiveIntensity: 0.12,
+    roughness: 0.9,
+    rotationZ: -0.16,
+    cloudOpacity: 0.42,
+    atmosphereLow: 0x147f83,
+    atmosphereHigh: 0xb6f6bc,
+    citySeed: 74311,
+    cityCount: 260,
+    cityClusters: 17,
+    citySpread: 0.075,
+    cityColor: 0x8fffd7,
+    citySize: 1.05,
+    moonColor: 0xddeee2
+  },
+  {
+    id: 'kryxia',
+    label: 'KRYXIA',
+    texture: 'death-world',
+    textureSeed: 98217,
+    surfaceColor: 0xe3b09a,
+    emissive: 0x170503,
+    emissiveIntensity: 0.08,
+    roughness: 1,
+    rotationZ: 0.08,
+    cloudOpacity: 0.13,
+    atmosphereLow: 0x7a1f0d,
+    atmosphereHigh: 0xff9a48,
+    citySeed: 31991,
+    cityCount: 72,
+    cityClusters: 5,
+    citySpread: 0.035,
+    cityColor: 0xffb35a,
+    citySize: 0.82,
+    moonColor: 0xd5aa94
+  }
+];
+
+function chooseDestination() {
+  const requested = new URLSearchParams(location.search).get('vf-destination');
+  const forced = LORE_DESTINATIONS.find((destination) => destination.id === requested);
+  if (forced) return forced;
+  try {
+    const previous = Number.parseInt(sessionStorage.getItem('vf-journey-destination-index'), 10);
+    const next = Number.isInteger(previous) ? (previous + 1) % LORE_DESTINATIONS.length : Math.floor(Math.random() * LORE_DESTINATIONS.length);
+    sessionStorage.setItem('vf-journey-destination-index', String(next));
+    return LORE_DESTINATIONS[next];
+  } catch (error) {
+    return LORE_DESTINATIONS[Math.floor(Math.random() * LORE_DESTINATIONS.length)];
+  }
+}
+
+const activeDestination = chooseDestination();
+body.dataset.journeyDestination = activeDestination.id;
+const destinationLabel = document.querySelector('.vf-journey-readout [data-journey-destination]');
+if (destinationLabel) destinationLabel.textContent = `02 ${activeDestination.label}`;
+
 let controller = null;
 let effectiveMode = 'static';
 let requestToken = 0;
@@ -61,6 +125,7 @@ async function showCinematic(reason) {
     const THREE = await import('/assets/vendor/three.module.min.js');
     if (token !== requestToken) return;
     controller = new SpaceJourneyController(THREE, mount, {
+      destination: activeDestination,
       onScene: updateSceneReadout,
       onFallback: (fallbackReason) => {
         console.warn('[VeilFarers] Cinematic visuals unavailable; using Static mode.');
@@ -110,7 +175,7 @@ class SpaceJourneyController {
     this.raf = 0;
     this.elapsed = 0;
     this.debugScene = new URLSearchParams(location.search).get('vf-scene');
-    this.debugProgress = { starfield: 0.08, planet: 0.92 }[this.debugScene];
+    this.debugProgress = { starfield: 0.08, destination: 0.92, planet: 0.92, 'first-garden': 0.92, kryxia: 0.92 }[this.debugScene];
     this.targetProgress = typeof this.debugProgress === 'number' ? this.debugProgress : 0;
     this.currentProgress = this.targetProgress;
     this.lastFrame = performance.now();
@@ -263,20 +328,27 @@ class SpaceJourneyController {
 
   createPlanet() {
     const T = this.THREE;
+    const destination = this.options.destination;
     const group = new T.Group();
-    const surface = this.loadTexture('/assets/books/core-planet-albedo.webp');
+    const surface = this.createPlanetTexture(destination);
     const clouds = this.createCloudTexture();
     const geometry = new T.SphereGeometry(4.2, this.compactMode ? 48 : 72, this.compactMode ? 34 : 52);
     const surfaceMaterial = new T.MeshStandardMaterial({
       map: surface,
-      roughness: 0.92,
+      color: destination.surfaceColor,
+      emissive: destination.emissive,
+      emissiveIntensity: destination.emissiveIntensity,
+      roughness: destination.roughness,
       metalness: 0.02,
       transparent: true,
       opacity: 0
     });
     const planet = new T.Mesh(geometry, surfaceMaterial);
-    planet.rotation.z = -0.16;
+    planet.rotation.z = destination.rotationZ;
     group.add(planet);
+
+    const cityLights = this.createCityLights(destination);
+    planet.add(cityLights.points);
 
     const cloudMaterial = new T.MeshStandardMaterial({
       map: clouds,
@@ -294,16 +366,20 @@ class SpaceJourneyController {
       depthWrite: false,
       side: T.BackSide,
       blending: T.AdditiveBlending,
-      uniforms: { uOpacity: { value: 0 } },
+      uniforms: {
+        uOpacity: { value: 0 },
+        uColorLow: { value: new T.Color(destination.atmosphereLow) },
+        uColorHigh: { value: new T.Color(destination.atmosphereHigh) }
+      },
       vertexShader: 'varying vec3 vNormal;void main(){vNormal=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
-      fragmentShader: 'varying vec3 vNormal;uniform float uOpacity;void main(){float rim=pow(1.0-abs(vNormal.z),5.6);vec3 c=mix(vec3(.12,.48,.72),vec3(1.0,.84,.5),rim*.16);gl_FragColor=vec4(c,rim*uOpacity);}'
+      fragmentShader: 'varying vec3 vNormal;uniform float uOpacity;uniform vec3 uColorLow;uniform vec3 uColorHigh;void main(){float rim=pow(1.0-abs(vNormal.z),5.6);vec3 c=mix(uColorLow,uColorHigh,rim*.24);gl_FragColor=vec4(c,rim*uOpacity);}'
     });
     const atmosphere = new T.Mesh(new T.SphereGeometry(4.31, this.compactMode ? 44 : 64, this.compactMode ? 30 : 44), atmosphereMaterial);
     group.add(atmosphere);
 
     const moonMaterial = new T.MeshStandardMaterial({
       map: this.loadTexture('/assets/books/core-moon-albedo.webp'),
-      color: 0xf2f1ed,
+      color: destination.moonColor,
       roughness: 1,
       metalness: 0,
       transparent: true,
@@ -318,11 +394,74 @@ class SpaceJourneyController {
     group.position.set(-4.75, 1.5, -1.1);
     group.userData.fade = [
       { material: surfaceMaterial, base: 1 },
-      { material: cloudMaterial, base: 0.34 },
+      { material: cloudMaterial, base: destination.cloudOpacity },
+      { material: cityLights.material, base: 1, uniform: true },
       { material: atmosphereMaterial, base: 0.42, uniform: true },
       { material: moonMaterial, base: 1 }
     ];
-    return { group, planet, cloudLayer, moon, moonPivot };
+    return { group, planet, cloudLayer, cityLights, moon, moonPivot };
+  }
+
+  createCityLights(destination) {
+    const T = this.THREE;
+    const random = seededRandom(destination.citySeed);
+    const hubs = Array.from({ length: destination.cityClusters }, () => ({
+      latitude: (random() - 0.5) * 1.7,
+      longitude: random() * Math.PI * 2,
+      weight: 0.35 + random() * 0.65
+    }));
+    const positions = new Float32Array(destination.cityCount * 3);
+    const sizes = new Float32Array(destination.cityCount);
+    const radius = 4.215;
+    for (let index = 0; index < destination.cityCount; index += 1) {
+      const hub = hubs[Math.floor(random() * hubs.length)];
+      const irregular = (random() + random() + random() - 1.5) * destination.citySpread;
+      const latitude = Math.max(-1.34, Math.min(1.34, hub.latitude + irregular));
+      const longitude = hub.longitude + (random() + random() - 1) * destination.citySpread * 2.2;
+      const horizontal = Math.cos(latitude);
+      positions[index * 3] = radius * horizontal * Math.cos(longitude);
+      positions[index * 3 + 1] = radius * Math.sin(latitude);
+      positions[index * 3 + 2] = radius * horizontal * Math.sin(longitude);
+      sizes[index] = destination.citySize * (0.6 + random() * 1.15) * hub.weight;
+    }
+    const geometry = new T.BufferGeometry();
+    geometry.setAttribute('position', new T.BufferAttribute(positions, 3));
+    geometry.setAttribute('aSize', new T.BufferAttribute(sizes, 1));
+    const material = new T.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      depthTest: true,
+      blending: T.AdditiveBlending,
+      uniforms: {
+        uOpacity: { value: 0 },
+        uColor: { value: new T.Color(destination.cityColor) },
+        uLightDirection: { value: new T.Vector3(-0.12, 0.08, -1).normalize() }
+      },
+      vertexShader: [
+        'attribute float aSize;',
+        'uniform vec3 uLightDirection;',
+        'varying float vNight;',
+        'void main(){',
+        ' vec3 worldNormal=normalize(mat3(modelMatrix)*normalize(position));',
+        ' vNight=1.0-smoothstep(-.24,.08,dot(worldNormal,uLightDirection));',
+        ' vec4 mv=modelViewMatrix*vec4(position,1.0);',
+        ' gl_Position=projectionMatrix*mv;',
+        ' gl_PointSize=clamp(aSize*(190.0/-mv.z),1.0,4.8);',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'uniform float uOpacity;',
+        'uniform vec3 uColor;',
+        'varying float vNight;',
+        'void main(){',
+        ' vec2 p=gl_PointCoord-.5;',
+        ' float glow=smoothstep(.5,.02,length(p));',
+        ' if(glow<.015) discard;',
+        ' gl_FragColor=vec4(uColor,glow*vNight*uOpacity);',
+        '}'
+      ].join('\n')
+    });
+    return { points: new T.Points(geometry, material), material };
   }
 
   createMoonTexture() {
@@ -373,7 +512,7 @@ class SpaceJourneyController {
     return texture;
   }
 
-  createPlanetTexture() {
+  createPlanetTexture(destination) {
     const T = this.THREE;
     const canvas = document.createElement('canvas');
     canvas.width = 768;
@@ -381,61 +520,56 @@ class SpaceJourneyController {
     const context = canvas.getContext('2d');
     const image = context.createImageData(canvas.width, canvas.height);
     const data = image.data;
-    const hash = (x, y) => {
-      const value = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
-      return value - Math.floor(value);
-    };
-    const noise = (x, y) => {
-      const ix = Math.floor(x);
-      const iy = Math.floor(y);
-      const fx = x - ix;
-      const fy = y - iy;
-      const ux = fx * fx * (3 - 2 * fx);
-      const uy = fy * fy * (3 - 2 * fy);
-      const a = hash(ix, iy);
-      const b = hash(ix + 1, iy);
-      const c = hash(ix, iy + 1);
-      const d = hash(ix + 1, iy + 1);
-      return (a + (b - a) * ux) + ((c + (d - c) * ux) - (a + (b - a) * ux)) * uy;
-    };
-    const fbm = (x, y) => {
-      let total = 0;
-      let amplitude = 0.52;
-      let frequency = 1;
-      for (let octave = 0; octave < 6; octave += 1) {
-        total += noise(x * frequency, y * frequency) * amplitude;
-        frequency *= 2.03;
-        amplitude *= 0.49;
-      }
-      return total;
-    };
+    const random = seededRandom(destination.textureSeed);
+    const waves = Array.from({ length: 11 }, (_, index) => ({
+      frequency: 1 + index,
+      vertical: 0.7 + random() * 5.5,
+      phase: random() * Math.PI * 2,
+      amplitude: 1 / Math.pow(1 + index, 0.78)
+    }));
     for (let y = 0; y < canvas.height; y += 1) {
       for (let x = 0; x < canvas.width; x += 1) {
         const nx = x / canvas.width;
         const ny = y / canvas.height;
         const lat = Math.abs(ny - 0.5) * 2;
-        const continental = fbm(nx * 5.3, ny * 5.3);
-        const detail = fbm(nx * 19.7 + 9.2, ny * 19.7 - 3.8);
-        const n = continental * 0.78 + detail * 0.22;
-        const coast = 0.51 + lat * 0.035;
+        let sum = 0;
+        let amplitude = 0;
+        waves.forEach((wave) => {
+          sum += Math.sin(nx * Math.PI * 2 * wave.frequency + Math.sin(ny * Math.PI * wave.vertical + wave.phase) * 1.65 + wave.phase) * wave.amplitude;
+          amplitude += wave.amplitude;
+        });
+        const detail = 0.5 + 0.5 * Math.sin(nx * Math.PI * 38 + Math.cos(ny * Math.PI * 27) * 2.4);
+        const n = 0.5 + sum / amplitude * 0.43;
+        const coast = destination.texture === 'garden' ? 0.49 + lat * 0.025 : 0.31 + lat * 0.012;
         const land = n > coast;
-        const elevation = Math.max(0, (n - coast) * 6.2);
-        const ice = lat > 0.86 - detail * 0.045;
+        const elevation = Math.max(0, Math.min(1, (n - coast) * 5.8));
+        const ice = destination.texture === 'garden' && lat > 0.91 - detail * 0.025;
         let r;
         let g;
         let b;
         if (ice) {
           r = 152 + detail * 40; g = 171 + detail * 38; b = 178 + detail * 38;
+        } else if (land && destination.texture === 'garden') {
+          const wetland = Math.max(0, 1 - Math.abs(ny - 0.5) * 3.6) * detail;
+          r = 18 + elevation * 42 + wetland * 9;
+          g = 55 + elevation * 56 + wetland * 40;
+          b = 45 + elevation * 34 + wetland * 28;
         } else if (land) {
-          const arid = Math.max(0, 1 - Math.abs(ny - 0.5) * 4.2) * detail;
-          r = 37 + elevation * 38 + arid * 34;
-          g = 49 + elevation * 28 + arid * 22;
-          b = 38 + elevation * 17 + arid * 6;
+          const scorched = Math.max(0, 1 - Math.abs(ny - 0.5) * 2.8) * detail;
+          r = 74 + elevation * 88 + scorched * 45;
+          g = 30 + elevation * 45 + scorched * 22;
+          b = 18 + elevation * 29 + scorched * 7;
         } else {
           const depth = Math.max(0, coast - n);
-          r = 5 + detail * 8;
-          g = 21 + detail * 16 - depth * 12;
-          b = 34 + detail * 25 - depth * 18;
+          if (destination.texture === 'garden') {
+            r = 4 + detail * 7;
+            g = 25 + detail * 20 - depth * 10;
+            b = 42 + detail * 30 - depth * 16;
+          } else {
+            r = 31 + detail * 22;
+            g = 13 + detail * 9;
+            b = 12 + detail * 7;
+          }
         }
         const index = (y * canvas.width + x) * 4;
         data[index] = Math.max(0, r);
@@ -503,17 +637,17 @@ class SpaceJourneyController {
   }
 
   update(time, delta) {
-    this.currentProgress += (this.targetProgress - this.currentProgress) * Math.min(1, delta * 5.2);
+    this.currentProgress += (this.targetProgress - this.currentProgress) * Math.min(1, delta * 9.5);
     const progress = this.currentProgress;
-    const planetWeight = smoothstep(0.53, 0.74, progress);
-    const hyperspaceWeight = pulse(progress, 0.4, 0.7);
+    const planetWeight = smoothstep(0.28, 0.56, progress);
+    const hyperspaceWeight = pulse(progress, 0.12, 0.5);
 
     this.starField.material.uniforms.uTime.value = time;
-    this.starField.material.uniforms.uSpeed.value = 1 + hyperspaceWeight * 15;
-    this.starField.material.uniforms.uTravel.value += delta * (1.3 + hyperspaceWeight * 31);
+    this.starField.material.uniforms.uSpeed.value = 1 + hyperspaceWeight * 8;
+    this.starField.material.uniforms.uTravel.value += delta * (1.3 + hyperspaceWeight * 16);
     this.starField.points.rotation.z = time * 0.003;
-    this.hyperspace.material.opacity = hyperspaceWeight * 0.68;
-    this.hyperspace.group.scale.z = 1 + hyperspaceWeight * 8;
+    this.hyperspace.material.opacity = hyperspaceWeight * 0.28;
+    this.hyperspace.group.scale.z = 1 + hyperspaceWeight * 4.5;
     this.hyperspace.group.position.z = Math.sin(time * 0.8) * 2;
 
     fadeGroup(this.planet.group, planetWeight);
@@ -531,7 +665,7 @@ class SpaceJourneyController {
     this.camera.lookAt(0, 0, 0);
 
     body.style.setProperty('--vf-journey-progress', progress.toFixed(4));
-    const weights = [['planet', planetWeight], ['starfield', 1 - planetWeight]].sort((a, b) => b[1] - a[1]);
+    const weights = [['destination', planetWeight], ['starfield', 1 - planetWeight]].sort((a, b) => b[1] - a[1]);
     if (weights[0][0] !== this.currentScene) {
       this.currentScene = weights[0][0];
       body.dataset.visualScene = this.currentScene;
@@ -550,7 +684,8 @@ class SpaceJourneyController {
     }
     const bounds = journeyScroll.getBoundingClientRect();
     const distance = Math.max(1, journeyScroll.offsetHeight - window.innerHeight);
-    this.targetProgress = Math.max(0, Math.min(1, -bounds.top / distance));
+    const progress = Math.max(0, Math.min(1, -bounds.top / distance));
+    this.targetProgress = progress > 0 ? Math.max(0.72, progress) : 0;
   }
 
   measurePerformance(now) {
