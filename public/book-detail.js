@@ -25,3 +25,14 @@ if (bookTheme) {
   document.head.append(atmosphereScript);
 }
 
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[data-vf-download]');
+  if (!link || typeof window.sa_event !== 'function') return;
+  window.sa_event('download_pdf', {
+    title: link.dataset.vfDownloadTitle,
+    version: link.dataset.vfDownloadVersion,
+    file: new URL(link.href, window.location.href).pathname,
+    source: 'book_detail'
+  });
+});
+

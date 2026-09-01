@@ -315,7 +315,34 @@ test('cinematic renderers use an iPhone and Safari compatible WebGL profile', ()
   assert.match(background, /compactMode \? 'default' : 'high-performance'/)
   assert.match(background, /webglcontextlost/)
   assert.match(background, /if \(!context\)/)
-  for (const book of books) assert.match(book, /book-detail\.js\?v=20260831-1/)
+  for (const book of books) assert.match(book, /book-detail\.js\?v=20260901-1/)
+})
+
+test('every book page offers its own tracked direct PDF download', () => {
+  const books = [
+    ['corebook.html', '/download/VeilFarers_Corebook_12.05-Editorial-Release.pdf', 'VeilFarers Corebook', '12.05'],
+    ['keepers-companion.html', '/download/VeilFarers_Keepers_Companion_12.04-Editorial-Release.pdf', "VeilFarers Keeper's Companion", '12.04'],
+    ['rust-and-steel.html', '/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf', 'VeilFarers: Rust &amp; Steel', '12.05'],
+    ['hearts-in-the-void.html', '/download/VeilFarers_Hearts_in_the_Void_1.0-Editorial-Release.pdf', 'Hearts in the Void', '1.0'],
+    ['alien-archives.html', '/download/VeilFarers_Alien_Species_12.04-Editorial-Release.pdf', 'VeilFarers: Alien Species', '12.04']
+  ]
+
+  for (const [file, href, title, version] of books) {
+    const page = read(`../public/books/${file}`)
+    assert.equal(page.includes(`href="${href}" download data-vf-download`), true)
+    assert.equal(page.includes(`data-vf-download-title="${title}"`), true)
+    assert.equal(page.includes(`data-vf-download-version="${version}"`), true)
+    assert.equal((page.match(/ data-vf-download(?=[ >])/g) || []).length, 2)
+    assert.match(page, /simple-analytics\.js/)
+    assert.match(page, /book-detail\.js\?v=20260901-1/)
+    assert.equal(existsSync(new URL(`../public${href}`, import.meta.url)), true)
+  }
+
+  const detail = read('../public/book-detail.js')
+  const styles = read('../public/book-detail.css')
+  assert.match(detail, /sa_event\('download_pdf'/)
+  assert.match(detail, /source: 'book_detail'/)
+  assert.match(styles, /\.book-actions \.book-download-action/)
 })
 
 test('Hearts background emits a denser twinkling particle field from the heart core', () => {
