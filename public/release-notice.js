@@ -188,6 +188,54 @@
     context.restore();
   }
 
+  function smoothStep(value) {
+    const clamped = Math.max(0, Math.min(1, value));
+    return clamped * clamped * (3 - 2 * clamped);
+  }
+
+  function drawKryllianEyes(context, time, animate) {
+    const cycleDuration = 8800;
+    const phase = animate ? Math.max(0, time - energyStart) % cycleDuration : 0;
+    let viewerWeight = 0;
+    if (phase >= 5850 && phase < 6350) viewerWeight = smoothStep((phase - 5850) / 500);
+    else if (phase >= 6350 && phase < 7550) viewerWeight = 1;
+    else if (phase >= 7550 && phase < 8150) viewerWeight = 1 - smoothStep((phase - 7550) / 600);
+    const downGaze = [{ x: 489, y: 402 }, { x: 600, y: 395 }];
+    const viewerGaze = [{ x: 453, y: 358 }, { x: 615, y: 347 }];
+    const pupilRadii = [5, 3.5];
+    const workLookX = animate ? Math.sin(phase / 920) * 1.8 + Math.sin(phase / 410) * .6 : 0;
+    const workLookY = animate ? Math.cos(phase / 1080) * 1.2 : 0;
+    const workInfluence = 1 - viewerWeight;
+    context.save();
+    context.globalCompositeOperation = 'lighter';
+    for (let index = 0; index < downGaze.length; index += 1) {
+      const source = {
+        x: downGaze[index].x + (viewerGaze[index].x - downGaze[index].x) * viewerWeight
+          + workLookX * workInfluence * (index === 0 ? 1 : .82),
+        y: downGaze[index].y + (viewerGaze[index].y - downGaze[index].y) * viewerWeight
+          + workLookY * workInfluence * (index === 0 ? 1 : .88)
+      };
+      const eye = mapPortraitPoint(source);
+      context.fillStyle = 'rgba(50,12,5,.94)';
+      context.shadowBlur = 0;
+      context.beginPath();
+      context.arc(eye.x, eye.y, pupilRadii[index] + 1.15, 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = 'rgba(255,211,30,.99)';
+      context.shadowColor = '#ffb814';
+      context.shadowBlur = 16;
+      context.beginPath();
+      context.arc(eye.x, eye.y, pupilRadii[index], 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = 'rgba(255,248,174,.96)';
+      context.shadowBlur = 4;
+      context.beginPath();
+      context.arc(eye.x - .75, eye.y - .75, index === 0 ? 1.25 : 1, 0, Math.PI * 2);
+      context.fill();
+    }
+    context.restore();
+  }
+
   function drawSparks(time, animate = true) {
     if (!(sparkCanvas instanceof HTMLCanvasElement) || !sizeSparkCanvas()) return;
     const context = sparkCanvas.getContext('2d');
@@ -199,6 +247,7 @@
     }
     context.clearRect(0, 0, sparkWidth, sparkHeight);
     drawCableEnergy(context, time, animate);
+    drawKryllianEyes(context, time, animate);
     context.globalCompositeOperation = 'lighter';
     for (let index = sparks.length - 1; index >= 0; index -= 1) {
       const spark = sparks[index];
