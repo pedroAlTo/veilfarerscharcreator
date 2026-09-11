@@ -10,7 +10,7 @@ This release installs the five supplied 12.06 book PDFs and First Crossing 1.1 s
 4. Beta invitation
 5. Nine Signals — Coming soon
 
-The new notices reuse the original gold, clipped-corner minimize and dismiss icons. Each notice remembers its own dismissal. A new session opens the first eligible notice. The Lite dice reuse the existing gold Hope and violet Fear d12 assets, calibrated to approximately twice their original visible size. Both art panels have a central flare and slowly expanding golden ribbons. The original typographic PDF cover remains on the bound Lite book in the CTA.
+The new notices reuse the original gold, clipped-corner minimize and dismiss icons. Each notice remembers its own dismissal. A new session opens the first eligible notice. The Lite dice reuse the existing gold Hope and violet Fear d12 assets, calibrated to approximately twice their original visible size. Both art panels have a central flare and slowly expanding golden ribbons. The Lite CTA displays the three illustrated First Crossing covers as bound books, with Maya at the front.
 
 ## Charon’s Refuge
 
@@ -27,7 +27,7 @@ Created using the built-in imagegen tool. Final project assets:
 - `public/assets/books/editions/first-crossing-table-kit.webp`
 - `public/assets/books/editions/first-crossing-color-maps.webp`
 
-The three First Crossing images appear on Downloads and in the Hearts in the Void starter section. They are promotional illustrations; the supplied PDF documents are unchanged. Full generated source renders and QA screenshots remain in local `output/`, excluded from Git.
+The three First Crossing images appear in the Lite CTA, on Downloads and in the Hearts in the Void starter section. They are promotional illustrations; the supplied PDF documents are unchanged. Full generated source renders and QA screenshots remain in local `output/`, excluded from Git.
 
 Final prompt specifications:
 
