@@ -26,7 +26,7 @@
     status.textContent = manifest.pdfCandidateStatus || '';
     const currentItems = (manifest.items||[]).filter(item => item && item.current !== false && !['deprecated','superseded','withdrawn'].includes(String(item.lifecycle || item.status || '').toLowerCase()));
     const cover = item => item && item.cover
-      ? `<div class="vf-cover"><img src="${esc(item.cover)}" alt="" width="600" height="776" loading="lazy" decoding="async"></div>`
+      ? `<div class="vf-cover"><img src="${esc(item.cover)}" alt="${esc(item.coverAlt || '')}" width="${Number(item.coverWidth) || 600}" height="${Number(item.coverHeight) || 776}" style="aspect-ratio:${Number(item.coverWidth) || 600}/${Number(item.coverHeight) || 776}" loading="lazy" decoding="async"></div>`
       : '';
     list.innerHTML = currentItems.map(item=>`<article class="vf-download-card${item.cover ? ' has-cover' : ''}">
       ${cover(item)}

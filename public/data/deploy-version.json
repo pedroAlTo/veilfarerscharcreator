@@ -1,16 +1,16 @@
 {
   "schema": "veilfarers.deploy/1",
-  "version": "v59.81",
-  "packageVersion": "59.81.0",
-  "date": "2026-07-24",
+  "version": "v59.82",
+  "packageVersion": "59.82.0",
+  "date": "2026-09-11",
   "cspProfile": "wasm-3d-dice-v2",
   "requiredScriptSource": "'wasm-unsafe-eval'",
   "expectedResponseHeaders": {
-    "X-VeilFarers-Release": "v59.81",
+    "X-VeilFarers-Release": "v59.82",
     "X-VeilFarers-CSP-Profile": "wasm-3d-dice-v2"
   },
   "accessibilityProfile": "WCAG-2.2-AA-target",
-  "generatedAt": "2026-07-24",
-  "release": "v59.81",
-  "notes": "Adds bilingual privacy and device-data controls, structured GDPR information and a storage inventory while preserving explicit private-tool roles, cloud-data deletion and the current standalone Hearts in the Void line."
+  "generatedAt": "2026-09-11",
+  "release": "v59.82",
+  "notes": "Books 12.06 and First Crossing 1.1 PDFs; cinematic release notices; new First Crossing illustrations; interactive Charon's Refuge with individually mapped window lights and particle stars. Nine Signals remains dormant behind Coming soon."
 }

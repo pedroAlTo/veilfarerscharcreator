@@ -1,0 +1,84 @@
+/* Cinematic art panels: one coherent book display and a shared golden light source. */
+.vf-edition-modal:not(.vf-coming-modal){width:min(1360px,calc(100% - 40px))}
+.vf-edition-grid{grid-template-columns:1.12fr 1fr}
+.vf-edition-art,.vf-lite-art{position:relative;isolation:isolate;overflow:hidden;padding:42px 24px 30px;background:#040b13}
+.vf-edition-art:before,.vf-lite-art:before{content:'';position:absolute;inset:0;z-index:-3;background:radial-gradient(ellipse at 50% 48%,#6c542244,transparent 67%),linear-gradient(145deg,#13243899,#03070d 75%)}
+.vf-edition-art:after,.vf-lite-art:after{content:'';position:absolute;z-index:-1;inset:18px;pointer-events:none;border:1px solid #ddbc7130;border-radius:50% 50% 3px 3px/35% 35% 3px 3px}
+.vf-golden-light{position:absolute;z-index:-2;inset:0;pointer-events:none;overflow:hidden}
+.vf-golden-light svg{width:100%;height:100%;position:absolute;inset:0;overflow:visible}
+.vf-light-core{transform-origin:400px 400px;animation:vf-core-breathe 7s ease-in-out infinite alternate}
+.vf-ribbon-wave{transform-origin:400px 400px;animation:vf-ribbon-expand 12s cubic-bezier(.2,.55,.4,1) infinite;opacity:0}
+.vf-ribbon-wave:nth-of-type(2){animation-delay:-4s;animation-duration:15s}
+.vf-ribbon-wave:nth-of-type(3){animation-delay:-8s;animation-duration:18s}
+.vf-ribbon-shine{stroke-dasharray:90 1100;animation:vf-ribbon-shine 9s linear infinite;stroke-linecap:round}
+.vf-golden-light .vf-light-star{animation:vf-core-breathe 6s ease-in-out infinite alternate;transform-origin:400px 400px}
+.vf-edition-modal:not([open]) .vf-golden-light *,.vf-cta-paused .vf-golden-light *{animation-play-state:paused!important}
+@keyframes vf-ribbon-expand{0%{transform:scale(.24) rotate(-10deg);opacity:0}18%{opacity:.65}75%{opacity:.42}100%{transform:scale(1.6) rotate(18deg);opacity:0}}
+@keyframes vf-core-breathe{from{opacity:.45;transform:scale(.88)}to{opacity:.82;transform:scale(1.12)}}
+@keyframes vf-ribbon-shine{to{stroke-dashoffset:-1190}}
+
+.vf-upgrade-badge{position:absolute;top:48px;left:50%;transform:translateX(-50%);white-space:nowrap;margin:0;background:#0a101ac9;box-shadow:0 0 45px #ddb05a18;border-color:#e4c17d80}
+.vf-book-collection{display:block;position:relative;width:100%;height:500px;margin:90px auto 20px;max-width:640px;perspective:1400px}
+.vf-book-collection .vf-bound-book{position:absolute;bottom:110px;margin:0;width:29%;max-width:none;transform:none!important;filter:none;grid-column:auto!important}
+.vf-book-collection .vf-bound-book:nth-child(1){left:35.5%;bottom:86px;width:33%;z-index:5}
+.vf-book-collection .vf-bound-book:nth-child(2){left:17%;z-index:4}
+.vf-book-collection .vf-bound-book:nth-child(3){left:55%;z-index:3}
+.vf-book-collection .vf-bound-book:nth-child(4){left:1%;bottom:127px;z-index:2}
+.vf-book-collection .vf-bound-book:nth-child(5){left:71%;bottom:127px;z-index:1}
+.vf-book-collection .vf-bound-book figcaption{display:none}
+.vf-book-collection:after{content:'';position:absolute;left:4%;right:0;bottom:53px;height:48px;z-index:0;background:radial-gradient(ellipse,#000c,transparent 70%);filter:blur(10px)}
+.vf-book-object{position:relative;transform-style:preserve-3d;filter:drop-shadow(10px 18px 12px #000a)}
+.vf-book-object img{display:block;position:relative;z-index:1;width:100%;height:auto;border:1px solid #dfcda070}
+.vf-book-object:before{content:'';position:absolute;left:100%;top:1%;width:9px;height:98%;background:repeating-linear-gradient(0deg,#b7b09e 0 1px,#e8e1d0 1px 3px);transform:skewY(-15deg);transform-origin:left center;border-right:2px solid #68583f}
+.vf-book-object:after{content:'';position:absolute;left:0;top:0;width:9%;height:100%;z-index:2;pointer-events:none;background:linear-gradient(90deg,#0008,#ffe8b314 22%,transparent)}
+.vf-bound-book:before,.vf-bound-book:after{display:none}
+.vf-book-collection .vf-book-object{transform:rotateY(-10deg)}
+.vf-book-collection .vf-bound-book:nth-child(1) .vf-book-object{transform:rotateY(-6deg)}
+.vf-book-collection .vf-bound-book:nth-child(n+3) .vf-book-object{transform:rotateY(-16deg)}
+.vf-collection-caption{position:absolute;bottom:73px;left:24px;right:24px;text-align:center;color:#d6c7a9;font:400 15px/1.5 Georgia,serif;letter-spacing:.025em}
+.vf-collection-caption:before{content:'';display:block;width:54px;margin:0 auto 18px;border-top:1px solid #dbba74aa}
+
+.vf-lite-art{min-height:780px;justify-content:flex-start;padding:50px 20px 34px}
+.vf-lite-art:before{background:linear-gradient(180deg,#050b1590,#060c18bb 65%,#080d18),url('/assets/books/hearts-void-core.webp') 25% 50%/cover;opacity:.95}
+.vf-lite-art .vf-golden-light{opacity:.7}
+.vf-lite-art:after{border-color:#e2c27f26}
+.vf-lite-book-scene{position:relative;z-index:1;width:230px;max-width:50%;margin:0 0 0 -35px;perspective:1400px}
+.vf-lite-book{filter:none;transform:rotateY(-18deg) rotateZ(-5deg)}
+.vf-lite-book .vf-book-object{filter:drop-shadow(16px 22px 22px #000b)}
+.vf-lite-book .vf-book-object:before{width:15px}
+.vf-cta-dice{position:absolute;z-index:2;left:0;bottom:56px;width:100%;height:410px;margin:0;max-width:none;overflow:visible}
+.vf-dice-caption{position:absolute;bottom:35px;left:20px;right:20px;text-align:center;font-size:16px;z-index:3}
+.vf-dice-fallback{gap:25px;padding:20px}
+.vf-dice-fallback b{width:36%;max-width:172px;height:auto;aspect-ratio:.91;font-size:clamp(16px,2vw,24px);background:linear-gradient(130deg,#fff0ac,#c09629 47%,#62440f);text-shadow:0 2px 8px #0009;filter:drop-shadow(0 18px 20px #0008)}
+.vf-dice-fallback b+b{background:linear-gradient(130deg,#d4c2ff,#7651aa 47%,#25133f)}
+.vf-edition-copy{position:relative;background:linear-gradient(135deg,#08131bdd,#0a111ae8)}
+
+@media(max-width:1000px) and (min-width:761px){.vf-edition-copy{padding:34px 26px}.vf-book-collection{height:420px}.vf-lite-book-scene{max-width:57%}.vf-lite-art{min-height:820px}.vf-cta-dice{height:390px}}
+@media(max-width:760px){
+ .vf-edition-modal:not(.vf-coming-modal){width:calc(100% - 20px)}
+ .vf-edition-grid{grid-template-columns:1fr}
+ .vf-edition-art{height:490px;min-height:0;padding:22px 14px}
+ .vf-book-collection{height:370px;margin:42px auto 0;max-width:520px}
+ .vf-book-collection .vf-bound-book{bottom:79px}
+ .vf-book-collection .vf-bound-book:nth-child(1){bottom:64px}
+ .vf-book-collection .vf-bound-book:nth-child(4),.vf-book-collection .vf-bound-book:nth-child(5){bottom:93px}
+ .vf-upgrade-badge{top:28px;font-size:12px;padding:10px 14px}
+ .vf-collection-caption{bottom:32px;font-size:14px}
+ .vf-lite-art{min-height:660px;height:660px;padding-top:28px}
+ .vf-lite-book-scene{width:190px;max-width:52%;margin-left:-20px}
+ .vf-cta-dice{height:330px;bottom:55px;max-width:none}
+ .vf-dice-caption{bottom:25px;font-size:14px}
+ .vf-dice-fallback{gap:15px;padding:15px}
+}
+@media(prefers-reduced-motion:reduce){.vf-golden-light *{animation:none!important}.vf-ribbon-wave{opacity:.3;transform:scale(1)}.vf-ribbon-wave:nth-of-type(2){transform:scale(.65) rotate(-12deg)}.vf-ribbon-wave:nth-of-type(3){transform:scale(1.4) rotate(20deg)}.vf-ribbon-shine{stroke-dasharray:none}}
+
+/* Use the original notices' icon-only controls and corner treatment. */
+.vf-edition-modal .vf-notice-controls{position:absolute;inset:0 0 auto;height:80px;z-index:8;padding:0;border:0;pointer-events:none}
+.vf-edition-modal .vf-notice-controls button{position:absolute;top:22px;display:grid;place-items:center;min-height:0;width:44px;height:44px;padding:0;border:1px solid rgba(225,189,109,.35);background:rgba(2,8,13,.84);color:var(--vf-gold-pale,#f2d49b);cursor:pointer;pointer-events:auto;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.vf-edition-modal .vf-notice-controls .vf-release-minimize{right:22px}
+.vf-edition-modal .vf-notice-controls .vf-release-delete{right:74px;padding:11px;color:#a9aaac}
+.vf-edition-modal .vf-notice-controls .vf-release-minimize:hover{border-color:var(--vf-gold-pale,#f2d49b);background:rgba(225,189,109,.14)}
+.vf-edition-modal .vf-notice-controls .vf-release-delete:hover{border-color:#d79f84;background:rgba(145,58,38,.13);color:#f0c6b3}
+.vf-edition-modal .vf-edition-copy{padding-top:82px}
+.vf-edition-modal .vf-coming-copy{padding-top:90px}
+@media(max-width:760px){.vf-edition-modal .vf-notice-controls button{top:15px}.vf-edition-modal .vf-notice-controls .vf-release-minimize{right:15px}.vf-edition-modal .vf-notice-controls .vf-release-delete{right:65px}.vf-edition-modal .vf-edition-copy{padding-top:28px}.vf-upgrade-badge{top:75px}.vf-book-collection{margin-top:80px}.vf-edition-art{height:530px}.vf-lite-art{padding-top:80px;min-height:700px;height:700px}}

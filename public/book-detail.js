@@ -18,7 +18,7 @@ const routeName = decodeURIComponent(location.pathname)
   .pop()
   .replace(/\.html$/i, '');
 const bookTheme = document.body.dataset.bookTheme || bookThemes[routeName] || '';
-if (bookTheme) {
+if (bookTheme && document.body.dataset.bookBackground !== 'custom') {
   document.body.dataset.bookTheme = bookTheme;
   const atmosphereScript = document.createElement('script');
   atmosphereScript.src = '/book-background.js?v=20260831-1';

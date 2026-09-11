@@ -154,8 +154,8 @@ test('home launch invitation is an accessible dismissible beta popup', () => {
   assert.match(home, /data-beta-close aria-label="Save beta tester invitation for later"/)
   assert.match(home, /data-beta-delete aria-label="Permanently dismiss beta tester invitation"/)
   assert.match(home, /data-beta-eye-smoke/)
-  assert.match(popup, /writeStorage\(sessionStorage, shelvedKey\)/)
-  assert.match(popup, /writeStorage\(localStorage, deletedKey\)/)
+  assert.match(popup, /writeStorage\('sessionStorage', shelvedKey\)/)
+  assert.match(popup, /writeStorage\('localStorage', deletedKey\)/)
   assert.match(popup, /vf:cta-inbox-update/)
   assert.match(popup, /target: 'beta'/)
   assert.match(popup, /function drawEyeSmoke\(time, animate = true\)/)
@@ -171,19 +171,19 @@ test('home launch invitation is an accessible dismissible beta popup', () => {
   assert.match(styles, /rotateY\(92deg\)/)
 })
 
-test('Rust and Steel correction is independent and queued before the beta invitation', () => {
+test('Repair notice remains independent while the new books have their own notice', () => {
   const home = read('../public/index.html')
   const notice = read('../public/release-notice.js')
   const popup = read('../public/beta-recruitment.js')
   const styles = read('../public/home-cinematic.css')
   const manifest = JSON.parse(read('../public/download/downloads.json'))
   const rust = manifest.items.find(item => item.id === 'rust-and-steel')
-  const pdf = readFileSync(new URL('../public/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf', import.meta.url))
+  const pdf = readFileSync(new URL('../public/download/VeilFarers_Rust_and_Steel_12.06.pdf', import.meta.url))
 
   assert.ok(home.indexOf('id="rust-download-correction"') < home.indexOf('id="beta-invitation"'))
   assert.match(home, /Rust &amp; Steel is back in the forge/)
-  assert.match(home, /thanks the sharp-eyed VeilFarer/)
-  assert.match(home, /Your feedback let us catch it/)
+  assert.match(home, /The correct book is available/)
+  assert.match(home, /Your feedback keeps this universe running/)
   assert.doesNotMatch(home, /You know who you are/)
   assert.match(home, /kryllian-rust-repair-notice\.png/)
   assert.match(home, /data-release-sparks/)
@@ -191,7 +191,7 @@ test('Rust and Steel correction is independent and queued before the beta invita
   assert.match(home, /data-release-delete aria-label="Permanently dismiss Rust and Steel correction"/)
   assert.match(notice, /vf-rust-download-fix-shelved-v1/)
   assert.match(notice, /vf-rust-download-fix-deleted-v1/)
-  assert.match(notice, /vf:release-notice-resolved/)
+  assert.match(notice, /vf:cta-inbox-update/)
   assert.match(notice, /function emitSparkBurst/)
   assert.match(notice, /\{ x: 1001, y: 1149 \}/)
   assert.match(notice, /\{ x: 837, y: 1243 \}/)
@@ -216,7 +216,7 @@ test('Rust and Steel correction is independent and queued before the beta invita
   assert.match(notice, /createLinearGradient\(tail\.x, tail\.y, head\.x, head\.y\)/)
   assert.match(notice, /requestAnimationFrame\(sparkLoop\)/)
   assert.match(notice, /reducedMotion\.matches/)
-  assert.match(popup, /vfReleaseNoticeBlocking/)
+  assert.doesNotMatch(popup, /vfReleaseNoticeBlocking/)
   assert.match(home, /class="vf-beta-inbox vf-cta-inbox"/)
   assert.match(styles, /\.vf-release-modal\.is-closing \.vf-release-card/)
   assert.equal(pdf.length, rust.bytes)
@@ -236,10 +236,11 @@ test('homepage notices share numbered manual navigation without sharing dismissa
   assert.match(home, />02<\/button>/)
   assert.match(home, /aria-label="Previous notice"/)
   assert.match(home, /aria-label="Next notice"/)
-  assert.match(home, /cta-carousel\.js\?v=20260901-1/)
+  assert.match(home, /cta-carousel\.js\?v=20260911-2/)
   assert.match(home, /kryllian-rust-repair-notice\.png\?v=20260901-1/)
   assert.match(home, /Colour sketch of Xirith's four-armed mechanic/)
-  assert.match(carousel, /\['release', 'beta'\]\.find/)
+  assert.match(carousel, /\['books', 'crossing', 'release', 'beta', 'minis'\]/)
+  assert.match(home, /data-cta-owner="minis"/)
   assert.match(carousel, /vf:cta-switch-request/)
   assert.match(carousel, /data-cta-inbox/)
   assert.match(carousel, /Open saved notifications/)
@@ -340,7 +341,7 @@ test('cinematic renderers use an iPhone and Safari compatible WebGL profile', ()
   assert.match(background, /compactMode \? 'default' : 'high-performance'/)
   assert.match(background, /webglcontextlost/)
   assert.match(background, /if \(!context\)/)
-  for (const book of books) assert.match(book, /book-detail\.js\?v=20260901-1/)
+  for (const book of books) assert.match(book, /book-detail\.js\?v=\d{8}-\d+/)
 })
 
 test('home journey rotates lore destinations without trapping vertical scroll', () => {
@@ -407,11 +408,11 @@ test('public discovery pages expose canonical, social and structured metadata', 
 
 test('every book page offers its own tracked direct PDF download', () => {
   const books = [
-    ['corebook.html', '/download/VeilFarers_Corebook_12.05-Editorial-Release.pdf', 'VeilFarers Corebook', '12.05'],
-    ['keepers-companion.html', '/download/VeilFarers_Keepers_Companion_12.04-Editorial-Release.pdf', "VeilFarers Keeper's Companion", '12.04'],
-    ['rust-and-steel.html', '/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf', 'VeilFarers: Rust &amp; Steel', '12.05'],
-    ['hearts-in-the-void.html', '/download/VeilFarers_Hearts_in_the_Void_1.0-Editorial-Release.pdf', 'Hearts in the Void', '1.0'],
-    ['alien-archives.html', '/download/VeilFarers_Alien_Species_12.04-Editorial-Release.pdf', 'VeilFarers: Alien Species', '12.04']
+    ['corebook.html', '/download/VeilFarers_Corebook_12.06.pdf', 'VeilFarers Corebook', '12.06'],
+    ['keepers-companion.html', '/download/VeilFarers_Keepers_Companion_12.06.pdf', "VeilFarers Keeper's Companion", '12.06'],
+    ['rust-and-steel.html', '/download/VeilFarers_Rust_and_Steel_12.06.pdf', 'VeilFarers: Rust &amp; Steel', '12.06'],
+    ['hearts-in-the-void.html', '/download/VeilFarers_Hearts_in_the_Void_12.06.pdf', 'Hearts in the Void', '12.06'],
+    ['alien-archives.html', '/download/VeilFarers_Alien_Species_12.06.pdf', 'VeilFarers: Alien Species', '12.06']
   ]
 
   for (const [file, href, title, version] of books) {
@@ -419,9 +420,9 @@ test('every book page offers its own tracked direct PDF download', () => {
     assert.equal(page.includes(`href="${href}" download data-vf-download`), true)
     assert.equal(page.includes(`data-vf-download-title="${title}"`), true)
     assert.equal(page.includes(`data-vf-download-version="${version}"`), true)
-    assert.equal((page.match(/ data-vf-download(?=[ >])/g) || []).length, 2)
+    assert.equal((page.match(/ data-vf-download(?=[ >])/g) || []).length, file === 'hearts-in-the-void.html' ? 5 : 2)
     assert.match(page, /simple-analytics\.js/)
-    assert.match(page, /book-detail\.js\?v=20260901-1/)
+    assert.match(page, /book-detail\.js\?v=\d{8}-\d+/)
     assert.equal(existsSync(new URL(`../public${href}`, import.meta.url)), true)
   }
 

@@ -65,7 +65,7 @@ const HISTORIC = /11\.1-RC3/ // superseded download entries kept in changelog.js
 const refs = new Map()
 for (const file of walk(PUBLIC)) {
   if (!CODE_EXT.has(extname(file).toLowerCase())) continue
-  if (file.includes('/assets/3d-dice/') || file.endsWith('.min.js')) continue
+  if (file.replaceAll('\\', '/').includes('/assets/3d-dice/') || file.endsWith('.min.js')) continue
   const text = readFileSync(file, 'utf8')
   for (const match of text.matchAll(REF)) {
     const ref = match[1].replace(/^\//, '')

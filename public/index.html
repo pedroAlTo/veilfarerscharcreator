@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="veilfarers-release" content="v59.81">
+  <meta name="veilfarers-release" content="v59.82">
   <meta charset="utf-8"><script src="/public-transition-init.js?v=20260829-1"></script>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="VeilFarers is a free science-fiction expansion for Daggerheart with original ancestries, classes, starship combat, augmentations, factions, powers and adventures.">
@@ -31,7 +31,8 @@
   <link rel="preload" href="/assets/homepage/space-journey-static.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="/home-cinematic.css?v=20260902-2">
   <link rel="stylesheet" href="/public-navigation.css?v=20260829-8">
-</head>
+  <link rel="stylesheet" href="/mini-survey.css?v=20260909-2">
+<link rel="stylesheet" href="/release-1206.css?v=20260910-1"><link rel="stylesheet" href="/edition-notices.css?v=20260911-1"><link rel="stylesheet" href="/cta-cinematic.css?v=20260911-3"></head>
 <body class="vf-home" data-visual-mode="static" data-visual-reason="initial">
   <a class="vf-skip-link" href="#main-content">Skip to content</a>
   <a class="vf-compatible-badge" href="/legal.html" aria-label="Daggerheart compatible community content"><img src="/assets/legal/daggerheart-compatible-white-full-color.png" alt="Daggerheart compatible"></a>
@@ -50,7 +51,7 @@
       <a href="#home">Home</a><a href="#explore">Setting</a><a href="/books/corebook.html">Core</a><a href="/books/keepers-companion.html">Keeper</a><a href="/books/rust-and-steel.html">Rust &amp; Steel</a><a href="/books/hearts-in-the-void.html">Hearts in the Void</a><a href="/books/alien-archives.html">Alien Species</a><a href="/downloads.html">Downloads</a><a href="#features">Features</a><a href="/feedback.html">Feedback</a><a class="vf-login-link" href="/login.html">Log in</a>
     </nav>
   </header>
-  <button class="vf-beta-inbox vf-cta-inbox" type="button" data-cta-inbox aria-label="Open saved notifications" aria-controls="rust-download-correction beta-invitation" aria-expanded="false"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2.5 3.5h27v17h-27zM3.5 5l12.5 9L28.5 5M3.5 19l8.5-7m16.5 7L20 12"/></svg></button>
+  <button class="vf-beta-inbox vf-cta-inbox" type="button" data-cta-inbox aria-label="Open saved notifications" aria-controls="rust-download-correction beta-invitation mini-invitation first-crossing-notice books-1206-notice" aria-expanded="false"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2.5 3.5h27v17h-27zM3.5 5l12.5 9L28.5 5M3.5 19l8.5-7m16.5 7L20 12"/></svg></button>
 
   <main id="main-content">
     <section class="vf-hero" id="home" aria-labelledby="hero-title" data-journey-scroll>
@@ -106,7 +107,7 @@
 
     <section class="vf-start-here" aria-labelledby="start-title">
       <header class="vf-start-header"><div><p class="vf-eyebrow">Where to start</p><h2 id="start-title">Choose your first crossing.</h2></div><p>VeilFarers can begin with learning the full system, preparing to guide a campaign, or stepping directly into a first cinematic adventure.</p></header>
-      <div class="vf-start-routes">
+      <a class="vf-first-crossing-banner" href="/books/hearts-in-the-void.html#first-crossing"><span class="vf-new-badge">New!</span><div><strong>First Crossing</strong><span>The fastest way to understand VeilFarers. Learn the system by playing your first session.</span></div><b>Start here ↗</b></a><div class="vf-start-routes">
         <a class="vf-start-route" href="/books/corebook.html"><img src="/img/covers/corebook.webp" alt="VeilFarers Corebook cover" loading="lazy" decoding="async"><span class="vf-start-number">01</span><div><p>Recommended for every new group</p><h3>Begin with the Corebook</h3><span>Learn the setting, ancestries, classes, powers, equipment, augmentations, naval combat, factions and the Wealth Tier economy. This is the foundation for players and Keepers.</span><strong>Explore the Corebook</strong></div></a>
         <a class="vf-start-route" href="/books/keepers-companion.html"><img src="/img/covers/keepers-companion.webp" alt="VeilFarers Keeper's Companion cover" loading="lazy" decoding="async"><span class="vf-start-number">02</span><div><p>Recommended for the Keeper</p><h3>Prepare with the Companion</h3><span>Build memorable NPCs, use clocks, layer environments, stage cinematic boss encounters and turn the setting into a living campaign.</span><strong>Explore the Companion</strong></div></a>
         <a class="vf-start-route" href="/books/hearts-in-the-void.html"><img src="/img/covers/hearts-in-the-void.webp" alt="VeilFarers Hearts in the Void cover" loading="lazy" decoding="async"><span class="vf-start-number">03</span><div><p>Recommended first adventure</p><h3>Play Hearts in the Void</h3><span>Put the system on the table through a focused, story-driven scenario. It is the clearest route from reading the rules to experiencing VeilFarers in play.</span><strong>Open the briefing</strong></div></a>
@@ -128,7 +129,7 @@
     <section class="vf-final-cta" aria-labelledby="final-title"><p class="vf-eyebrow">The next crossing begins here</p><h2 id="final-title">Explore VeilFarers</h2><div class="vf-final-links"><a href="#explore">Setting</a><a href="/downloads.html">Downloads</a><a href="/books/alien-archives.html">Alien Species</a><a href="/books/corebook.html">Books</a></div></section>
   </main>
 
-  <dialog class="vf-release-modal" id="rust-download-correction" data-release-modal aria-labelledby="release-correction-title" aria-describedby="release-correction-description">
+  <dialog class="vf-release-modal" id="rust-download-correction" data-release-modal data-cta-notice="release" data-cta-title="Rust &amp; Steel download update" aria-labelledby="release-correction-title" aria-describedby="release-correction-description">
     <div class="vf-release-card">
       <button class="vf-release-delete" type="button" data-release-delete aria-label="Permanently dismiss Rust and Steel correction"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
       <button class="vf-release-minimize" type="button" data-release-minimize aria-label="Minimize Rust and Steel correction"><span aria-hidden="true"></span></button>
@@ -136,9 +137,9 @@
       <div class="vf-release-copy">
         <p class="vf-eyebrow">Workshop bulletin · Download repaired</p>
         <h2 id="release-correction-title">Rust &amp; Steel is back in the forge.</h2>
-        <p class="vf-release-lead">For a short time, the Rust &amp; Steel download was serving the Corebook by mistake. The correct 12.05 PDF is now online.</p>
-        <p id="release-correction-description">Xirith's repair bay thanks the sharp-eyed VeilFarer who told us the file had been moonlighting as the Corebook. Your feedback let us catch it and hammer the right book back into place.</p>
-        <a class="vf-release-action" href="/download/VeilFarers_Rust_and_Steel_12.05-Editorial-Release.pdf" download>Download the repaired edition</a>
+        <p class="vf-release-lead">The Rust &amp; Steel download once served the Corebook by mistake. The correct book is available, now in its 12.06 edition.</p>
+        <p id="release-correction-description">Xirith’s repair bay thanks the sharp-eyed VeilFarer who reported it. Your feedback keeps this universe running.</p>
+        <a class="vf-release-action" href="/download/VeilFarers_Rust_and_Steel_12.06.pdf" download>Download Rust &amp; Steel 12.06</a>
         <nav class="vf-cta-pagination" data-cta-owner="release" aria-label="Homepage notices">
           <button class="vf-cta-arrow" type="button" data-cta-target="beta" aria-label="Previous notice"><span aria-hidden="true">&#x2039;</span></button>
           <button class="vf-cta-index is-current" type="button" data-cta-target="release" aria-current="page" aria-label="Notice 1: Rust and Steel correction">01</button>
@@ -149,15 +150,42 @@
     </div>
   </dialog>
 
-  <dialog class="vf-beta-modal" id="beta-invitation" data-beta-modal aria-labelledby="beta-title" aria-describedby="beta-description">
+
+
+  <dialog class="vf-beta-modal" id="beta-invitation" data-beta-modal data-cta-notice="beta" data-cta-title="Beta tester invitation" aria-labelledby="beta-title" aria-describedby="beta-description">
     <div class="vf-beta-card">
       <button class="vf-beta-delete" type="button" data-beta-delete aria-label="Permanently dismiss beta tester invitation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
       <button class="vf-beta-close" type="button" data-beta-close aria-label="Save beta tester invitation for later"><span aria-hidden="true"></span></button>
       <figure class="vf-beta-portrait"><img src="/assets/homepage/ethereal-beta-recruitment-v2.webp" alt="A smoky Ethereal in a constellation hat points toward the viewer" decoding="async"><canvas class="vf-beta-eye-smoke" data-beta-eye-smoke aria-hidden="true"></canvas></figure>
-      <div class="vf-beta-copy"><p class="vf-eyebrow">Beta signal · Recruitment open</p><h2 id="beta-title"><span>VeilFarers wants you</span><strong>as a beta tester!</strong></h2><p class="vf-beta-report">Report in at <a href="/feedback.html">veilfarers.com/feedback</a></p><p id="beta-description">Play the system, then be heard. Head to <a href="/feedback.html">Feedback</a> and tell us what works, what breaks, and what you'd change.</p><a class="vf-beta-action" href="/feedback.html">Answer the call</a><nav class="vf-cta-pagination" data-cta-owner="beta" aria-label="Homepage notices"><button class="vf-cta-arrow" type="button" data-cta-target="release" aria-label="Previous notice"><span aria-hidden="true">&#x2039;</span></button><button class="vf-cta-index" type="button" data-cta-target="release" aria-label="Notice 1: Rust and Steel correction">01</button><button class="vf-cta-index is-current" type="button" data-cta-target="beta" aria-current="page" aria-label="Notice 2: Beta tester invitation">02</button><button class="vf-cta-arrow" type="button" data-cta-target="release" aria-label="Next notice"><span aria-hidden="true">&#x203a;</span></button></nav></div>
+      <div class="vf-beta-copy"><p class="vf-eyebrow">Beta signal · Recruitment open</p><h2 id="beta-title"><span>VeilFarers wants you</span><strong>as a beta tester!</strong></h2><p class="vf-beta-report">Report in at <a href="/feedback.html">veilfarers.com/feedback</a></p><p id="beta-description">Play the system, then be heard. Head to <a href="/feedback.html">Feedback</a> and tell us what works, what breaks, and what you'd change.</p><a class="vf-beta-action" href="/feedback.html">Answer the call</a><nav class="vf-cta-pagination" data-cta-owner="beta" aria-label="Homepage notices"><button class="vf-cta-arrow" type="button" data-cta-target="release" aria-label="Previous notice"><span aria-hidden="true">&#x2039;</span></button><button class="vf-cta-index" type="button" data-cta-target="release" aria-label="Notice 1: Books 12.06">01</button><button class="vf-cta-index is-current" type="button" data-cta-target="beta" aria-current="page" aria-label="Notice 2: Beta tester invitation">02</button><button class="vf-cta-arrow" type="button" data-cta-target="release" aria-label="Next notice"><span aria-hidden="true">&#x203a;</span></button></nav></div>
     </div>
   </dialog>
 
+<dialog class="vf-edition-modal" id="books-1206-notice" data-cta-notice="books" data-cta-title="Books 12.06" data-simple-notice aria-labelledby="books-1206-title">
+<div class="vf-notice-controls"><button class="vf-release-minimize" type="button" data-notice-minimize aria-label="Save Books 12.06 for later"><span aria-hidden="true"></span></button><button class="vf-release-delete" type="button" data-notice-delete aria-label="Dismiss Books 12.06"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button></div><div class="vf-edition-grid"><div class="vf-edition-art"><div class="vf-golden-light" aria-hidden="true"><svg viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice"><defs>
+<radialGradient id="vf-upgrade-core"><stop stop-color="#fff9df" stop-opacity=".95"/><stop offset=".08" stop-color="#ffe4a1" stop-opacity=".8"/><stop offset=".32" stop-color="#dbae51" stop-opacity=".28"/><stop offset="1" stop-color="#956320" stop-opacity="0"/></radialGradient>
+<linearGradient id="vf-upgrade-ribbon" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#d69b3a" stop-opacity="0"/><stop offset=".3" stop-color="#edc97b" stop-opacity=".4"/><stop offset=".52" stop-color="#fff2c2"/><stop offset=".7" stop-color="#c28c36" stop-opacity=".45"/><stop offset="1" stop-color="#d69b3a" stop-opacity="0"/></linearGradient>
+<filter id="vf-upgrade-glow"><feGaussianBlur stdDeviation="5"/></filter></defs>
+<g class="vf-light-core"><ellipse cx="400" cy="400" rx="370" ry="290" fill="url(#vf-upgrade-core)"/><ellipse cx="400" cy="400" rx="340" ry="3" fill="#ffeab8" opacity=".4" filter="url(#vf-upgrade-glow)"/></g>
+<g fill="none" stroke="url(#vf-upgrade-ribbon)">
+<g class="vf-ribbon-wave"><path d="M-180 800C80 630 150 300 400 400S650 170 1000-50" stroke-width="17" opacity=".2"/><path d="M-180 800C80 630 150 300 400 400S650 170 1000-50" stroke-width="2"/><path d="M-180 800C80 630 150 300 400 400S650 170 1000-50" stroke="#fff2ca" stroke-width="3" opacity=".7" class="vf-ribbon-shine"/></g>
+<g class="vf-ribbon-wave"><path d="M-120-180C310 100 680 160 400 400S300 650 980 850" stroke-width="24" opacity=".15"/><path d="M-120-180C310 100 680 160 400 400S300 650 980 850" stroke-width="2"/><path d="M-150 260C150 700 300 220 400 400S700 680 960 390" stroke-width="1" opacity=".6"/></g>
+<g class="vf-ribbon-wave"><path d="M-100 700C330 730 650 460 400 400S250 250 850-150" stroke-width="12" opacity=".24"/><path d="M-100 700C330 730 650 460 400 400S250 250 850-150" stroke-width="2"/><path d="M-100 700C330 730 650 460 400 400S250 250 850-150" stroke="#fff2ca" stroke-width="2" opacity=".5" class="vf-ribbon-shine"/></g></g>
+<g class="vf-light-star" fill="#fce5ad"><circle cx="130" cy="216" r="1"/><circle cx="654" cy="570" r="1.5"/><circle cx="174" cy="641" r="1.2"/><circle cx="618" cy="133" r="1"/><circle cx="342" cy="90" r="1.2"/><circle cx="721" cy="325" r="1.2"/></g>
+</svg></div><span class="vf-upgrade-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17V4m-5 5 5-5 5 5M5 15v5h14v-5"/></svg>12.06 UPGRADE</span><div class="vf-book-collection"><figure class="vf-bound-book"><div class="vf-book-object"><img src="/img/covers/corebook.webp" alt="VeilFarers Corebook cover" width="600" height="800" loading="lazy"></div><figcaption>Corebook</figcaption></figure><figure class="vf-bound-book"><div class="vf-book-object"><img src="/img/covers/keepers-companion.webp" alt="VeilFarers Keeper's Companion cover" width="600" height="800" loading="lazy"></div><figcaption>Keeper's Companion</figcaption></figure><figure class="vf-bound-book"><div class="vf-book-object"><img src="/img/covers/hearts-in-the-void.webp" alt="Hearts in the Void cover" width="600" height="800" loading="lazy"></div><figcaption>Hearts in the Void</figcaption></figure><figure class="vf-bound-book"><div class="vf-book-object"><img src="/img/covers/rust-and-steel.webp" alt="VeilFarers: Rust &amp; Steel cover" width="600" height="800" loading="lazy"></div><figcaption>Rust & Steel</figcaption></figure><figure class="vf-bound-book"><div class="vf-book-object"><img src="/img/covers/alien-species.webp" alt="VeilFarers: Alien Species cover" width="600" height="800" loading="lazy"></div><figcaption>Alien Species</figcaption></figure></div><p class="vf-collection-caption">Five books. A complete universe of possibilities.</p></div><div class="vf-edition-copy"><p class="vf-eyebrow"><span class="vf-new-badge">New!</span> The 12.06 collection</p><h2 id="books-1206-title">Your universe.<br><em>Upgraded.</em></h2><ul class="vf-edition-descriptions"><li><strong>Corebook</strong><span>Character creation, the Pearl Era, powers, equipment, augmentations and starship combat. The foundation for players and Keepers.</span></li><li><strong>Keeper's Companion</strong><span>Prepare sessions, build NPCs, manage pressure with clocks and bring the Shattered Worlds to life.</span></li><li><strong>Hearts in the Void</strong><span>A missing heir, a crossing through the Veil and a silent station. Adventure 1.0, updated to rules 12.06.</span></li><li><strong>Rust & Steel</strong><span>Weapons, armor, equipment and survival. Expand the technology and hard choices available to your crew.</span></li><li><strong>Alien Species</strong><span>Explore the peoples of the Shattered Worlds through biology, culture, NPCs and tools for inter-species encounters.</span></li></ul><a class="vf-release-action" href="/downloads.html">Get the updated books</a><nav class="vf-cta-pagination" data-cta-owner="books" aria-label="Homepage notices"></nav></div></div></dialog>
+<dialog class="vf-edition-modal vf-lite-modal" id="first-crossing-notice" data-cta-notice="crossing" data-cta-title="New! First Crossing Lite 1.1" data-simple-notice aria-labelledby="crossing-title">
+<div class="vf-notice-controls"><button class="vf-release-minimize" type="button" data-notice-minimize aria-label="Save First Crossing for later"><span aria-hidden="true"></span></button><button class="vf-release-delete" type="button" data-notice-delete aria-label="Dismiss First Crossing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button></div><div class="vf-edition-grid"><div class="vf-lite-art"><div class="vf-golden-light" aria-hidden="true"><svg viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice"><defs>
+<radialGradient id="vf-crossing-core"><stop stop-color="#fff9df" stop-opacity=".95"/><stop offset=".08" stop-color="#ffe4a1" stop-opacity=".8"/><stop offset=".32" stop-color="#dbae51" stop-opacity=".28"/><stop offset="1" stop-color="#956320" stop-opacity="0"/></radialGradient>
+<linearGradient id="vf-crossing-ribbon" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#d69b3a" stop-opacity="0"/><stop offset=".3" stop-color="#edc97b" stop-opacity=".4"/><stop offset=".52" stop-color="#fff2c2"/><stop offset=".7" stop-color="#c28c36" stop-opacity=".45"/><stop offset="1" stop-color="#d69b3a" stop-opacity="0"/></linearGradient>
+<filter id="vf-crossing-glow"><feGaussianBlur stdDeviation="5"/></filter></defs>
+<g class="vf-light-core"><ellipse cx="400" cy="400" rx="370" ry="290" fill="url(#vf-crossing-core)"/><ellipse cx="400" cy="400" rx="340" ry="3" fill="#ffeab8" opacity=".4" filter="url(#vf-crossing-glow)"/></g>
+<g fill="none" stroke="url(#vf-crossing-ribbon)">
+<g class="vf-ribbon-wave"><path d="M-180 800C80 630 150 300 400 400S650 170 1000-50" stroke-width="17" opacity=".2"/><path d="M-180 800C80 630 150 300 400 400S650 170 1000-50" stroke-width="2"/><path d="M-180 800C80 630 150 300 400 400S650 170 1000-50" stroke="#fff2ca" stroke-width="3" opacity=".7" class="vf-ribbon-shine"/></g>
+<g class="vf-ribbon-wave"><path d="M-120-180C310 100 680 160 400 400S300 650 980 850" stroke-width="24" opacity=".15"/><path d="M-120-180C310 100 680 160 400 400S300 650 980 850" stroke-width="2"/><path d="M-150 260C150 700 300 220 400 400S700 680 960 390" stroke-width="1" opacity=".6"/></g>
+<g class="vf-ribbon-wave"><path d="M-100 700C330 730 650 460 400 400S250 250 850-150" stroke-width="12" opacity=".24"/><path d="M-100 700C330 730 650 460 400 400S250 250 850-150" stroke-width="2"/><path d="M-100 700C330 730 650 460 400 400S250 250 850-150" stroke="#fff2ca" stroke-width="2" opacity=".5" class="vf-ribbon-shine"/></g></g>
+<g class="vf-light-star" fill="#fce5ad"><circle cx="130" cy="216" r="1"/><circle cx="654" cy="570" r="1.5"/><circle cx="174" cy="641" r="1.2"/><circle cx="618" cy="133" r="1"/><circle cx="342" cy="90" r="1.2"/><circle cx="721" cy="325" r="1.2"/></g>
+</svg></div><div class="vf-lite-book-scene"><figure class="vf-bound-book vf-lite-book"><div class="vf-book-object"><img src="/assets/books/editions/first-crossing-1.1.png" alt="First Crossing 1.1 — the original typographic PDF cover" width="707" height="1000"></div><figcaption>FIRST CROSSING · 1.1</figcaption></figure></div><div class="vf-cta-dice" id="vf-crossing-dice" aria-hidden="true"><span class="vf-dice-fallback"><b>Hope · d12</b><b>Fear · d12</b></span></div><p class="vf-dice-caption">Two dice. Your first decision.</p></div><div class="vf-edition-copy"><p class="vf-eyebrow"><span class="vf-new-badge">New!</span> First Crossing · Lite starter · 1.1</p><h2 id="crossing-title">Learn the system.<br><em>By playing it.</em></h2><p class="vf-lite-lead">The fastest way to understand VeilFarers.</p><p>A complete first session teaches the rules as your crew takes a contract, secures a ship and crosses the Veil. Start playing without reading the full collection first.</p><div class="vf-lite-facts"><span><strong>3–4</strong> hours</span><span><strong>3–5</strong> players + Keeper</span><span><strong>5</strong> ready characters</span></div><p>Download the session and its required Table Kit. References, character folios and printer-friendly maps are included; color maps are optional. Continue into Hearts in the Void when you’re ready.</p><a class="vf-release-action" href="/books/hearts-in-the-void.html#first-crossing">Start with First Crossing</a><nav class="vf-cta-pagination" data-cta-owner="crossing" aria-label="Homepage notices"></nav></div></div></dialog>
+<dialog class="vf-edition-modal vf-coming-modal" id="mini-invitation" data-cta-notice="minis" data-cta-title="Nine Signals · Coming soon" data-simple-notice aria-labelledby="mini-title"><div class="vf-notice-controls"><button class="vf-release-minimize" type="button" data-notice-minimize aria-label="Save Nine Signals for later"><span aria-hidden="true"></span></button><button class="vf-release-delete" type="button" data-notice-delete aria-label="Dismiss Nine Signals"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button></div><div class="vf-coming-copy"><p class="vf-eyebrow">Transmission pending</p><h2 id="mini-title">Nine signals.</h2><p class="vf-coming-label">Coming soon!</p><p>The next transmission is on its way.</p><nav class="vf-cta-pagination" data-cta-owner="minis" aria-label="Homepage notices"></nav></div></dialog>
   <footer class="vf-site-footer"><a class="vf-wordmark" href="#home"><span>VEILFARERS</span></a><p>Cross the dark. Carry what matters.</p><nav aria-label="Footer"><a href="/downloads.html">Downloads</a><a href="/feedback.html">Feedback</a><a href="/legal.html">License &amp; credits</a><a href="/login.html">Log in</a></nav></footer>
   <p class="vf-visual-announcer" role="status" aria-live="polite" data-visual-announcer></p>
 
@@ -175,8 +203,38 @@
   <script src="/public-navigation.js?v=20260829-2" defer></script>
   <script type="module" src="/space-journey.js?v=20260902-2"></script>
   <script src="/friend-navigation.js?v=20260829-2" defer></script>
-  <script src="/release-notice.js?v=20260901-18" defer></script>
-  <script src="/beta-recruitment.js?v=20260831-6" defer></script>
-  <script src="/cta-carousel.js?v=20260901-1" defer></script>
-</body>
+  <script src="/release-notice.js?v=20260911-1" defer></script>
+  <script src="/beta-recruitment.js?v=20260909-1" defer></script>
+  <template id="vf-mini-survey-template"><dialog class="vf-mini-modal" id="mini-invitation" data-mini-modal data-cta-notice="minis" data-cta-title="Ancestry mini-expansions" aria-labelledby="mini-title" aria-describedby="mini-intro">
+    <div class="vf-mini-card">
+      <div class="vf-mini-toolbar">
+        <button class="vf-mini-tool" type="button" data-mini-delete aria-label="Permanently dismiss the mini-expansion notice on this device" title="Dismiss this notice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+        <button class="vf-mini-tool" type="button" data-mini-close aria-label="Save the mini-expansion notice to the envelope" title="Save for later"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+      </div>
+      <div class="vf-mini-story">
+        <p class="vf-mini-eyebrow">Alien Species · Community transmission 01</p>
+        <h2 id="mini-title">Nine signals.<br><em>Which one first?</em></h2>
+        <p class="vf-mini-intro" id="mini-intro">A mini-expansion for every ancestry. Every signal will be decoded. Your vote decides which one reaches the Archive first.</p>
+        <div class="vf-mini-receiver" aria-hidden="true"><span><strong>09</strong>SIGNALS FOUND</span><i style="--signal:0"></i><i style="--signal:1"></i><i style="--signal:2"></i><i style="--signal:3"></i><i style="--signal:4"></i><i style="--signal:5"></i><i style="--signal:6"></i><i style="--signal:7"></i><i style="--signal:8"></i></div>
+        <dl class="vf-mini-process"><div><dt>7 days</dt><dd>To cast your vote</dd></div><div><dt>3 reveals</dt><dd>Per batch, with release dates</dd></div><div><dt>1 week</dt><dd>Between each release</dd></div></dl>
+      </div>
+      <div class="vf-mini-voting">
+        <p class="vf-mini-status" data-mini-status>Preparing the transmission</p>
+        <form class="vf-mini-form" data-mini-form>
+          <fieldset><legend>Who should reach the Archive first?</legend><div class="vf-mini-choices" data-mini-choices></div></fieldset>
+          <p class="vf-mini-note">One vote per VeilFarer, please. We won’t track you to enforce it. Everyone’s mini will be released; you’re choosing the order. <a href="#mini-privacy">About your vote</a></p>
+          <button class="vf-mini-submit" type="submit" data-mini-submit disabled>Voting opens soon</button>
+          <p class="vf-mini-message" data-mini-message role="status" aria-live="polite">The opening date will be announced here.</p>
+          <noscript><p class="vf-mini-note">Enable JavaScript to use this survey. You can still explore <a href="/books/alien-archives.html">Alien Species</a>.</p></noscript>
+        </form>
+        <div class="vf-mini-footer"><nav class="vf-cta-pagination" data-cta-owner="minis" aria-label="Homepage notices"></nav><a class="vf-mini-archive-link" href="/books/alien-archives.html#mini-expansions">Explore Alien Species ↗</a></div>
+        <details class="vf-mini-note" id="mini-privacy"><summary>About your vote</summary><p>Only total votes per ancestry are saved. We don’t collect names, emails, accounts or visitor identifiers for this poll. No cookies or fingerprints are used to check for repeat votes. The envelope remembers whether you save or dismiss this notice; it does not remember your vote. Our host still processes ordinary technical requests. See the <a href="/legal.html#privacy">privacy notice</a>.</p></details>
+      </div>
+    </div>
+  </dialog></template>
+<script src="/notice-config.js?v=20260911-1" defer></script>
+<script src="/cta-carousel.js?v=20260911-2" defer></script>
+
+
+<script type="module" src="/edition-notices.mjs?v=20260911-4"></script></body>
 </html>

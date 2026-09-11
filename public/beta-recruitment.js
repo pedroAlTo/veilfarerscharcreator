@@ -23,29 +23,29 @@
   let smokeParticles = [];
 
   function readStorage(storage, key) {
-    try { return storage.getItem(key) === '1'; }
+    try { return window[storage].getItem(key) === '1'; }
     catch { return false; }
   }
 
   function writeStorage(storage, key, value = '1') {
-    try { storage.setItem(key, value); }
+    try { window[storage].setItem(key, value); }
     catch { /* Controls remain usable when browser storage is unavailable. */ }
   }
 
-  function isDeleted() { return readStorage(localStorage, deletedKey); }
-  function isShelved() { return readStorage(sessionStorage, shelvedKey); }
+  function isDeleted() { return readStorage('localStorage', deletedKey); }
+  function isShelved() { return readStorage('sessionStorage', shelvedKey); }
 
   function reportInbox(active, animate = false) {
     const deleted = isDeleted();
     window.dispatchEvent(new CustomEvent('vf:cta-inbox-update', { detail: {
-      target: 'beta', active: active && !deleted, deleted, open: modal.open, animate
+      target: 'beta', active: active && !deleted, deleted, open: modal.open, animate, auto: !isShelved() && !deleted
     } }));
   }
 
-  function rememberShelved() { writeStorage(sessionStorage, shelvedKey); }
+  function rememberShelved() { writeStorage('sessionStorage', shelvedKey); }
 
   function rememberDeleted() {
-    writeStorage(localStorage, deletedKey);
+    writeStorage('localStorage', deletedKey);
     try { sessionStorage.removeItem(shelvedKey); }
     catch { /* Nothing else is required. */ }
     reportInbox(false);
@@ -195,18 +195,17 @@
     closeMode = mode;
     switchTarget = target;
     if (mode === 'delete') rememberDeleted();
-    else if (mode === 'shelve') rememberShelved();
+    else rememberShelved();
     if (reducedMotion.matches) {
       finishClose();
       return;
     }
     modal.classList.add('is-closing');
-    card?.addEventListener('animationend', finishClose, { once: true });
     closeTimer = window.setTimeout(finishClose, 850);
   }
 
   function openInvitation() {
-    if (isDeleted() || modal.open || closing) return;
+    if (isDeleted() || modal.open || closing || document.querySelector('dialog[open]')) return;
     try { modal.showModal(); }
     catch { return; }
     reportInbox(false);
@@ -224,7 +223,7 @@
   window.addEventListener('vf:cta-open', event => {
     if (event.detail?.target === 'beta') openInvitation();
   });
-  window.addEventListener('vf:cta-state-request', () => reportInbox(isShelved() && !modal.open));
+  window.addEventListener('vf:cta-state-request', () => reportInbox(!modal.open));
   modal.addEventListener('cancel', (event) => {
     event.preventDefault();
     closeInvitation('shelve');
@@ -234,24 +233,6 @@
   });
   action?.addEventListener('click', rememberShelved);
 
-  if (isDeleted()) {
-    reportInbox(false);
-    return;
-  }
-  if (isShelved()) {
-    reportInbox(true);
-    return;
-  }
-
-  reportInbox(false);
-  const scheduleOpen = () => window.setTimeout(openInvitation, 900);
-  const queueOpen = () => {
-    if (document.documentElement.dataset.vfReleaseNoticeBlocking === 'true') {
-      window.addEventListener('vf:release-notice-resolved', scheduleOpen, { once: true });
-      return;
-    }
-    scheduleOpen();
-  };
-  if (document.readyState === 'complete') queueOpen();
-  else window.addEventListener('load', queueOpen, { once: true });
+  // The shared carousel controls initial opening; no competing modal timers.
+  reportInbox(!isDeleted());
 })();

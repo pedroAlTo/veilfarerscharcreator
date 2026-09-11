@@ -25,17 +25,17 @@
   let lastEnergyCycle = -1;
 
   function readStorage(storage, key) {
-    try { return storage.getItem(key) === '1'; }
+    try { return window[storage].getItem(key) === '1'; }
     catch { return false; }
   }
 
   function writeStorage(storage, key) {
-    try { storage.setItem(key, '1'); }
+    try { window[storage].setItem(key, '1'); }
     catch { /* The notice remains usable when browser storage is unavailable. */ }
   }
 
-  function isDeleted() { return readStorage(localStorage, deletedKey); }
-  function isShelved() { return readStorage(sessionStorage, shelvedKey); }
+  function isDeleted() { return readStorage('localStorage', deletedKey); }
+  function isShelved() { return readStorage('sessionStorage', shelvedKey); }
 
   function portraitGeometry() {
     const sourceWidth = portraitImage?.naturalWidth || 1138;
@@ -312,22 +312,17 @@
   function reportInbox(active, animate = false) {
     const deleted = isDeleted();
     window.dispatchEvent(new CustomEvent('vf:cta-inbox-update', { detail: {
-      target: 'release', active: active && !deleted, deleted, open: modal.open, animate
+      target: 'release', active: active && !deleted, deleted, open: modal.open, animate, auto: !isShelved() && !deleted
     } }));
   }
 
-  function rememberShelved() { writeStorage(sessionStorage, shelvedKey); }
+  function rememberShelved() { writeStorage('sessionStorage', shelvedKey); }
 
   function rememberDeleted() {
-    writeStorage(localStorage, deletedKey);
+    writeStorage('localStorage', deletedKey);
     try { sessionStorage.removeItem(shelvedKey); }
     catch { /* Nothing else is required. */ }
     reportInbox(false);
-  }
-
-  function releaseBetaQueue() {
-    delete document.documentElement.dataset.vfReleaseNoticeBlocking;
-    window.dispatchEvent(new CustomEvent('vf:release-notice-resolved'));
   }
 
   function finishClose() {
@@ -344,8 +339,6 @@
       const target = switchTarget;
       switchTarget = '';
       window.setTimeout(() => window.dispatchEvent(new CustomEvent('vf:cta-open', { detail: { target } })), 80);
-    } else {
-      releaseBetaQueue();
     }
   }
 
@@ -355,23 +348,19 @@
     closeMode = mode;
     switchTarget = target;
     if (mode === 'delete') rememberDeleted();
-    else if (mode === 'shelve') rememberShelved();
+    else rememberShelved();
     if (reducedMotion.matches) {
       finishClose();
       return;
     }
     modal.classList.add('is-closing');
-    card?.addEventListener('animationend', finishClose, { once: true });
     closeTimer = window.setTimeout(finishClose, 850);
   }
 
   function openNotice() {
-    if (isDeleted() || modal.open || closing) return;
+    if (isDeleted() || modal.open || closing || document.querySelector('dialog[open]')) return;
     try { modal.showModal(); }
-    catch {
-      releaseBetaQueue();
-      return;
-    }
+    catch { return; }
     reportInbox(false);
     minimizeButton?.focus({ preventScroll: true });
     if (portraitImage?.complete) startSparks();
@@ -387,7 +376,7 @@
   window.addEventListener('vf:cta-open', event => {
     if (event.detail?.target === 'release') openNotice();
   });
-  window.addEventListener('vf:cta-state-request', () => reportInbox(isShelved() && !modal.open));
+  window.addEventListener('vf:cta-state-request', () => reportInbox(!modal.open));
   modal.addEventListener('cancel', event => {
     event.preventDefault();
     closeNotice('shelve');
@@ -396,18 +385,6 @@
     if (event.target === modal) closeNotice('shelve');
   });
 
-  if (isDeleted()) {
-    reportInbox(false);
-    return;
-  }
-  if (isShelved()) {
-    reportInbox(true);
-    return;
-  }
-
-  document.documentElement.dataset.vfReleaseNoticeBlocking = 'true';
-  reportInbox(false);
-  const scheduleOpen = () => window.setTimeout(openNotice, 650);
-  if (document.readyState === 'complete') scheduleOpen();
-  else window.addEventListener('load', scheduleOpen, { once: true });
+  // The shared carousel controls initial opening; no competing modal timers.
+  reportInbox(!isDeleted());
 })();

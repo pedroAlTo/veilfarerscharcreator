@@ -1,0 +1,6 @@
+# Preserve canonical PDF bytes on Windows and keep binary artwork out of text diffs.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
