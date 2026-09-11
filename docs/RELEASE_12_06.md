@@ -10,13 +10,13 @@ This release installs the five supplied 12.06 book PDFs and First Crossing 1.1 s
 4. Beta invitation
 5. Nine Signals — Coming soon
 
-The new notices reuse the original gold, clipped-corner minimize and dismiss icons. Each notice remembers its own dismissal. A new session opens the first eligible notice. The Lite dice reuse the existing gold Hope and violet Fear d12 assets, calibrated to approximately twice their original visible size. Both art panels have a central flare and slowly expanding golden ribbons. The Lite CTA displays the three illustrated First Crossing covers as bound books, with Maya at the front.
+The new notices reuse the original gold, clipped-corner minimize and dismiss icons. Each notice remembers its own dismissal. A new session opens the first eligible notice. The Lite dice reuse the existing gold Hope and violet Fear d12 assets, reduced slightly and confined to the foreground below the centered book collection. A character sheet and pencil sit behind the books. Both art panels have a central flare and slowly expanding golden ribbons. The Lite CTA displays the three illustrated First Crossing covers as bound books, with Maya at the front.
 
 ## Charon’s Refuge
 
-The station artwork derives from the first supplied visual reference. It has an unlit base image and 84 individual SVG window polygons traced against its 1536 × 1024 coordinate system. Selecting a sector starts an uneven ignition, then a subtle pulse with occasional short failures; the previous sector fades to darkness. The starfield is a separate canvas, sampled against a padded hull mask so particles remain in the background.
+The station artwork derives from the first supplied visual reference. It has an unlit base image and 84 individual SVG window polygons traced against its 1536 × 1024 coordinate system. Selecting a sector starts an uneven ignition, then a subtle pulse with occasional short failures; the previous sector fades to darkness. The starfield is a separate canvas, sampled against a padded hull mask so particles remain in the background. A beveled HUD selector tracks the active sector. Six quiet environmental readings and fast microtext packets accompany a first-view typewriter title with a blinking cursor. Power values stay between 17% and 24% without alert language; the fictional readings reveal no infestation details.
 
-Animations stop offscreen or in a hidden tab. Reduced motion keeps the stars and selected windows steady; the Lite dice have a static fallback.
+Animations stop offscreen or in a hidden tab. Reduced motion keeps the stars and selected windows steady; the Lite dice stay hidden, with no 2D substitute.
 
 ## Generated artwork
 

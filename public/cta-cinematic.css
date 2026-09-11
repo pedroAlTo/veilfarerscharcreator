@@ -100,3 +100,40 @@
  .vf-lite-library [data-lite-book="kit"],.vf-lite-library [data-lite-book="maps"]{top:22px}
  .vf-lite-library .vf-book-object:before,.vf-lite-library [data-lite-book="session"] .vf-book-object:before{width:6px}
 }
+
+/* A centered library, with real play materials layered behind it. */
+.vf-lite-book-scene.vf-lite-library{position:absolute;left:50%;top:50%;width:min(600px,90%);max-width:none;aspect-ratio:1.8;margin:0;transform:translate(-50%,-50%)}
+.vf-lite-library [data-lite-book="session"]{left:31.5%}
+.vf-lite-library [data-lite-book="kit"]{left:3.5%}
+.vf-lite-library [data-lite-book="maps"]{left:65%}
+.vf-table-props{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.vf-table-sheet{position:absolute;width:52%;height:auto;left:12%;top:50%;transform:rotate(-14deg);transform-origin:center;opacity:.58;filter:sepia(.35) brightness(.65) drop-shadow(15px 20px 15px #000c);border:1px solid #baa98280}
+.vf-table-pencil{position:absolute;width:43%;height:auto;left:15%;top:86%;transform:rotate(8deg);transform-origin:center;filter:sepia(.16) brightness(.64);opacity:.84}
+.vf-cta-dice canvas{opacity:0;transition:opacity .35s ease}
+.vf-cta-dice[data-ready="true"] canvas{opacity:1}
+.vf-dice-fallback{display:none!important}
+@media(max-width:760px){
+ .vf-lite-book-scene.vf-lite-library{width:90%;margin:0;top:50%}
+ .vf-table-sheet{width:57%;left:9%;top:51%}
+ .vf-table-pencil{width:59%;left:14%;top:84%;height:auto}
+}
+@media(prefers-reduced-motion:reduce){.vf-cta-dice canvas{transition:none}}
+
+/* Keep the smaller dice in the foreground below the centered covers. */
+.vf-lite-art .vf-cta-dice{z-index:4;height:280px;bottom:58px}
+.vf-dice-caption{z-index:5;padding:7px 10px;background:linear-gradient(90deg,transparent,#040b13cc 25%,#040b13cc 75%,transparent);text-shadow:0 2px 5px #000;color:#d8c397}
+@media(max-width:760px){.vf-lite-art .vf-cta-dice{height:250px;bottom:57px}}
+
+/* A shared overhead view: covers and dim bindings remain in the same plane. */
+.vf-lite-book-scene.vf-lite-library,.vf-book-collection{perspective:none}
+.vf-bound-book,.vf-book-object{transform-style:flat}
+.vf-book-object,.vf-book-collection .vf-book-object,.vf-book-collection .vf-bound-book:nth-child(n) .vf-book-object{transform:none!important}
+.vf-lite-library [data-lite-book="session"]{transform:rotate(-2deg)}
+.vf-lite-library [data-lite-book="kit"]{transform:rotate(-6deg)}
+.vf-lite-library [data-lite-book="maps"]{transform:rotate(5deg)}
+.vf-book-object img{border:1px solid #665c485e;filter:brightness(.86) saturate(.88)}
+.vf-book-object:before,.vf-lite-library .vf-book-object:before,.vf-lite-library [data-lite-book="session"] .vf-book-object:before{inset:3px -3px -4px 3px;width:auto;height:auto;z-index:0;transform:none;border:0;background:linear-gradient(135deg,#514d42,#746b58);box-shadow:1px 1px 1px #070c10,inset -1px -1px #403e35}
+.vf-book-object:after{width:4%;background:linear-gradient(90deg,#0206095c,transparent)}
+.vf-lite-library .vf-book-object{filter:drop-shadow(4px 9px 7px #000b)}
+.vf-book-collection .vf-book-object{filter:drop-shadow(4px 8px 7px #0009)}
+@media(max-width:760px){.vf-book-object:before,.vf-lite-library .vf-book-object:before,.vf-lite-library [data-lite-book="session"] .vf-book-object:before{inset:2px -2px -3px 2px}}

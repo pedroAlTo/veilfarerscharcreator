@@ -10,6 +10,10 @@ The original survey markup is preserved, inert, inside `#vf-mini-survey-template
 
 To launch on the user's request, set the confirmed opening date in `public/mini-campaign.mjs` and change `VF_MINI_SURVEY_ENABLED` to `true` in `public/notice-config.js`. The original form then replaces the placeholder before carousel initialization; `edition-notices.mjs` loads the existing survey controller. Verify the server's campaign date agrees before publishing. Keep the notice in position 5.
 
-The First Crossing CTA displays three bound books using the illustrated session, Table Kit and Color Maps covers. Maya leads the composition at the front. Bindings are HTML/CSS; the original typographic PDF cover remains available as an asset. The two decorative d12 dice use the same DiceBox engine, assets and Hope/Fear materials as the Player Tool, without loading or changing the private tool. Reduced motion or renderer failure displays a static fallback.
+The First Crossing CTA displays three bound books using the illustrated session, Table Kit and Color Maps covers. Maya leads the composition at the front. Bindings are HTML/CSS; the original typographic PDF cover remains available as an asset. The two decorative d12 dice use the same DiceBox engine, assets and Hope/Fear materials as the Player Tool, without loading or changing the private tool. The dice stay hidden until the 3D canvas is initialized; there are no 2D placeholder dice. Reduced motion or renderer failure leaves the decorative dice absent. A rendered page of the actual character sheet and a worn, textured SVG pencil under matching dim light sit behind the books, which are centered in the art frame.
 
 Books 12.06 is the first automatic notice for a new visitor. Session minimization and permanent dismissal are respected independently for each notice. The new notices reuse the original gold corner-cut minimize and dismiss icons.
+
+The pencil rests at a shallow angle across the lower sheet, clear of the books; the entire eraser and ferrule remain visible.
+
+Both book notices use one overhead perspective with thin, dim bindings and restrained contact shadows. Covers and page edges share the same rotation.
