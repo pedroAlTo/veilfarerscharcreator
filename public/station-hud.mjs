@@ -20,6 +20,7 @@ export function setupStationHUD(element) {
   const art = element.querySelector('.hv-station-art');
   const target = element.querySelector('[data-hud-target]');
   const name = element.querySelector('[data-station-name]');
+  const targetNumbers = target?.querySelector('[data-hud-target-numbers]');
   if (!hud || !art || !target || !name) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const fullName = "CHARON'S REFUGE";
@@ -36,6 +37,10 @@ export function setupStationHUD(element) {
   }
   function paintPacket() {
     sequence++;
+    if (targetNumbers) {
+      const digits = width => String(Math.floor(Math.random() * 10 ** width)).padStart(width, '0');
+      targetNumbers.textContent = `${digits(3)}.${digits(3)} / ${digits(2)}.${digits(3)} / ${digits(6)}`;
+    }
     const channels = ['ATM', 'PWR', 'COM', 'LSS', 'H2O', 'PRS'];
     stream.forEach((line, i) => {
       const word = () => Math.floor(Math.random() * 65536).toString(16).padStart(4, '0').toUpperCase();

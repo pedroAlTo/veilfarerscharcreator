@@ -1,5 +1,5 @@
 import { setupStationStarfield } from './station-starfield.mjs?v=20260911-1';
-import { setupStationHUD } from './station-hud.mjs?v=20260911-1';
+import { setupStationHUD } from './station-hud.mjs?v=20260911-2';
 import { setupStationLights } from './station-lights.mjs?v=20260911-2';
 // Small, progressive enhancements. The complete briefing remains readable without JS.
 export const SECTORS = Object.freeze(['docking', 'commercial', 'residential', 'engineering', 'research']);
