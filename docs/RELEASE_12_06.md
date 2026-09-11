@@ -36,6 +36,12 @@ Final prompt specifications:
 - **Table Kit:** a substantial physical three-panel Keeper screen with panoramic station and nebula art, character folios, reference cards, a pencil and gold/violet d12s on a worn table. Warm desk light, cool starship ambience and tactile paper. Matching premium VeilFarers border, palette and Table Kit 1.1 typography.
 - **Color Maps:** a composed arrangement of four physical color map sheets: Charon’s Refuge overview, circular docking ring, industrial acquisition yard and central-starship hangar. Architectural detail, grids, restrained symbols, paper depth and aged-gold outlines. Matching cinematic palette, border and Color Maps 1.1 typography.
 
+## Rust & Steel equipment archive
+
+Four matching blueprint plates illustrate armories, powered armor, field equipment and utility drones. The black-market tile features a digital rogue mask. Every illustration has responsive WebP sizes and opens in a keyboard-accessible larger view; native image links still work without JavaScript. Prompt specifications and asset locations are recorded in `RUST_SCHEMATICS.md`.
+
+The Heat tile uses the book's 0–10 track and canonical bands: Cold (0–2), Warm (3–4), Hot (5–6), Burning (7–8), Inferno (9), Burned (10). Its segments fill as the color shifts from steel blue to amber and then red. The automatic demonstration starts in view, pauses offscreen or behind an artwork dialog, and runs once. A range control allows direct exploration and a replay button restarts it. Reduced motion uses manual control only. No campaign data is stored or changed.
+
 ## Dormant survey
 
 The full survey markup, controller and server-side counting code are retained. `VF_MINI_SURVEY_ENABLED` remains false and `campaign.opensAt` remains null. See `CTA_LAUNCH.md` for activation. No live votes were submitted during validation.
