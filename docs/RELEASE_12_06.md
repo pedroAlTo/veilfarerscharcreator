@@ -1,4 +1,4 @@
-# VeilFarers v59.82 — 11 September 2026
+# VeilFarers v59.82 — 12 September 2026
 
 This release installs the five supplied 12.06 book PDFs and First Crossing 1.1 session, Table Kit and Color Maps. The supplied Markdown and raw maps remain reference material. PDF sizes and SHA-256 hashes are recorded in `public/download/downloads.json`; existing character and starship sheets retain their original versions.
 
@@ -10,13 +10,13 @@ This release installs the five supplied 12.06 book PDFs and First Crossing 1.1 s
 4. Beta invitation
 5. Nine Signals — Coming soon
 
-The new notices reuse the original gold, clipped-corner minimize and dismiss icons. Each notice remembers its own dismissal. A new session opens the first eligible notice. The Lite dice reuse the existing gold Hope and violet Fear d12 assets, calibrated to approximately twice their original visible size. Both art panels have a central flare and slowly expanding golden ribbons. The original typographic PDF cover remains on the bound Lite book in the CTA.
+The new notices reuse the original gold, clipped-corner minimize and dismiss icons. Each notice remembers its own dismissal. A new session opens the first eligible notice. The Lite dice reuse the existing gold Hope and violet Fear d12 assets, reduced slightly and confined to the foreground below the centered book collection. The actual 3D engine, physics module and both themes initialize at page startup in an invisible staging area; the first roll still waits for the First Crossing notice to open. A character sheet and pencil sit behind the books. Both art panels have a central flare and slowly expanding golden ribbons. The Lite CTA displays the three illustrated First Crossing covers as bound books, with Maya at the front.
 
 ## Charon’s Refuge
 
-The station artwork derives from the first supplied visual reference. It has an unlit base image and 84 individual SVG window polygons traced against its 1536 × 1024 coordinate system. Selecting a sector starts an uneven ignition, then a subtle pulse with occasional short failures; the previous sector fades to darkness. The starfield is a separate canvas, sampled against a padded hull mask so particles remain in the background.
+The station artwork derives from the first supplied visual reference. It has an unlit base image and 107 individual SVG window polygons traced against its 1536 × 1024 coordinate system. All three residential modules have individually traced panes and activate together. Selecting a sector starts an uneven ignition, then a subtle pulse with occasional short failures; the previous sector fades to darkness. A few stars show brief, independent glints. A brighter blue discharge with a white core and a small branching arc appears immediately when Engineering is selected, then once per 67 seconds spent viewing that sector. Each burst fades within 0.7 seconds; selecting another area removes it, and selecting Engineering again retriggers it. A minimum visual scale keeps it readable on mobile. Reduced motion suppresses the discharge. The heart’s background particle plume is visible from the opening frame and pauses offscreen. The starfield is a separate canvas, sampled against a padded hull mask so particles remain in the background. A beveled HUD selector tracks the active sector with a 10% orange fill, animated static and a scanning sweep. Fast numerical readouts sit just below its bottom-right corner, aligned with the frame edge. Six quiet environmental readings and fast microtext packets accompany a first-view typewriter title with a blinking cursor. Power values stay between 17% and 24% without alert language; the fictional readings reveal no infestation details.
 
-Animations stop offscreen or in a hidden tab. Reduced motion keeps the stars and selected windows steady; the Lite dice have a static fallback.
+Animations stop offscreen or in a hidden tab. Reduced motion keeps the stars and selected windows steady; the Lite dice stay hidden, with no 2D substitute.
 
 ## Generated artwork
 
@@ -27,7 +27,7 @@ Created using the built-in imagegen tool. Final project assets:
 - `public/assets/books/editions/first-crossing-table-kit.webp`
 - `public/assets/books/editions/first-crossing-color-maps.webp`
 
-The three First Crossing images appear on Downloads and in the Hearts in the Void starter section. They are promotional illustrations; the supplied PDF documents are unchanged. Full generated source renders and QA screenshots remain in local `output/`, excluded from Git.
+The three First Crossing images appear in the Lite CTA, on Downloads and in the Hearts in the Void starter section. They are promotional illustrations; the supplied PDF documents are unchanged. Full generated source renders and QA screenshots remain in local `output/`, excluded from Git.
 
 Final prompt specifications:
 
@@ -35,6 +35,24 @@ Final prompt specifications:
 - **First Crossing:** premium cinematic, realistic painterly science-fiction cover. Maya Santos, a tired middle-aged woman with prematurely grey hair and a discreet dark suit, sits in the Nexus Inferior booth with black coffee and activates a three-dimensional cyan hologram of 23-year-old Alexei Joric in ceremonial military uniform. Navy, charcoal, violet, pale gold and amber; aged-gold clipped-corner border; VeilFarers / Chronicles of the Silence / First Crossing / Lite Starter 1.1 typography.
 - **Table Kit:** a substantial physical three-panel Keeper screen with panoramic station and nebula art, character folios, reference cards, a pencil and gold/violet d12s on a worn table. Warm desk light, cool starship ambience and tactile paper. Matching premium VeilFarers border, palette and Table Kit 1.1 typography.
 - **Color Maps:** a composed arrangement of four physical color map sheets: Charon’s Refuge overview, circular docking ring, industrial acquisition yard and central-starship hangar. Architectural detail, grids, restrained symbols, paper depth and aged-gold outlines. Matching cinematic palette, border and Color Maps 1.1 typography.
+
+## Rust & Steel equipment archive
+
+Four matching blueprint plates illustrate armories, powered armor, field equipment and utility drones. The black-market tile features a digital rogue mask. Every illustration has responsive WebP sizes and opens in a keyboard-accessible larger view; native image links still work without JavaScript. Prompt specifications and asset locations are recorded in `RUST_SCHEMATICS.md`.
+
+The Heat tile uses the book's 0–10 track and canonical bands: Cold (0–2), Warm (3–4), Hot (5–6), Burning (7–8), Inferno (9), Burned (10). Its segments fill as the color shifts from steel blue to amber and then red. The automatic demonstration starts in view, pauses offscreen or behind an artwork dialog, and runs once. A range control allows direct exploration and a replay button restarts it. Reduced motion uses manual control only. No campaign data is stored or changed.
+
+## Keeper and Corebook illustrated features
+
+Keeper's Companion now illustrates all nine topics with eight archival plates and a six-segment Reactor Meltdown clock. The layered-environments plate separates a single scene into its Micro base, one Macro feature and an optional Veil feature. The clock fills once in view, turns red at six, pauses offscreen and behind the image viewer, and supports manual progress and replay. The segments have narrow separators and a larger empty center, keeping the count clear at every viewport. Its caption identifies the actual trigger rather than implying that elapsed time advances the game clock.
+
+The Corebook features retain the existing ancestry portraits and Domain symbols, reuse the equipment archive where appropriate, and add plates for augmentations, naval combat, wealth and armor interaction. The augmentation plate retains the original detailed arm model, replaces the collar with a bionic eye and contains no crest. Faction play uses Amaranth, Joric and Valerius shields; the adventure case uses the Explorers’ Guild shield. All plates have responsive WebP variants and a keyboard-accessible full-size viewer.
+
+Reputation & factions includes an eight-crest picker: the six Houses, Free Fleet and Explorers' Guild. It shows the current chapter 16 reputation benefits from the 12.06 PDF, plus affiliation obligations. The Guild retains its narrative progression without invented numbered tiers. Keyboard arrows, Home and End select factions; all faction content remains available without JavaScript.
+
+Every House card uses the same centered crest mount and image height, including Amaranth's optimized picture source. An invisible `source` element no longer occupies a grid cell. A generated woven flag texture appears behind the crests, tinted burgundy, navy, charcoal, blue, green or teal to match the emblem. Original crest files remain intact. Full prompts and asset paths are in `BOOK_ILLUSTRATIONS.md`.
+
+Validation for these changes: 116 browser checks at 1440, 900 and 390 px, reduced motion and no-JavaScript fallbacks; 68 Node tests; deployment verifier checks 156 asset references with no errors or warnings. Source PDFs and protected character-creator rule data are unchanged.
 
 ## Dormant survey
 
@@ -47,3 +65,7 @@ The full survey markup, controller and server-side counting code are retained. `
 - Browser checks: desktop/mobile rendering, notice order and controls, d12 loading, all five sectors, download portraits, starfield and dormant survey.
 
 The Windows asset verifier now normalizes path separators before applying its existing vendored-dice exclusion, avoiding a false missing-texture error without changing the dice engine or textures.
+
+## Final correction checks
+
+Desktop and mobile checks confirm early engine/physics/theme loading before First Crossing opens, real 3D rendering after opening, a clear clock center, the three corrected plates, a populated moving heart canvas, three active residential modules and the previous sector fading completely. Animations retain offscreen pause and reduced-motion behavior. Unit checks bound the rare engineering discharge and independent star glints.

@@ -16,7 +16,8 @@ const base='http://127.0.0.1:8892';
    await page.locator('#books-1206-notice').screenshot({path:`output/cta-refresh/books-${name}.jpg`,type:'jpeg',quality:70});
    await page.locator('#books-1206-notice [data-cta-target="crossing"]').click();
    await page.locator('#first-crossing-notice').waitFor({state:'visible'});
-   await page.locator('.vf-lite-book img').evaluate(n=>n.decode());
+   await page.locator('.vf-lite-book img').evaluateAll(ns=>Promise.all(ns.map(n=>n.decode())));
+   assert.equal(await page.locator('.vf-lite-library img').count(),3);
    if(motion==='no-preference'){
     await page.waitForFunction(()=>document.querySelector('#vf-crossing-dice').dataset.ready==='true',{},{timeout:20000});
     await page.waitForTimeout(6500);
@@ -42,7 +43,7 @@ const base='http://127.0.0.1:8892';
    }
    await page.locator('#first-crossing').screenshot({path:`output/cta-refresh/section-${name}.jpg`,type:'jpeg',quality:70});
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-   assert.deepEqual(errors,[]);assert.deepEqual(missing,[]);console.log('PASS '+name+': five notices, dice, dormant survey, five window groups, PDF cover and no page errors');await ctx.close();
+   assert.deepEqual(errors,[]);assert.deepEqual(missing,[]);console.log('PASS '+name+': five notices, dice, dormant survey, five window groups, three First Crossing covers and no page errors');await ctx.close();
   }
   // Preview activation without changing the actual release flag or submitting votes.
   const ctx=await browser.newContext({reducedMotion:'reduce'});await ctx.route('**/*',async r=>{

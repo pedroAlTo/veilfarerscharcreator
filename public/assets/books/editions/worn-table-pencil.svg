@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="44" viewBox="0 0 500 44">
+  <defs>
+    <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#665e4e"/><stop offset=".25" stop-color="#95816a"/>
+      <stop offset=".46" stop-color="#85755e"/><stop offset=".51" stop-color="#756651"/>
+      <stop offset="1" stop-color="#453f35"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#53514a"/><stop offset=".3" stop-color="#b0a596"/>
+      <stop offset=".6" stop-color="#817c72"/><stop offset="1" stop-color="#4b4b45"/>
+    </linearGradient>
+    <filter id="grain" x="-2%" y="-10%" width="104%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".035 .65" numOctaves="3" seed="8" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".24"/></feComponentTransfer>
+      <feComposite in2="SourceAlpha" operator="in" result="texture"/>
+      <feBlend in="SourceGraphic" in2="texture" mode="multiply"/>
+    </filter>
+    <filter id="contact" x="-5%" y="-50%" width="110%" height="210%">
+      <feDropShadow dx="1" dy="3" stdDeviation="1.6" flood-color="#000" flood-opacity=".6"/>
+    </filter>
+  </defs>
+  <g filter="url(#contact)">
+    <g filter="url(#grain)">
+      <path d="M15 12Q9 12 9 19L10 26Q10 30 15 30H39V12Z" fill="#84766d"/>
+      <path d="M13 13Q17 17 14 28M20 14L23 29M30 13L28 29" fill="none" stroke="#4b4941" stroke-width=".7" opacity=".55"/>
+      <path d="M60 12L434 11.6L440 15.5L435 29.3L60 30Z" fill="url(#paint)"/>
+      <path d="M61 15.5L431 15.1M63 26.2L434 26.4" stroke="#c1b299" stroke-width=".6" opacity=".45"/>
+      <path d="M69 12L84 12.2L75 13.5ZM140 29.7L162 29.6L149 27.9ZM250 12L271 12L260 13.4ZM397 29.4L421 29.3L415 27.6Z" fill="#c0a47a" opacity=".66"/>
+      <path d="M104 18L140 18.3M188 24L227 24.4M299 18L320 17.5M356 23L383 23.3" stroke="#b5a58b" stroke-width=".55" opacity=".33"/>
+      <path d="M433 11.6L483 21L435 29.3L428 25.4L436 20.5L427 16.2Z" fill="#ae987b"/>
+      <path d="M436 15L479 21L438 25M444 16L457 20L442 23" fill="none" stroke="#715d46" stroke-width=".7" opacity=".65"/>
+      <path d="M473 19L488 21L472 23Z" fill="#242b2b"/>
+      <path d="M476 20L485 21" stroke="#68706d" stroke-width=".45"/>
+      <path d="M36 11.5H64V30.5H36Z" fill="url(#metal)"/>
+      <path d="M39 12V30M43 12V30M57 12V30M61 12V30" stroke="#393c37" stroke-width="1" opacity=".7"/>
+      <path d="M46 14L52 15M48 27L54 25" stroke="#c5bba7" stroke-width=".7" opacity=".45"/>
+    </g>
+    <text x="281" y="23.5" fill="#b8a78a" opacity=".48" font-family="monospace" font-size="5.5" letter-spacing="1.4">VEILFARERS  /  HB</text>
+  </g>
+</svg>

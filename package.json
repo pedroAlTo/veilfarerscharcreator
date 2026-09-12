@@ -8,6 +8,7 @@
     "check": "npm run verify && npm test"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.0.3",
     "@netlify/identity": "^1.1.0"
   },
   "devDependencies": {
