@@ -1,4 +1,4 @@
-# VeilFarers v59.82 — 11 September 2026
+# VeilFarers v59.82 — 12 September 2026
 
 This release installs the five supplied 12.06 book PDFs and First Crossing 1.1 session, Table Kit and Color Maps. The supplied Markdown and raw maps remain reference material. PDF sizes and SHA-256 hashes are recorded in `public/download/downloads.json`; existing character and starship sheets retain their original versions.
 
@@ -41,6 +41,18 @@ Final prompt specifications:
 Four matching blueprint plates illustrate armories, powered armor, field equipment and utility drones. The black-market tile features a digital rogue mask. Every illustration has responsive WebP sizes and opens in a keyboard-accessible larger view; native image links still work without JavaScript. Prompt specifications and asset locations are recorded in `RUST_SCHEMATICS.md`.
 
 The Heat tile uses the book's 0–10 track and canonical bands: Cold (0–2), Warm (3–4), Hot (5–6), Burning (7–8), Inferno (9), Burned (10). Its segments fill as the color shifts from steel blue to amber and then red. The automatic demonstration starts in view, pauses offscreen or behind an artwork dialog, and runs once. A range control allows direct exploration and a replay button restarts it. Reduced motion uses manual control only. No campaign data is stored or changed.
+
+## Keeper and Corebook illustrated features
+
+Keeper's Companion now illustrates all nine topics with eight archival plates and a six-segment Reactor Meltdown clock. The layered-environments plate separates a single scene into its Micro base, one Macro feature and an optional Veil feature. The clock fills once in view, turns red at six, pauses offscreen and behind the image viewer, and supports manual progress and replay. Its caption identifies the actual trigger rather than implying that elapsed time advances the game clock.
+
+The Corebook features retain the existing ancestry portraits and Domain symbols, reuse the equipment archive where appropriate, and add plates for augmentations, naval combat, wealth and armor interaction. All plates have responsive WebP variants and a keyboard-accessible full-size viewer.
+
+Reputation & factions includes an eight-crest picker: the six Houses, Free Fleet and Explorers' Guild. It shows the current chapter 16 reputation benefits from the 12.06 PDF, plus affiliation obligations. The Guild retains its narrative progression without invented numbered tiers. Keyboard arrows, Home and End select factions; all faction content remains available without JavaScript.
+
+Every House card uses the same centered crest mount and image height, including Amaranth's optimized picture source. An invisible `source` element no longer occupies a grid cell. A generated woven flag texture appears behind the crests, tinted burgundy, navy, charcoal, blue, green or teal to match the emblem. Original crest files remain intact. Full prompts and asset paths are in `BOOK_ILLUSTRATIONS.md`.
+
+Validation for these changes: 116 browser checks at 1440, 900 and 390 px, reduced motion and no-JavaScript fallbacks; 65 existing Node tests; deployment verifier checks 155 asset references with no errors or warnings. Source PDFs and protected character-creator rule data are unchanged.
 
 ## Dormant survey
 
