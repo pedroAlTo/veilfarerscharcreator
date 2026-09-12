@@ -1,6 +1,6 @@
-import { setupStationStarfield } from './station-starfield.mjs?v=20260911-1';
+import { setupStationStarfield } from './station-starfield.mjs?v=20260912-3';
 import { setupStationHUD } from './station-hud.mjs?v=20260911-2';
-import { setupStationLights } from './station-lights.mjs?v=20260911-2';
+import { setupStationLights } from './station-lights.mjs?v=20260912-3';
 // Small, progressive enhancements. The complete briefing remains readable without JS.
 export const SECTORS = Object.freeze(['docking', 'commercial', 'residential', 'engineering', 'research']);
 
@@ -85,7 +85,7 @@ function setupHeart() {
   let width = 0, height = 0, origin = { x: 0, y: 0, scale: 1 };
   let frameId = 0, previous = 0, clock = 0, budget = 0, inView = false;
   let particles = [];
-  const stars = Array.from({ length: 26 }, (_, i) => ({
+  const stars = Array.from({ length: 54 }, (_, i) => ({
     x: .11 + ((i * .618033989) % .82), y: .08 + ((i * .414213562) % .66), phase: i * 2.4,
     size: i % 6 === 0 ? 1.1 : .55
   }));
@@ -97,16 +97,21 @@ function setupHeart() {
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     const position = getComputedStyle(art).objectPosition.split(' ').map(value => parseFloat(value) / 100);
     origin = heartOrigin(width, height, art.naturalWidth || 1920, art.naturalHeight || 1080, position[0], position[1]);
-    particles = []; // Previous screen-space paths do not survive a size/orientation change.
+    particles = []; // Re-seed in the new screen space so the plume is visible immediately.
+    if (!motion.matches) for (let i = 0; i < (width < 760 ? 65 : 100); i++) emit(true);
   }
-  function emit() {
+  function emit(populate = false) {
     const angle = -.45 - Math.random() * 1.05;
-    const speed = (24 + Math.random() * 70) * Math.min(1, origin.scale);
+    const speed = (34 + Math.random() * 70) * Math.min(1, origin.scale);
     const spread = 9 * origin.scale;
     particles.push({ x: origin.x + (Math.random() - .5) * spread,
       y: origin.y + (Math.random() - .5) * spread, vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed, age: 0, life: 1.8 + Math.random() * 3.5,
-      radius: .5 + Math.random() * 1.1, phase: Math.random() * 6.28 });
+      vy: Math.sin(angle) * speed, age: 0, life: 4.8 + Math.random() * 3.2,
+      radius: .65 + Math.random() * 1.2, phase: Math.random() * 6.28 });
+    if (populate) {
+      const particle = particles.at(-1); particle.age = Math.random() * particle.life * .85;
+      particle.x += particle.vx * particle.age; particle.y += particle.vy * particle.age;
+    }
   }
   function draw(now) {
     frameId = 0;
@@ -122,14 +127,14 @@ function setupHeart() {
     glow.addColorStop(.3, `rgba(238,191,122,${pulse * .12})`);
     glow.addColorStop(1, 'rgba(226,183,103,0)');
     context.fillStyle = glow; context.fillRect(origin.x - glowRadius, origin.y - glowRadius, glowRadius * 2, glowRadius * 2);
-    budget += delta * (7 + pulse * 38);
-    while (budget >= 1) { if (particles.length < 100) emit(); budget--; }
+    budget += delta * (20 + pulse * 56);
+    while (budget >= 1) { if (particles.length < (width < 760 ? 120 : 190)) emit(); budget--; }
     particles = particles.filter(particle => particle.age < particle.life);
     particles.forEach(particle => {
       particle.age += delta;
       particle.x += particle.vx * delta; particle.y += particle.vy * delta;
       const fade = Math.max(0, 1 - particle.age / particle.life);
-      const alpha = Math.min(1, particle.age * 7) * fade * (.5 + .25 * Math.sin(clock * 2 + particle.phase));
+      const alpha = Math.min(1, particle.age * 7) * fade * (.7 + .2 * Math.sin(clock * 2 + particle.phase));
       context.strokeStyle = `rgba(229,204,159,${alpha * .32})`; context.lineWidth = .65;
       context.beginPath(); context.moveTo(particle.x - particle.vx * .07, particle.y - particle.vy * .07); context.lineTo(particle.x, particle.y); context.stroke();
       context.fillStyle = `rgba(255,230,185,${alpha})`;

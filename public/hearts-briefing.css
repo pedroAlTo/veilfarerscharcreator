@@ -19,7 +19,7 @@ body.hearts-briefing::after{display:none}
 .hv-scene{position:absolute;z-index:-2;inset:0;pointer-events:none}
 .hv-scene img,.hv-scene canvas{position:absolute;width:100%;height:100%;inset:0}
 .hv-scene img{object-fit:cover;object-position:50% 50%}
-.hv-scene canvas{opacity:.85}
+.hv-scene canvas{opacity:1}
 .hv-hero::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#02070a05 12%,#02070a15 38%,#02070acf 60%,#02070aea),linear-gradient(0deg,#050b10,transparent 23%,transparent 85%,#02070a90)}
 .hv-hero-frame{position:relative;width:min(1440px,calc(100% - 96px));margin:auto;min-height:inherit;display:flex;flex-direction:column;padding:108px 0 24px}
 .hv-transmission{display:flex;align-items:center;gap:10px;color:#c9c9bf;font:400 .75rem/1.5 monospace;letter-spacing:.07em;text-transform:uppercase}

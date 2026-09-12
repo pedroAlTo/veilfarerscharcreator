@@ -150,4 +150,48 @@ A close-up straight-on view of substantial woven charcoal-grey flag fabric hangi
 
 ## Validation
 
-116 browser checks cover desktop, tablet and mobile layout, centered crests, eight faction panels and keyboard selection, full-size art viewing and focus restoration, the six-segment clock, offscreen pause, replay, reduced motion and no-JavaScript links. All 65 existing Node tests pass. Deployment verification reports 155 checked references with no errors or warnings.
+116 browser checks cover desktop, tablet and mobile layout, centered crests, eight faction panels and keyboard selection, full-size art viewing and focus restoration, the six-segment clock, offscreen pause, replay, reduced motion and no-JavaScript links. All 68 Node tests pass. Deployment verification reports 156 checked references with no errors or warnings.
+
+## Final artwork corrections — 12 September 2026
+
+The current plates use the original detailed arm model, with a bionic eye in place of the collar and no crest. The faction and expedition plates use the existing House and Guild insignia as authoritative references. New asset filenames keep previous cached images from appearing in the updated cards. Each plate also has a `-768.webp` responsive variant. Original renders are kept locally; only optimized final variants are published.
+
+### Augmentations: original arm model and bionic eye
+
+Asset: `public/assets/books/core-schematics/augmentations-eye.webp`.
+
+References:
+
+- `public/assets/books/core-schematics/augmentations.webp`
+
+Final generation prompt:
+
+> Use this ORIGINAL high-quality augmentation plate as the exact base. Preserve its arm model, intricate machining, rich fine metal textures, dimensional rendering, lighting, hand, side-view arm, background and dark archival style. The user rejected the simpler redraws: do not redesign or simplify this arm. Make the requested change at TOP CENTER: replace the detached padded COLLAR with a sophisticated BIONIC EYE, a spherical ocular implant with a detailed glass iris lens, concentric focusing components, fine brass/stainless mechanisms and a short neural connector, rendered in the same premium technical style and occupying the same area. The arm's upper-left connector should have a coherent side-facing attachment edge matching the small side view, with the open socket interior occluded by its near metal rim; achieve that locally while preserving the original outer arm model and detail. Keep the triangular implant at upper right unchanged. Absolutely NO shield, crest, insignia, title, label or new text anywhere. No additional decorative symbols. Landscape 3:2. Highest fine-detail fidelity to the supplied original.
+
+### Faction play: established House shields
+
+Asset: `public/assets/books/keeper-schematics/faction-play-crests.webp`.
+
+References:
+
+- `public/assets/books/keeper-schematics/faction-play.webp`
+- `public/img/affiliation/house-amaranth.webp`
+- `public/img/affiliation/house-joric.webp`
+- `public/img/affiliation/house-valerius.webp`
+
+Final generation prompt:
+
+> Edit image 1, the VeilFarers faction strategy blueprint. The three invented emblems must be entirely removed and replaced with the EXISTING faction shields supplied as images 2, 3, 4. Image 2 is House Amaranth (burgundy narrow shield, open book, compass/star, vertical key). Put this exact shield at top center instead of the invented sun medallion. Image 3 is House Joric (navy wide shield, tall pale tower, spears, laurels, star): put this exact shield at lower left instead of the invented hexagonal icon. Image 4 is House Valerius (deep green narrow shield, gold key, pale chevron): put this exact shield at lower right instead of the invented crescent. Preserve the exact silhouettes, heraldic motifs and color identities of these supplied shield assets. Do not simplify, redesign, mix symbols, invent crests, put the emblems inside different outer medallions or add text. Keep the same central orbital station, chart routes, planets, layout and dark blue engraved technical illustration style from image 1. The original shields are the authoritative designs and should remain clearly recognizable at thumbnail size. Landscape 3:2.
+
+### Adventure hooks: Explorers’ Guild seal
+
+Asset: `public/assets/books/keeper-schematics/adventure-hooks-guild.webp`.
+
+References:
+
+- `public/assets/books/keeper-schematics/adventure-hooks.webp`
+- `public/img/affiliation/explorers-guild.webp`
+
+Final generation prompt:
+
+> Edit image 1 only at the large side panel of the equipment case on the lower right. Remove its invented crescent/fork insignia entirely. Replace it with the EXISTING Explorers' Guild crest supplied as image 2: the precise navy shield silhouette with gold border, gold star, drawing compass and globe/grid motif. Use this same authentic crest as a worn metallic/decal badge mounted flat on the case side, correctly projected to the plane of that panel. Preserve all of the crest's identifying motifs and proportions; no new icon, no invented insignia, no hybrid design. Everything else remains unchanged: beacon, tablet, case geometry, hardware, route chart, planets, background, subdued navy/aged-brass engraving, lighting and archival blueprint style. Do not add text or brighten the illustration. Landscape 3:2.

@@ -1,4 +1,4 @@
-import { stationWindows } from './station-windows.mjs?v=20260911-2';
+import { stationWindows } from './station-windows.mjs?v=20260912-3';
 export function lampLevel(age, seed, reduced=false) {
  if(reduced) return 1;
  const t=age-(seed%7)*.065;
