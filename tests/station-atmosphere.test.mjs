@@ -13,17 +13,22 @@ test('Residential includes independently traced panes on all three physical modu
  assert.ok(centers.every(p=>modules.filter(contains=>contains(p)).length===1),'Every residential pane belongs to one pod');
 });
 
-test('The engineering discharge is brief, rare and absent at initial selection',()=>{
+test('The engineering spark starts on selection and retains long quiet intervals',()=>{
+ assert.equal(engineeringSpark(0),1,'Selection immediately produces the bright opening flash');
+ assert.ok(engineeringSpark(.18) > engineeringSpark(.12),'A second electrical pulse follows the first');
+ assert.equal(engineeringSpark(.7),0);
+ assert.equal(engineeringSpark(42),0,'The previous delayed first burst is gone');
+ assert.equal(engineeringSpark(66.99),0);
+ assert.equal(engineeringSpark(67),1,'The next discharge still waits 67 active seconds');
  let lit=0,run=0,longest=0,bursts=0;
  for(let i=0;i<201000;i++){
   const seconds=i/1000,value=engineeringSpark(seconds);
   assert.ok(value>=0&&value<=1);
-  if(seconds<40)assert.equal(value,0);
   if(value>0){lit++;if(!run)bursts++;run++;longest=Math.max(longest,run);}else run=0;
  }
  assert.equal(bursts,3);
- assert.ok(lit/201000<.003,'Blue light occupies less than 0.3% of viewing time');
- assert.ok(longest<=190,'Each discharge ends within 190 milliseconds');
+ assert.ok(lit/201000<.011,'The hinge remains dark for more than 98.9% of viewing time');
+ assert.ok(longest<=701,'Every discharge ends within 0.7 seconds');
 });
 
 test('Star glints brighten individually and return to their normal light',()=>{

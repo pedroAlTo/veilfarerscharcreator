@@ -1,4 +1,4 @@
-import { setupStationStarfield } from './station-starfield.mjs?v=20260912-3';
+import { setupStationStarfield } from './station-starfield.mjs?v=20260912-4';
 import { setupStationHUD } from './station-hud.mjs?v=20260911-2';
 import { setupStationLights } from './station-lights.mjs?v=20260912-3';
 // Small, progressive enhancements. The complete briefing remains readable without JS.

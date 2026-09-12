@@ -3,11 +3,13 @@ export function starGlint(seconds, phase, period) {
   const t = ((seconds + phase) % period + period) % period;
   return t < 1.35 ? Math.sin(Math.PI * t / 1.35) ** 4 : 0;
 }
-// A barely visible discharge at a solar-array hinge, once per 67 active seconds.
+// A short blue discharge on selection, then once per 67 visible active seconds.
 export function engineeringSpark(seconds) {
-  const t = ((seconds + 25) % 67 + 67) % 67;
-  if (t >= .19) return 0;
-  return Math.sin(Math.PI * t / .19) ** 2 * (t > .07 && t < .11 ? .18 : 1);
+  if (!Number.isFinite(seconds) || seconds < 0) return 0;
+  const t = seconds % 67;
+  if (t >= .7) return 0;
+  const pulse = t < .09 ? 1 : t < .16 ? .12 : t < .32 ? .9 : t < .39 ? .18 : .65;
+  return (1 - t / .7) ** 1.4 * pulse;
 }
 
 // Sample the dark background with a padded hull mask; stars stay outside the station.
@@ -18,7 +20,11 @@ export function setupStationStarfield(element) {
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   let width = 0, height = 0, frame = 0, previous = 0, time = 0, visible = false;
   let engineeringActive = false, engineeringTime = 0;
-  element.addEventListener('vf:station-sector', event => { engineeringActive = event.detail === 'engineering'; });
+  element.addEventListener('vf:station-sector', event => {
+    engineeringActive = event.detail === 'engineering';
+    if (engineeringActive) engineeringTime = 0;
+    paint();
+  });
   const artwork = element.querySelector('.hv-station-art > img');
   let background = null;
   const maskWidth = 384, maskHeight = 256;
@@ -82,13 +88,22 @@ export function setupStationStarfield(element) {
     const intensity = engineeringSpark(engineeringTime);
     if (!intensity) return;
     // Source-art coordinates: the upper array's small hinge on the connecting truss.
-    const scale = width / 1536, x = 1215 * scale, y = 709 * height / 1024;
+    const x = 1215 / 1536 * width, y = 709 / 1024 * height;
+    // Preserve a readable spark on narrow screens while keeping it at the same hinge.
+    const scale = Math.max(width / 1536, .45);
     context.save();context.translate(x,y);context.scale(scale,scale);
-    const glow = context.createRadialGradient(0,0,0,0,0,4);
-    glow.addColorStop(0,`rgba(96,183,255,${intensity*.3})`);glow.addColorStop(1,'rgba(60,131,255,0)');
-    context.fillStyle=glow;context.fillRect(-4,-4,8,8);
-    context.strokeStyle=`rgba(152,217,255,${intensity*.65})`;context.lineWidth=.8;
-    context.beginPath();context.moveTo(-1.5,.8);context.lineTo(-.3,-.8);context.lineTo(.8,.1);context.lineTo(1.7,-1.2);context.stroke();
+    context.globalCompositeOperation='lighter';
+    const glow = context.createRadialGradient(0,0,0,0,0,16);
+    glow.addColorStop(0,`rgba(118,209,255,${intensity*.95})`);
+    glow.addColorStop(.22,`rgba(56,155,255,${intensity*.65})`);
+    glow.addColorStop(1,'rgba(35,105,255,0)');
+    context.fillStyle=glow;context.fillRect(-16,-16,32,32);
+    context.strokeStyle=`rgba(199,240,255,${intensity})`;context.lineWidth=1.4;
+    context.shadowColor='#5fbdff';context.shadowBlur=4;
+    context.beginPath();context.moveTo(-5,3);context.lineTo(-1,-2);context.lineTo(1.5,1);context.lineTo(5.5,-4);
+    context.moveTo(-1,-2);context.lineTo(-3,-5);context.stroke();
+    context.fillStyle=`rgba(236,250,255,${intensity})`;
+    context.beginPath();context.arc(0,0,1.4,0,Math.PI*2);context.fill();
     context.restore();
   }
   function tick(now) {
