@@ -81,3 +81,17 @@
 
 /* Redactions replace confidential prose; no covered text is stored in the DOM. */
 .xa-classified{display:inline-block;width:var(--redaction-width,10ch);max-width:100%;height:.82em;margin:0 .12em;vertical-align:-.06em;background:var(--crt-mid);opacity:.64;box-shadow:inset 0 -1px var(--crt-dark);user-select:none}
+
+/* Cultural plates remain whole, with their context underneath the image. */
+.species-card.xa-culture-card{display:flex;flex-direction:column;min-height:0;height:auto}
+.species-card.xa-culture-card::after{display:none}
+.xa-culture-card .xa-culture-art{display:block;aspect-ratio:3/2;overflow:hidden;background:#061018}
+.species-card.xa-culture-card img{display:block;width:100%;height:auto;min-height:0;aspect-ratio:3/2;object-fit:contain;object-position:center;filter:none}
+.species-card.xa-culture-card>div{position:relative;inset:auto;padding:23px 24px 26px;flex:1;border-top:1px solid var(--line)}
+.xa-culture-card>div>span{line-height:1.7;font-size:8px;letter-spacing:.12em}
+.xa-culture-card>div>h3{font-size:25px;line-height:1.2;margin:9px 0 12px}
+.xa-culture-card>div>p{font-size:13px;line-height:1.65}
+.xa-culture-art:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+@media(prefers-reduced-motion:reduce){.xa-culture-card img{transition:none}.xa-culture-card:hover img{transform:none}}
+
+#record-crystallis .xa-mugshot{background-image:url('/assets/books/alien-schematics/npc-surveillance-marked.webp')}

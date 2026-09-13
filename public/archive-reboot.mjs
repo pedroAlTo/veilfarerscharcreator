@@ -28,7 +28,7 @@ export function setupArchiveReboot(archive,{restore=()=>{}}={}){
  const loginStatus=overlay.querySelector('[data-login-state]');
  const meter=overlay.querySelector('[data-login-meter]');
  let busy=false,visible=false,frame=0,last=0,elapsed=0,reduced=false,stage='ready',origin=null,selected=null;
- const messages={warning:'ITRUSIVE ACCES DETECTED! Proceding to shut dow.',shutdown:'Shutting down the archive.',off:'Display offline.',bios:'Kurogane Technologies. Loading system BIOS.',login:'Signing in as DVoss with a masked password.',restore:'Access granted. Restoring the archive.'};
+ const messages={warning:'INTRUSIVE ACCESS DETECTED! Proceeding to shut down.',shutdown:'Shutting down the archive.',off:'Display offline.',bios:'Kurogane Technologies. Loading system BIOS.',login:'Signing in as DVoss with a masked password.',restore:'Access granted. Restoring the archive.'};
  archive.dataset.archiveState='ready';pager.hidden=false;
 
  function pause(){cancelAnimationFrame(frame);frame=0;last=0;}
@@ -73,7 +73,7 @@ export function setupArchiveReboot(archive,{restore=()=>{}}={}){
   overlay.hidden=false;sidebar.inert=true;records.forEach(record=>record.inert=true);
   biosLines.forEach(line=>line.classList.remove('is-loaded'));user.textContent='';password.textContent='';
   paint();overlay.focus({preventScroll:true});
-  screen.scrollIntoView({block:'center',behavior:reduced?'instant':'smooth'});
+  views.find(view=>!view.hidden).scrollIntoView({block:'center',behavior:reduced?'instant':'smooth'});
   archive.dispatchEvent(new Event('archive-reboot-state'));resume();
  }
  pager.querySelectorAll('button').forEach(button=>button.addEventListener('click',start));

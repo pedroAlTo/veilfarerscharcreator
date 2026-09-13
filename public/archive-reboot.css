@@ -1,3 +1,4 @@
+@font-face{font-family:'Aldrich';src:url('/assets/fonts/aldrich/Aldrich-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
 /* The restricted directory is part of the archive's fictional terminal. */
 .xa-record-sidebar{display:flex;flex-direction:column;min-width:0;border-right:1px solid color-mix(in srgb,var(--crt-mid) 19%,transparent);transition:opacity .35s ease}
 .xa-record-sidebar .xa-record-list{border-right:0;flex:1}
@@ -8,7 +9,7 @@
 .xa-archive-pager strong{font-weight:700;color:var(--crt-bright)}
 .is-rebooting .xa-record-sidebar{opacity:.3}
 .xa-record{transition:opacity .4s ease}.is-rebooting .xa-record{visibility:hidden;opacity:0}
-.xa-reboot{--crt-alert:#de786b;position:absolute;z-index:2;inset:0;display:grid;place-items:center;background:var(--crt-dark);padding:38px 28px 62px;outline:none}
+.xa-reboot{--crt-alert:#ff7264;position:absolute;z-index:2;inset:0;display:grid;place-items:center;background:var(--crt-dark);padding:38px 28px 62px;outline:none}
 .xa-reboot[hidden],.xa-reboot-view[hidden]{display:none!important}
 .xa-reboot-view{width:min(100%,520px);animation:xa-boot-enter .45s ease both;color:var(--crt-bright);font:12px/1.7 'Courier New',monospace}
 .xa-reboot-view h4{margin:14px 0;font:400 clamp(19px,2.1vw,30px)/1.35 'Courier New',monospace;letter-spacing:.025em}
@@ -48,3 +49,17 @@
 @media(prefers-reduced-motion:reduce){.xa-reboot-view,.xa-reboot-warning h4,.xa-power-line,.xa-boot-cursor,.xa-typing-cursor{animation:none!important}.xa-record,.xa-record-sidebar,.xa-bios-log p,.xa-login-meter:after{transition:none}.xa-power-line{display:none}}
 
 .xa-terminal:is([data-archive-state="bios"],[data-archive-state="login"]) .xa-reboot-skip{visibility:visible}
+
+/* One physical monitor: the directory, header and telemetry also lose power. */
+.xa-terminal.is-rebooting{background:#000;box-shadow:none}
+.xa-terminal.is-rebooting>.xa-terminal-header,.xa-terminal.is-rebooting>.xa-terminal-body,.xa-terminal.is-rebooting>.xa-terminal-footer{visibility:hidden;opacity:0}
+.xa-reboot-warning{width:min(100%,760px);padding:30px 24px;border-block:1px solid #ff726460;background:linear-gradient(90deg,transparent,#8b211318,transparent)}
+.xa-reboot-warning h4{font:400 clamp(28px,3.8vw,54px)/1.2 'Aldrich',sans-serif;letter-spacing:.035em;text-shadow:0 0 20px #ff726455,0 0 3px #ff726450;margin:18px 0}
+.xa-reboot-warning p{font:400 clamp(13px,1.5vw,18px)/1.6 'Aldrich',sans-serif;letter-spacing:.04em}
+.xa-reboot-warning .xa-reboot-code{font-size:10px;letter-spacing:.24em;margin-bottom:24px}
+.xa-terminal:is([data-archive-state="shutdown"],[data-archive-state="off"]) .xa-reboot{background:#000}
+.xa-terminal:is([data-archive-state="shutdown"],[data-archive-state="off"])::before,.xa-terminal:is([data-archive-state="shutdown"],[data-archive-state="off"])::after{display:none}
+@media(max-width:760px){.xa-reboot-warning{padding:24px 4px}.xa-reboot-warning h4{font-size:clamp(25px,7vw,34px)}.xa-reboot-warning .xa-reboot-code{font-size:8px;letter-spacing:.13em}}
+
+@keyframes xa-intrusion-alarm{0%,100%{opacity:1}50%{opacity:.58}}
+.xa-reboot-warning h4{animation-name:xa-intrusion-alarm}

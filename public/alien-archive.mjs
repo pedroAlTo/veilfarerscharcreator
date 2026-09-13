@@ -1,4 +1,4 @@
-import {setupArchiveReboot} from './archive-reboot.mjs?v=20260913-4';
+import {setupArchiveReboot} from './archive-reboot.mjs?v=20260913-5';
 import {setupBookIllustrations} from './book-illustrations.mjs?v=20260912-2';
 
 export function selectArchiveRecord(archive, id) {
