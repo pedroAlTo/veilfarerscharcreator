@@ -30,7 +30,7 @@
 .xa-record[hidden]{display:none!important}
 .xa-record:not([hidden])+.xa-record{border-top:1px solid color-mix(in srgb, var(--crt-mid) 19%, transparent)}
 .xa-mugshot-wrap{margin:0;position:relative;align-self:start}
-.xa-mugshot{aspect-ratio:1;background-image:url('/assets/books/alien-schematics/npc-surveillance.webp');background-size:300% 200%;background-position:var(--face-x) var(--face-y);filter:url(#obsidian-phosphor);border:1px solid color-mix(in srgb, var(--crt-mid) 29%, transparent);position:relative}
+.xa-mugshot{aspect-ratio:1;background-image:url('/assets/books/alien-schematics/npc-surveillance.webp');background-size:300% 200%;background-position:var(--face-x) var(--face-y);filter:none;border:1px solid color-mix(in srgb, var(--crt-mid) 29%, transparent);position:relative}
 .xa-mugshot:after{content:'';position:absolute;inset:9px;border:1px solid color-mix(in srgb, var(--crt-mid) 12%, transparent);clip-path:polygon(0 0,16% 0,16% 2%,2% 2%,2% 16%,0 16%,0 0,100% 0,100% 16%,98% 16%,98% 2%,84% 2%,84% 0,100% 0,100% 100%,84% 100%,84% 98%,98% 98%,98% 84%,100% 84%,100% 100%,0 100%,0 84%,2% 84%,2% 98%,16% 98%,16% 100%,0 100%)}
 .xa-mugshot-wrap figcaption{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font:8px/1.5 'Courier New',monospace;letter-spacing:.09em;color:var(--crt-mid)}
 .xa-record-stamp{margin-top:28px;padding:12px;border-block:1px solid color-mix(in srgb, var(--crt-mid) 21%, transparent);color:var(--crt-mid);font:9px/1.65 'Courier New',monospace;letter-spacing:.1em}
@@ -56,7 +56,7 @@
 @keyframes xa-record-scan{0%{transform:translateY(-90%);opacity:1}100%{transform:translateY(90%);opacity:0}}
 .xa-terminal.is-paused .xa-record-screen:after{animation-play-state:paused}
 /* Fixed raster lines, curved glass edges and a gentle vertical refresh band. */
-.xa-terminal::before{content:'';position:absolute;z-index:4;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 2px,color-mix(in srgb,var(--crt-dark) 38%,transparent) 2px 3px),radial-gradient(ellipse at center,transparent 55%,color-mix(in srgb,var(--crt-dark) 48%,transparent) 100%);box-shadow:inset 0 0 24px 6px var(--crt-dark)}
+.xa-terminal::before{content:'';position:absolute;z-index:4;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 2px,color-mix(in srgb,var(--crt-dark) 8%,transparent) 2px 3px),radial-gradient(ellipse at center,transparent 55%,color-mix(in srgb,var(--crt-dark) 22%,transparent) 100%);box-shadow:inset 0 0 24px 6px var(--crt-dark)}
 .xa-terminal::after{content:'';position:absolute;z-index:3;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 0 39%,color-mix(in srgb,var(--crt-bright) 5%,transparent) 47%,color-mix(in srgb,var(--crt-bright) 9%,transparent) 49.7%,transparent 50% 100%);transform:translateY(-105%);animation:xa-crt-refresh 11s linear infinite}
 .xa-terminal :is(h4,strong,summary,.xa-inline-link){text-shadow:0 0 5px color-mix(in srgb,var(--crt-bright) 24%,transparent)}
 .xa-terminal .xa-inline-link,.xa-terminal strong{color:var(--crt-bright)}
@@ -64,7 +64,6 @@
 .xa-terminal ::selection{color:var(--crt-dark);background:var(--crt-bright)}
 .xa-terminal .xa-record-list a[aria-selected=true]{color:var(--crt-bright);border-color:var(--crt-mid)}
 .xa-terminal.is-paused::after{animation-play-state:paused}
-.xa-display-filter{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
 @keyframes xa-crt-refresh{from{transform:translateY(-105%)}to{transform:translateY(105%)}}
 @media(prefers-reduced-motion:reduce){.xa-terminal::after{animation:none;display:none}}
 .xa-field-table{aspect-ratio:3/2;padding:22px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(#8aafbd08 1px,transparent 1px),linear-gradient(90deg,#8aafbd08 1px,transparent 1px),#07121b;background-size:24px 24px;border-bottom:1px solid #b796623d}

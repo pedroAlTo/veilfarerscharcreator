@@ -2,7 +2,7 @@
 
 Mode: built-in ImageGen image editing, using the original six-person contact sheet as an identity reference. The output is `public/assets/books/alien-schematics/npc-surveillance.webp`; the original studio portraits remain available in the repository. These are illustrative surveillance scenes, not additional canonical events in the NPC biographies. The profile text and PDF source links are unchanged.
 
-The terminal uses three base inks: near-black green `#070c09`, mid phosphor `#758e76` and bright phosphor `#bed7b0`. An SVG display filter maps the image to those three tones. Static raster lines and a subtle edge vignette sit over the complete terminal; a slow 11-second refresh band pauses when the terminal is offscreen or the document is hidden. Reduced motion retains the static CRT texture without the moving band. Text remains selectable and normal links/keyboard navigation remain available.
+The terminal interface uses three base inks: near-black green `#070c09`, mid phosphor `#758e76` and bright phosphor `#bed7b0`. The surveillance artwork keeps its original grain, colors and tonal range, with no posterization or color-remapping filter. Very light raster lines at 8% opacity and a subtle edge vignette sit over the complete terminal; a slow 11-second refresh band pauses when the terminal is offscreen or the document is hidden. Reduced motion retains the static CRT texture without the moving band. Text remains selectable and normal links/keyboard navigation remain available.
 
 ## Final prompt
 
@@ -23,3 +23,7 @@ PALETTE: only THREE nominal colors like a very old monochrome green CRT: near-bl
 ## Validation
 
 The complete archive/discovery browser check passes all 149 assertions at desktop, tablet and mobile sizes. Additional CRT checks pass at 1440 and 390 px: all six surveillance cells display, every terminal text color resolves to one of the two phosphor inks, scanlines cover the entire screen without intercepting input, the refresh band runs while visible and pauses offscreen, reduced motion retains only the static raster, and keyboard selection works. Screenshots were reviewed at both sizes. Deployment verification passes with no errors or warnings.
+
+Display refinement: removed the three-tone image filter and its unused SVG definitions. The original surveillance WebP is unchanged; the scanline opacity is reduced from 38% to 8%.
+
+The archive sword insignia retains a muted red accent (`#c75f56`) alongside the bright phosphor ink, as requested; the rest of the terminal remains monochrome.
