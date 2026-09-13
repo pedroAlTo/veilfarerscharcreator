@@ -8,7 +8,7 @@ class VeilFarersThemePlayer extends HTMLElement {
     if (this.shadowRoot) return;
     const root = this.attachShadow({ mode: 'open' });
     root.innerHTML = `
-      <link rel="stylesheet" href="/theme-player.css?v=20260914-1">
+      <link rel="stylesheet" href="/theme-player.css?v=20260914-2">
       <section aria-label="VeilFarers theme music">
         <div class="lyrics-sky" aria-hidden="true"></div>
         <p class="sr current-lyric" aria-live="off"></p>
@@ -170,9 +170,32 @@ class VeilFarersThemePlayer extends HTMLElement {
       };
       audio.addEventListener('playing', setupMedia, { signal });
     }
+    // Netlify adds a full-width, 48px review toolbar on narrow preview screens.
+    // Reserve its visible height rather than covering either set of controls.
+    let previewObserver, previewFinder, previewResize;
+    const watchPreview = () => {
+      const wrapper = document.querySelector('[data-netlify-deploy-id]');
+      if (!wrapper) return;
+      previewFinder?.disconnect();
+      const inset = () => {
+        const toolbar = wrapper.querySelector('iframe[title="Netlify Drawer"]');
+        const box = toolbar?.getBoundingClientRect();
+        const reserve = box && box.width > innerWidth * .8 && box.height > 0 && box.height <= 100 && box.bottom >= innerHeight - 2;
+        this.style.setProperty('--preview-inset', reserve ? `${box.height + 12}px` : '0px');
+      };
+      previewObserver = new MutationObserver(inset);
+      previewObserver.observe(wrapper, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'hidden'] });
+      previewResize = new ResizeObserver(inset); previewResize.observe(wrapper);
+      window.addEventListener('resize', inset, { signal }); inset();
+    };
+    if (document.querySelector('[data-netlify-deploy-id]')) watchPreview();
+    else if (location.hostname.startsWith('deploy-preview-')) {
+      previewFinder = new MutationObserver(watchPreview);
+      previewFinder.observe(document.body, { childList: true });
+    }
     controls(); draw();
     if (state.playing && state.engaged && position < themeSong.duration - 1) start(true);
-    this.cleanup = () => { save(); destroyed = true; intent = false; stopFrame(); audio.pause(); abort.abort(); channel?.close(); };
+    this.cleanup = () => { save(); destroyed = true; intent = false; stopFrame(); audio.pause(); abort.abort(); channel?.close(); previewObserver?.disconnect(); previewFinder?.disconnect(); previewResize?.disconnect(); };
   }
   disconnectedCallback() { this.cleanup?.(); }
 }

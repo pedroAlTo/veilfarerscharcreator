@@ -18,7 +18,7 @@ The dock has play/pause, an expandable seek/volume/mute panel, and a dedicated f
 
 Audio does not load or play for a new visitor until requested. Per-tab session storage remembers position, volume, mute, lyric visibility and the user's playback choice. A navigation restores the saved position and attempts to resume only an already requested performance. This is a multipage site, so navigation can cause a brief interruption; browsers that require a fresh gesture present “Press play to continue the theme” and keep the saved position. Playback cannot be guaranteed uninterrupted across full document loads.
 
-Playback errors have a retry path. Keyboard focus, native labelled sliders, mute and OS media controls are supported. Hidden tabs stop lyric rendering while music may continue. Different tabs coordinate playback to avoid two copies of the theme. Shadow DOM isolates the component from the different book and tool styles. The player is omitted from printing. There is no new third-party runtime or telemetry.
+Playback errors have a retry path. Keyboard focus, native labelled sliders, mute and OS media controls are supported. Hidden tabs stop lyric rendering while music may continue. Different tabs coordinate playback to avoid two copies of the theme. Shadow DOM isolates the component from the different book and tool styles. On mobile deploy previews, the player reserves space above the visible Netlify review toolbar; production retains the original corner position. The player is omitted from printing. There is no new third-party runtime or telemetry.
 
 ## Validation
 

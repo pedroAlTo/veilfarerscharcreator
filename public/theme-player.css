@@ -3,7 +3,7 @@
   position: fixed;
   z-index: 85;
   right: max(20px, env(safe-area-inset-right));
-  bottom: max(20px, env(safe-area-inset-bottom));
+  bottom: max(20px, env(safe-area-inset-bottom), var(--preview-inset, 0px));
   display: block;
   width: 176px;
   color: #eddbaf;
@@ -81,6 +81,6 @@ input[type="range"] { display: block; width: 100%; height: 18px; margin: 0; acce
 :host([data-expanded]) .lyrics-sky { opacity: .12; }
 @keyframes heartbeat { 0%,35%,100% { box-shadow: 0 0 0 #dfb65300; } 10%,24% { box-shadow: 0 0 12px #dfb65328, inset 0 0 8px #dfb65312; } 16% { box-shadow: 0 0 4px #dfb6530d; } }
 @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
-@media(max-width:680px) { :host { right: max(10px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); width: 170px; } .play, .lyrics-toggle, .details-toggle { min-height: 36px; } .lyric { font-size: 20px; } }
+@media(max-width:680px) { :host { right: max(10px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom), var(--preview-inset, 0px)); width: 170px; } .play, .lyrics-toggle, .details-toggle { min-height: 36px; } .lyric { font-size: 20px; } }
 @media(prefers-reduced-motion:reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .lyric { will-change: auto; } }
 @media print { :host { display: none; } }
