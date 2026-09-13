@@ -74,7 +74,7 @@ test('Alien Species presents the book features, nine peoples and a reduced-motio
   const background = read('../public/book-background.js')
   assert.match(page, /alien-archives-lab-v1\.webp/)
   assert.equal((page.match(/class="species-card"/g) || []).length, 9)
-  assert.equal((page.match(/class="feature-panel"/g) || []).length, 9)
+  assert.equal((page.match(/class="feature-panel(?: [^"]*)?"/g) || []).length, 9)
   assert.match(styles, /data-book-theme="alien"/)
   assert.match(background, /theme === 'alien'/)
   assert.match(background, /drawAlienDNA/)
@@ -135,9 +135,13 @@ test('home feature cards link their full surface to the matching section', () =>
 test('home explains the recommended starting routes without covering book art', () => {
   const home = read('../public/index.html')
   assert.match(home, /Where to start/)
-  assert.match(home, /Recommended for every new group/)
+  assert.match(home, /Explore the complete rules/)
   assert.match(home, /Recommended for the Keeper/)
-  assert.match(home, /Recommended first adventure/)
+  assert.match(home, /Continue after First Crossing/)
+  const entry = home.match(/<div class="vf-first-step">[\s\S]*?<\/div>/)?.[0]
+  assert.ok(entry, 'A permanent starter entry exists outside the notices')
+  assert.match(entry, /href="\/books\/hearts-in-the-void.html#first-crossing"/)
+  assert.ok(home.indexOf(entry) < home.indexOf('id="features"'), 'The starter precedes the feature grid')
   for (const href of ['corebook.html', 'keepers-companion.html', 'hearts-in-the-void.html']) assert.match(home, new RegExp(href))
 })
 
