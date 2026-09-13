@@ -1,3 +1,4 @@
+import {setupArchiveReboot} from './archive-reboot.mjs?v=20260913-4';
 import {setupBookIllustrations} from './book-illustrations.mjs?v=20260912-2';
 
 export function selectArchiveRecord(archive, id) {
@@ -30,6 +31,7 @@ function setupArchive(archive){
  }
  updateStatus();
  function choose(id){
+  if(archive.dataset.archiveState!=='ready')return;
   if(!selectArchiveRecord(archive,id))return;
   clearTimeout(reading);archive.classList.remove('is-reading');
   if(!motion.matches){void archive.offsetWidth;archive.classList.add('is-reading');reading=setTimeout(()=>archive.classList.remove('is-reading'),650);}
@@ -49,7 +51,7 @@ function setupArchive(archive){
  });
  function sync(){
   clearInterval(timer);timer=0;archive.classList.toggle('is-paused',!visible||document.hidden||motion.matches);
-  if(!visible||document.hidden||motion.matches)return;
+  if(!visible||document.hidden||motion.matches||archive.dataset.archiveState!=='ready')return;
   timer=setInterval(()=>{stream.textContent=Array.from({length:4},()=>Math.floor(Math.random()*65536).toString(16).padStart(4,'0').toUpperCase()).join(' / ');},140);
  }
  new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;sync();}).observe(archive);
@@ -57,7 +59,9 @@ function setupArchive(archive){
  document.addEventListener('visibilitychange',sync);
  window.addEventListener('pagehide',()=>{clearInterval(timer);clearTimeout(reading);});
  window.addEventListener('pageshow',sync);
- window.addEventListener('hashchange',()=>{const id=location.hash.replace('#record-','');if(selectArchiveRecord(archive,id)){archive.classList.remove('is-reading');accesses++;updateStatus();}});
+ archive.addEventListener('archive-reboot-state',sync);
+ setupArchiveReboot(archive,{restore(id){selectArchiveRecord(archive,id);accesses++;updateStatus();try{history.replaceState(history.state,'',`#record-${id}`);}catch{}}});
+ window.addEventListener('hashchange',()=>{if(archive.dataset.archiveState!=='ready')return;const id=location.hash.replace('#record-','');if(selectArchiveRecord(archive,id)){archive.classList.remove('is-reading');accesses++;updateStatus();}});
 }
 
 function setupFieldTable(table){

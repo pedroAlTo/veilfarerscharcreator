@@ -1,0 +1,50 @@
+/* The restricted directory is part of the archive's fictional terminal. */
+.xa-record-sidebar{display:flex;flex-direction:column;min-width:0;border-right:1px solid color-mix(in srgb,var(--crt-mid) 19%,transparent);transition:opacity .35s ease}
+.xa-record-sidebar .xa-record-list{border-right:0;flex:1}
+.xa-archive-pager{display:flex;align-items:center;justify-content:center;gap:18px;margin:0 12px 16px;padding-top:14px;border-top:1px solid color-mix(in srgb,var(--crt-mid) 24%,transparent);color:var(--crt-mid);font:13px/1.5 'Courier New',monospace}
+.xa-archive-pager[hidden]{display:none}
+.xa-archive-pager button{width:32px;height:36px;padding:0;border:1px solid transparent;background:transparent;color:var(--crt-bright);font:18px/1 'Courier New',monospace;cursor:pointer}
+.xa-archive-pager button:hover{border-color:var(--crt-mid);background:color-mix(in srgb,var(--crt-mid) 9%,transparent)}
+.xa-archive-pager strong{font-weight:700;color:var(--crt-bright)}
+.is-rebooting .xa-record-sidebar{opacity:.3}
+.xa-record{transition:opacity .4s ease}.is-rebooting .xa-record{visibility:hidden;opacity:0}
+.xa-reboot{--crt-alert:#de786b;position:absolute;z-index:2;inset:0;display:grid;place-items:center;background:var(--crt-dark);padding:38px 28px 62px;outline:none}
+.xa-reboot[hidden],.xa-reboot-view[hidden]{display:none!important}
+.xa-reboot-view{width:min(100%,520px);animation:xa-boot-enter .45s ease both;color:var(--crt-bright);font:12px/1.7 'Courier New',monospace}
+.xa-reboot-view h4{margin:14px 0;font:400 clamp(19px,2.1vw,30px)/1.35 'Courier New',monospace;letter-spacing:.025em}
+.xa-reboot-view p{margin:0;color:inherit;font:12px/1.7 'Courier New',monospace}
+.xa-reboot-warning{text-align:center;color:var(--crt-alert)}
+.xa-reboot-warning h4{color:var(--crt-alert);text-shadow:0 0 18px #de786b30;animation:xa-intrusion-blink 1.05s ease-in-out infinite}
+.xa-reboot-warning p{color:var(--crt-alert)}
+.xa-reboot-code{display:block;color:var(--crt-alert);font-size:9px;letter-spacing:.16em;margin-bottom:26px}
+.xa-reboot-shutdown{text-align:center;color:var(--crt-mid);font-size:10px;animation:xa-boot-collapse .85s cubic-bezier(.65,0,.35,1) both}
+.xa-power-line{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--crt-bright);box-shadow:0 0 14px var(--crt-bright);animation:xa-power-down .85s ease-in-out both}
+.xa-boot-brand{display:flex;align-items:center;gap:16px;border-bottom:1px solid color-mix(in srgb,var(--crt-mid) 28%,transparent);padding-bottom:22px;margin-bottom:28px}
+.xa-boot-brand img{width:42px;height:52px;flex-shrink:0}
+.xa-boot-brand strong{display:block;font:700 clamp(11px,1.25vw,16px)/1.5 'Courier New',monospace;letter-spacing:.08em}
+.xa-boot-brand span{display:block;margin-top:5px;font:8px/1.4 'Courier New',monospace;color:var(--crt-mid);letter-spacing:.06em}
+.xa-bios-log p{display:flex;justify-content:space-between;gap:12px;margin:13px 0;color:var(--crt-mid);font-size:11px;opacity:0;transform:translateY(3px);transition:opacity .2s ease,transform .2s ease}
+.xa-bios-log p.is-loaded{opacity:1;transform:none}.xa-bios-log span{color:var(--crt-bright)}
+.xa-boot-cursor{color:var(--crt-bright);font-size:16px;animation:xa-intrusion-blink 1s steps(1) infinite}
+.xa-reboot-login h4{font-size:15px;margin-bottom:24px}
+.xa-login-fields{margin:0}.xa-login-fields>div{display:grid;grid-template-columns:85px 1fr;gap:15px;align-items:center;margin:15px 0}
+.xa-login-fields dt{font-size:9px;color:var(--crt-mid)}
+.xa-login-fields dd{margin:0;min-height:35px;padding:6px 10px;border-bottom:1px solid var(--crt-mid);color:var(--crt-bright);font-size:15px;letter-spacing:.07em}
+.xa-typing-cursor{display:inline-block;width:6px;height:14px;vertical-align:-2px;margin-left:4px;background:var(--crt-mid);animation:xa-intrusion-blink 1s steps(1) infinite}
+.xa-login-meter{height:3px;margin:28px 0 12px;background:color-mix(in srgb,var(--crt-mid) 18%,transparent)}
+.xa-login-meter:after{content:'';display:block;width:var(--login-progress,0%);height:100%;background:var(--crt-bright);transition:width .1s linear}
+.xa-reboot-login [data-login-state]{font-size:9px;color:var(--crt-mid);letter-spacing:.1em}
+.xa-reboot-restore{text-align:center}.xa-reboot-restore>span{font-size:10px;color:var(--crt-mid)}
+.xa-reboot-skip{visibility:hidden;position:absolute;bottom:22px;right:24px;padding:8px 10px;border:1px solid color-mix(in srgb,var(--crt-mid) 24%,transparent);background:var(--crt-dark);color:var(--crt-mid);font:9px/1.4 'Courier New',monospace;cursor:pointer}
+.xa-reboot-skip span{margin-left:8px}.xa-reboot-skip:hover{color:var(--crt-bright);border-color:var(--crt-mid)}
+.xa-reboot-announcement{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.is-rebooting .xa-record-screen:after{display:none}
+.xa-terminal.is-paused :is(.xa-reboot-view,.xa-reboot-warning h4,.xa-power-line,.xa-boot-cursor,.xa-typing-cursor){animation-play-state:paused}
+@keyframes xa-intrusion-blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes xa-boot-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes xa-boot-collapse{0%{opacity:1;transform:scaleY(1)}75%{opacity:.8;transform:scaleY(.012)}100%{opacity:0;transform:scaleY(0)}}
+@keyframes xa-power-down{0%,45%{opacity:0;transform:scaleX(1)}60%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(0)}}
+@media(max-width:760px){.xa-record-sidebar{border-right:0;border-bottom:1px solid color-mix(in srgb,var(--crt-mid) 19%,transparent)}.xa-record-sidebar .xa-record-list{border-bottom:0}.xa-archive-pager{margin:0 12px 12px;padding-top:5px}.xa-reboot{padding:28px 20px 62px}.xa-boot-brand{gap:12px}.xa-bios-log p{font-size:9px}.xa-login-fields>div{grid-template-columns:68px 1fr;gap:10px}}
+@media(prefers-reduced-motion:reduce){.xa-reboot-view,.xa-reboot-warning h4,.xa-power-line,.xa-boot-cursor,.xa-typing-cursor{animation:none!important}.xa-record,.xa-record-sidebar,.xa-bios-log p,.xa-login-meter:after{transition:none}.xa-power-line{display:none}}
+
+.xa-terminal:is([data-archive-state="bios"],[data-archive-state="login"]) .xa-reboot-skip{visibility:visible}
