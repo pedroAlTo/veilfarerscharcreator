@@ -21,11 +21,12 @@ test('lyrics appear with the voice, float upwards, fade out and do not fill inst
   const cue = themeSong.cues[0];
   assert.deepEqual(visibleCues(themeSong.cues, 0), []);
   assert.ok(visibleCues(themeSong.cues, cue.start).includes(cue));
-  assert.ok(lyricMotion(cue, cue.end + 2).y < lyricMotion(cue, cue.start + 1).y);
-  assert.ok(lyricMotion(cue, cue.end + 2).opacity < lyricMotion(cue, cue.end).opacity);
-  assert.ok(!visibleCues(themeSong.cues, cue.end + 6).includes(cue));
+  assert.ok(lyricMotion(cue, cue.end + .6).y < lyricMotion(cue, cue.start + 1).y);
+  assert.ok(lyricMotion(cue, cue.end + .6).opacity < lyricMotion(cue, cue.end).opacity);
+  assert.ok(!visibleCues(themeSong.cues, cue.end + 1.3).includes(cue));
+  assert.ok(lyricMotion(cue, cue.end + 1.2).y >= -38, 'Short, bounded rise remains near the player');
   assert.deepEqual(visibleCues(themeSong.cues, 103), []);
-  assert.ok(visibleCues(themeSong.cues, 155).length <= 3);
+  assert.ok(visibleCues(themeSong.cues, 155).length <= 2);
 });
 test('seeking backwards derives lyrics from media time, reduced motion shows one stationary line', () => {
   assert.equal(visibleCues(themeSong.cues, 271, true).at(-1).text, 'Until the stars come together.');

@@ -73,8 +73,8 @@ input[type="range"] { display: block; width: 100%; height: 18px; margin: 0; acce
 .hint { margin: 15px 0 0; padding-top: 12px; border-top: 1px solid #b4945030; color: #aaa38f; font-size: 11px; }
 .status { position: absolute; bottom: calc(100% + 7px); right: 0; width: 220px; padding: 8px; background: #060d12; border: 1px solid #a88747; font-size: 11px; }
 .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.lyrics-sky { position: absolute; bottom: calc(100% + 14px); right: 0; width: min(370px, calc(100vw - 36px)); height: min(360px, 50vh); pointer-events: none; }
-.lyric { position: absolute; right: 0; bottom: 0; width: 100%; margin: 0; padding: 4px 0 4px 25px; text-align: right; color: #b99758; font: 400 clamp(19px, 1.6vw, 24px)/1.45 Georgia, "Times New Roman", serif; text-wrap: balance; will-change: transform, opacity; }
+.lyrics-sky { position: absolute; bottom: calc(100% + 10px); right: 0; width: min(370px, calc(100vw - 36px)); height: min(150px, 30vh); pointer-events: none; }
+.lyric { position: absolute; right: 0; bottom: 0; width: 100%; margin: 0; padding: 3px 0 3px 20px; text-align: right; color: #b99758; font: 400 clamp(19px, 1.6vw, 24px)/1.22 Georgia, "Times New Roman", serif; letter-spacing: -.025em; word-spacing: -.04em; text-wrap: balance; will-change: transform, opacity; }
 .lyric span { display: inline-block; transition: color .18s ease, text-shadow .22s ease; }
 .lyric .sung { color: #ead096; text-shadow: 0 0 12px #e3b64c48, 0 2px 7px #000; }
 .lyric .singing { color: #fff3d0; text-shadow: 0 0 5px #f8ce76, 0 0 18px #eeb44a99, 0 0 36px #ce89145c, 0 2px 8px #000; }

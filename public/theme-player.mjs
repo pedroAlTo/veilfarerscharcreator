@@ -1,4 +1,4 @@
-import { themeSong, visibleCues, lyricMotion, readPlayerState } from './theme-song.mjs?v=20260914-1';
+import { themeSong, visibleCues, lyricMotion, readPlayerState } from './theme-song.mjs?v=20260914-4';
 
 const STORAGE = 'vf-theme-player-v1';
 const svg = (body) => `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
@@ -8,7 +8,7 @@ class VeilFarersThemePlayer extends HTMLElement {
     if (this.shadowRoot) return;
     const root = this.attachShadow({ mode: 'open' });
     root.innerHTML = `
-      <link rel="stylesheet" href="/theme-player.css?v=20260914-2">
+      <link rel="stylesheet" href="/theme-player.css?v=20260914-4">
       <section aria-label="VeilFarers theme music">
         <div class="lyrics-sky" aria-hidden="true"></div>
         <p class="sr current-lyric" aria-live="off"></p>
@@ -81,7 +81,7 @@ class VeilFarersThemePlayer extends HTMLElement {
         node.style.opacity = String(frame.opacity);
         const y = motion.matches ? 0 : Math.min(frame.y, ceiling);
         node.style.transform = `translate3d(${frame.x}px, ${y}px, 0)`;
-        ceiling = y - node.offsetHeight - 14;
+        ceiling = y - node.offsetHeight - 6;
         Array.from(node.children).forEach((word, i) => {
           const timing = cue.words[i]; word.classList.toggle('sung', now >= timing.start);
           word.classList.toggle('singing', now >= timing.start && now < timing.end);

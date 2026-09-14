@@ -1,4 +1,4 @@
-import { cues } from './theme-lyrics.mjs?v=20260914-1';
+import { cues } from './theme-lyrics.mjs?v=20260914-4';
 
 export const themeSong = Object.freeze({
   id: '843a7766-508c-41a8-b483-3b1353cded84',
@@ -25,13 +25,13 @@ export function readPlayerState(raw) {
 
 export function visibleCues(all, time, reduced = false) {
   if (!Number.isFinite(time)) return [];
-  return all.filter(cue => time >= cue.start - .35 && time < cue.end + (reduced ? 1.2 : 5.5)).slice(reduced ? -1 : -3);
+  return all.filter(cue => time >= cue.start - .35 && time < cue.end + (reduced ? .65 : 1.2)).slice(reduced ? -1 : -2);
 }
 
 export function lyricMotion(cue, time, reduced = false) {
   const age = time - cue.start, after = Math.max(0, time - cue.end);
   const duration = Math.max(.1, cue.end - cue.start);
-  const opacity = Math.min(1, Math.max(0, (age + .35) / .65)) * Math.max(0, 1 - after / (reduced ? 1.2 : 5.5));
+  const opacity = Math.min(1, Math.max(0, (age + .35) / .65)) * Math.max(0, 1 - after / (reduced ? .65 : 1.2));
   if (reduced) return { opacity, x: 0, y: 0 };
-  return { opacity, x: -Math.min(14, after * 2), y: -Math.max(0, Math.min(1, age / duration)) * 45 - after * 35 };
+  return { opacity, x: -Math.min(3, after * 2), y: -Math.max(0, Math.min(1, age / duration)) * 18 - Math.min(after, 1.2) * 16 };
 }

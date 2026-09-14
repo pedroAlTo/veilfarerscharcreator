@@ -21,13 +21,16 @@ try {for(const width of [1440,900,390]) {
   ok((await host.locator('.lyric').textContent()).includes('In the dark'),'Voice-synchronised text');
   ok(await host.locator('.singing').count()>=1,'Sung word illuminates');
   const early=await host.locator('.lyric').first().evaluate(e=>getComputedStyle(e).transform);
-  await audio.evaluate(a=>a.currentTime=16);await p.waitForTimeout(150);
+  await audio.evaluate(a=>a.currentTime=14.7);await p.waitForTimeout(150);
   const late=await host.locator('.lyric').first().evaluate(e=>({transform:getComputedStyle(e).transform,opacity:+getComputedStyle(e).opacity}));
   ok(early!==late.transform&&late.opacity<1,'Departed verse rises and fades');
+  await audio.evaluate(a=>a.currentTime=16);await p.waitForTimeout(100);ok(await host.locator('.lyric').count()===0,'Verse has disappeared just over one second after singing ends');
   await audio.evaluate(a=>a.currentTime=103);await p.waitForTimeout(150);ok(await host.locator('.lyric').count()===0,'Instrumental gap clears words');
-  await audio.evaluate(a=>a.currentTime=149);await p.waitForTimeout(150);
+  await audio.evaluate(a=>a.currentTime=149.6);await p.waitForTimeout(150);
   const rectangles=await host.locator('.lyric').evaluateAll(els=>els.map(e=>{const r=e.getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right};}).sort((a,b)=>a.top-b.top));
   ok(rectangles.every((r,i)=>i===0||r.top>=rectangles[i-1].bottom),'Consecutive lines remain separated');
+  ok(rectangles.length<=2&&rectangles.every(r=>box.y-r.top<150),'At most two verses stay close to the player');
+  ok(await host.locator('.lyric').first().evaluate(e=>parseFloat(getComputedStyle(e).letterSpacing)<0),'Letters are more closely spaced');
   ok(rectangles.every(r=>r.left>=0&&r.right<=width),'Lyrics remain within mobile viewport');
   await p.screenshot({path:`${out}/floating-${width}.png`});
   await host.getByRole('button',{name:'Pause VeilFarers theme',exact:true}).click();
