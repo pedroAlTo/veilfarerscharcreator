@@ -7,7 +7,7 @@ try{for(const width of [1440,900,390]){
  page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base+'/behind-the-veil/',{waitUntil:'domcontentloaded'});
  await page.locator('h1').waitFor();ok((await page.title()).includes('Behind the Veil'),'Journal title');
- ok(await page.locator('.journal-entry img').evaluate(e=>e.complete&&e.naturalWidth>0),'Existing book illustration loads');
+ await page.locator('.journal-entry img').evaluate(e=>e.decode());ok(await page.locator('.journal-entry img').evaluate(e=>e.complete&&e.naturalWidth>0),'Existing book illustration loads');
  await page.screenshot({path:`${out}/index-${width}.png`,fullPage:true});
  await page.locator('.journal-entry').click();await page.waitForURL('**/overkill*');
  const slider=page.getByRole('slider',{name:'Rolled damage'});

@@ -40,7 +40,7 @@ try{for(const width of [1440,390]){
  ok(await page.evaluate(n=>__heartQA.frames===n,count),'Removal releases renderer');ok(errors.length===0,errors.join('\n'));await context.close();
 }
 const context=await browser.newContext({reducedMotion:'reduce'}),page=await context.newPage();await page.goto(base+'/behind-the-veil/',{waitUntil:'domcontentloaded'});
-const host=page.locator('vf-theme-player');await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await page.waitForTimeout(500);
+const host=page.locator('vf-theme-player');await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await page.waitForFunction(()=>{const a=document.querySelector('vf-theme-player').shadowRoot.querySelector('audio');return !a.paused&&a.currentTime>.5;});
 const first=await host.locator('canvas').evaluate(c=>c.toDataURL());await page.waitForTimeout(300);ok(await host.locator('canvas').evaluate((c,png)=>c.toDataURL()===png,first),'Reduced-motion heart stays stationary');await context.close();
 // Audio must still work when the optional visualization API is unavailable.
 const fallback=await browser.newContext(),q=await fallback.newPage();await q.addInitScript(()=>{window.AudioContext=undefined;window.webkitAudioContext=undefined;});
