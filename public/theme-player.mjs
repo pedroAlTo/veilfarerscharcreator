@@ -1,4 +1,4 @@
-import { createParticleHeart } from './theme-heart.mjs?v=20260919-2';
+import { createParticleHeart } from './theme-heart.mjs?v=20260919-3';
 import { themeSong, visibleCues, lyricMotion, readPlayerState } from './theme-song.mjs?v=20260919-1';
 
 const STORAGE = 'vf-theme-player-v1';
@@ -9,7 +9,7 @@ class VeilFarersThemePlayer extends HTMLElement {
     if (this.shadowRoot) return;
     const root = this.attachShadow({ mode: 'open' });
     root.innerHTML = `
-      <link rel="stylesheet" href="/theme-player.css?v=20260919-1">
+      <link rel="stylesheet" href="/theme-player.css?v=20260919-3">
       <section aria-label="VeilFarers theme music">
         <canvas class="theme-heart" aria-hidden="true"></canvas>
         <div class="lyrics-sky" aria-hidden="true"></div>
@@ -22,7 +22,8 @@ class VeilFarersThemePlayer extends HTMLElement {
           <p class="hint">Let the words rise with the music. Use the lyrics button to show or hide them.</p>
         </div>
         <p class="status" role="status" hidden></p>
-        <div class="dock">
+        <button class="edge-tab" aria-label="Open theme player" aria-expanded="false" aria-controls="theme-dock" title="Open theme player">${svg('<path d="m9 5-5 7 5 7M15 16V6l6-1v9m-6 2c-4-2-5 3-1 3 1 0 1-1 1-3m7-2c-4-2-5 3-1 3 1 0 1-1 1-3"/>')}<span>THEME</span></button>
+        <div class="dock" id="theme-dock" hidden>
           <button class="play" aria-label="Play VeilFarers theme">${svg('<path class="play-icon" d="m8 4 13 8-13 8Z"/><path class="pause-icon" d="M6 4h4v16H6zm8 0h4v16h-4z"/>')}</button>
           <div class="identity"><button class="details-toggle" aria-label="Music controls" aria-expanded="false" aria-controls="theme-details"><span class="name">VEILFARERS</span><span class="subtitle">The theme ${svg('<path d="m6 15 6-6 6 6"/>')}</span></button></div>
           <button class="lyrics-toggle" aria-label="Show floating lyrics" aria-pressed="false" title="Show floating lyrics">${svg('<path d="M4 5h16M4 10h10M4 15h7m6 4V9l4-1v4m-4 6c-4-2-5 3-1 3 1 0 1-1 1-3Z"/>')}</button>
@@ -34,6 +35,8 @@ class VeilFarersThemePlayer extends HTMLElement {
     const $ = (sel) => root.querySelector(sel);
     const audio = $('audio'), play = $('.play'), seek = $('.seek'), lyricsButton = $('.lyrics-toggle');
     const sky = $('.lyrics-sky'), panel = $('.panel'), details = $('.details-toggle'), status = $('.status');
+    const tab = $('.edge-tab'), dock = $('.dock');
+    let revealed = false;
     const heart = createParticleHeart($('.theme-heart'), audio);
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let stored;
@@ -51,6 +54,16 @@ class VeilFarersThemePlayer extends HTMLElement {
     };
     const report = (message = '') => { status.textContent = message; status.hidden = !message; };
     const controls = () => {
+      const open = revealed || intent || (!audio.paused && !audio.ended);
+      const restoreFocus = !open && !dock.hidden && root.activeElement && (dock.contains(root.activeElement) || panel.contains(root.activeElement));
+      this.toggleAttribute('data-docked', !open);
+      dock.hidden = !open; tab.hidden = open;
+      tab.setAttribute('aria-expanded', String(open));
+      if (!open) {
+        panel.hidden = true; details.setAttribute('aria-expanded', 'false');
+        this.removeAttribute('data-expanded');
+        if (restoreFocus && !destroyed) tab.focus({ preventScroll: true });
+      }
       this.toggleAttribute('data-playing', !audio.paused && !audio.ended);
       play.setAttribute('aria-label', intent && audio.paused ? 'Cancel loading music' : audio.paused ? 'Play VeilFarers theme' : 'Pause VeilFarers theme');
       lyricsButton.setAttribute('aria-pressed', String(lyrics));
@@ -68,7 +81,7 @@ class VeilFarersThemePlayer extends HTMLElement {
       if (root.activeElement !== seek) seek.value = String(now);
       seek.setAttribute('aria-valuetext', `${time(now)} of ${time(themeSong.duration)}`);
       $('.elapsed').textContent = time(now);
-      if (!lyrics || document.hidden || audio.ended) { clearLyrics(); return; }
+      if (!lyrics || document.hidden || audio.ended || (audio.paused && !revealed)) { clearLyrics(); return; }
       const active = visibleCues(themeSong.cues, now, motion.matches);
       const ids = new Set(active.map(cue => cue.id));
       for (const [id, node] of nodes) if (!ids.has(id)) { node.remove(); nodes.delete(id); }
@@ -117,15 +130,16 @@ class VeilFarersThemePlayer extends HTMLElement {
       panel.hidden = !open; details.setAttribute('aria-expanded', String(open)); this.toggleAttribute('data-expanded', open);
       if (focusBack) details.focus();
     };
+    tab.addEventListener('click', () => { revealed = true; controls(); play.focus({ preventScroll: true }); }, { signal });
     play.addEventListener('click', () => {
       userActivated = true;
-      if (intent || !audio.paused) { intent = false; audio.pause(); controls(); save(); }
+      if (intent || !audio.paused) { intent = false; revealed = false; audio.pause(); controls(); draw(); save(); }
       else { if (audio.ended) { audio.currentTime = 0; position = 0; } start(); }
     }, { signal });
     details.addEventListener('click', () => togglePanel(panel.hidden), { signal });
     $('.close').addEventListener('click', () => togglePanel(false, true), { signal });
-    document.addEventListener('click', event => { if (!event.composedPath().includes(this)) togglePanel(false); }, { signal });
-    root.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) { event.stopPropagation(); togglePanel(false, true); } }, { signal });
+    document.addEventListener('click', event => { if (!event.composedPath().includes(this)) { togglePanel(false); if (audio.paused && !intent) { revealed = false; controls(); draw(); } } }, { signal });
+    root.addEventListener('keydown', event => { if (event.key === 'Escape') { event.stopPropagation(); if (!panel.hidden) togglePanel(false, true); if (audio.paused && !intent) { revealed = false; controls(); draw(); } } }, { signal });
     lyricsButton.addEventListener('click', () => { userActivated = true; if (!audio.paused) heart.activate(); lyrics = !lyrics; controls(); draw(); save(); }, { signal });
     seek.addEventListener('input', () => {
       userActivated = true; position = Number(seek.value); prepare();
@@ -135,11 +149,11 @@ class VeilFarersThemePlayer extends HTMLElement {
     $('.volume-range').addEventListener('input', event => { userActivated = true; audio.volume = Number(event.target.value) / 100; audio.muted = false; controls(); save(); }, { signal });
     $('.mute').addEventListener('click', () => { userActivated = true; audio.muted = !audio.muted; controls(); save(); }, { signal });
     audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(position, audio.duration - .01); draw(); }, { signal });
-    audio.addEventListener('playing', () => { report(); intent = true; controls(); startFrame(); save(); }, { signal });
-    audio.addEventListener('pause', () => { if (!suspended) intent = false; stopFrame(); controls(); draw(); save(); }, { signal });
+    audio.addEventListener('playing', () => { revealed = false; report(); intent = true; controls(); startFrame(); save(); }, { signal });
+    audio.addEventListener('pause', () => { if (!suspended) { intent = false; revealed = false; } stopFrame(); controls(); draw(); save(); }, { signal });
     audio.addEventListener('timeupdate', () => { if (performance.now() - lastSave > 1500) { save(); lastSave = performance.now(); } if (!raf && !document.hidden) draw(); }, { signal });
     audio.addEventListener('seeked', draw, { signal });
-    audio.addEventListener('ended', () => { intent = false; stopFrame(); clearLyrics(); controls(); save(); }, { signal });
+    audio.addEventListener('ended', () => { intent = false; revealed = false; stopFrame(); clearLyrics(); controls(); save(); }, { signal });
     audio.addEventListener('error', () => { intent = false; stopFrame(); controls(); report('The theme could not load. Press play to retry.'); save(); }, { signal });
     document.addEventListener('visibilitychange', () => { save(); if (document.hidden) { stopFrame(); clearLyrics(); } else { draw(); startFrame(); } }, { signal });
     motion.addEventListener('change', () => { clearLyrics(); draw(); }, { signal });

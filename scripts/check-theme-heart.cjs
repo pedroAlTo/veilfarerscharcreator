@@ -1,5 +1,6 @@
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs');
+const openPlayer=async(host)=>{const tab=host.getByRole('button',{name:'Open theme player',exact:true});if(await tab.isVisible())await tab.click();};
 const base=process.env.QA_BASE||'http://127.0.0.1:8893',out='output/theme-heart';fs.mkdirSync(out,{recursive:true});
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});let checks=0;const ok=(v,m)=>{assert.ok(v,m);checks++};
 try{for(const width of [1440,390]){
@@ -10,13 +11,13 @@ try{for(const width of [1440,390]){
    const create=AudioContext.prototype.createMediaElementSource;
    AudioContext.prototype.createMediaElementSource=function(audio){qa.sources++;qa.state=this.state;return create.call(this,audio);};
    const read=AnalyserNode.prototype.getByteFrequencyData;
-   AnalyserNode.prototype.getByteFrequencyData=function(data){read.call(this,data);qa.frames++;const value=data.slice(2,8).reduce((a,b)=>a+b,0);qa.max=Math.max(qa.max,value);if(qa.samples.length<200)qa.samples.push(value);};
+   AnalyserNode.prototype.getByteFrequencyData=function(data){read.call(this,data);if(qa.input!==undefined){data.fill(0);data[3]=qa.input;}qa.frames++;const value=data.slice(2,8).reduce((a,b)=>a+b,0);qa.max=Math.max(qa.max,value);if(qa.samples.length<200)qa.samples.push(value);};
  });
  await page.goto(base+'/books/hearts-in-the-void.html',{waitUntil:'domcontentloaded'});
  const host=page.locator('vf-theme-player'),heart=host.locator('.theme-heart'),audio=host.locator('audio');await heart.waitFor({state:'attached'});await page.waitForFunction(()=>getComputedStyle(document.querySelector('vf-theme-player').shadowRoot.querySelector('canvas')).opacity==='0');
  ok(await heart.evaluate(e=>+getComputedStyle(e).opacity===0),'Heart hidden before playback');
  ok(await page.evaluate(()=>__heartQA.sources===0),'No Web Audio routing before user choice');
- await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();
+ await openPlayer(host);await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();
  await page.waitForFunction(()=>__heartQA.sources===1&&__heartQA.frames>5);
  await audio.evaluate(a=>a.currentTime=125);await page.waitForFunction(()=>{const a=document.querySelector('vf-theme-player').shadowRoot.querySelector('audio');return !a.seeking&&a.readyState>=3&&a.currentTime>125.2&&__heartQA.max>50;},null,{timeout:20000});
  ok(await page.evaluate(()=>__heartQA.state==='running'&&__heartQA.max>50),'Analyser reads real bass from the supplied track');
@@ -30,24 +31,33 @@ try{for(const width of [1440,390]){
  ok(await heart.evaluate(e=>getComputedStyle(e).pointerEvents==='none'),'Particle layer cannot block page clicks');
  const ink=await heart.evaluate(c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let lit=0,peak=0;for(let i=3;i<d.length;i+=4){if(d[i]>8)lit++;peak=Math.max(peak,d[i]);}return {fraction:lit/(c.width*c.height),peak};});
  ok(ink.fraction>0&&ink.fraction<.003,'Only sparse particles occupy the canvas, without a filled silhouette or spectrum bed');
- ok(ink.peak>0&&ink.peak<=100,'Particles remain subdued even over a loud passage');
+ ok(ink.peak>0&&ink.peak<=200,'Bass highlights stay below opaque white');
  await page.screenshot({path:`${out}/heart-${width}.png`});
+ // Hold the anatomical pose fixed and feed two bass attacks to the real renderer.
+ await audio.evaluate(a=>Object.defineProperty(a,'currentTime',{get:()=>127,configurable:true}));
+ const light=()=>heart.evaluate(c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let sum=0;for(let i=3;i<d.length;i+=4)sum+=d[i];return sum;});
+ await page.evaluate(()=>__heartQA.input=0);await page.waitForTimeout(900);const quiet=await light();
+ const attack=async()=>{const frame=await page.evaluate(()=>{__heartQA.input=255;return __heartQA.frames;});await page.waitForFunction(n=>__heartQA.frames>=n+2,frame);return light();};
+ const bright=await attack();ok(bright>quiet*1.8,'Bass attack visibly brightens the particles');
+ await page.evaluate(()=>__heartQA.input=0);await page.waitForTimeout(750);const faded=await light();ok(faded<bright*.65,'Brightness decays between bass hits');
+ ok(await attack()>faded*1.8,'The next bass hit lights the particles again');
+ await page.evaluate(()=>delete __heartQA.input);await audio.evaluate(a=>delete a.currentTime);
  await host.getByRole('button',{name:'Pause VeilFarers theme',exact:true}).click();await page.waitForTimeout(550);
  const frames=await page.evaluate(()=>__heartQA.frames);await page.waitForTimeout(150);
  ok(await page.evaluate(n=>__heartQA.frames===n,frames),'Pause stops analyser rendering');
  ok(await heart.evaluate(e=>+getComputedStyle(e).opacity===0),'Pause hides heart');
- await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await page.waitForTimeout(250);
+ await openPlayer(host);await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await page.waitForTimeout(250);
  ok(await page.evaluate(()=>__heartQA.sources===1),'Resume reuses one source without doubled audio');
- await host.getByRole('button',{name:'Music controls',exact:true}).click();await host.getByRole('button',{name:'Mute music',exact:true}).click();
+ await openPlayer(host);await host.getByRole('button',{name:'Music controls',exact:true}).click();await host.getByRole('button',{name:'Mute music',exact:true}).click();
  ok(await audio.evaluate(a=>a.muted),'Mute remains functional');
  await host.evaluate(e=>e.remove());await page.waitForTimeout(100);const count=await page.evaluate(()=>__heartQA.frames);await page.waitForTimeout(100);
  ok(await page.evaluate(n=>__heartQA.frames===n,count),'Removal releases renderer');ok(errors.length===0,errors.join('\n'));await context.close();
 }
 const context=await browser.newContext({reducedMotion:'reduce'}),page=await context.newPage();await page.goto(base+'/behind-the-veil/',{waitUntil:'domcontentloaded'});
-const host=page.locator('vf-theme-player');await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await page.waitForFunction(()=>{const a=document.querySelector('vf-theme-player').shadowRoot.querySelector('audio');return !a.paused&&a.currentTime>.5;});
+const host=page.locator('vf-theme-player');await openPlayer(host);await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await page.waitForFunction(()=>{const a=document.querySelector('vf-theme-player').shadowRoot.querySelector('audio');return !a.paused&&a.currentTime>.5;});
 const first=await host.locator('canvas').evaluate(c=>c.toDataURL());await page.waitForTimeout(300);ok(await host.locator('canvas').evaluate((c,png)=>c.toDataURL()===png,first),'Reduced-motion heart stays stationary');await context.close();
 // Audio must still work when the optional visualization API is unavailable.
 const fallback=await browser.newContext(),q=await fallback.newPage();await q.addInitScript(()=>{window.AudioContext=undefined;window.webkitAudioContext=undefined;});
-await q.goto(base+'/behind-the-veil/',{waitUntil:'domcontentloaded'});await q.locator('vf-theme-player').getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await q.waitForFunction(()=>document.querySelector('vf-theme-player').shadowRoot.querySelector('audio').currentTime>.1);ok(true,'Native audio works without Web Audio');await fallback.close();
+await q.goto(base+'/behind-the-veil/',{waitUntil:'domcontentloaded'});await openPlayer(q.locator('vf-theme-player'));await q.locator('vf-theme-player').getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await q.waitForFunction(()=>document.querySelector('vf-theme-player').shadowRoot.querySelector('audio').currentTime>.1);ok(true,'Native audio works without Web Audio');await fallback.close();
 console.log(`PASS ${checks} particle-heart browser checks.`);
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});

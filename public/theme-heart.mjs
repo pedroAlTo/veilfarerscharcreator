@@ -16,9 +16,9 @@ export function createParticleHeart(canvas, audio) {
   const random = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
   // A single oblique ventricular volume tapers toward an off-centre apex.
   // Sparse atrial and great-vessel landmarks replace the symmetric heart icon.
-  // Only about half of these 24 points are visible at any moment; no outline is drawn.
-  const landmarks = Array.from({ length: 16 }, (_, i) => {
-    const v = .06 + .90 * (i + .5) / 16, angle = i * 2.399963;
+  // Only about half of these 29 points are visible at any moment; no outline is drawn.
+  const landmarks = Array.from({ length: 21 }, (_, i) => {
+    const v = .06 + .90 * (i + .5) / 21, angle = i * 2.399963;
     const taper = Math.sin(Math.PI * (.1 + .9 * v));
     return {
       x: -.13 + .42 * v + .43 * taper ** .7 * Math.cos(angle),
@@ -72,9 +72,10 @@ export function createParticleHeart(canvas, audio) {
     const energy = bins && audible ? bassEnergy(bins, audioContext.sampleRate, analyser.fftSize) : 0;
     average += (energy - average) * (1 - Math.exp(-dt * 2));
     envelope += (energy - envelope) * (1 - Math.exp(-dt * (energy > envelope ? 22 : 7)));
-    const attack = Math.max(0, energy - average) * 2.8;
-    pulse = Math.max(attack, pulse * Math.exp(-dt * 7));
+    const attack = Math.max(0, energy - average - .015) * 6;
+    pulse = Math.max(attack, pulse * Math.exp(-dt * 5.5));
     const beat = reduced ? 0 : Math.min(1, envelope * .4 + pulse);
+    const glow = reduced ? 0 : Math.min(1, pulse);
     const t = reduced ? 0 : audio.currentTime;
     const yaw = .20 + (reduced ? 0 : Math.sin(t * .12) * .07), c = Math.cos(yaw), s = Math.sin(yaw);
     const scale = Math.min(width * .24, height * .41) * (1 + beat * .025);
@@ -93,8 +94,8 @@ export function createParticleHeart(canvas, audio) {
       };
     }).filter(point => point.presence > .08).sort((a, b) => a.z - b.z);
     for (const { x, y, z, p, perspective, presence } of projected) {
-      const alpha = Math.min(.38, (.24 + (z + .4) * .12 + beat * .035) * p.brightness * presence);
-      ctx.fillStyle = z < -.06 ? `rgba(125,160,167,${alpha * .8})` : `rgba(208,181,126,${alpha})`;
+      const alpha = Math.min(.78, (.19 + (z + .4) * .10 + glow * .58) * p.brightness * presence);
+      ctx.fillStyle = z < -.06 ? `rgba(${125 + glow * 55},${160 + glow * 45},${167 + glow * 45},${alpha * .8})` : `rgba(${208 + glow * 47},${181 + glow * 43},${126 + glow * 31},${alpha})`;
       const size = p.size * perspective * (1 + beat * .08);
       ctx.beginPath(); ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill();
     }

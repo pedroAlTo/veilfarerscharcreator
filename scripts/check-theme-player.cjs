@@ -1,5 +1,6 @@
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs');
+const openPlayer=async(host)=>{const tab=host.getByRole('button',{name:'Open theme player',exact:true});if(await tab.isVisible())await tab.click();};
 const base=process.env.QA_BASE||'http://127.0.0.1:8892',out='output/theme-player';fs.mkdirSync(out,{recursive:true});
 (async()=>{let checks=0;const ok=(v,m)=>{assert.ok(v,m);checks++};
 const browser=await chromium.launch({channel:'msedge',headless:true});
@@ -8,11 +9,21 @@ try {for(const width of [1440,900,390]) {
   p.on('pageerror',e=>errors.push(e.message));p.on('request',r=>{if(r.url().includes('/assets/audio/'))audioRequests.push(r.url());});
   await p.goto(base+'/books/hearts-in-the-void.html',{waitUntil:'domcontentloaded'});
   const host=p.locator('vf-theme-player'),audio=host.locator('audio');
-  await host.locator('.play').waitFor();await p.waitForFunction(()=>getComputedStyle(document.querySelector('vf-theme-player')).position==='fixed');
+  await host.locator('.play').waitFor({state:'attached'});await p.waitForFunction(()=>getComputedStyle(document.querySelector('vf-theme-player')).position==='fixed');
   ok(await host.count()===1,'One player');ok(await audio.evaluate(a=>a.paused&&!a.getAttribute('src')&&a.preload==='none'),'No autoplay or eager MP3 fetch');ok(audioRequests.length===0,'No audio requests before intent');
   ok(await p.locator('.vf-compatible-badge').count()===0,'Floating badge replaced');ok(await p.locator('.book-footer .vf-footer-compatible').count()===1,'Compatibility badge retained in footer');
-  const box=await host.boundingBox();ok(box.width<=180&&box.x+box.width<=width,'Compact right-hand dock');
-  await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();
+  const tabBox=await host.boundingBox();
+  ok(tabBox.width===40&&Math.abs(tabBox.x+tabBox.width-width)<1,'Idle player is only a 40px tab flush with the right edge');
+  ok(await host.locator('.dock').isHidden(),'Idle transport controls are hidden');
+  await host.getByRole('button',{name:'Open theme player',exact:true}).focus();await p.keyboard.press('Enter');
+  ok(await host.locator('.play').evaluate(e=>e.getRootNode().activeElement===e),'Keyboard opening focuses play');
+  ok(await audio.evaluate(a=>a.paused&&!a.getAttribute('src')),'Opening the tab does not start or fetch audio');
+  await p.keyboard.press('Escape');ok(await host.locator('.edge-tab').evaluate(e=>!e.hidden&&e.getRootNode().activeElement===e),'Escape folds idle player and restores tab focus');
+  await openPlayer(host);await p.locator('h1').first().click();ok(await host.locator('.dock').isHidden(),'Outside click folds an idle player');
+  await openPlayer(host);await p.waitForTimeout(300);
+  const box=await host.boundingBox();ok(box.width<=180&&box.x+box.width<=width,'Open dock stays in the viewport');
+  await p.screenshot({path:`${out}/tab-open-${width}.png`});
+  await openPlayer(host);await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();
   await p.waitForFunction(()=>{const a=document.querySelector('vf-theme-player').shadowRoot.querySelector('audio');return !a.paused&&a.currentTime>.1&&a.readyState>=2;});
   ok(await audio.evaluate(a=>Math.abs(a.duration-294.792)<.2),'Supplied MP3 decodes to the expected duration');
   ok(await host.locator('.lyric').count()===0,'Lyrics opt-in');
@@ -35,7 +46,10 @@ try {for(const width of [1440,900,390]) {
   await p.screenshot({path:`${out}/floating-${width}.png`});
   await host.getByRole('button',{name:'Pause VeilFarers theme',exact:true}).click();
   const paused=await audio.evaluate(a=>a.currentTime);await p.waitForTimeout(250);ok(await audio.evaluate((a,t)=>a.paused&&Math.abs(a.currentTime-t)<.1,paused),'Pause stops media');
-  await host.getByRole('button',{name:'Music controls',exact:true}).click();
+  ok(await host.locator('.dock').isHidden()&&await host.locator('.edge-tab').isVisible(),'Pausing automatically returns to the edge tab');
+  ok(await host.locator('.lyric').count()===0,'Folding clears paused floating lyrics');
+  await p.screenshot({path:`${out}/tab-idle-${width}.png`});
+  await openPlayer(host);await host.getByRole('button',{name:'Music controls',exact:true}).click();
   await host.getByRole('slider',{name:'Music volume',exact:true}).fill('22');
   ok(await audio.evaluate(a=>a.volume===.22),'Volume control');
   await host.getByRole('button',{name:'Mute music',exact:true}).click();ok(await audio.evaluate(a=>a.muted),'Mute');
@@ -44,15 +58,15 @@ try {for(const width of [1440,900,390]) {
   await p.waitForTimeout(150);ok(await audio.evaluate(a=>Math.abs(a.currentTime-124)<.3),'Seek while paused');
   await host.locator('.panel').screenshot({path:`${out}/controls-${width}.png`});
   await p.keyboard.press('Escape');ok(await host.locator('.panel').isHidden(),'Escape closes controls');
-  await p.goto(base+'/downloads.html',{waitUntil:'domcontentloaded'});await host.locator('.play').waitFor();
+  await p.goto(base+'/downloads.html',{waitUntil:'domcontentloaded'});await host.locator('.play').waitFor({state:'attached'});
   const saved=await host.evaluate(e=>({seek:+e.shadowRoot.querySelector('.seek').value,volume:+e.shadowRoot.querySelector('.volume-range').value,lyrics:e.shadowRoot.querySelector('.lyrics-toggle').getAttribute('aria-pressed'),paused:e.shadowRoot.querySelector('audio').paused}));
   ok(Math.abs(saved.seek-124)<.5&&saved.volume===22&&saved.lyrics==='true'&&saved.paused,'Position, volume, lyrics and pause survive navigation');
-  await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await p.waitForFunction(()=>document.querySelector('vf-theme-player').shadowRoot.querySelector('audio').currentTime>124);
-  await p.goto(base+'/books/corebook.html',{waitUntil:'domcontentloaded'});await host.locator('.play').waitFor();
+  await openPlayer(host);await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await p.waitForFunction(()=>document.querySelector('vf-theme-player').shadowRoot.querySelector('audio').currentTime>124);
+  await p.goto(base+'/books/corebook.html',{waitUntil:'domcontentloaded'});await host.locator('.play').waitFor({state:'attached'});
   await p.waitForFunction(()=>{const root=document.querySelector('vf-theme-player').shadowRoot;return root.querySelector('audio').currentTime>=124||!root.querySelector('.status').hidden;});
   if (await audio.evaluate(a=>a.paused)) {
     ok((await host.locator('.status').textContent()).includes('Press play'),'Browser gesture requirement is explained');
-    await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();
+    await openPlayer(host);await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();
   }
   await p.waitForFunction(()=>document.querySelector('vf-theme-player').shadowRoot.querySelector('audio').currentTime>=124);
   ok(await audio.evaluate(a=>a.currentTime>=124),'Opt-in playback resumes at saved position');
@@ -61,13 +75,13 @@ try {for(const width of [1440,900,390]) {
   ok(errors.length===0,JSON.stringify(errors));await ctx.close();console.log(`PASS player ${width}px.`);
 }
 const ctx=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'}),p=await ctx.newPage();
-await p.goto(base+'/books/hearts-in-the-void.html',{waitUntil:'domcontentloaded'});const host=p.locator('vf-theme-player');await host.locator('.play').waitFor();
-await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await p.waitForFunction(()=>document.querySelector('vf-theme-player').shadowRoot.querySelector('audio').readyState>=2);
+await p.goto(base+'/books/hearts-in-the-void.html',{waitUntil:'domcontentloaded'});const host=p.locator('vf-theme-player');await host.locator('.play').waitFor({state:'attached'});
+await openPlayer(host);await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();await p.waitForFunction(()=>document.querySelector('vf-theme-player').shadowRoot.querySelector('audio').readyState>=2);
 await host.getByRole('button',{name:'Show floating lyrics',exact:true}).click();await host.locator('audio').evaluate(a=>a.currentTime=147.9);await p.waitForTimeout(150);
 ok(await host.locator('.lyric').count()===1,'Reduced motion shows one verse');ok(await host.locator('.lyric').evaluate(e=>getComputedStyle(e).transform==='matrix(1, 0, 0, 1, 0, 0)'),'Reduced motion is stationary');await ctx.close();
 const c=await browser.newContext(),q=await c.newPage();
 for(const path of ['/','/books/alien-archives.html','/books/keepers-companion.html','/books/rust-and-steel.html','/legal.html','/feedback.html','/login.html']) {
-  await q.goto(base+path,{waitUntil:'domcontentloaded'});await q.locator('vf-theme-player .play').waitFor();ok(await q.locator('vf-theme-player').count()===1,`Same player on ${path}`);
+  await q.goto(base+path,{waitUntil:'domcontentloaded'});await q.locator('vf-theme-player .play').waitFor({state:'attached'});ok(await q.locator('vf-theme-player').count()===1,`Same player on ${path}`);
 }
 await c.close();console.log(`PASS ${checks} music player checks.`);
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

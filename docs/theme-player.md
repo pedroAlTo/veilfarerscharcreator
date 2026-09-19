@@ -33,7 +33,7 @@ Run `node scripts/check-theme-player.cjs` with `PLAYWRIGHT_MODULE` pointing to t
 
 ## Bass-reactive particle heart — 19 September 2026
 
-When playback starts, a sparse suggestion of an anatomical heart appears above the dock. Twenty-four spatial landmarks describe an oblique ventricular volume, its offset apex, the atrial shoulder and interrupted great vessels; approximately half are visible at a time through slow staggered fades. Subpixel-to-one-pixel muted gold and blue points drift gently without connecting lines, trails or bloom. Bass-driven expansion is limited to 2.5%, and the spectral bars have been removed. The form is deliberately incomplete. Optional lyrics overlap it and remain the foreground focus with their existing short travel and fade.
+When playback starts, a sparse suggestion of an anatomical heart appears above the dock. Twenty-nine spatial landmarks (24 increased by 20%, rounded to the nearest point) describe an oblique ventricular volume, its offset apex, the atrial shoulder and interrupted great vessels; approximately half are visible at a time through slow staggered fades. Subpixel-to-one-pixel muted gold and blue points drift gently without connecting lines, trails or bloom. Each bass onset raises particle opacity and lightens its color, then an exponential release lowers the intensity until the next onset. Bass-driven expansion remains limited to 2.5%, and the spectral bars have been removed. The form is deliberately incomplete. Optional lyrics overlap it and remain the foreground focus with their existing short travel and fade.
 
 `theme-heart.mjs` uses the track's MediaElementAudioSource and an AnalyserNode (FFT 2048). Energy in 30–160 Hz and its onset envelope control the contraction/expansion; there is no independent metronome or canned heartbeat. The native audio is rerouted only after AudioContext is running, and a later user gesture can retry a pending automatic resume. One source is reused across pause/play. Web Audio unavailability leaves native playback functional.
 
@@ -44,3 +44,9 @@ Validation: eight focused Node tests cover lyrics, page coverage, Overkill bound
 The same three browser suites also pass on the deployed Netlify preview: 67 journal checks, 34 particle-heart checks and 90 player regression checks. Browser checks wait for image decoding and actual audio playback before evaluating the rendered output.
 
 The sparse anatomical revision adds rendered-pixel coverage and peak-opacity checks to the existing desktop/mobile playback suite. The same renderer is loaded by all 20 pages through the shared player.
+
+## Idle edge tab — 20 September 2026
+
+When idle or paused, the common player presents only a 40px tab flush with the right edge. Activating it reveals the transport controls and moves keyboard focus to Play without fetching audio or starting playback. Playback keeps the full dock visible. Pause/end restore the tab; Escape and outside clicks also fold a manually opened idle player. Focus returns to the tab when a focused control is hidden. Floating lyrics clear on folding, and reduced motion disables drawer transitions. The mobile Netlify toolbar inset remains in effect.
+
+The updated player suite passes 114 local assertions across desktop, tablet and mobile, including tab position, keyboard opening and focus restoration, no fetch on opening, outside dismissal, automatic folding on pause and navigation preferences. The particle suite passes 40 local assertions, including two controlled low-frequency attacks with the anatomical pose held fixed: brightness rises on each attack and decays between them. Eight focused Node tests pass. Audio, lyrics, timing, track data and opt-in playback behavior are unchanged.
