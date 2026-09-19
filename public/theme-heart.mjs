@@ -1,4 +1,4 @@
-// A projected 3D point cloud. The spectrum and pulse come from the playing track.
+// Sparse anatomical landmarks, projected in 3D. The quiet pulse comes from the playing track.
 export function bassEnergy(bins, sampleRate, fftSize) {
   const low = Math.max(1, Math.ceil(30 * fftSize / sampleRate));
   const high = Math.min(bins.length - 1, Math.floor(160 * fftSize / sampleRate));
@@ -14,16 +14,29 @@ export function createParticleHeart(canvas, audio) {
   let envelope = 0, average = 0, pulse = 0, lastTime = 0, width = 300, height = 178;
   let seed = 97;
   const random = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
-  const points = Array.from({ length: 1150 }, () => {
-    const t = random() * Math.PI * 2, phi = Math.acos(2 * random() - 1);
-    const shell = Math.sin(phi), depth = Math.cos(phi);
+  // A single oblique ventricular volume tapers toward an off-centre apex.
+  // Sparse atrial and great-vessel landmarks replace the symmetric heart icon.
+  // Only about half of these 24 points are visible at any moment; no outline is drawn.
+  const landmarks = Array.from({ length: 16 }, (_, i) => {
+    const v = .06 + .90 * (i + .5) / 16, angle = i * 2.399963;
+    const taper = Math.sin(Math.PI * (.1 + .9 * v));
     return {
-      x: 16 * Math.sin(t) ** 3 / 18 * shell,
-      y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t) - 2) / 18 * shell,
-      z: depth * .39 * (.8 + .2 * Math.sin(t) ** 2),
-      brightness: .35 + random() * .65, size: .35 + random() * .65, band: Math.floor(random() * 35),
+      x: -.13 + .42 * v + .43 * taper ** .7 * Math.cos(angle),
+      y: -.48 + 1.26 * v,
+      z: .28 * taper ** .8 * Math.sin(angle),
     };
   });
+  landmarks.push(
+    { x: -.37, y: -.39, z: -.03 }, { x: -.39, y: -.58, z: -.08 },
+    // Interrupted aortic arch and the forward, lateral pulmonary trunk.
+    { x: -.03, y: -.59, z: -.02 }, { x: -.07, y: -.86, z: -.04 },
+    { x: .13, y: -.97, z: -.09 }, { x: .30, y: -.81, z: -.15 },
+    { x: .10, y: -.52, z: .27 }, { x: .40, y: -.65, z: .19 },
+  );
+  const points = landmarks.map(p => ({
+    ...p, brightness: .65 + random() * .35, size: .65 + random() * .35,
+    phase: random() * Math.PI * 2, speed: .45 + random() * .18,
+  }));
   const resize = () => {
     const rect = canvas.getBoundingClientRect();
     width = rect.width || 300; height = rect.height || 178;
@@ -63,36 +76,27 @@ export function createParticleHeart(canvas, audio) {
     pulse = Math.max(attack, pulse * Math.exp(-dt * 7));
     const beat = reduced ? 0 : Math.min(1, envelope * .4 + pulse);
     const t = reduced ? 0 : audio.currentTime;
-    const yaw = .25 + (reduced ? 0 : Math.sin(t * .28) * .16), c = Math.cos(yaw), s = Math.sin(yaw);
-    const scale = Math.min(width * .30, height * .43) * (1 + beat * .13);
+    const yaw = .20 + (reduced ? 0 : Math.sin(t * .12) * .07), c = Math.cos(yaw), s = Math.sin(yaw);
+    const scale = Math.min(width * .24, height * .41) * (1 + beat * .025);
     ctx.clearRect(0, 0, width, height);
-    // A low, wide spectral bed anchors the heart just above the dock.
-    const bands = 36, span = Math.min(220, width - 36), start = (width - span) / 2;
-    for (let i = 0; i < bands; i++) {
-      const hz = 45 * (8000 / 45) ** (i / (bands - 1));
-      const index = analyser ? Math.min(bins.length - 1, Math.round(hz * analyser.fftSize / audioContext.sampleRate)) : 0;
-      const amplitude = reduced ? .12 : (bins?.[index] || 0) / 255;
-      ctx.fillStyle = `rgba(209,169,93,${.13 + amplitude * .3})`;
-      ctx.fillRect(start + i * span / bands, height - 5 - amplitude * 12, 2, 1 + amplitude * 12);
-    }
-    // Depth sorting and perspective retain volume as the surface gently turns.
+    // No spectral bars, connecting lines, accumulated trails or glow shells.
+    // Slow local drift and staggered fades suggest an organ without tracing it.
     const projected = points.map(p => {
+      const drift = reduced ? 0 : Math.sin(t * .32 + p.phase) * .018;
       const z = p.z * c - p.x * s, x = p.x * c + p.z * s;
       const perspective = 3.8 / (3.8 - z);
-      const local = !reduced && bins ? (bins[p.band + 1] || 0) / 255 : 0;
-      const expansion = 1 + local * beat * .025;
-      return { x:width / 2 + x * scale * perspective * expansion, y:height * .45 + (p.y + z * .12) * scale * perspective * expansion, z, p, perspective };
-    }).sort((a,b) => a.z - b.z);
-    for (const point of projected) {
-      const {x,y,z,p,perspective} = point;
-      const alpha = Math.min(.85, (.14 + (z + .5) * .37 + beat * .18) * p.brightness);
-      ctx.fillStyle = z < -.07 ? `rgba(108,165,173,${alpha * .7})` : `rgba(240,200,126,${alpha})`;
-      const size = p.size * perspective * (1 + beat * .35);
-      ctx.beginPath(); ctx.arc(x,y,size,0,Math.PI*2); ctx.fill();
-      if (p.brightness > .96 && z > .05) {
-        ctx.fillStyle = `rgba(246,209,142,${alpha * .12})`;
-        ctx.beginPath();ctx.arc(x,y,size*3.8,0,Math.PI*2);ctx.fill();
-      }
+      const presence = Math.max(0, Math.sin(t * p.speed + p.phase));
+      return {
+        x: width / 2 + (x + drift) * scale * perspective,
+        y: height * .53 + (p.y + z * .12 + drift * .6) * scale * perspective,
+        z, p, perspective, presence,
+      };
+    }).filter(point => point.presence > .08).sort((a, b) => a.z - b.z);
+    for (const { x, y, z, p, perspective, presence } of projected) {
+      const alpha = Math.min(.38, (.24 + (z + .4) * .12 + beat * .035) * p.brightness * presence);
+      ctx.fillStyle = z < -.06 ? `rgba(125,160,167,${alpha * .8})` : `rgba(208,181,126,${alpha})`;
+      const size = p.size * perspective * (1 + beat * .08);
+      ctx.beginPath(); ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill();
     }
   };
   return { activate, draw, destroy() { disposed = true; resizeObserver.disconnect(); source?.disconnect(); analyser?.disconnect(); audioContext?.close().catch(() => {}); ctx.clearRect(0,0,width,height); } };

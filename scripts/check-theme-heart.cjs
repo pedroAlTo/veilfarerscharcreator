@@ -27,6 +27,9 @@ try{for(const width of [1440,390]){
  await audio.evaluate(a=>a.currentTime=127);await page.waitForTimeout(200);
  const lyric=await host.locator('.lyric').last().boundingBox();ok(lyric&&lyric.y<bb.y+bb.height&&lyric.y+lyric.height>bb.y,'Lyrics overlap heart region');
  ok(await heart.evaluate(e=>getComputedStyle(e).pointerEvents==='none'),'Particle layer cannot block page clicks');
+ const ink=await heart.evaluate(c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let lit=0,peak=0;for(let i=3;i<d.length;i+=4){if(d[i]>8)lit++;peak=Math.max(peak,d[i]);}return {fraction:lit/(c.width*c.height),peak};});
+ ok(ink.fraction>0&&ink.fraction<.003,'Only sparse particles occupy the canvas, without a filled silhouette or spectrum bed');
+ ok(ink.peak>0&&ink.peak<=100,'Particles remain subdued even over a loud passage');
  await page.screenshot({path:`${out}/heart-${width}.png`});
  await host.getByRole('button',{name:'Pause VeilFarers theme',exact:true}).click();await page.waitForTimeout(550);
  const frames=await page.evaluate(()=>__heartQA.frames);await page.waitForTimeout(150);

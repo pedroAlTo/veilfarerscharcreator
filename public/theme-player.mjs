@@ -1,4 +1,4 @@
-import { createParticleHeart } from './theme-heart.mjs?v=20260919-1';
+import { createParticleHeart } from './theme-heart.mjs?v=20260919-2';
 import { themeSong, visibleCues, lyricMotion, readPlayerState } from './theme-song.mjs?v=20260919-1';
 
 const STORAGE = 'vf-theme-player-v1';
