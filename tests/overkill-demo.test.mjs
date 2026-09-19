@@ -8,11 +8,18 @@ test('Overkill begins at a complete interval beyond Severe, never at Major plus 
     assert.equal(resolveOverkill(damage).hp, expected, `${damage} damage`);
   }
 });
-test('Deadly uses five-point steps and Armor lowers the category, including large Overkill', () => {
+test('Deadly uses five-point steps; each spent armor slot removes exactly one HP', () => {
   assert.equal(resolveOverkill(26,{deadly:true}).hp,3);
   assert.equal(resolveOverkill(27,{deadly:true}).hp,4);
   assert.equal(resolveOverkill(32,{deadly:true}).hp,5);
-  for (const [damage,hp] of [[1,0],[12,1],[22,2],[32,3],[1022,3]]) assert.equal(resolveOverkill(damage,{armor:true}).hp,hp);
+  for (const [damage,hp] of [[1,0],[12,1],[22,2],[32,3],[42,4],[1022,102]]) assert.equal(resolveOverkill(damage,{armorSlots:1}).hp,hp);
+  for (let armorSlots=0;armorSlots<=6;armorSlots++) {
+    assert.equal(resolveOverkill(42,{deadly:true,armorSlots}).hp,7-armorSlots);
+    assert.equal(resolveOverkill(1,{armorSlots}).hp,Math.max(0,1-armorSlots));
+  }
+  assert.equal(resolveOverkill(42,{deadly:true,armorSlots:20}).spent,6);
+  assert.equal(resolveOverkill(42,{armorSlots:-2}).spent,0);
+  assert.equal(resolveOverkill(42,{armorSlots:NaN}).spent,0);
 });
 test('Bass analysis responds to low frequencies, ignores isolated treble, and reports silence', () => {
   const bins=new Uint8Array(1024), rate=48000, fft=2048;

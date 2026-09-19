@@ -15,7 +15,16 @@ try{for(const width of [1440,900,390]){
  await page.getByRole('combobox',{name:'Overkill interval'}).selectOption('deadly');
  await slider.fill('27');ok(await page.locator('[data-hp]').textContent()==='4 HP','Deadly exact first breakpoint');
  await slider.focus();await page.keyboard.press('ArrowLeft');ok(await page.locator('[data-hp]').textContent()==='3 HP','Keyboard changes damage');
- await slider.fill('42');await page.getByRole('checkbox').check();ok(await page.locator('[data-hp]').textContent()==='3 HP','Armor reduces Overkill to Severe');
+ await slider.fill('42');const markers=page.locator('[data-armor-marker]');ok(await markers.count()===6,'Six armor markers');
+ await markers.nth(0).click();ok(await page.locator('[data-hp]').textContent()==='6 HP','One slot removes one HP from 7 HP Overkill');
+ for(let i=1;i<6;i++)await markers.nth(i).click();ok(await page.locator('[data-hp]').textContent()==='1 HP','Six slots remove six HP');
+ ok(await page.locator('[data-armor-count]').textContent()==='6 / 6 spent','Spent count matches markers');
+ await markers.nth(5).focus();await page.keyboard.press('Space');ok(await page.locator('[data-hp]').textContent()==='2 HP','Keyboard restores a marker');
+ ok(await markers.nth(5).getAttribute('aria-pressed')==='false','Restored marker exposes correct state');
+ await slider.fill('1');ok(await page.locator('[data-hp]').textContent()==='0 HP','HP loss stops at zero');
+ await slider.fill('42');await page.getByRole('combobox',{name:'Overkill interval'}).selectOption('standard');ok(await page.locator('[data-hp]').textContent()==='0 HP','Mode change preserves five spent slots');
+ await page.getByRole('combobox',{name:'Overkill interval'}).selectOption('deadly');
+ ok(await page.getByRole('checkbox').count()===0,'Armor uses markers instead of a checkbox');
  ok((await page.locator('[data-explanation]').textContent()).includes('7 HP before armor'),'Raw damage consequence remains explained');
  ok(await page.locator('.journal-body').innerText().then(t=>t.includes('open-ended')&&t.includes('Massive Damage')),'Author rationale and original-system context');
  await page.locator('#experiment').scrollIntoViewIfNeeded();
