@@ -18,9 +18,10 @@ try{for(const width of [1440,390]){
  ok(await page.evaluate(()=>__heartQA.sources===0),'No Web Audio routing before user choice');
  await host.getByRole('button',{name:'Play VeilFarers theme',exact:true}).click();
  await page.waitForFunction(()=>__heartQA.sources===1&&__heartQA.frames>5);
- await audio.evaluate(a=>a.currentTime=125);await page.waitForTimeout(1200);
+ await audio.evaluate(a=>a.currentTime=125);await page.waitForFunction(()=>{const a=document.querySelector('vf-theme-player').shadowRoot.querySelector('audio');return !a.seeking&&a.readyState>=3&&a.currentTime>125.2&&__heartQA.max>50;},null,{timeout:20000});
  ok(await page.evaluate(()=>__heartQA.state==='running'&&__heartQA.max>50),'Analyser reads real bass from the supplied track');
  ok(await page.evaluate(()=>new Set(__heartQA.samples).size>5),'Spectrum varies with the music');
+ await page.waitForFunction(()=>getComputedStyle(document.querySelector('vf-theme-player').shadowRoot.querySelector('canvas')).opacity==='1');
  ok(await heart.evaluate(e=>+getComputedStyle(e).opacity===1),'Heart revealed during playback');
  const bb=await heart.boundingBox();ok(bb.x>=0&&bb.x+bb.width<=width&&bb.height<=180,'Compact heart within viewport');
  await host.getByRole('button',{name:'Show floating lyrics',exact:true}).click();
