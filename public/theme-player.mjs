@@ -1,4 +1,5 @@
-import { themeSong, visibleCues, lyricMotion, readPlayerState } from './theme-song.mjs?v=20260914-4';
+import { createParticleHeart } from './theme-heart.mjs?v=20260919-1';
+import { themeSong, visibleCues, lyricMotion, readPlayerState } from './theme-song.mjs?v=20260919-1';
 
 const STORAGE = 'vf-theme-player-v1';
 const svg = (body) => `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
@@ -8,8 +9,9 @@ class VeilFarersThemePlayer extends HTMLElement {
     if (this.shadowRoot) return;
     const root = this.attachShadow({ mode: 'open' });
     root.innerHTML = `
-      <link rel="stylesheet" href="/theme-player.css?v=20260914-4">
+      <link rel="stylesheet" href="/theme-player.css?v=20260919-1">
       <section aria-label="VeilFarers theme music">
+        <canvas class="theme-heart" aria-hidden="true"></canvas>
         <div class="lyrics-sky" aria-hidden="true"></div>
         <p class="sr current-lyric" aria-live="off"></p>
         <div class="panel" id="theme-details" hidden>
@@ -32,6 +34,7 @@ class VeilFarersThemePlayer extends HTMLElement {
     const $ = (sel) => root.querySelector(sel);
     const audio = $('audio'), play = $('.play'), seek = $('.seek'), lyricsButton = $('.lyrics-toggle');
     const sky = $('.lyrics-sky'), panel = $('.panel'), details = $('.details-toggle'), status = $('.status');
+    const heart = createParticleHeart($('.theme-heart'), audio);
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let stored;
     try { stored = sessionStorage.getItem(STORAGE); } catch { /* Optional per-tab preferences. */ }
@@ -93,13 +96,13 @@ class VeilFarersThemePlayer extends HTMLElement {
     const frame = (stamp) => {
       raf = 0;
       if (destroyed || audio.paused || document.hidden) return;
-      if (stamp - lastFrame > 32) { draw(); lastFrame = stamp; }
+      if (stamp - lastFrame > 32) { draw(); heart.draw(stamp, motion.matches); lastFrame = stamp; }
       raf = requestAnimationFrame(frame);
     };
     const startFrame = () => { if (!raf && !audio.paused && !document.hidden) raf = requestAnimationFrame(frame); };
     const prepare = () => { if (!audio.getAttribute('src')) audio.src = themeSong.src; else if (audio.error) audio.load(); };
     const start = async (resume = false) => {
-      intent = true; report(); prepare(); controls();
+      intent = true; report(); prepare(); heart.activate(); controls();
       try {
         await audio.play();
         if (!intent || destroyed) { audio.pause(); return; }
@@ -123,7 +126,7 @@ class VeilFarersThemePlayer extends HTMLElement {
     $('.close').addEventListener('click', () => togglePanel(false, true), { signal });
     document.addEventListener('click', event => { if (!event.composedPath().includes(this)) togglePanel(false); }, { signal });
     root.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) { event.stopPropagation(); togglePanel(false, true); } }, { signal });
-    lyricsButton.addEventListener('click', () => { userActivated = true; lyrics = !lyrics; controls(); draw(); save(); }, { signal });
+    lyricsButton.addEventListener('click', () => { userActivated = true; if (!audio.paused) heart.activate(); lyrics = !lyrics; controls(); draw(); save(); }, { signal });
     seek.addEventListener('input', () => {
       userActivated = true; position = Number(seek.value); prepare();
       if (audio.readyState) audio.currentTime = position;
@@ -195,7 +198,7 @@ class VeilFarersThemePlayer extends HTMLElement {
     }
     controls(); draw();
     if (state.playing && state.engaged && position < themeSong.duration - 1) start(true);
-    this.cleanup = () => { save(); destroyed = true; intent = false; stopFrame(); audio.pause(); abort.abort(); channel?.close(); previewObserver?.disconnect(); previewFinder?.disconnect(); previewResize?.disconnect(); };
+    this.cleanup = () => { save(); destroyed = true; intent = false; stopFrame(); audio.pause(); abort.abort(); channel?.close(); previewObserver?.disconnect(); previewFinder?.disconnect(); previewResize?.disconnect(); heart.destroy(); };
   }
   disconnectedCallback() { this.cleanup?.(); }
 }

@@ -43,7 +43,7 @@ test('new visitors never autoplay, saved opt-in and valid preferences restore sa
   assert.equal(invalid.time,0); assert.equal(invalid.volume,1); assert.equal(invalid.playing,false);
 });
 test('all first-party HTML pages load exactly one common player', () => {
-  const pages = ['public','public/books'].flatMap(dir => readdirSync(dir).filter(f=>f.endsWith('.html')).map(f=>`${dir}/${f}`));
-  assert.equal(pages.length,18);
+  const pages = ['public','public/books','public/behind-the-veil'].flatMap(dir => readdirSync(dir).filter(f=>f.endsWith('.html')).map(f=>`${dir}/${f}`));
+  assert.equal(pages.length,20);
   for (const page of pages) assert.equal((readFileSync(page,'utf8').match(/src="\/theme-player\.mjs\?/g)||[]).length,1,page);
 });

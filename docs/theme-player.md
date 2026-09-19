@@ -1,6 +1,6 @@
 # VeilFarers theme player
 
-The author supplied `Fraggle Ensemble (6).mp3` on 14 September 2026 as the VeilFarers theme. The same compact player now appears on all 18 first-party HTML pages, including the homepage, all books, Downloads and the tools. It occupies the former bottom-right compatibility-badge position. Existing floating compatibility badges move into their page footer, retaining their link and attribution.
+The author supplied `Fraggle Ensemble (6).mp3` on 14 September 2026 as the VeilFarers theme. The same compact player now appears on all 20 first-party HTML pages, including the homepage, all books, Behind the Veil, Downloads and the tools. It occupies the former bottom-right compatibility-badge position. Existing floating compatibility badges move into their page footer, retaining their link and attribution.
 
 ## Audio and lyrics
 
@@ -30,3 +30,13 @@ Playback errors have a retry path. Keyboard focus, native labelled sliders, mute
 - Deploy verification reports 173 valid asset references and no errors or warnings.
 
 Run `node scripts/check-theme-player.cjs` with `PLAYWRIGHT_MODULE` pointing to the available Playwright installation and `QA_BASE` set to the preview origin.
+
+## Bass-reactive particle heart — 19 September 2026
+
+When playback starts, a compact 1,150-point heart appears above the dock. Its particle positions have depth, perspective and a slight turn; warm gold foreground points and subdued blue depth points match the rest of the site. The optional lyrics overlap the heart and remain in the foreground with their existing short travel and fade. A small logarithmic spectrum spans 45–8,000 Hz beneath it.
+
+`theme-heart.mjs` uses the track's MediaElementAudioSource and an AnalyserNode (FFT 2048). Energy in 30–160 Hz and its onset envelope control the contraction/expansion; there is no independent metronome or canned heartbeat. The native audio is rerouted only after AudioContext is running, and a later user gesture can retry a pending automatic resume. One source is reused across pause/play. Web Audio unavailability leaves native playback functional.
+
+The shared player's 30 fps loop drives the particles. Pause/end hide the heart, mute removes audio-driven motion, hidden tabs stop rendering, and element removal disconnects and closes the audio context. Reduced motion shows a stationary point cloud. The layer ignores pointer events, reserves no document space, and dims behind expanded playback controls. No microphone access, additional media, or external 3D runtime is used.
+
+Validation: eight focused Node tests cover lyrics, page coverage, Overkill boundaries and bass-band isolation. The existing 90 music-player browser checks pass locally. The journal's browser suite passes 43 assertions at 1440/900/390 px, including static content without JavaScript. The particle-heart suite passes 30 assertions at desktop/mobile sizes, including real analyser input, single audio routing, pause/resume, mute, lyrics overlap, reduced motion and fallback without Web Audio.
