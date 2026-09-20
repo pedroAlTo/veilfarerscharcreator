@@ -1,0 +1,97 @@
+/* The public archive and its restricted record terminal. */
+.xa-grid>.xa-intro-card{grid-column:span 3}
+.xa-grid>.xa-npc-card{grid-column:1/-1}
+.xa-species-atlas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,1fr);aspect-ratio:3/2;gap:3px;padding:12px;background:#07121b}
+.xa-species-atlas a{position:relative;overflow:hidden;min-height:0;border:1px solid #b6a07130}
+.xa-species-atlas img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.45) brightness(.7);transition:filter .25s}
+.xa-species-atlas a:hover img,.xa-species-atlas a:focus-visible img{filter:saturate(.85) brightness(.95)}
+.xa-species-atlas span{position:absolute;bottom:4px;left:6px;color:#e6d9be;font:8px/1.2 'Courier New',monospace;text-shadow:0 1px 4px #000}
+.xa-inline-link{display:inline-block;margin-top:15px;color:#dcc28d;font:11px/1.5 'Courier New',monospace;text-underline-offset:4px}
+.xa-npc-intro{display:flex;align-items:baseline;justify-content:space-between;gap:36px;border-top:0;border-bottom:1px solid #b796623d}
+.xa-npc-intro h3{white-space:nowrap;margin:0}.xa-npc-intro p{max-width:720px;margin:0}
+.xa-terminal{--crt-dark:#070c09;--crt-mid:#758e76;--crt-bright:#bed7b0;--archive-ink:var(--crt-bright);--archive-accent:var(--crt-bright);margin:22px;border:1px solid color-mix(in srgb, var(--crt-mid) 38%, transparent);background:var(--crt-dark);box-shadow:inset 0 0 45px var(--crt-dark);position:relative;isolation:isolate;overflow:hidden;border-radius:12px;color:var(--crt-bright)}
+.xa-terminal-header{display:flex;align-items:center;gap:16px;padding:18px 22px;border-bottom:1px solid color-mix(in srgb, var(--crt-mid) 24%, transparent);background:linear-gradient(100deg,color-mix(in srgb, var(--crt-mid) 4%, transparent),transparent 65%)}
+.xa-terminal-header img{width:39px;height:49px;opacity:.85}
+.xa-terminal-header strong{display:block;color:var(--crt-bright);font:14px/1.5 'Courier New',monospace;letter-spacing:.18em;font-weight:400}
+.xa-terminal-header small{font:8px/1.6 'Courier New',monospace;letter-spacing:.12em;color:var(--crt-mid)}
+.xa-terminal-level{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--archive-accent);font:9px 'Courier New',monospace;letter-spacing:.1em}
+.xa-terminal-level:before{content:'';width:5px;height:5px;background:var(--archive-accent);box-shadow:0 0 9px color-mix(in srgb, var(--crt-mid) 24%, transparent)}
+.xa-terminal-body{display:grid;grid-template-columns:220px minmax(0,1fr)}
+.xa-record-list{padding:12px;border-right:1px solid color-mix(in srgb, var(--crt-mid) 19%, transparent);background:var(--crt-dark)}
+.xa-record-list>a{display:block;position:relative;margin-bottom:4px;padding:13px 12px;border:1px solid transparent;text-decoration:none;color:var(--crt-bright)}
+.xa-record-list a>small{display:block;color:var(--crt-mid);font:8px/1.4 'Courier New',monospace;letter-spacing:.08em}
+.xa-record-list a>strong{display:block;margin:6px 0;font:12px/1.5 'Courier New',monospace;font-weight:400}
+.xa-record-list a>span{font:9px/1.4 'Courier New',monospace;color:var(--crt-mid)}
+.xa-record-list a:hover{background:color-mix(in srgb, var(--crt-mid) 3%, transparent);color:var(--crt-bright)}
+.xa-record-list a[aria-selected=true]{border-color:color-mix(in srgb, var(--crt-mid) 33%, transparent);background:linear-gradient(90deg,color-mix(in srgb, var(--crt-mid) 9%, transparent),transparent);box-shadow:inset 2px 0 var(--archive-accent);color:var(--crt-bright)}
+.xa-record-list a[aria-selected=true] small{color:var(--crt-mid)}
+.xa-record-screen{position:relative;min-width:0;overflow:hidden;background:repeating-linear-gradient(0deg,transparent 0 3px,color-mix(in srgb, var(--crt-mid) 1%, transparent) 3px 4px)}
+.xa-record{display:grid;grid-template-columns:minmax(170px,.85fr) minmax(0,1.3fr);gap:24px;padding:24px}
+.xa-record[hidden]{display:none!important}
+.xa-record:not([hidden])+.xa-record{border-top:1px solid color-mix(in srgb, var(--crt-mid) 19%, transparent)}
+.xa-mugshot-wrap{margin:0;position:relative;align-self:start}
+.xa-mugshot{aspect-ratio:1;background-image:url('/assets/books/alien-schematics/npc-surveillance.webp');background-size:300% 200%;background-position:var(--face-x) var(--face-y);filter:none;border:1px solid color-mix(in srgb, var(--crt-mid) 29%, transparent);position:relative}
+.xa-mugshot:after{content:'';position:absolute;inset:9px;border:1px solid color-mix(in srgb, var(--crt-mid) 12%, transparent);clip-path:polygon(0 0,16% 0,16% 2%,2% 2%,2% 16%,0 16%,0 0,100% 0,100% 16%,98% 16%,98% 2%,84% 2%,84% 0,100% 0,100% 100%,84% 100%,84% 98%,98% 98%,98% 84%,100% 84%,100% 100%,0 100%,0 84%,2% 84%,2% 98%,16% 98%,16% 100%,0 100%)}
+.xa-mugshot-wrap figcaption{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font:8px/1.5 'Courier New',monospace;letter-spacing:.09em;color:var(--crt-mid)}
+.xa-record-stamp{margin-top:28px;padding:12px;border-block:1px solid color-mix(in srgb, var(--crt-mid) 21%, transparent);color:var(--crt-mid);font:9px/1.65 'Courier New',monospace;letter-spacing:.1em}
+.xa-record-stamp span{display:block;color:var(--crt-mid);font-size:8px;margin-top:7px}
+.xa-record-copy{min-width:0}
+.xa-record-code{margin:0 0 12px!important;color:var(--crt-mid)!important;font:9px/1.4 'Courier New',monospace!important;letter-spacing:.12em}
+.xa-record-copy h4{margin:0 0 16px;color:var(--crt-bright);font:400 clamp(22px,1.8vw,28px)/1.2 'Courier New',monospace;letter-spacing:-.035em}
+.xa-record-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 23px;padding-bottom:17px;border-bottom:1px solid color-mix(in srgb, var(--crt-mid) 16%, transparent)}
+.xa-record-meta dt{color:var(--crt-mid);font:8px/1.4 'Courier New',monospace;text-transform:uppercase;letter-spacing:.09em}
+.xa-record-meta dd{margin:5px 0 0;color:var(--crt-bright);font:11px/1.5 'Courier New',monospace}
+.xa-record-copy h5{font:9px/1.4 'Courier New',monospace;font-weight:400;color:var(--crt-mid);letter-spacing:.1em;text-transform:uppercase;margin:18px 0 7px}
+.xa-record-copy p{font:12px/1.75 'Courier New',monospace;color:var(--crt-bright);margin:0}
+.xa-record-copy details{margin-top:20px;padding-top:14px;border-top:1px solid color-mix(in srgb, var(--crt-mid) 16%, transparent)}
+.xa-record-copy summary{cursor:pointer;color:var(--crt-mid);font:10px/1.6 'Courier New',monospace}
+.xa-record-copy details p{margin-top:10px}
+.xa-redacted{display:flex;gap:6px;margin-top:9px;max-width:240px}
+.xa-redacted i{height:8px;background:color-mix(in srgb, var(--crt-mid) 24%, transparent);width:36%}.xa-redacted i:nth-child(2){width:22%}.xa-redacted i:last-child{width:30%}
+.xa-redaction-label{margin-top:7px!important;color:var(--crt-mid)!important;font:8px/1.4 'Courier New',monospace!important;letter-spacing:.07em}
+.xa-terminal-footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:13px 20px;border-top:1px solid color-mix(in srgb, var(--crt-mid) 24%, transparent);font:8px/1.5 'Courier New',monospace;color:var(--crt-mid);letter-spacing:.05em}
+.xa-terminal-footer [data-record-stream]{color:var(--crt-mid)}
+.xa-record-screen:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,transparent 40%,color-mix(in srgb, var(--crt-mid) 9%, transparent) 49%,color-mix(in srgb, var(--crt-mid) 33%, transparent) 50%,transparent 53%);transform:translateY(-110%);opacity:0}
+.is-reading .xa-record-screen:after{animation:xa-record-scan .6s ease-out}
+@keyframes xa-record-scan{0%{transform:translateY(-90%);opacity:1}100%{transform:translateY(90%);opacity:0}}
+.xa-terminal.is-paused .xa-record-screen:after{animation-play-state:paused}
+/* Fixed raster lines, curved glass edges and a gentle vertical refresh band. */
+.xa-terminal::before{content:'';position:absolute;z-index:4;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 2px,color-mix(in srgb,var(--crt-dark) 8%,transparent) 2px 3px),radial-gradient(ellipse at center,transparent 55%,color-mix(in srgb,var(--crt-dark) 22%,transparent) 100%);box-shadow:inset 0 0 24px 6px var(--crt-dark)}
+.xa-terminal::after{content:'';position:absolute;z-index:3;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 0 39%,color-mix(in srgb,var(--crt-bright) 5%,transparent) 47%,color-mix(in srgb,var(--crt-bright) 9%,transparent) 49.7%,transparent 50% 100%);transform:translateY(-105%);animation:xa-crt-refresh 11s linear infinite}
+.xa-terminal :is(h4,strong,summary,.xa-inline-link){text-shadow:0 0 5px color-mix(in srgb,var(--crt-bright) 24%,transparent)}
+.xa-terminal .xa-inline-link,.xa-terminal strong{color:var(--crt-bright)}
+.xa-terminal :focus-visible{outline-color:var(--crt-bright)}
+.xa-terminal ::selection{color:var(--crt-dark);background:var(--crt-bright)}
+.xa-terminal .xa-record-list a[aria-selected=true]{color:var(--crt-bright);border-color:var(--crt-mid)}
+.xa-terminal.is-paused::after{animation-play-state:paused}
+@keyframes xa-crt-refresh{from{transform:translateY(-105%)}to{transform:translateY(105%)}}
+@media(prefers-reduced-motion:reduce){.xa-terminal::after{animation:none;display:none}}
+.xa-field-table{aspect-ratio:3/2;padding:22px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(#8aafbd08 1px,transparent 1px),linear-gradient(90deg,#8aafbd08 1px,transparent 1px),#07121b;background-size:24px 24px;border-bottom:1px solid #b796623d}
+.xa-field-table>span{font:9px/1.4 'Courier New',monospace;letter-spacing:.11em;color:#80969d;text-transform:uppercase}
+.xa-field-table [data-field-entry]{padding-block:16px}
+.xa-field-table strong{display:block;color:#d7b978;font:32px/1.1 'Courier New',monospace;font-weight:400}
+.xa-field-table p{font:15px/1.55 Georgia,serif;color:#d3d8d5;margin:12px 0 0;min-height:70px}
+.xa-field-table button{align-self:start;padding:8px 12px;color:#d7be92;border:1px solid #b7966260;background:#0a1820;font:10px/1.4 'Courier New',monospace;cursor:pointer}
+.xa-field-table [hidden]{display:none!important}
+.xa-feature-caption{display:block;color:#849da5;font:9px/1.5 'Courier New',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.07em}
+@media(max-width:1050px){.xa-grid>.xa-card{grid-column:span 3}.xa-grid>.xa-npc-card{grid-column:1/-1}.xa-terminal-body{grid-template-columns:175px minmax(0,1fr)}.xa-record{grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr);gap:18px;padding:20px}.xa-record-list{padding:8px}.xa-record-list>a{padding:12px 8px}.xa-terminal{margin:14px}.xa-npc-intro{display:block}.xa-npc-intro p{margin-top:12px}.xa-record-stamp{padding:9px;font-size:8px}}
+@media(max-width:760px){.xa-terminal-body{display:block}.xa-record-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-right:0;border-bottom:1px solid #83979730;gap:4px}.xa-record-list>a{margin:0;padding:10px 7px}.xa-record-list a>strong{font-size:10px;min-height:30px}.xa-record-list a>span{font-size:8px}.xa-terminal-header{padding:15px 14px;gap:10px}.xa-terminal-header strong{font-size:12px}.xa-terminal-level{font-size:8px;letter-spacing:0}.xa-terminal-footer{flex-wrap:wrap;gap:6px;padding:12px}.xa-record{grid-template-columns:minmax(140px,.8fr) minmax(0,1.2fr);gap:17px;padding:18px}.xa-record-copy h4{font-size:25px}}
+@media(max-width:680px){.xa-grid>.xa-card{grid-column:1/-1}.xa-terminal{margin:10px}.xa-record{display:block;padding:18px}.xa-mugshot-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.7fr);gap:0 16px;margin-bottom:22px}.xa-mugshot{grid-column:1;grid-row:1}.xa-mugshot-wrap figcaption{grid-column:1}.xa-record-stamp{grid-column:2;grid-row:1;align-self:center;margin:0;font-size:8px}.xa-record-meta{grid-template-columns:1fr 1fr}.xa-terminal-header img{width:30px;height:39px}.xa-terminal-header strong{font-size:10px;letter-spacing:.12em}.xa-terminal-header small{font-size:7px}.xa-terminal-level{display:none}.xa-field-table{min-height:260px}.xa-species-atlas{padding:8px}.xa-species-atlas span{font-size:7px}.xa-npc-intro{padding:20px}}
+@media(prefers-reduced-motion:reduce){.xa-record-screen:after{animation:none!important}.xa-species-atlas img{transition:none}}
+
+/* Redactions replace confidential prose; no covered text is stored in the DOM. */
+.xa-classified{display:inline-block;width:var(--redaction-width,10ch);max-width:100%;height:.82em;margin:0 .12em;vertical-align:-.06em;background:var(--crt-mid);opacity:.64;box-shadow:inset 0 -1px var(--crt-dark);user-select:none}
+
+/* Cultural plates remain whole, with their context underneath the image. */
+.species-card.xa-culture-card{display:flex;flex-direction:column;min-height:0;height:auto}
+.species-card.xa-culture-card::after{display:none}
+.xa-culture-card .xa-culture-art{display:block;aspect-ratio:3/2;overflow:hidden;background:#061018}
+.species-card.xa-culture-card img{display:block;width:100%;height:auto;min-height:0;aspect-ratio:3/2;object-fit:contain;object-position:center;filter:none}
+.species-card.xa-culture-card>div{position:relative;inset:auto;padding:23px 24px 26px;flex:1;border-top:1px solid var(--line)}
+.xa-culture-card>div>span{line-height:1.7;font-size:8px;letter-spacing:.12em}
+.xa-culture-card>div>h3{font-size:25px;line-height:1.2;margin:9px 0 12px}
+.xa-culture-card>div>p{font-size:13px;line-height:1.65}
+.xa-culture-art:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+@media(prefers-reduced-motion:reduce){.xa-culture-card img{transition:none}.xa-culture-card:hover img{transform:none}}
+
+#record-crystallis .xa-mugshot{background-image:url('/assets/books/alien-schematics/npc-surveillance-marked.webp')}

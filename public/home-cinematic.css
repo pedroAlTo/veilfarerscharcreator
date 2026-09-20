@@ -103,3 +103,13 @@ body[data-visual-mode="static"]:not([data-visual-reason="initial"]) .vf-hero{hei
 
 /* Electrical activity at the loose cable ends in the Rust & Steel notice. */
 .vf-release-sparks{position:absolute;z-index:2;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen}
+
+/* A readable introduction between the galaxy tour and the starting routes. */
+.vf-field-guide{position:relative;z-index:10;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(36px,6vw,90px);width:min(var(--vf-max),calc(100% - 48px));margin:70px auto;padding:clamp(36px,6vw,80px);border-block:1px solid var(--vf-line);background:linear-gradient(120deg,rgba(3,10,16,.94),rgba(4,11,18,.85))}
+.vf-field-guide h2{margin:0 0 24px;font:400 clamp(38px,4.4vw,64px)/1.06 Georgia,serif;letter-spacing:-.025em;color:var(--vf-white)}
+.vf-field-guide p{margin:0 0 18px;color:var(--vf-soft);font-size:15px;line-height:1.8}.vf-field-guide .vf-eyebrow{color:var(--vf-gold);font-size:10px}.vf-field-guide .vf-guide-lead{font-size:18px}.vf-guide-lead strong{font-weight:500;color:var(--vf-gold-pale)}
+.vf-field-guide a{color:var(--vf-gold-pale);text-decoration-color:var(--vf-gold-dim);text-underline-offset:4px}.vf-field-guide a:hover{color:#fff4da;text-decoration-color:currentColor}
+.vf-guide-start{display:inline-block;margin-top:10px;padding-block:12px;border-bottom:1px solid var(--vf-line);font-size:14px;text-decoration:none}
+.vf-guide-questions article+article{margin-top:22px;padding-top:22px;border-top:1px solid rgba(225,189,109,.15)}.vf-guide-questions h3{margin:0 0 8px;font:400 23px/1.25 Georgia,serif;color:var(--vf-gold-pale)}.vf-guide-questions p{margin:0;font-size:14px}
+@media(max-width:900px){.vf-field-guide{grid-template-columns:1fr;gap:34px}}
+@media(max-width:600px){.vf-field-guide{width:calc(100% - 16px);margin:35px auto;padding:40px 19px}.vf-field-guide h2{font-size:40px}.vf-field-guide .vf-guide-lead{font-size:17px}}

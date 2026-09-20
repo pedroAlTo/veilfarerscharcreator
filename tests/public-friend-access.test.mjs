@@ -73,8 +73,8 @@ test('Alien Species presents the book features, nine peoples and a reduced-motio
   const styles = read('../public/book-detail.css')
   const background = read('../public/book-background.js')
   assert.match(page, /alien-archives-lab-v1\.webp/)
-  assert.equal((page.match(/class="species-card"/g) || []).length, 9)
-  assert.equal((page.match(/class="feature-panel"/g) || []).length, 9)
+  assert.equal((page.match(/class="species-card(?: [^"]*)?"/g) || []).length, 9)
+  assert.equal((page.match(/class="feature-panel(?: [^"]*)?"/g) || []).length, 9)
   assert.match(styles, /data-book-theme="alien"/)
   assert.match(background, /theme === 'alien'/)
   assert.match(background, /drawAlienDNA/)
@@ -135,9 +135,13 @@ test('home feature cards link their full surface to the matching section', () =>
 test('home explains the recommended starting routes without covering book art', () => {
   const home = read('../public/index.html')
   assert.match(home, /Where to start/)
-  assert.match(home, /Recommended for every new group/)
+  assert.match(home, /Explore the complete rules/)
   assert.match(home, /Recommended for the Keeper/)
-  assert.match(home, /Recommended first adventure/)
+  assert.match(home, /Continue after First Crossing/)
+  const entry = home.match(/<div class="vf-first-step">[\s\S]*?<\/div>/)?.[0]
+  assert.ok(entry, 'A permanent starter entry exists outside the notices')
+  assert.match(entry, /href="\/books\/hearts-in-the-void.html#first-crossing"/)
+  assert.ok(home.indexOf(entry) < home.indexOf('id="features"'), 'The starter precedes the feature grid')
   for (const href of ['corebook.html', 'keepers-companion.html', 'hearts-in-the-void.html']) assert.match(home, new RegExp(href))
 })
 
@@ -472,7 +476,7 @@ test('public editorial pages publish the complete VeilFarers favicon set', () =>
   assert.equal(manifest.theme_color, '#03060a')
 })
 
-test('high-bandwidth transparent artwork uses AVIF with original fallbacks', () => {
+test('high-bandwidth artwork uses optimized transparent assets and responsive cultural plates', () => {
   const home = read('../public/index.html')
   const core = read('../public/books/corebook.html')
   const alien = read('../public/books/alien-archives.html')
@@ -480,10 +484,12 @@ test('high-bandwidth transparent artwork uses AVIF with original fallbacks', () 
   assert.match(home, /<source srcset="\/assets\/homepage\/art\/solara-compact-transparent\.avif" type="image\/avif">/)
   assert.match(home, /<img src="\/assets\/homepage\/art\/solara-compact-transparent\.png"/)
   assert.match(core, /<source srcset="\/assets\/optimized\/affiliation\/house-amaranth\.avif" type="image\/avif">/)
-  for (let index = 1; index <= 9; index += 1) {
-    const name = String(index).padStart(2, '0')
-    assert.match(alien, new RegExp(`<source srcset="/assets/optimized/ancestry/${name}\\.avif" type="image/avif">`))
-    assert.match(alien, new RegExp(`<img src="/img/ancestry/${name}\\.png"`))
+  for (const name of ['ailuran','bloomstrider','celestiari','ethereal','human','kryllian','kryx','rift-spinner','synthetic']) {
+    const full = `/assets/books/alien-cultures/${name}.webp`
+    const small = `/assets/books/alien-cultures/${name}-768.webp`
+    assert.ok(alien.includes(`src="${full}"`))
+    assert.ok(alien.includes(`srcset="${small} 768w, ${full} 1536w"`))
+    assert.ok(statSync(new URL('../public' + small, import.meta.url)).size < statSync(new URL('../public' + full, import.meta.url)).size)
   }
 
   const pairs = [
