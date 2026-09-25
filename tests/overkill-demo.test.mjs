@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveOverkill, ARMOR_PROFILE } from '../public/overkill-demo.mjs';
+import { resolveOverkill, ARMOR_PROFILE, DEMO_MAX_HP, ENCOUNTERS, rollDamage, applyCombatHit } from '../public/overkill-demo.mjs';
 import { bassEnergy } from '../public/theme-heart.mjs';
 
 test('Overkill begins at a complete interval beyond Severe, never at Major plus ten', () => {
@@ -36,4 +36,27 @@ test('Tactical Armor uses five slots and adds wearer level to both base threshol
   assert.equal(ARMOR_PROFILE.baseSevere + ARMOR_PROFILE.level, 22);
   assert.equal(resolveOverkill(42, { deadly:true, armorSlots:5 }).hp, 2);
   assert.equal(resolveOverkill(32).hp, 4, 'available armor does not automatically soak a hit');
+});
+
+test('enemy threats climb in expected damage and the giant robot fires 10D8 + 5', () => {
+  const averages = ENCOUNTERS.map(enemy => enemy.count * (enemy.sides + 1) / 2 + enemy.bonus);
+  assert.ok(averages.every((average, index) => index === 0 || average > averages[index - 1]));
+  const boss = ENCOUNTERS.at(-1);
+  assert.deepEqual([boss.count, boss.sides, boss.bonus], [10, 8, 5]);
+  assert.equal(rollDamage(boss, () => 0).damage, 15);
+  assert.equal(rollDamage(boss, () => 0.999).damage, 85);
+  assert.equal(resolveOverkill(85, { deadly: true, armorSlots: 5 }).hp, 10);
+});
+
+test('successive attacks consume armor, empty hearts, and leave the soldier down', () => {
+  assert.equal(DEMO_MAX_HP, 6);
+  assert.equal(ENCOUNTERS.length, 5);
+  assert.equal(ENCOUNTERS[3].sprite, 'robot-heavy');
+  assert.ok(ENCOUNTERS.every(enemy => enemy.sprite !== 'ship'));
+  const first = applyCombatHit({ hp: 6, armorRemaining: 5 }, 42, { deadly: true, armorSlots: 2 });
+  assert.deepEqual([first.rawHP, first.hp, first.lost, first.hpAfter, first.armorRemaining], [7, 5, 5, 1, 3]);
+  const final = applyCombatHit({ hp: first.hpAfter, armorRemaining: first.armorRemaining }, 25);
+  assert.deepEqual([final.lost, final.hpAfter, final.armorRemaining], [1, 0, 3]);
+  const blocked = applyCombatHit({ hp: 6, armorRemaining: 2 }, 5, { armorSlots: 5 });
+  assert.deepEqual([blocked.lost, blocked.hpAfter, blocked.armorRemaining], [0, 6, 0]);
 });

@@ -35,7 +35,7 @@ test('public navigation keeps the cinematic wordmark and complete link sequence'
   const rust = read('../public/books/rust-and-steel.html')
   const hearts = read('../public/books/hearts-in-the-void.html')
   const alien = read('../public/books/alien-archives.html')
-  const labels = ['Home', 'Setting', 'Core', 'Keeper', 'Rust &amp; Steel', 'Hearts in the Void', 'Alien Species', 'Downloads', 'Features', 'Feedback']
+  const labels = ['Home', 'Setting', 'Core', 'Keeper', 'Rust &amp; Steel', 'Hearts in the Void', 'Alien Species', 'Downloads', 'Behind the Veil', 'Feedback']
   for (const source of [home, portal, core, keeper, rust, hearts, alien]) {
     assert.match(source, /vf-wordmark-mark/)
     const publicMarker = source.indexOf('Public navigation')
@@ -229,7 +229,7 @@ test('Repair notice remains independent while the new books have their own notic
 
 test('homepage notices share numbered manual navigation without sharing dismissal state', () => {
   const home = read('../public/index.html')
-  const carousel = read('../public/cta-carousel.js')
+  const carousel = read('../public/cta-carousel-scheduled.js')
   const release = read('../public/release-notice.js')
   const beta = read('../public/beta-recruitment.js')
   const styles = read('../public/home-cinematic.css')
@@ -240,10 +240,10 @@ test('homepage notices share numbered manual navigation without sharing dismissa
   assert.match(home, />02<\/button>/)
   assert.match(home, /aria-label="Previous notice"/)
   assert.match(home, /aria-label="Next notice"/)
-  assert.match(home, /cta-carousel\.js\?v=20260911-2/)
+  assert.match(home, /cta-carousel-scheduled\.js\?v=20260923-1/)
   assert.match(home, /kryllian-rust-repair-notice\.png\?v=20260901-1/)
   assert.match(home, /Colour sketch of Xirith's four-armed mechanic/)
-  assert.match(carousel, /\['books', 'crossing', 'release', 'beta', 'minis'\]/)
+  assert.match(carousel, /\['pricing', 'behind', 'books', 'crossing', 'release', 'beta', 'minis'\]/)
   assert.match(home, /data-cta-owner="minis"/)
   assert.match(carousel, /vf:cta-switch-request/)
   assert.match(carousel, /data-cta-inbox/)

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "notices": {
+    "pricing": { "enabled": true, "startsAt": null, "endsAt": "2026-10-07T21:59:59.000Z", "priority": 1 },
+    "behind": { "enabled": true, "startsAt": null, "endsAt": null, "priority": 2 },
+    "books": { "enabled": true, "startsAt": null, "endsAt": null, "priority": 3 },
+    "crossing": { "enabled": true, "startsAt": null, "endsAt": null, "priority": 4 },
+    "release": { "enabled": true, "startsAt": null, "endsAt": null, "priority": 5 },
+    "beta": { "enabled": true, "startsAt": null, "endsAt": null, "priority": 6 },
+    "minis": { "enabled": true, "startsAt": null, "endsAt": null, "priority": 7 }
+  }
+}

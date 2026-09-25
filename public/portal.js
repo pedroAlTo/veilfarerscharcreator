@@ -30,8 +30,9 @@
       <a href="/books/hearts-in-the-void.html">Hearts in the Void</a>
       <a href="/books/alien-archives.html">Alien Species</a>
       <a href="/downloads.html">Downloads</a>
-      <a href="/#features">Features</a>
+      <a href="/behind-the-veil/">Behind the Veil</a>
       <a href="/feedback.html">Feedback</a>
+      <a id="vf-nav-admin" href="/admin.html" hidden aria-hidden="true">Admin</a>
       <a id="vf-nav-account" class="vf-nav-account" href="/login.html"><span class="vf-account-dot" aria-hidden="true"></span><span class="vf-account-label">Log in</span></a>
     </nav>
     <div id="vf-nav-character-id" class="vf-nav-character-id" hidden>
@@ -333,6 +334,7 @@
 
   const account=nav.querySelector('#vf-nav-account');
   const accountLabel=account.querySelector('.vf-account-label');
+  const adminLink=nav.querySelector('#vf-nav-admin');
   function rolesOf(user){ return user&&user.app_metadata&&Array.isArray(user.app_metadata.roles)?user.app_metadata.roles:[]; }
   function renderAccount(user){
     const signedIn=!!user;
@@ -341,6 +343,8 @@
     account.classList.toggle('is-guest',!signedIn);
     accountLabel.textContent='Log in';
     account.title=signedIn?(user.email||'Signed in with Netlify Identity'):'Log in with Netlify Identity';
+    adminLink.hidden=!roles.some(role=>String(role).toLowerCase()==='admin');
+    adminLink.setAttribute('aria-hidden',String(adminLink.hidden));
     applyPrivateNavRoles(roles);
   }
   function refreshSelectableCharacters(){

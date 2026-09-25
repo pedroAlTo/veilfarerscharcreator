@@ -10,6 +10,7 @@
   <script src="veilfarers-theme.js"></script>
   <link rel="stylesheet" href="veilfarers-theme.css">
   <link rel="stylesheet" href="veilfarers-accessibility.css">
+  <link rel="stylesheet" href="admin-cta.css?v=20260923-1">
   <script defer src="veilfarers-accessibility.js"></script>
 </head>
 <body>
@@ -29,6 +30,12 @@
   <p id="admin-status" class="vf-status">Checking administrator role…</p>
   <section id="admin-content" hidden>
     <div class="vf-sheet-grid" style="margin:18px 0"><div class="vf-sheet-block"><h3>Portal version</h3><p id="admin-portal-version">—</p></div><div class="vf-sheet-block"><h3>Canonical release</h3><p id="admin-release">—</p></div><div class="vf-sheet-block"><h3>Firebase runtime</h3><p id="firebase-health">Checking…</p></div><div class="vf-sheet-block"><h3>Authentication</h3><p>Netlify Identity · role <code>admin</code> + configured email</p></div></div>
+    <div class="vf-panel vf-content vf-cta-admin" style="margin-bottom:18px" data-cta-admin>
+      <div class="vf-section-heading"><div><div class="vf-eyebrow">Homepage transmissions</div><h2>CTA scheduling</h2></div><span class="vf-badge">Server controlled</span></div>
+      <p>Pause, resume or schedule each notice. Dates use your browser’s local time and are stored as UTC. A future start works for launches such as Halloween without another deploy.</p>
+      <p id="cta-admin-status" class="vf-status" role="status" aria-live="polite">Loading CTA schedule…</p>
+      <form id="cta-admin-form"><div id="cta-admin-list" class="vf-cta-admin-list"></div><div class="vf-actions" style="margin-top:14px"><button class="vf-button primary" type="submit">Save all schedules</button></div></form>
+    </div>
     <div class="vf-panel vf-content" style="margin-bottom:18px">
       <div class="vf-section-heading"><div><div class="vf-eyebrow">Private playtest group</div><h2>Protected-tool access</h2></div><span class="vf-badge">Invite only</span></div>
       <p>Invite an Identity account and choose exactly which protected tools it may use. The <code>admin</code> role cannot be assigned here.</p>
@@ -47,6 +54,6 @@
     <div class="vf-panel vf-content"><h2>Change log</h2><div id="changelog"></div></div>
   </section>
 </main>
-<script src="admin.js"></script><script src="portal.js"></script>
+<script src="admin.js"></script><script src="admin-cta.js?v=20260923-1"></script><script src="portal.js"></script>
 <script type="module" src="/theme-player.mjs?v=20260919-3"></script>
 </body></html>
