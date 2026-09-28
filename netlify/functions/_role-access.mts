@@ -38,3 +38,11 @@ export const requirePortalAdmin=(user:any)=>{
   if(email!==configuredEmail)throw Object.assign(new Error('This administrator role is not assigned to the configured portal owner.'),{status:403,code:'ADMIN_EMAIL_MISMATCH'})
   return {email,roles:[...userRoles(user)]}
 }
+
+// Publishing permissions are the Identity admin role. Managing accounts keeps
+// the separate configured-owner restriction in requirePortalAdmin above.
+export const requireContentAdmin=(user:any)=>{
+  if(!user)throw Object.assign(new Error('Sign in with a VeilFarers administrator account.'),{status:401,code:'IDENTITY_REQUIRED'})
+  if(!userRoles(user).has('admin'))throw Object.assign(new Error('Administrator role required.'),{status:403,code:'ADMIN_ROLE_REQUIRED'})
+  return {roles:[...userRoles(user)]}
+}

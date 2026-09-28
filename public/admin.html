@@ -10,33 +10,43 @@
   <script src="veilfarers-theme.js"></script>
   <link rel="stylesheet" href="veilfarers-theme.css">
   <link rel="stylesheet" href="veilfarers-accessibility.css">
-  <link rel="stylesheet" href="admin-cta.css?v=20260923-1">
+  <link rel="stylesheet" href="admin-cta.css?v=20260927-1">
   <script defer src="veilfarers-accessibility.js"></script>
 </head>
 <body>
 <main class="vf-shell">
-  <header class="vf-hero"><div><div class="vf-eyebrow">Restricted Portal Diagnostics</div><h1>Administration</h1><p class="vf-lead">Deployment status, canonical release information and the portal change log. Any future write operation must also validate the Netlify Identity JWT server-side.</p></div></header>
+  <header class="vf-hero"><div><div class="vf-eyebrow">Publishing &amp; portal administration</div><h1>Administration</h1><p class="vf-lead">Manage homepage CTAs and Behind the Veil articles, schedule publication, and check portal status.</p></div></header>
   <section class="vf-panel vf-content" style="margin-bottom:18px">
     <div class="vf-section-heading"><div><div class="vf-eyebrow">Project owner setup</div><h2>Assign the administrator profile</h2></div><span class="vf-badge">Identity role: admin</span></div>
     <ol>
       <li>Open the VeilFarers project in Netlify and go to <strong>Project configuration → Identity → Users</strong>.</li>
       <li>Select the Identity user who should administer the portal.</li>
       <li>Choose <strong>Edit settings</strong>, add <code>admin</code> in <strong>Roles</strong>, and save.</li>
-      <li>Set the Functions-only environment variable <code>VF_ADMIN_EMAIL</code> to that same account email.</li>
+
       <li>Ask the user to log out and log in again so Netlify issues a new JWT containing the role.</li>
     </ol>
+    <p class="vf-muted">The <code>admin</code> role grants CTA and article management. Account invitations, role changes and deletions are separately restricted to the project owner configured by <code>VF_ADMIN_EMAIL</code>.</p>
     <p class="vf-muted"><strong>Important:</strong> this is a Netlify Identity application role, not the Owner/Developer role used for access to the Netlify team dashboard.</p>
   </section>
-  <p id="admin-status" class="vf-status">Checking administrator role…</p>
+  <p id="admin-status" class="vf-status" role="status" aria-live="polite">Checking administrator role…</p>
+  <div id="admin-auth-actions" class="vf-actions" hidden><button id="admin-sign-in" class="vf-button primary" type="button">Sign in</button><button id="admin-sign-out" class="vf-button" type="button" hidden>Sign out</button><button id="admin-retry" class="vf-button" type="button">Check access again</button></div>
+  <div id="admin-runtime-help" class="vf-sheet-block" hidden><p>This preview serves static files only. Saving publication settings requires Netlify Functions and a verified Netlify Identity session. Use Netlify Dev for a local server, or open the deployed administration page.</p><a class="vf-button" href="https://veilfarers.com/admin.html">Open live administration</a></div>
   <section id="admin-content" hidden>
-    <div class="vf-sheet-grid" style="margin:18px 0"><div class="vf-sheet-block"><h3>Portal version</h3><p id="admin-portal-version">—</p></div><div class="vf-sheet-block"><h3>Canonical release</h3><p id="admin-release">—</p></div><div class="vf-sheet-block"><h3>Firebase runtime</h3><p id="firebase-health">Checking…</p></div><div class="vf-sheet-block"><h3>Authentication</h3><p>Netlify Identity · role <code>admin</code> + configured email</p></div></div>
+    <div class="vf-sheet-grid" style="margin:18px 0"><div class="vf-sheet-block"><h3>Portal version</h3><p id="admin-portal-version">—</p></div><div class="vf-sheet-block"><h3>Canonical release</h3><p id="admin-release">—</p></div><div class="vf-sheet-block"><h3>Firebase runtime</h3><p id="firebase-health">Checking…</p></div><div class="vf-sheet-block"><h3>Authentication</h3><p>Netlify Identity · verified <code>admin</code> role</p></div></div>
     <div class="vf-panel vf-content vf-cta-admin" style="margin-bottom:18px" data-cta-admin>
-      <div class="vf-section-heading"><div><div class="vf-eyebrow">Homepage transmissions</div><h2>CTA scheduling</h2></div><span class="vf-badge">Server controlled</span></div>
-      <p>Pause, resume or schedule each notice. Dates use your browser’s local time and are stored as UTC. A future start works for launches such as Halloween without another deploy.</p>
-      <p id="cta-admin-status" class="vf-status" role="status" aria-live="polite">Loading CTA schedule…</p>
-      <form id="cta-admin-form"><div id="cta-admin-list" class="vf-cta-admin-list"></div><div class="vf-actions" style="margin-top:14px"><button class="vf-button primary" type="submit">Save all schedules</button></div></form>
+      <div class="vf-section-heading"><div><div class="vf-eyebrow">Publication controls</div><h2>CTAs &amp; Behind the Veil</h2></div><span class="vf-badge">Scheduled publishing</span></div>
+      <p>Enable, pause or schedule each entry. An empty start publishes immediately; an empty end keeps it available. Scheduled changes take effect automatically without another deploy.</p>
+      <p id="cta-admin-timezone" class="vf-muted"></p>
+      <p id="cta-admin-status" class="vf-status" role="status" aria-live="polite">Waiting for administrator verification…</p>
+      <form id="cta-admin-form">
+        <fieldset id="cta-admin-controls" disabled>
+          <h3>Homepage CTAs</h3><div id="cta-admin-list" class="vf-cta-admin-list"></div>
+          <h3>Behind the Veil articles</h3><p class="vf-muted">Each article setting applies to all its available languages. The Behind the Veil CTA is controlled separately above.</p><div id="article-admin-list" class="vf-cta-admin-list"></div>
+          <div class="vf-actions vf-cta-save"><button id="cta-admin-save" class="vf-button primary" type="submit" disabled>Save all schedules</button><button id="cta-admin-reload" class="vf-button" type="button">Reload saved settings</button><span id="cta-admin-updated" class="vf-muted"></span></div>
+        </fieldset>
+      </form>
     </div>
-    <div class="vf-panel vf-content" style="margin-bottom:18px">
+    <div id="identity-admin-panel" class="vf-panel vf-content" style="margin-bottom:18px">
       <div class="vf-section-heading"><div><div class="vf-eyebrow">Private playtest group</div><h2>Protected-tool access</h2></div><span class="vf-badge">Invite only</span></div>
       <p>Invite an Identity account and choose exactly which protected tools it may use. The <code>admin</code> role cannot be assigned here.</p>
       <form id="identity-invite-form" class="vf-sheet-block">
@@ -54,6 +64,6 @@
     <div class="vf-panel vf-content"><h2>Change log</h2><div id="changelog"></div></div>
   </section>
 </main>
-<script src="admin.js"></script><script src="admin-cta.js?v=20260923-1"></script><script src="portal.js"></script>
+<script src="admin.js?v=20260927-1"></script><script src="admin-cta.js?v=20260927-1"></script><script src="portal.js"></script>
 <script type="module" src="/theme-player.mjs?v=20260919-3"></script>
 </body></html>

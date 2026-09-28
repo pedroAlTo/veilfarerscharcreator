@@ -1,8 +1,8 @@
 {
   "schema": "veilfarers.downloads/2",
   "release": "12.06",
-  "releaseLine": "Books 12.06 · First Crossing 1.1",
-  "generatedAt": "2026-09-10",
+  "releaseLine": "Books 12.06 \u00b7 First Crossing 1.1",
+  "generatedAt": "2026-09-28",
   "items": [
     {
       "id": "corebook",
@@ -98,13 +98,49 @@
       "current": true
     },
     {
+      "id": "power-cards-color",
+      "title": "Domain Power Cards \u2014 Color",
+      "coverAlt": "A printable A4 sheet of six domain power cards with colored banners and gold borders.",
+      "description": "All 147 English domain powers, with colored banners and illustrated backs. Six cards per A4 sheet, with crop marks and 3 mm bleed. Trim size: 63 \u00d7 88 mm. Print pages 3-52 at 100%, double-sided, flipping on the long edge.",
+      "downloadLabel": "Download color cards",
+      "version": "12.06",
+      "type": "printable cards",
+      "file": "/download/VeilFarers_Power_Cards_12.06_Duplex_A4.pdf",
+      "cover": "/img/covers/power-cards-color.jpg",
+      "coverWidth": 600,
+      "coverHeight": 849,
+      "bytes": 43794251,
+      "sha256": "6c88a8732503b6cfccf65ef51ce78ebe7cfd14dd1943657c0b43f4a04831383c",
+      "status": "3 mm bleed + crop marks",
+      "current": true,
+      "pages": 52
+    },
+    {
+      "id": "power-cards-print-friendly",
+      "title": "Domain Power Cards \u2014 Print Friendly",
+      "coverAlt": "A low-ink A4 sheet of six domain power cards on white backgrounds, retaining colored banners and domain symbols.",
+      "description": "All 147 English domain powers in a low-ink edition, retaining domain symbols and banner colors, with VeilFarers logo backs. Six cards per A4 sheet, with crop marks and 3 mm bleed. Trim size: 63 \u00d7 88 mm. Print pages 3-52 at 100%, double-sided, flipping on the long edge.",
+      "downloadLabel": "Download print-friendly cards",
+      "version": "12.06",
+      "type": "printable cards",
+      "file": "/download/VeilFarers_Power_Cards_12.06_Print_Friendly_A4.pdf",
+      "cover": "/img/covers/power-cards-print-friendly.jpg",
+      "coverWidth": 600,
+      "coverHeight": 849,
+      "bytes": 982741,
+      "sha256": "1cedf2c0ee7822018df3cd86880428fc2b4ac645bb079b887427128d778f592b",
+      "status": "3 mm bleed + crop marks",
+      "current": true,
+      "pages": 52
+    },
+    {
       "id": "first-crossing",
       "title": "First Crossing",
       "version": "1.1",
       "type": "starter session",
       "file": "/download/VeilFarers_First_Crossing_1.1.pdf",
       "status": "Rules 12.06",
-      "description": "A complete first session for 3–5 players and one Keeper, designed for 3–4 hours. Includes starter rules and a route into Hearts in the Void. Requires the companion Table Kit.",
+      "description": "A complete first session for 3\u20135 players and one Keeper, designed for 3\u20134 hours. Includes starter rules and a route into Hearts in the Void. Requires the companion Table Kit.",
       "current": true,
       "bytes": 195368,
       "sha256": "cc7684db0caaa9ebbd792651e7738a2c23bd1669db268cc9692859aa1221f8e7",
@@ -115,7 +151,7 @@
     },
     {
       "id": "first-crossing-table-kit",
-      "title": "First Crossing — Table Kit",
+      "title": "First Crossing \u2014 Table Kit",
       "version": "1.1",
       "type": "play aids",
       "file": "/download/VeilFarers_First_Crossing_Table_Kit_1.1.pdf",
@@ -131,12 +167,12 @@
     },
     {
       "id": "first-crossing-color-maps",
-      "title": "First Crossing — Color Maps",
+      "title": "First Crossing \u2014 Color Maps",
       "version": "1.1",
       "type": "map collection",
       "file": "/download/VeilFarers_First_Crossing_Color_Maps_1.1.pdf",
       "status": "Rules 12.06",
-      "description": "Four map plates for screen use or optional color printing: Harrow Dock, Dock K-17, Charon’s Refuge and its docking ring.",
+      "description": "Four map plates for screen use or optional color printing: Harrow Dock, Dock K-17, Charon\u2019s Refuge and its docking ring.",
       "current": true,
       "bytes": 6676596,
       "sha256": "bf4333d5a6af2c0af02fd0468ac650fefdeed8f0bbe1cd254b738e0702421f05",
@@ -146,6 +182,6 @@
       "coverHeight": 1536
     }
   ],
-  "pdfCandidateStatus": "Five books updated to 12.06. First Crossing 1.1 includes a starter session, required Table Kit and optional color maps. Existing character and starship sheets retain their stated versions.",
+  "pdfCandidateStatus": "Five books updated to 12.06, plus all 147 domain power cards in color and print-friendly editions. First Crossing 1.1 includes a starter session, required Table Kit and optional color maps. Existing character and starship sheets retain their stated versions.",
   "currentOnly": true
 }

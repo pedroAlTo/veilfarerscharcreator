@@ -4,17 +4,13 @@
   let order = ['pricing', 'behind', 'books', 'crossing', 'release', 'beta', 'minis'].filter(id => document.querySelector('[data-cta-notice="' + id + '"]'));
   const states = Object.fromEntries(order.map(id => [id, { active: false, deleted: false, open: false, ready: false, auto: false }]));
   const titles = Object.fromEntries(order.map(id => [id, document.querySelector('[data-cta-notice="' + id + '"]').dataset.ctaTitle]));
-  let schedule = Object.fromEntries(order.map((id, index) => [id, { enabled: true, startsAt: null, endsAt: null, priority: index + 1 }]));
+  let schedule = {};
+  const boundNavigation = new WeakSet();
   let scheduleReady = false;
   let initialOpenHandled = false;
+  let paginationOrder = '';
 
-  function isLive(id, now = Date.now()) {
-    const item = schedule[id];
-    if (!item?.enabled) return false;
-    const starts = item.startsAt ? Date.parse(item.startsAt) : NaN;
-    const ends = item.endsAt ? Date.parse(item.endsAt) : NaN;
-    return (!Number.isFinite(starts) || now >= starts) && (!Number.isFinite(ends) || now < ends);
-  }
+  function isLive(id) { return window.VFPublication?.isLive('notices', id) === true; }
   function availableNotices() {
     return order.filter(id => states[id]?.ready && isLive(id) && !states[id].deleted);
   }
@@ -36,6 +32,8 @@
         if (id === owner) { button.setAttribute('aria-current', 'page'); button.classList.add('is-current'); }
       });
       addButton('›', 'Next notice', 'vf-cta-arrow').dataset.ctaStep = '1';
+      if (boundNavigation.has(nav)) continue;
+      boundNavigation.add(nav);
       nav.addEventListener('click', event => {
         const button = event.target.closest('button');
         if (!button || button.disabled) return;
@@ -44,7 +42,7 @@
           const available = availableNotices();
           target = available[(available.indexOf(owner) + Number(button.dataset.ctaStep) + available.length) % available.length];
         }
-        if (target && target !== owner) window.dispatchEvent(new CustomEvent('vf:cta-switch-request', { detail: { from: owner, to: target } }));
+        if (target && target !== owner) requestOpen(target);
       });
     }
   }
@@ -76,27 +74,32 @@
   }
   function openInitial() {
     if (initialOpenHandled || !scheduleReady || document.readyState !== 'complete') return;
-    initialOpenHandled = true;
     const direct = location.hash === '#minis' && availableNotices().includes('minis');
     const target = direct ? 'minis' : order.find(id => states[id].ready && states[id].auto && isLive(id) && !states[id].deleted);
-    if (target) setTimeout(() => {
+    if (!target) return;
+    initialOpenHandled = true;
+    setTimeout(() => {
       if (!order.some(id => states[id].open)) requestOpen(target, Boolean(direct));
     }, direct ? 0 : 650);
   }
-  async function loadSchedule() {
-    let data;
-    try {
-      const response = await fetch('/api/cta-config', { cache: 'no-store' });
-      if (!response.ok) throw new Error(String(response.status));
-      data = await response.json();
-    } catch {
-      try { data = await fetch('/data/cta-schedule.json', { cache: 'no-store' }).then(response => response.json()); }
-      catch { data = { notices: schedule }; }
-    }
-    schedule = { ...schedule, ...(data.notices || {}) };
+  function applySchedule() {
+    schedule = window.VFPublication?.config?.notices || {};
+    scheduleReady = Boolean(window.VFPublication?.config);
     order.sort((a, b) => (Number(schedule[a]?.priority) || 99) - (Number(schedule[b]?.priority) || 99));
-    scheduleReady = true;
-    buildPagination();
+    for (const id of order) states[id].open = Boolean(document.querySelector('[data-cta-notice="' + id + '"]')?.open);
+    const nextOrder = order.join(',');
+    if (nextOrder !== paginationOrder) {
+      const focused = document.activeElement;
+      const focusOwner = focused?.closest('[data-cta-owner]')?.dataset.ctaOwner;
+      const focusTarget = focused?.dataset.ctaTarget;
+      const focusStep = focused?.dataset.ctaStep;
+      buildPagination();
+      paginationOrder = nextOrder;
+      if (focusOwner && (focusTarget || focusStep)) {
+        const selector = '[data-cta-owner="' + focusOwner + '"] [' + (focusTarget ? 'data-cta-target="' + focusTarget : 'data-cta-step="' + focusStep) + '"]';
+        document.querySelector(selector)?.focus({ preventScroll: true });
+      }
+    }
     syncInterface();
     openInitial();
   }
@@ -117,5 +120,6 @@
   window.addEventListener('load', openInitial, { once: true });
   syncInterface();
   window.dispatchEvent(new CustomEvent('vf:cta-state-request'));
-  loadSchedule();
+  window.addEventListener('vf:publication-update', applySchedule);
+  applySchedule();
 })();

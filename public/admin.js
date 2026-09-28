@@ -10,6 +10,22 @@
   let activeIdentityUser=null;
   let users=[];
   let busy=false;
+  let ownerAccess=false;
+  let sessionGeneration=0;
+  const authActions=document.getElementById('admin-auth-actions');
+  const localHelp=document.getElementById('admin-runtime-help');
+  const userPanel=document.getElementById('identity-admin-panel');
+  function lockUserTools(){
+    userPanel.querySelectorAll('input,button').forEach(control=>{control.disabled=busy||!ownerAccess;});
+  }
+  function publishAccess(detail){
+    window.VF_CONTENT_ADMIN_STATE=detail;
+    window.dispatchEvent(new CustomEvent('vf:content-admin',{detail}));
+  }
+  function resetAccess(){
+    ownerAccess=false;users=[];userList.innerHTML='';lockUserTools();
+    content.hidden=true;publishAccess({authorized:false});
+  }
 
   function setStatus(msg,type=''){status.textContent=msg;status.className='vf-status'+(type?` ${type}`:'');}
   function setUserStatus(msg,type=''){userStatus.textContent=msg;userStatus.className='vf-status'+(type?` ${type}`:'');}
@@ -21,8 +37,9 @@
   }
   async function userApi(body){
     const response=await fetch('/api/admin-users',{method:'POST',credentials:'same-origin',cache:'no-store',headers:await authHeaders(),body:JSON.stringify(body)});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok)throw Error(data.error||'Administrator request failed.');
+    const data=await response.json().catch(()=>null);
+    if(!response.ok)throw Error(data?.error||'User-management service unavailable.');
+    if(!data||typeof data!=='object')throw Error('The user-management service returned an invalid response.');
     return data;
   }
   async function loadRelease(){
@@ -55,11 +72,12 @@
       </article>`;
     }).join('');
   }
-  async function loadUsers(){
-    setUserStatus('Loading protected-tool access…');
+  async function loadUsers(generation=sessionGeneration){
+    setUserStatus('Checking access to account management…');
     const data=await userApi({action:'list'});
-    users=data.users||[];
-    renderUsers();
+    if(generation!==sessionGeneration)return;
+    if(!Array.isArray(data.users))throw Error('The user-management service returned an invalid account list.');
+    users=data.users;ownerAccess=true;renderUsers();lockUserTools();
     setUserStatus(`${users.length} Identity account${users.length===1?'':'s'} loaded.`,'ok');
   }
   function setInviteRole(role,button){
@@ -68,9 +86,9 @@
   }
   document.querySelectorAll('[data-invite-role]').forEach(button=>button.addEventListener('click',()=>setInviteRole(button.dataset.inviteRole,button)));
   document.getElementById('identity-invite-form').addEventListener('submit',async event=>{
-    event.preventDefault();if(busy)return;
+    event.preventDefault();if(busy||!ownerAccess)return;
     const email=document.getElementById('identity-invite-email').value.trim();
-    busy=true;document.getElementById('identity-invite-submit').disabled=true;setUserStatus(`Inviting ${email}…`);
+    busy=true;lockUserTools();setUserStatus(`Inviting ${email}…`);
     try{
       await userApi({action:'invite',email,roles:[...selectedInviteRoles]});
       document.getElementById('identity-invite-email').value='';
@@ -78,10 +96,10 @@
       document.querySelectorAll('[data-invite-role]').forEach(button=>{button.classList.remove('primary');button.setAttribute('aria-pressed','false')});
       await loadUsers();setUserStatus(`Invitation sent to ${email}.`,'ok');
     }catch(error){setUserStatus(error.message||String(error),'bad')}
-    finally{busy=false;document.getElementById('identity-invite-submit').disabled=false}
+    finally{busy=false;lockUserTools()}
   });
   userList.addEventListener('click',async event=>{
-    const card=event.target.closest('[data-user-id]'),button=event.target.closest('button');if(!card||!button||busy)return;
+    const card=event.target.closest('[data-user-id]'),button=event.target.closest('button');if(!card||!button||busy||!ownerAccess)return;
     const user=users.find(item=>item.id===card.dataset.userId);if(!user)return;
     const role=button.dataset.userRole;
     if(role){
@@ -91,7 +109,7 @@
     const action=button.dataset.action;
     if(action==='begin-delete'){card.querySelector('[data-delete-confirm]').classList.remove('vf-hidden');card.querySelector('[data-confirm-email]').focus();return}
     if(action==='cancel-delete'){card.querySelector('[data-delete-confirm]').classList.add('vf-hidden');card.querySelector('[data-confirm-email]').value='';return}
-    busy=true;setUserStatus('Applying administrator action…');
+    busy=true;lockUserTools();setUserStatus('Applying administrator action…');
     try{
       if(action==='save-roles'){
         await userApi({action:'updateRoles',userId:user.id,roles:user.roles.filter(role=>role==='player'||role==='keeper')});
@@ -103,26 +121,65 @@
         await loadUsers();setUserStatus(`${user.email} and associated cloud data were deleted.`,'ok');
       }
     }catch(error){setUserStatus(error.message||String(error),'bad')}
-    finally{busy=false}
+    finally{busy=false;lockUserTools()}
   });
-  async function load(){
-    await Promise.all([loadRelease(),loadUsers()]);
-  }
-  if(window.VF_IS_LOCAL_TEST===true){
-    setStatus('Local test mode · administrator API mutations remain disabled outside Netlify.','ok');
-    content.hidden=false;loadRelease().catch(err=>setStatus(err.message,'bad'));
-    userList.innerHTML='<div class="vf-empty">Deploy Preview required to test Identity invitations and role changes.</div>';
-    return;
-  }
-  if(!identity){setStatus('Netlify Identity is unavailable.','bad');return;}
-  identity.on('init',user=>{
+  async function refreshAccess(user){
+    const generation=++sessionGeneration;
     activeIdentityUser=user;
-    const roles=user?.app_metadata?.roles||[];
-    if(!user){setStatus('Sign in with an administrator account.','bad');identity.open('login');return;}
-    if(!roles.includes('admin')){setStatus('Access denied: this account does not have the admin role.','bad');return;}
-    setStatus('Administrator identity detected. Verifying server authorization…');
-    content.hidden=false;
-    load().then(()=>setStatus('Administrator access granted.','ok')).catch(err=>{content.hidden=true;setStatus(err.message,'bad')});
-  });
-  identity.on('login',()=>location.reload());identity.init();
+    resetAccess();
+    authActions.hidden=false;
+    document.getElementById('admin-sign-in').hidden=!!user;
+    document.getElementById('admin-sign-out').hidden=!user;
+    if(!user){setStatus('Sign in with a Netlify Identity account that has the admin role.');return;}
+    setStatus('Verifying content administrator access…');
+    try{
+      const response=await fetch('/api/content-admin',{credentials:'same-origin',cache:'no-store',headers:await authHeaders()});
+      const data=await response.json().catch(()=>null);
+      if(generation!==sessionGeneration)return;
+      if(!response.ok)throw Error(data?.error||'Content administration requires the Netlify server. Open the deployed administration page or run Netlify Dev.');
+      if(data?.authorized!==true||!data.config)throw Error('The content administration service returned an invalid response.');
+      content.hidden=false;
+      publishAccess({authorized:true,config:data.config});
+      setStatus('Content administrator access granted.','ok');
+      loadRelease().catch(error=>{if(generation===sessionGeneration)document.getElementById('firebase-health').textContent='Diagnostics unavailable: '+error.message;});
+      loadUsers(generation).catch(error=>{
+        if(generation!==sessionGeneration)return;
+        ownerAccess=false;lockUserTools();
+        setUserStatus('Account management is unavailable for this session: '+error.message+' CTA and article publishing remain available.','bad');
+      });
+    }catch(error){
+      if(generation!==sessionGeneration)return;
+      setStatus(error.message||String(error),'bad');
+      publishAccess({authorized:false});
+    }
+  }
+  document.getElementById('admin-sign-in').addEventListener('click',()=>identity?.open?.('login'));
+  document.getElementById('admin-sign-out').addEventListener('click',()=>identity?.logout?.());
+  document.getElementById('admin-retry').addEventListener('click',()=>refreshAccess(identity?.currentUser?.()));
+  lockUserTools();
+  async function boot(){
+    const local=['localhost','127.0.0.1','::1','[::1]'].includes(location.hostname);
+    if(local){
+      try{
+        const response=await fetch('/api/content-admin',{cache:'no-store'});
+        const data=await response.json().catch(()=>null);
+        if(response.status===404||!data){
+          content.hidden=false;localHelp.hidden=false;authActions.hidden=true;
+          setStatus('Static local preview · publishing is unavailable here.','bad');
+          setUserStatus('Account management requires Netlify Identity and Netlify Functions.');
+          publishAccess({authorized:false,readOnly:true});
+          loadRelease().catch(()=>{});
+          return;
+        }
+      }catch(_){
+        localHelp.hidden=false;
+      }
+    }
+    if(!identity){setStatus('Netlify Identity could not load. Check your connection and reload this page.','bad');return;}
+    identity.on('init',refreshAccess);
+    identity.on('login',user=>{identity.close?.();refreshAccess(user);});
+    identity.on('logout',()=>refreshAccess(null));
+    identity.init();
+  }
+  boot().catch(error=>setStatus(error.message||String(error),'bad'));
 })();

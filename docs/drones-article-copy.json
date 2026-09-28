@@ -1,0 +1,166 @@
+{
+  "en": {
+    "title": "Drones in Veilfarers",
+    "subtitle": "A tool for the whole table",
+    "deck": "I wanted drones to give pilots a chance to shine beyond the cockpit. The challenge was making sure they gave everyone else something to do, too.",
+    "sections": [
+      {
+        "id": "origin",
+        "label": "01 · The idea",
+        "title": "A pilot without a cockpit",
+        "paragraphs": [
+          "The original idea behind drones came from two things: giving pilots a chance to shine even when they aren't in a ship or vehicle, and tapping into the popularity of drones themselves.",
+          "These tools have become so common in civilian and military life that I couldn't imagine a future where they didn't play an important role. In a world like Veilfarers, it made sense for this kind of technology to be part of everyday life.",
+          "But I also wanted a drone to feel like something you could make your own. Each player or group should be able to put together the one that best fits the way they play."
+        ]
+      },
+      {
+        "id": "build",
+        "label": "02 · Building a drone",
+        "title": "Simple to build. Yours to customize.",
+        "paragraphs": [
+          "I went with a simple, modular approach:",
+          "<ol><li><strong>Buy a chassis.</strong> This determines how tough the drone is, how many expansion slots it has, and which kinds of technology it supports.</li><li><strong>Buy the modules</strong> you want to install.</li><li><strong>Your drone is ready to use.</strong></li></ol>",
+          "Modules cover things like flight, armor and tools, along with limited weapon options depending on the kind of drone you've bought.",
+          "That lets you build a spider drone for infiltration, able to climb walls almost silently. Or a reconnaissance drone that buzzes through an area, feeding information to the group in real time.",
+          "I could picture someone guiding their drone through an infiltration or espionage mission, or using it for tactical and logistical support. There were plenty of possibilities. The question was what those possibilities would feel like at the table."
+        ]
+      },
+      {
+        "id": "problem",
+        "label": "03 · The problem",
+        "title": "One player playing. Four checking their phones.",
+        "paragraphs": [
+          "This brought back some bittersweet memories. I remember Cyberpunk sessions where the hacker needed to get into a system. As a player, my problem was watching one person spend an hour solving little hacking puzzles with the GM while everyone else sat there, bored, looking at their phones.",
+          "There was another danger: the drone could replace the character altogether. The character stays in a safe room while the drone goes off and has the entire adventure.",
+          "Neither of those sounded fun or exciting for a table. So how did I deal with them? With a few fairly simple rules that give the Keeper a way to manage the adventure, grounded in the logic of the world."
+        ]
+      },
+      {
+        "id": "fragility",
+        "label": "04 · Fragility",
+        "title": "Useful, agile—and very easy to lose",
+        "paragraphs": [
+          "One of the ideas that helped me balance drones was making them particularly fragile. Even the toughest drone can be taken out by one or two good shots. It can be agile, mobile and useful, but it is still fragile.",
+          "That gives you a reason to think before using it for everything. A drone is expensive. It has a serial number. If someone shoots it down, you've just lost a lot of money and left behind something that can incriminate you.",
+          "I deliberately gave drones very few HP because I wanted using one to be a strategic decision.",
+          "Drone weapon damage also <strong>does not scale with the character’s Proficiency</strong>. That matters: a drone can provide tactical support, but it should never replace a competent character or NPC."
+        ]
+      },
+      {
+        "id": "signal",
+        "label": "05 · Signal",
+        "title": "Getting in takes a plan",
+        "paragraphs": [
+          "Another rule I introduced was coverage, or signal. Drones are enormously popular, so the defenses around sensitive areas have evolved to account for them. Most secure areas have signal jammers to keep drones from getting in.",
+          "Communication is also limited by the sheer volume of traffic on the planet's networks. Electrical storms, radio-suppressing emissions, Veil events and other anomalies can affect the signal, too.",
+          "For a drone to work at its best, the players need to get involved and prepare a plan. If you want to enter a protected area, perhaps you need access codes that identify your drone as one belonging there. Perhaps you need to find an authorized communications frequency, or install signal repeaters to keep the connection working despite the defenses.",
+          "For a particularly creative group, the possibilities are almost endless. Getting the drone into position can give the whole group things to work out and accomplish."
+        ]
+      },
+      {
+        "id": "shared",
+        "label": "06 · Shared control",
+        "title": "The crown jewel: everyone gets a turn",
+        "paragraphs": [
+          "And finally, the crown jewel. This is what addresses the biggest problem for me: one entertained player and four others looking at their phones.",
+          "The cheapest, easiest module to install is the <strong>neural link</strong>. It costs <strong>1 cr</strong> and takes up <strong>no slots</strong>. It acts as a control hub, letting several people control the drone during their own spotlight.",
+          "Suddenly, everyone can take part in that drone infiltration. Each player can bring their class abilities and specializations to the problems the drone encounters along the way.",
+          "The Scoundrel guides it through the infiltration. The Pilot takes over for difficult maneuvers. The Engineer hacks the access to a door. The Diplomat sends a believable message to the guard watching an entrance.",
+          "The drone is still one gadget, but the mission belongs to the group. That was the missing piece for me."
+        ]
+      },
+      {
+        "id": "conclusion",
+        "label": "07 · At the table",
+        "title": "A gadget that brings the group in",
+        "paragraphs": [
+          "Taken together, these choices solved the problem in a way that I feel fits the fantasy of the gadget. You get a drone you can customize and use creatively, with enough limitations to make planning matter.",
+          "And, most importantly to me, everyone has something to do during the session."
+        ]
+      }
+    ]
+  },
+  "es": {
+    "title": "Los drones en Veilfarers",
+    "subtitle": "Una herramienta para toda la mesa",
+    "deck": "Quería que los drones dieran a los pilotos la oportunidad de brillar fuera de la cabina. El reto era conseguir que también dieran algo que hacer al resto del grupo.",
+    "sections": [
+      {
+        "id": "origin",
+        "label": "01 · La idea",
+        "title": "Un piloto fuera de la cabina",
+        "paragraphs": [
+          "El diseño de los drones nació originalmente para cubrir dos cosas: dar a los pilotos la posibilidad de brillar incluso cuando no están en una nave o un vehículo, y aprovechar la popularidad de los propios drones.",
+          "Son herramientas que han ganado muchísima presencia en los ámbitos civil y militar. No veía un futuro en el que estos gadgets tecnológicos no tuvieran un papel importante. En un mundo como Veilfarers, tenía sentido que esta tecnología formara parte de la vida cotidiana.",
+          "Pero también quería que el dron fuera personalizable. Que cada jugador o grupo pudiera montarse el que mejor se ajustara a su forma de jugar."
+        ]
+      },
+      {
+        "id": "build",
+        "label": "02 · Construir un dron",
+        "title": "Fácil de montar. A tu medida.",
+        "paragraphs": [
+          "Opté por una construcción sencilla, pero modular:",
+          "<ol><li><strong>Compras una carcasa.</strong> Esta define lo resistente que es el dron, cuántos slots de ampliación tiene y qué tipos de tecnología soporta.</li><li><strong>Compras los módulos</strong> que quieres instalar.</li><li><strong>¡Ya tienes tu dron listo para usar!</strong></li></ol>",
+          "Los módulos cubren cosas como vuelo, armadura y herramientas, además de un uso limitado de armas según el tipo de dron que hayas comprado.",
+          "Así puedes montar un dron araña de infiltración, capaz de trepar por las paredes sin hacer prácticamente ningún ruido. O un dron de reconocimiento que pasa zumbando por una zona y transmite información al grupo en tiempo real.",
+          "Me imaginaba a alguien guiando su dron en una misión de infiltración o espionaje, o utilizándolo como apoyo táctico y logístico. Había muchas posibilidades. La cuestión era cómo se traducirían en la mesa."
+        ]
+      },
+      {
+        "id": "problem",
+        "label": "03 · El problema",
+        "title": "Uno jugando. Cuatro mirando el móvil.",
+        "paragraphs": [
+          "Y eso me trajo recuerdos agridulces. Recuerdo sesiones de Cyberpunk en las que el hacker tenía que entrar en un sistema. Mi problema como jugador era ver cómo una persona se pasaba una hora resolviendo pequeños puzles de hacking con el GM, mientras los demás mirábamos nuestros teléfonos, aburridos.",
+          "Había otro peligro: que el dron sustituyera por completo al personaje. El personaje se queda sentado en una habitación segura mientras el dron hace toda la aventura.",
+          "Ninguna de las dos opciones me parecía divertida ni emocionante para una mesa. ¿Cómo lo resolví? Con unas reglas bastante sencillas que permiten al Keeper gestionar la aventura de una forma lógica y coherente con el mundo."
+        ]
+      },
+      {
+        "id": "fragility",
+        "label": "04 · Fragilidad",
+        "title": "Útil, ágil y muy fácil de perder",
+        "paragraphs": [
+          "Una de las ideas que me ayudó a equilibrar los drones fue hacerlos especialmente frágiles. Incluso el más resistente puede quedar neutralizado con uno o dos buenos disparos. Puede ser ágil, móvil y útil, pero sigue siendo frágil.",
+          "Eso hace que te lo pienses antes de usarlo para todo. Un dron es caro. Tiene un número de serie. Si lo derriban, acabas de perder muchísimo dinero y has dejado una huella que te puede incriminar.",
+          "Por eso les di deliberadamente muy pocos HP: quería que utilizarlos fuera una decisión estratégica.",
+          "El daño de sus armas, además, <strong>no escala con la Proficiency del personaje</strong>. Esto es importante: el dron puede servir como apoyo táctico, pero nunca debería sustituir a un personaje o PNJ competente."
+        ]
+      },
+      {
+        "id": "signal",
+        "label": "05 · La señal",
+        "title": "Para entrar hace falta un plan",
+        "paragraphs": [
+          "Otra regla que implementé fue la cobertura, o señal. Los drones son enormemente populares y, por eso mismo, las protecciones de las zonas sensibles han evolucionado para tenerlos en cuenta. La mayoría de las zonas de seguridad dispone de inhibidores de señal para impedir que entren.",
+          "La comunicación también está limitada por la inmensa carga de las redes del propio planeta. Las tormentas eléctricas, las emisiones radiosupresoras, los eventos del Velo y otras anomalías pueden afectar a la señal.",
+          "Para que un dron funcione en condiciones óptimas, los jugadores tienen que implicarse y preparar un plan. Si quieres entrar en una zona protegida, quizá necesites conseguir códigos de acceso que identifiquen tu dron como uno de los suyos. O encontrar una frecuencia de comunicación autorizada. O instalar repetidores de señal para mantener la conexión pese a las protecciones.",
+          "Las posibilidades son casi ilimitadas para un grupo especialmente creativo. Conseguir que el dron llegue a su destino puede dar a todos cosas que resolver y hacer."
+        ]
+      },
+      {
+        "id": "shared",
+        "label": "06 · Control compartido",
+        "title": "La joya de la corona: todos participan",
+        "paragraphs": [
+          "Y, por último, la joya de la corona. Lo que resuelve el mayor problema para mí: un jugador entretenido y otros cuatro mirando sus móviles.",
+          "El módulo más barato y fácil de instalar es el de <strong>conexión neuronal</strong>. Cuesta <strong>1 cr</strong> y <strong>no ocupa slots</strong>. Funciona como un centro de control y permite que varios individuos manejen el dron durante su propio spotlight.",
+          "De repente, todos pueden participar en esa infiltración. Cada jugador puede aportar sus habilidades de clase y especializaciones para superar los problemas que el dron se vaya encontrando.",
+          "El Scoundrel lo controla durante la infiltración. El piloto toma el mando en las maniobras complicadas. El ingeniero hackea el acceso a una puerta. El diplomático transmite un mensaje creíble al guardia que vigila una entrada.",
+          "El dron sigue siendo un único gadget, pero la misión es de todo el grupo. Esa era la pieza que me faltaba."
+        ]
+      },
+      {
+        "id": "conclusion",
+        "label": "07 · En la mesa",
+        "title": "Un gadget que cuenta con el grupo",
+        "paragraphs": [
+          "Todas estas decisiones resolvían el problema de una forma que considero ajustada a la fantasía del gadget. Tienes un dron que puedes personalizar y usar con creatividad, con suficientes limitaciones para que preparar un plan importe.",
+          "Y, sobre todo para mí, todos tienen algo que hacer durante la partida."
+        ]
+      }
+    ]
+  }
+}

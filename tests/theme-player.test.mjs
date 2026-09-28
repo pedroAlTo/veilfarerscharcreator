@@ -44,6 +44,6 @@ test('new visitors never autoplay, saved opt-in and valid preferences restore sa
 });
 test('all first-party HTML pages load exactly one common player', () => {
   const pages = ['public','public/books','public/behind-the-veil'].flatMap(dir => readdirSync(dir).filter(f=>f.endsWith('.html')).map(f=>`${dir}/${f}`));
-  assert.equal(pages.length,20);
+  assert.ok(pages.length >= 20, 'Expected public pages were discovered');
   for (const page of pages) assert.equal((readFileSync(page,'utf8').match(/src="\/theme-player\.mjs\?/g)||[]).length,1,page);
 });

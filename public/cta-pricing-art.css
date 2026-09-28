@@ -1,0 +1,167 @@
+/* The price rises. The price remains zero. */
+.vf-pricing-signal.vf-pricing-art {
+  isolation: isolate;
+  min-height: 640px;
+  background: radial-gradient(ellipse at 50% 57%, #62481d4d, transparent 55%), linear-gradient(155deg, #09121c, #060a10 62%, #17130c);
+}
+.vf-pricing-art::before {
+  width: 118%;
+  top: calc(50% - 220px);
+  border-color: #e1bd6d19;
+  box-shadow: 0 0 0 36px #e1bd6d05, 0 0 0 74px #e1bd6d04;
+  animation: none;
+}
+.vf-pricing-art::after {
+  width: 73%;
+  top: calc(50% + 177px);
+  height: 85px;
+  aspect-ratio: auto;
+  border-color: #e1bd6d26;
+  background: radial-gradient(ellipse, #e1bd6d1c, transparent 70%);
+  transform: rotate(-4deg);
+  animation: none;
+}
+.vf-pricing-art__grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: .35;
+  background: repeating-linear-gradient(0deg, transparent 0 63px, #e1bd6d12 64px 65px), repeating-linear-gradient(90deg, transparent 0 63px, #e1bd6d12 64px 65px);
+  mask-image: linear-gradient(transparent, #000 40%, #000 70%, transparent);
+}
+.vf-pricing-art__headline {
+  position: absolute;
+  z-index: 3;
+  top: calc(50% - 274px);
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+.vf-pricing-art__headline p,
+.vf-pricing-art__footer p {
+  margin: 0;
+  color: #c2ac7c;
+  font: 600 8px/1.7 "Segoe UI", sans-serif;
+  letter-spacing: .25em;
+}
+.vf-pricing-art__headline > b {
+  display: block;
+  margin: 7px 0 8px;
+  color: #f4d591;
+  font: 400 clamp(94px, 9vw, 126px)/1 Georgia, serif;
+  letter-spacing: -.09em;
+  text-shadow: 0 0 40px #e1bd6d22;
+}
+.vf-pricing-art__headline small { font-size: .56em; margin-left: .07em; }
+.vf-pricing-art__headline p:last-child { font-size: 7px; letter-spacing: .19em; color: #807766; }
+.vf-pricing-art__books {
+  position: absolute;
+  z-index: 2;
+  top: calc(50% - 27px);
+  left: 4%;
+  width: 92%;
+  height: 250px;
+  perspective: 900px;
+}
+.vf-pricing-art__book {
+  position: absolute;
+  bottom: 0;
+  width: 40%;
+  border: 1px solid #f3d39772;
+  background: #171917;
+  box-shadow: -6px 6px 0 #04080bbb, 0 24px 32px #000a;
+}
+.vf-pricing-art__book::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-left: 3px solid #0a111559;
+  background: linear-gradient(105deg, #fff3cf20, transparent 20%, transparent 80%, #0002);
+  pointer-events: none;
+}
+.vf-pricing-art__book img { width: 100%; height: auto; }
+.vf-pricing-art__book.is-keeper { left: 3%; bottom: 18px; transform: rotate(-13deg) rotateY(12deg); filter: brightness(.81); }
+.vf-pricing-art__book.is-rust { right: 3%; bottom: 18px; transform: rotate(13deg) rotateY(-12deg); filter: brightness(.85); }
+.vf-pricing-art__book.is-core { z-index: 2; left: 28%; width: 44%; transform: translateY(0); }
+.vf-pricing-art__currency {
+  position: absolute;
+  z-index: 1;
+  top: calc(50% + 2px);
+  color: #d4b36f;
+  font: 400 64px/1 Georgia, serif;
+  text-shadow: 0 0 22px #e1bd6d24;
+  opacity: .55;
+  animation: vf-pricing-currency-rise 5.8s linear infinite paused;
+}
+.vf-pricing-art__currency.is-euro { left: 10%; animation-delay: -1.3s; }
+.vf-pricing-art__currency.is-dollar { right: 9%; font-size: 74px; animation-delay: -3.8s; }
+.vf-pricing-art__currency.is-euro-small { right: 25%; top: calc(50% + 47px); font-size: 32px; animation-delay: -5.1s; animation-duration: 7.1s; }
+.vf-pricing-art__currency.is-dollar-small { left: 27%; top: calc(50% + 12px); font-size: 35px; animation-delay: -.2s; animation-duration: 6.7s; }
+.vf-pricing-art__arrow {
+  position: absolute;
+  z-index: 0;
+  top: calc(50% + 11px);
+  width: 29px;
+  height: 140px;
+  stroke: #e1bd6d;
+  stroke-width: 1.3;
+  opacity: .35;
+  animation: vf-pricing-arrow-rise 4.8s ease-in-out infinite paused;
+}
+.vf-pricing-art__arrow.is-one { left: 17%; animation-delay: -2.2s; }
+.vf-pricing-art__arrow.is-two { left: 48%; top: calc(50% - 25px); animation-delay: -4.1s; }
+.vf-pricing-art__arrow.is-three { right: 15%; animation-delay: -.7s; }
+.vf-pricing-art__footer { position: absolute; z-index: 3; top: calc(50% + 265px); width: 100%; text-align: center; }
+.vf-pricing-art__footer b { display: block; margin-bottom: 8px; color: #efddb4; font: 400 25px/1 Georgia, serif; letter-spacing: -.03em; }
+.vf-pricing-art__footer p { color: #8b8069; font-size: 6px; letter-spacing: .2em; }
+#pricing-update[open] .vf-pricing-art__currency,
+#pricing-update[open] .vf-pricing-art__arrow { animation-play-state: running; }
+@keyframes vf-pricing-currency-rise {
+  0% { opacity: 0; transform: translateY(50px); }
+  18%, 70% { opacity: .56; }
+  100% { opacity: 0; transform: translateY(-148px); }
+}
+@keyframes vf-pricing-arrow-rise {
+  0% { opacity: 0; transform: translateY(35px); }
+  25%, 65% { opacity: .4; }
+  100% { opacity: 0; transform: translateY(-137px); }
+}
+@media (max-width: 760px) {
+  #pricing-update .vf-announcement-card { grid-template-columns: minmax(0, 1fr); }
+  #pricing-update .vf-announcement-copy { min-width: 0; }
+  #pricing-update .vf-cta-pagination { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); width: 100%; max-width: 349px; gap: 3px; }
+  #pricing-update .vf-cta-pagination button { min-width: 0; }
+  #pricing-update .vf-announcement-copy h2 { font-size: clamp(34px, 11.2vw, 46px); }
+  .vf-pricing-signal.vf-pricing-art { min-height: 380px; }
+  .vf-pricing-art::before { width: 88%; top: 40px; }
+  .vf-pricing-art::after { width: 65%; top: 273px; height: 48px; }
+  .vf-pricing-art__headline { top: 30px; }
+  .vf-pricing-art__headline p { font-size: 7px; }
+  .vf-pricing-art__headline > b { margin: 3px 0 4px; font-size: 70px; }
+  .vf-pricing-art__headline p:last-child { font-size: 6px; }
+  .vf-pricing-art__books { top: 142px; left: 16%; width: 68%; height: 168px; }
+  .vf-pricing-art__book.is-keeper, .vf-pricing-art__book.is-rust { bottom: 11px; }
+  .vf-pricing-art__currency { top: 240px; font-size: 45px; }
+  .vf-pricing-art__currency.is-euro { left: 9%; }
+  .vf-pricing-art__currency.is-dollar { right: 9%; font-size: 48px; }
+  .vf-pricing-art__currency.is-euro-small { top: 250px; right: 26%; font-size: 25px; }
+  .vf-pricing-art__currency.is-dollar-small { top: 230px; left: 25%; font-size: 27px; }
+  .vf-pricing-art__arrow { top: 220px; width: 23px; height: 112px; }
+  .vf-pricing-art__arrow.is-two { top: 190px; }
+  .vf-pricing-art__arrow.is-one { left: 15%; }
+  .vf-pricing-art__arrow.is-three { right: 15%; }
+  .vf-pricing-art__footer { top: auto; bottom: 19px; }
+  .vf-pricing-art__footer b { margin-bottom: 6px; font-size: 22px; }
+}
+@media (max-width: 380px) {
+  .vf-pricing-art__headline { text-align: left; left: 27px; width: calc(100% - 54px); }
+  .vf-pricing-art__books { left: 11%; width: 78%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #pricing-update .vf-pricing-art__currency,
+  #pricing-update .vf-pricing-art__arrow { animation: none; }
+  .vf-pricing-art__currency { transform: translateY(-74px); opacity: .4; }
+  .vf-pricing-art__currency.is-euro-small,
+  .vf-pricing-art__currency.is-dollar-small { opacity: .2; }
+  .vf-pricing-art__arrow { transform: translateY(-100px); opacity: .25; }
+}

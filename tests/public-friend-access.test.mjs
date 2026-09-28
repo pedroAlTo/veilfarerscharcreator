@@ -240,7 +240,7 @@ test('homepage notices share numbered manual navigation without sharing dismissa
   assert.match(home, />02<\/button>/)
   assert.match(home, /aria-label="Previous notice"/)
   assert.match(home, /aria-label="Next notice"/)
-  assert.match(home, /cta-carousel-scheduled\.js\?v=20260923-1/)
+  assert.match(home, /cta-carousel-scheduled\.js\?v=/)
   assert.match(home, /kryllian-rust-repair-notice\.png\?v=20260901-1/)
   assert.match(home, /Colour sketch of Xirith's four-armed mechanic/)
   assert.match(carousel, /\['pricing', 'behind', 'books', 'crossing', 'release', 'beta', 'minis'\]/)

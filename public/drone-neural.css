@@ -1,0 +1,60 @@
+/* Neural-link scene: character choices reveal the story through actions and speech. */
+[data-drone-scene="shared"]{height:460px;}
+[data-drone-scene="shared"] .drone-hud{right:12px;}
+.neural-duct{position:absolute;left:-8px;right:-8px;top:70px;height:88px;background:#253944;border:4px solid #748986;box-shadow:0 5px 0 #07121b,0 -5px 0 #07121b;z-index:2;}
+.neural-duct::before,.neural-duct::after{content:"";position:absolute;left:0;right:0;height:12px;background:#445557 url('/assets/behind-the-veil/drones/props/vent-rim.png') repeat-x center/28px 28px;image-rendering:pixelated;z-index:2;}
+.neural-duct::before{top:0;}.neural-duct::after{bottom:0;}
+.neural-duct-interior{position:absolute;inset:12px 0;background:repeating-linear-gradient(90deg,transparent 0 62px,#294149 62px 65px),#0a171c;border-top:2px solid #050c12;border-bottom:2px solid #050c12;}
+.neural-floor-vent{position:absolute;left:81%;top:146px;width:clamp(42px,18%,80px);height:13px;transform:translateX(-50%);background:#061017;box-shadow:0 0 0 2px #203638;z-index:5;}
+.neural-floor-grille{position:absolute;inset:0;display:block;border:2px solid #8b9e96;background:#485d5a url('/assets/behind-the-veil/drones/props/vent-grille.png') repeat-x center/16px 16px;image-rendering:pixelated;transform-origin:right center;box-shadow:0 2px 0 #061017;}
+[data-drone-scene="shared"] .neural-shutter{z-index:5;filter:none;}
+[data-drone-scene="shared"] .neural-scout{z-index:6;filter:drop-shadow(2px 3px 0 #030b1480);}
+[data-drone-scene="shared"] .neural-cover{z-index:9;filter:drop-shadow(4px 3px 0 #030b1480);}
+.neural-camera{position:absolute;left:32%;top:72px;width:22px;height:15px;transform:translateX(-50%);z-index:7;background:#5d716e;border:3px solid #1d282e;box-shadow:0 -5px 0 -1px #899997;}
+.neural-camera i{position:absolute;left:2px;right:2px;top:2px;height:5px;background:#a6b3a9;}.neural-camera b{position:absolute;left:0;bottom:-5px;width:9px;height:7px;background:#b56858;border:2px solid #202833;}
+.neural-camera[data-off="true"] b{background:#52666b;}.neural-camera[data-off="true"] i{background:#55726b;}
+.neural-camera-zone{position:absolute;top:85px;left:22%;width:18%;height:62px;background:#e5846044;clip-path:polygon(53% 0,60% 0,100% 100%,0 100%);border-bottom:2px solid #dd8762;z-index:3;}
+.neural-hack-link{position:absolute;z-index:12;border-top:3px dotted #77efce;transform-origin:0 0;filter:drop-shadow(0 2px 0 #0b1824);pointer-events:none;}
+.neural-hack-link::after{content:"";position:absolute;right:-4px;top:-6px;width:9px;height:9px;border:2px solid #a6ffe3;}
+.neural-door-panel{position:absolute;width:14px;height:23px;border:3px solid #617a81;background:#0c202a;z-index:5;}
+.neural-door-panel i{display:block;height:3px;background:#d29b4e;margin:2px 0;}.neural-door-panel[data-open="true"] i{background:#73dab2;}
+.neural-alert{position:absolute;z-index:13;transform:translate(-50%,-50%);background:#e8ac55;color:#241c18;border:2px solid #ffdfa0;padding:0 5px;font:900 19px/1.15 Consolas,monospace;box-shadow:3px 3px 0 #08121c;}
+.neural-guard-dialogue{position:absolute;left:30%;right:7%;z-index:12;pointer-events:none;}
+.neural-guard-dialogue .drone-bubble{position:relative;padding:12px 14px;background:#091923f5;border:2px solid #d9bf81;color:#e3e7da;font:12px/1.6 Consolas,monospace;box-shadow:4px 4px 0 #030b13;}
+.neural-guard-dialogue .drone-bubble::after{content:"";position:absolute;bottom:-9px;left:var(--bubble-tail,75%);width:12px;height:12px;background:#091923;border-right:2px solid #d9bf81;border-bottom:2px solid #d9bf81;transform:skewY(35deg);}
+.neural-guard-dialogue b{display:block;margin-bottom:5px;font-size:10px;letter-spacing:.06em;color:#f0cd80;}
+.neural-guard-dialogue[data-voice="radio"] .drone-bubble{border-color:#72c9cf;}.neural-guard-dialogue[data-voice="radio"] .drone-bubble::after{border-color:#72c9cf;}.neural-guard-dialogue[data-voice="radio"] b{color:#82e6d2;}
+.neural-selector{position:relative;background:#101e30;}
+.neural-thought-space{height:95px;position:relative;}
+.neural-thought{position:absolute;bottom:15px;z-index:12;box-sizing:border-box;padding:10px 12px;background:#263641;border:2px solid #aac0c5;box-shadow:3px 3px 0 #040c15;color:#e1e9df;font:12px/1.5 Consolas,monospace;}
+.neural-thought::before,.neural-thought::after{content:"";position:absolute;background:#263641;border:2px solid #aac0c5;left:var(--thought-tail,50%);transform:translateX(-50%);}
+.neural-thought::before{width:9px;height:7px;bottom:-11px;}.neural-thought::after{width:4px;height:4px;bottom:-20px;}
+.neural-selector .drone-controls.is-crew{grid-template-columns:repeat(4,minmax(0,1fr));border-top:0;padding-top:2px;}
+.neural-selector .drone-controls.is-crew button{position:relative;isolation:isolate;overflow:hidden;background:#112b3d;border-color:#52748b;color:#bad3db;box-shadow:none;}
+.neural-selector .drone-controls.is-crew button[aria-pressed="true"]{background:#112b3d;border-color:#52748b;color:#ffe6b4;box-shadow:none;}
+.neural-selector .drone-controls.is-crew button::before{content:"";position:absolute;z-index:-1;top:0;width:78px;height:66px;background:linear-gradient(#ffdda523,#ffdda56b);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);opacity:0;}
+.neural-selector .drone-controls.is-crew button[aria-pressed="true"]::before{opacity:1;}
+.neural-selector .drone-controls.is-crew button[aria-disabled="true"]{cursor:progress;}
+.neural-selector button:focus-visible{outline:3px solid #a1f4ec;outline-offset:3px;}
+.neural-footer{padding:0 13px 13px;display:flex;justify-content:flex-end;}
+.neural-footer button{padding:9px 12px;background:#152e3d;color:#c5d9df;border:2px solid #66889a;font:700 11px/1.3 Consolas,monospace;cursor:pointer;}
+.neural-footer button span{margin-left:6px;font-size:15px;}
+.neural-sr-status{position:absolute;width:1px;height:1px;padding:0!important;margin:-1px!important;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.drone-dialogue-transcript{background:#101e30;padding:0 17px 14px;color:#a8d4d7;font:12px/1.6 Consolas,monospace;}.drone-dialogue-transcript summary{cursor:pointer;color:#e3ce9f;}.drone-dialogue-transcript p{font-size:12px!important;}
+@media(max-width:650px){
+ .neural-guard-dialogue{left:7%;right:6%;}.neural-guard-dialogue .drone-bubble{font-size:11px;padding:10px 12px;}.neural-guard-dialogue b{font-size:9px;}
+ .neural-thought-space{height:116px;}.neural-thought{font-size:11px;}
+ .neural-selector .drone-controls.is-crew{gap:4px;padding:2px 7px 10px;}.neural-selector .drone-controls.is-crew button{font-size:9px;padding:8px 2px;}
+ .neural-footer{padding-right:7px;}.neural-footer button{font-size:10px;}
+}
+.neural-channel{position:absolute;z-index:10;left:8%;right:8%;top:172px;display:flex;align-items:center;gap:13px;padding:8px 12px;border:1px solid #548c8c;background:#0b2029e8;color:#a9e8d5;font:11px/1.4 Consolas,monospace;}
+.neural-channel b{display:block;font-size:9px;letter-spacing:.09em;color:#6edec9;margin-bottom:2px;}
+.neural-channel-lock{position:relative;display:block;flex:0 0 14px;height:13px;background:#78bda9;border:2px solid #bbefcf;margin-top:5px;box-shadow:2px 2px 0 #061019;}
+.neural-channel-lock::before{content:"";position:absolute;left:1px;top:-10px;width:8px;height:8px;border:2px solid #bbefcf;border-bottom:0;}
+.neural-channel-lock::after{content:"";position:absolute;left:4px;top:3px;width:3px;height:5px;background:#133035;}
+.neural-channel[data-state="connecting"]{border-style:dashed;color:#b3c5ca;}.neural-channel[data-state="connecting"] .neural-channel-lock{opacity:.45;}
+.neural-hack-link[data-target="radio-linked"]{border-top:2px dashed #7ecdd3;}
+@media(max-width:650px){.neural-channel{left:7%;right:6%;gap:9px;font-size:9px;padding:7px 9px;}.neural-channel b{font-size:8px;}}
+/* Leave room for both connection telemetry and the guard's dialogue on narrow screens. */
+@media(max-width:650px){[data-drone-scene="shared"]{height:460px;}}
+@media(max-width:360px){[data-drone-scene="shared"]{height:480px;}}
