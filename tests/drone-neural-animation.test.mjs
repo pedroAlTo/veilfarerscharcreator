@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createNeuralPuzzle, chooseNeuralRole, advanceNeuralPuzzle} from '../public/drone-neural-puzzle.mjs';
-import {neuralSceneFrame} from '../public/drone-shared.mjs';
+import {neuralSceneFrame,neuralEpilogueFrame,NEURAL_AWARD_HOLD_MS} from '../public/drone-shared.mjs';
 
 const finish = (state, role) => {
   const selected = chooseNeuralRole(state, role);
@@ -111,4 +111,30 @@ test('the hacked radio order precedes the guard answer and departure while the d
   const gone = actionAt(3, 'diplomat', 14500);
   assert.equal(gone.stage, 'door');
   assert.equal(neuralSceneFrame(gone, 14500).guardVisible, false);
+});
+
+test('victory holds for seventeen seconds before the doorway conversation',()=>{
+ assert.equal(neuralEpilogueFrame(0).phase,'award');
+ assert.equal(neuralEpilogueFrame(NEURAL_AWARD_HOLD_MS-1).phase,'award');
+ assert.deepEqual(neuralEpilogueFrame(NEURAL_AWARD_HOLD_MS).lineIndex,0);
+ const lines=new Set();
+ for(let ms=NEURAL_AWARD_HOLD_MS;ms<50000;ms+=100)if(neuralEpilogueFrame(ms).phase==='dialogue')lines.add(neuralEpilogueFrame(ms).lineIndex);
+ assert.deepEqual([...lines],[0,1,2,3,4,5,6,7]);
+});
+
+test('missiles and lasers precede the drone crash, door closure, and shared curse',()=>{
+ const times={};
+ for(let ms=0;ms<60000;ms+=20){const frame=neuralEpilogueFrame(ms);times[frame.phase]??=ms;}
+ assert.ok(times.dialogue<times.volley&&times.volley<times.crash&&times.crash<times.closing&&times.closing<times.curse);
+ const volley=neuralEpilogueFrame(times.volley+1400);
+ assert.equal(volley.door,7);
+ assert.equal(volley.shots.filter(s=>s.active&&s.kind==='missile').length,2);
+ assert.equal(volley.shots.filter(s=>s.active&&s.kind==='laser').length,2);
+ const arc=neuralEpilogueFrame(times.crash+700);
+ assert.ok(arc.crashProgress>0&&arc.crashProgress<1);
+ assert.equal(arc.broken,false);
+ const broken=neuralEpilogueFrame(times.crash+1900);
+ assert.equal(broken.broken,true);
+ assert.ok(broken.deathFrame>0);
+ assert.equal(neuralEpilogueFrame(times.curse).door,0);
 });

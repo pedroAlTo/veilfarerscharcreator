@@ -1,5 +1,5 @@
 import {droneSprites} from './drone-sprites.mjs?v=20260927-5';
-import {renderShared,setupShared,positionDroneScan} from './drone-shared.mjs?v=20260927-5';
+import {renderShared,setupShared,positionDroneScan} from './drone-shared.mjs?v=20260928-1';
 import {renderSignal,setupSignal} from './drone-signal-scene.mjs?v=20260927-5';
 
 const es=document.documentElement.lang==='es';

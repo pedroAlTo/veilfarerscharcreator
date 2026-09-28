@@ -44,7 +44,7 @@ for(const lang of ['en','es']){
 <script type="application/ld+json">${JSON.stringify(data)}</script>
 <link rel="stylesheet" href="/book-detail.css?v=20260901-1"><link rel="stylesheet" href="/public-navigation.css?v=20260829-8"><link rel="stylesheet" href="/behind-the-veil.css?v=20260920-armor"><link rel="stylesheet" href="/overkill-pixel.css?v=20260925-12"><link rel="stylesheet" href="/drone-pixel.css?v=20260927-5">
 <link rel="stylesheet" href="/drone-signal.css?v=20260927-5">
-<link rel="stylesheet" href="/drone-neural.css?v=20260927-5">
+<link rel="stylesheet" href="/drone-neural.css?v=20260928-1">
 </head><body class="vf-book-page veil-journal overkill-pixel drones-pixel"><a class="skip" href="#journal-content">${u.skip}</a>${header}
 <main id="journal-content"><nav class="journal-breadcrumb" aria-label="${lang==='en'?'Breadcrumb':'Ruta de navegación'}"><a href="/">VeilFarers</a><span>/</span><a href="/behind-the-veil/">${u.journal}</a><span>/ Drones</span></nav>
 <div class="drone-topbar"><nav class="drone-languages" aria-label="${u.lang}"><a href="/behind-the-veil/drones.html" lang="en" hreflang="en" data-article-language${lang==='en'?' aria-current="page"':''}>English</a><a href="/behind-the-veil/drones-es.html" lang="es" hreflang="es" data-article-language${lang==='es'?' aria-current="page"':''}>Español</a></nav><button class="drone-motion" type="button" data-drone-motion aria-pressed="true" hidden>${u.pause}</button></div>
@@ -55,7 +55,7 @@ ${c.sections.map(s=>`<section id="${s.id}"><p class="journal-label">${s.label}</
 <div class="pixel-share"><button type="button" data-share-article>${u.share}</button><p class="journal-share-status" role="status" data-share-status></p></div>
 <p class="pixel-art-credit">${u.credit} <a href="https://www.gamedevmarket.net/asset/pixel-art-sci-fi-complete-toolkit" target="_blank" rel="noopener">BarelyApes</a>. ${u.extraCredit}</p><p class="journal-note">${u.note}</p>
 </article></div></main><footer class="book-footer"><span>VeilFarers · ${u.journal}</span><nav><a href="/behind-the-veil/">${u.journal}</a><a href="/downloads.html">${u.footerDownloads}</a><a href="/feedback.html">${u.footerFeedback}</a><a href="/legal.html">${u.footerLegal}</a></nav></footer>
-<script src="/public-navigation.js?v=20260829-2" defer></script><script src="/simple-analytics.js" defer></script><script src="/book-detail.js?v=20260901-1" defer></script><script type="module" src="/drone-scenes.mjs?v=20260927-5"></script><script type="module" src="/theme-player.mjs?v=20260919-3"></script></body></html>`;
+<script src="/public-navigation.js?v=20260829-2" defer></script><script src="/simple-analytics.js" defer></script><script src="/book-detail.js?v=20260901-1" defer></script><script type="module" src="/drone-scenes.mjs?v=20260928-1"></script><script type="module" src="/theme-player.mjs?v=20260919-3"></script></body></html>`;
  fs.writeFileSync(new URL(`../public/behind-the-veil/${file}`,import.meta.url),html+'\n');
 }
 console.log('Built English and Spanish Drones articles.');

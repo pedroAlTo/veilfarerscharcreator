@@ -1,5 +1,5 @@
-import {createNeuralPuzzle,chooseNeuralRole,advanceNeuralPuzzle,NEURAL_PUZZLE_ROLES as roles} from './drone-neural-puzzle.mjs?v=20260927-5';
-import {NEURAL_COPY} from './drone-neural-copy.mjs?v=20260927-5';
+import {createNeuralPuzzle,chooseNeuralRole,advanceNeuralPuzzle,NEURAL_PUZZLE_ROLES as roles} from './drone-neural-puzzle.mjs?v=20260928-1';
+import {NEURAL_COPY} from './drone-neural-copy.mjs?v=20260928-1';
 const clamp=(v,min=0,max=1)=>Math.max(min,Math.min(max,v));
 const mix=(a,b,t)=>a+(b-a)*clamp(t);
 
@@ -50,9 +50,33 @@ export function neuralSceneFrame(p,time) {
  return f;
 }
 
+export const NEURAL_AWARD_HOLD_MS=17000;
+const epilogueLineDurations=[3400,2700,2800,2600,2500,2700,3200,2600];
+const dialogueEnd=NEURAL_AWARD_HOLD_MS+epilogueLineDurations.reduce((sum,n)=>sum+n,0);
+export function neuralEpilogueFrame(elapsedMs){
+ const t=Math.max(0,elapsedMs);
+ if(t<NEURAL_AWARD_HOLD_MS)return {phase:'award',lineIndex:-1,door:7,shots:[],hostiles:false};
+ if(t<dialogueEnd){
+  let offset=t-NEURAL_AWARD_HOLD_MS,lineIndex=0;
+  while(offset>=epilogueLineDurations[lineIndex])offset-=epilogueLineDurations[lineIndex++];
+  return {phase:'dialogue',lineIndex,door:7,shots:[],hostiles:true};
+ }
+ const volleyT=t-dialogueEnd;
+ if(volleyT<3300){
+  const shots=[0,430,820,1280].map((delay,i)=>({kind:i<2?'missile':'laser',progress:clamp((volleyT-delay)/(i<2?1900:1150)),active:volleyT>=delay&&volleyT<delay+(i<2?1900:1150),index:i}));
+  return {phase:'volley',lineIndex:-1,door:7,shots,hostiles:true};
+ }
+ const crashT=volleyT-3300;
+ if(crashT<2600)return {phase:'crash',lineIndex:-1,door:7,shots:[],hostiles:true,crashProgress:clamp(crashT/1600),broken:crashT>=1600,deathFrame:Math.min(23,Math.floor(clamp((crashT-1600)/850)*24))};
+ const closeT=crashT-2600;
+ if(closeT<1200)return {phase:'closing',lineIndex:-1,door:Math.round(7*(1-clamp(closeT/950))),shots:[],hostiles:closeT<750};
+ if(closeT<4400)return {phase:'curse',lineIndex:-1,door:0,shots:[],hostiles:false};
+ return {phase:'complete',lineIndex:-1,door:0,shots:[],hostiles:false};
+}
+
 export function setupShared(s,figure,context){
  s.puzzle=createNeuralPuzzle();s.sharedLastTime=s.time;s.exitStarted=null;s.exitFinished=false;
- s.sharedUI={figure,context,u:NEURAL_COPY[document.documentElement.lang==='es'?'es':'en'],buttons:[...figure.querySelectorAll('[data-crew]')],thought:figure.querySelector('[data-neural-thought]'),selector:figure.querySelector('[data-neural-selector]'),status:figure.querySelector('[data-neural-status]'),transcript:figure.querySelector('[data-radio-transcript]')};
+ s.sharedUI={figure,context,u:NEURAL_COPY[document.documentElement.lang==='es'?'es':'en'],buttons:[...figure.querySelectorAll('[data-crew]')],thought:figure.querySelector('[data-neural-thought]'),selector:figure.querySelector('[data-neural-selector]'),status:figure.querySelector('[data-neural-status]'),transcript:figure.querySelector('[data-radio-transcript]'),epilogue:figure.querySelector('[data-epilogue-transcript]')};
  for(const button of s.sharedUI.buttons)button.addEventListener('click',()=>{
   const next=chooseNeuralRole(s.puzzle,button.dataset.crew);if(next===s.puzzle)return;
   s.puzzle=next;s.role=next.role;if(next.pending?.kind==='dismiss')s.departureLine=Math.floor(Math.random()*3);s.sharedLastTime=s.time;
@@ -60,7 +84,7 @@ export function setupShared(s,figure,context){
   context.rerender();
  });
  figure.querySelector('[data-neural-reset]').addEventListener('click',()=>{
-  s.puzzle=createNeuralPuzzle();s.role=null;s.exitStarted=null;s.exitFinished=false;s.sharedLastTime=s.time;s.radioHeard=false;s.departureLine=0;s.sharedUI.transcript.querySelector('details').open=false;context.rerender();
+  s.puzzle=createNeuralPuzzle();s.role=null;s.exitStarted=null;s.exitFinished=false;s.sharedLastTime=s.time;s.radioHeard=false;s.departureLine=0;s.sharedUI.transcript.querySelector('details').open=false;s.sharedUI.epilogue.querySelector('details').open=false;context.rerender();
  });
  context.rerender();
 }
@@ -73,17 +97,37 @@ export function renderShared(s,time,{set,sprite,say,paused=false}) {
  const w=s.el.clientWidth,h=s.el.clientHeight,floor=h-34,ductY=114,ductH=76;
  s.el.dataset.puzzleStage=p.stage;s.el.dataset.puzzleBusy=String(Boolean(p.pending));s.el.dataset.cameraMethod=p.cameraMethod||'';
  const actor=(name,x,y,opts={})=>set(s,name,x,y/h*100,opts);
- if(p.stage==='done'&&s.exitStarted===null)s.exitStarted=time;
+ if(p.stage==='done'&&s.exitStarted===null){
+  s.exitStarted=time;
+  s.el.scrollIntoView({block:'start',behavior:paused?'auto':'smooth'});
+ }
  if(p.stage==='done'&&(paused||(time-s.exitStarted)>=3500))s.exitFinished=true;
  const exitT=p.stage==='done'?(s.exitFinished?5:(time-s.exitStarted)/1000):-1;
+ const ep=p.stage==='done'?neuralEpilogueFrame(time-s.exitStarted):null;
+ s.el.dataset.epilogue=ep?.phase||'';
  const hatchOpen=exitT<0?0:clamp(exitT/.45)*(1-clamp((exitT-1.3)/.4));
  s.el.querySelector('.neural-floor-grille').style.transform='rotate('+(-78*hatchOpen)+'deg)';
  s.el.querySelector('[data-neural-floor-vent]').dataset.open=String(hatchOpen>.05);
  const doorFlightY=floor-Math.min(150,w*.29)*48/64*.55;
- const droneX=exitT<0?f.x:mix(81,86,(exitT-2.1)/1.1);
- const droneY=exitT<0?ductY:mix(ductY,doorFlightY,(exitT-.45)/1.45);
- const droneOpacity=exitT<0?f.opacity:exitT>=3.2?0:mix(f.opacity,1,exitT/.35);
- const droneW=Math.min(36,w*.084);s.actors.scout.style.width=droneW+'px';actor('scout',droneX,droneY,{opacity:droneOpacity,flip:exitT<0?f.flip:false});
+ let droneX=exitT<0?f.x:mix(81,86,(exitT-2.1)/1.1);
+ let droneY=exitT<0?ductY:mix(ductY,doorFlightY,(exitT-.45)/1.45);
+ let droneOpacity=exitT<0?f.opacity:exitT>=3.2?0:mix(f.opacity,1,exitT/.35);
+ const droneW=Math.min(36,w*.084);
+ if(ep?.phase==='crash'){
+  droneX=mix(86,43,ep.crashProgress);
+  droneY=floor-droneW*.5-Math.sin(Math.PI*ep.crashProgress)*Math.min(125,h*.29);
+  droneOpacity=1;
+ }else if(ep&&['closing','curse','complete'].includes(ep.phase)){droneX=43;droneY=floor-droneW*.5;droneOpacity=1;}
+ s.actors.scout.style.width=droneW+'px';actor('scout',droneX,droneY,{opacity:droneOpacity,flip:ep?.phase==='crash'});
+ if(ep?.phase==='crash'&&ep.broken)sprite(s.actors.scout.querySelector('img'),'down',ep.deathFrame);
+ else if(ep&&['closing','curse','complete'].includes(ep.phase))sprite(s.actors.scout.querySelector('img'),'down',23);
+ else sprite(s.actors.scout.querySelector('img'),'scout',time/170);
+ const award=s.el.querySelector('[data-neural-award]');award.hidden=ep?.phase!=='award';
+ const wreck=s.el.querySelector('[data-neural-wreck]');wreck.hidden=!(ep?.phase==='crash'&&ep.broken&&ep.deathFrame<13);wreck.style.left=droneX+'%';wreck.style.top=(floor-droneW*.55)+'px';
+ for(const img of s.el.querySelectorAll('[data-neural-shot]')){
+  const shot=ep?.shots[Number(img.dataset.neuralShot)];img.hidden=!shot?.active;
+  if(shot?.active){img.style.left=mix(84,-6,shot.progress)+'%';img.style.top=(floor-54+(shot.index%2?18:-9))+'px';img.dataset.kind=shot.kind;}
+ }
  [46,59,72].forEach((x,i)=>{const el=s.actors['shutter'+(i+1)];el.style.width=ductH*16/58+'px';actor('shutter'+(i+1),x,ductY);sprite(el.querySelector('img'),'shutter',Math.round(2+f.gates[i]*4));});
  const camera=s.el.querySelector('[data-neural-camera]'),cone=s.el.querySelector('[data-neural-camera-zone]');
  camera.dataset.off=String(f.cameraOff);cone.style.opacity=f.cameraOff?'0':'.55';
@@ -97,13 +141,14 @@ export function renderShared(s,time,{set,sprite,say,paused=false}) {
   s.actors[name].style.width=crewW+'px';actor(name,x,y,{opacity:progress===1?0:1});
   sprite(s.actors[name].querySelector('img'),run>=0?name+'Run':name,time/(run>=0?90:170));
  });
- const doorW=Math.min(150,w*.29),doorH=doorW*48/64;s.actors.door.style.width=doorW+'px';actor('door',86,floor-doorH/2);sprite(s.actors.door.querySelector('img'),'door',f.door);
+ const doorW=Math.min(150,w*.29),doorH=doorW*48/64;s.actors.door.style.width=doorW+'px';actor('door',86,floor-doorH/2);sprite(s.actors.door.querySelector('img'),'door',ep?ep.door:f.door);
  const guardW=Math.min(42,w*.105),guardH=guardW*29/19,guardY=floor-guardH/2;
+ s.actors.ambusher.style.width=guardW+'px';actor('ambusher',86,guardY,{flip:true,opacity:ep?.hostiles?1:0});sprite(s.actors.ambusher.querySelector('img'),'guard',time/170);
  s.actors.guard.style.width=guardW+'px';actor('guard',f.guardX,guardY,{flip:f.guardFlip,opacity:f.guardVisible?1:0});
  sprite(s.actors.guard.querySelector('img'),f.guardWalking?'guardRun':'guard',time/(f.guardWalking?100:170));
  const gunW=guardW*.8,gunH=gunW*7/15,dir=f.guardFlip?-1:1;
  s.actors.guardGun.style.width=gunW+'px';actor('guardGun',f.guardX+dir*(guardW*.22+gunW*.2)/w*100,floor-guardH*.37+gunH*.25,{flip:f.guardFlip,opacity:f.guardVisible?1:0});
- const panel=s.el.querySelector('[data-neural-panel]');panel.style.left='89%';panel.style.top=(floor-guardH*.68)+'px';panel.dataset.open=String(f.door===7);
+ const panel=s.el.querySelector('[data-neural-panel]');panel.style.left='89%';panel.style.top=(floor-guardH*.68)+'px';panel.dataset.open=String((ep?ep.door:f.door)===7);
  const alert=s.el.querySelector('[data-neural-alert]');alert.hidden=!f.alert;alert.style.left=f.guardX+'%';alert.style.top=(floor-guardH-25)+'px';
  const hack=s.el.querySelector('[data-neural-hack]');hack.hidden=!f.hack;
  if(f.hack){
@@ -114,8 +159,18 @@ export function renderShared(s,time,{set,sprite,say,paused=false}) {
  channel.hidden=p.stage==='done'||(!connecting&&!connected);channel.dataset.state=connected?'connected':'connecting';channel.querySelector('[data-neural-channel-text]').textContent=connected?u.connected:u.connecting;
  const speechText=f.speech==='departure'?u.departures[s.departureLine||0]:u[f.speech];
  const departure=ui.transcript.querySelector('[data-departure-transcript]');departure.hidden=f.speech!=='departure'&&p.lastAction?.kind!=='dismiss';departure.textContent=u.guard+': '+u.departures[s.departureLine||0];
- const dialog=s.el.querySelector('[data-neural-dialogue]');dialog.hidden=!f.speech;
- if(f.speech){
+ const dialog=s.el.querySelector('[data-neural-dialogue]');
+ const epLine=ep?.phase==='dialogue'?u.lines[ep.lineIndex]:null;
+ const epCurse=ep?.phase==='curse';
+ dialog.hidden=!f.speech&&!epLine&&!epCurse;
+ if(epLine||epCurse){
+  const speaker=epCurse?'all':epLine[0],line=epCurse?u.curse:epLine[1];
+  dialog.style.bottom=(h-floor+guardH+19)+'px';
+  const bubble=dialog.querySelector('.drone-bubble');bubble.style.setProperty('--bubble-tail','88%');
+  dialog.querySelector('[data-neural-speaker]').textContent=speaker==='enemy'?u.enemy:speaker==='all'?u.all:u.crew[roles.indexOf(speaker)];
+  dialog.querySelector('[data-neural-speech]').textContent='“'+line+'”';
+  dialog.dataset.voice=speaker==='enemy'?'enemy':speaker==='all'?'all':'crew';
+ }else if(f.speech){
   dialog.style.bottom=(h-floor+guardH+17+(f.alert?30:0))+'px';
   const bubble=dialog.querySelector('.drone-bubble');bubble.style.setProperty('--bubble-tail',`${clamp((w*f.guardX/100-dialog.offsetLeft)/dialog.offsetWidth*100,8,92)}%`);
   dialog.querySelector('[data-neural-speaker]').textContent=f.speech==='order'?u.radio:u.guard;
@@ -132,8 +187,9 @@ export function renderShared(s,time,{set,sprite,say,paused=false}) {
   ui.thought.style.width=bw+'px';ui.thought.style.left=left+'px';ui.thought.style.setProperty('--thought-tail',(anchor-left)+'px');
  }
  for(const button of ui.buttons){button.setAttribute('aria-pressed',String(button.dataset.crew===p.role));button.setAttribute('aria-disabled',String(Boolean(p.pending)));}
- const status=f.speech?speechText:hint||(exitT>=3.5?u.done:p.pending?u.busy:u.results[p.lastAction?.kind]||u.ready);
+ const status=epCurse?u.curse:epLine?epLine[1]:ep?.phase==='award'?u.award:ep?.phase==='crash'?u.ambush:f.speech?speechText:hint||(exitT>=3.5?u.done:p.pending?u.busy:u.results[p.lastAction?.kind]||u.ready);
  if(ui.status.textContent!==status)ui.status.textContent=status;
  ui.transcript.hidden=!s.radioHeard;
+ ui.epilogue.hidden=p.stage!=='done';
  say(s,p.role?u.crew[roles.indexOf(p.role)].toUpperCase():u.hub);
 }
