@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveOverkill, ARMOR_PROFILE, DEMO_MAX_HP, ENCOUNTERS, rollDamage, applyCombatHit } from '../public/overkill-demo.mjs';
+import { resolveOverkill, ARMOR_PROFILE, ARMOR_PROFILES, DEMO_MAX_HP, ENCOUNTERS, rollDamage, applyCombatHit } from '../public/overkill-demo.mjs';
 import { bassEnergy } from '../public/theme-heart.mjs';
 
 test('Overkill begins at a complete interval beyond Severe, never at Major plus ten', () => {
@@ -36,6 +36,18 @@ test('Tactical Armor uses five slots and adds wearer level to both base threshol
   assert.equal(ARMOR_PROFILE.baseSevere + ARMOR_PROFILE.level, 22);
   assert.equal(resolveOverkill(42, { deadly:true, armorSlots:5 }).hp, 2);
   assert.equal(resolveOverkill(32).hp, 4, 'available armor does not automatically soak a hit');
+});
+
+test('selectable light, medium and heavy armor use Corebook 12.06 thresholds and slots',()=>{
+  assert.deepEqual(ARMOR_PROFILES.map(p=>[p.name,p.weight,p.baseMajor,p.baseSevere,p.slots]),[
+    ['Frontier Vest','Light',5,11,3],['Tactical Armor','Medium',10,20,5],['Power Armor','Heavy',15,30,8],
+  ]);
+  assert.deepEqual(ARMOR_PROFILES.map(p=>[p.baseMajor+p.level,p.baseSevere+p.level]),[[7,13],[12,22],[17,32]]);
+  assert.equal(resolveOverkill(20,{profile:ARMOR_PROFILES[0]}).rawHP,3);
+  assert.equal(resolveOverkill(20,{profile:ARMOR_PROFILES[2]}).rawHP,2);
+  const heavy=applyCombatHit({hp:6,armorRemaining:8},42,{profile:ARMOR_PROFILES[2],armorSlots:8});
+  assert.deepEqual([heavy.rawHP,heavy.spent,heavy.hpAfter,heavy.armorRemaining],[4,8,6,0]);
+  assert.equal(resolveOverkill(42,{profile:ARMOR_PROFILES[0],armorSlots:8}).spent,3);
 });
 
 test('enemy threats climb in expected damage and the giant robot fires 10D8 + 5', () => {

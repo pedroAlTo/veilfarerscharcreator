@@ -1,22 +1,26 @@
-// Personal-scale thresholds from Corebook 12.06 pp. 94–95.
-// Tactical Armor spends one slot to prevent one HP from a connected hit.
-export const ARMOR_PROFILE = Object.freeze({ name: 'Tactical Armor', baseMajor: 10, baseSevere: 20, level: 2, slots: 5 });
+// Printed armor profiles: VeilFarers Corebook 12.06, pp. 124–126. The demo soldier is level 2.
+export const ARMOR_PROFILES = Object.freeze([
+  Object.freeze({id:'frontier-vest',name:'Frontier Vest',weight:'Light',baseMajor:5,baseSevere:11,level:2,slots:3,feature:'Flexible · +1 Evasion'}),
+  Object.freeze({id:'tactical-armor',name:'Tactical Armor',weight:'Medium',baseMajor:10,baseSevere:20,level:2,slots:5,feature:'Tactical · +1 Instinct for perception; Reflective cancels Energy penetration'}),
+  Object.freeze({id:'power-armor',name:'Power Armor',weight:'Heavy',baseMajor:15,baseSevere:30,level:2,slots:8,feature:'Very Heavy · −2 Evasion, −1 Agility; Powered servos'}),
+]);
+export const ARMOR_PROFILE = ARMOR_PROFILES[1];
 export const DEMO_MAX_HP = 6;
 
-export function resolveOverkill(damage, { major = ARMOR_PROFILE.baseMajor + ARMOR_PROFILE.level, severe = ARMOR_PROFILE.baseSevere + ARMOR_PROFILE.level, deadly = false, armorSlots = 0 } = {}) {
+export function resolveOverkill(damage, { profile = ARMOR_PROFILE, major = profile.baseMajor + profile.level, severe = profile.baseSevere + profile.level, deadly = false, armorSlots = 0 } = {}) {
   const step = deadly ? 5 : 10;
   const extra = Math.max(0, Math.floor((damage - severe) / step));
   const rawHP = damage <= 0 ? 0 : damage < major ? 1 : damage < severe ? 2 : 3 + extra;
-  const spent = Number.isFinite(armorSlots) ? Math.max(0, Math.min(ARMOR_PROFILE.slots, Math.floor(armorSlots))) : 0;
+  const spent = Number.isFinite(armorSlots) ? Math.max(0, Math.min(profile.slots, Math.floor(armorSlots))) : 0;
   const hp = Math.max(0, rawHP - spent);
   const tier = ['No damage', 'Minor', 'Major', 'Severe'][rawHP] || 'Overkill';
   return { rawHP, hp, tier, extra, spent, next: damage < major ? major : damage < severe ? severe : severe + (extra + 1) * step };
 }
 
-export function applyCombatHit({ hp, armorRemaining }, damage, { deadly = false, armorSlots = 0 } = {}) {
-  const available = Math.max(0, Math.min(ARMOR_PROFILE.slots, Math.floor(armorRemaining)));
+export function applyCombatHit({ hp, armorRemaining }, damage, { profile = ARMOR_PROFILE, deadly = false, armorSlots = 0 } = {}) {
+  const available = Math.max(0, Math.min(profile.slots, Math.floor(armorRemaining)));
   const selected = Number.isFinite(armorSlots) ? Math.max(0, Math.min(available, Math.floor(armorSlots))) : 0;
-  const result = resolveOverkill(damage, { deadly, armorSlots: selected });
+  const result = resolveOverkill(damage, { profile, deadly, armorSlots: selected });
   const hpBefore = Math.max(0, Math.min(DEMO_MAX_HP, Math.floor(hp)));
   const lost = Math.min(hpBefore, result.hp);
   return { ...result, hpBefore, hpAfter: hpBefore - lost, lost, armorRemaining: available - selected };
@@ -61,6 +65,8 @@ if (typeof document !== 'undefined') {
     const combatant = soldier.closest('.arena-soldier');
     const floating = lab.querySelector('[data-floating-damage]');
     const attack = lab.querySelector('[data-attack]');
+    const armorSelect = lab.querySelector('[data-armor-select]');
+    const enemySelect = lab.querySelector('[data-enemy-select]');
     const modeInputs = [...lab.querySelectorAll('input[name="pixel-overkill-mode"]')];
     const shields = [...lab.querySelectorAll('[data-shield]')];
     const choices = [...lab.querySelectorAll('[data-enemy]')];
@@ -70,7 +76,8 @@ if (typeof document !== 'undefined') {
     let busy = false;
     let dead = false;
     let hp = DEMO_MAX_HP;
-    let armorRemaining = ARMOR_PROFILE.slots;
+    let armorProfile = ARMOR_PROFILE;
+    let armorRemaining = armorProfile.slots;
     let heroType = 2;
     const heroFolder = type => type === 2 ? 'hero' : type === 3 ? 'hero-alt' : `hero-${type}`;
     const heroPath = (type, state, index) => `${ASSET}/${heroFolder(type)}/Hero${type}-${state}_${type === 1 ? index : pad(index)}.png`;
@@ -103,18 +110,21 @@ if (typeof document !== 'undefined') {
     const renderHealth = () => {
       lab.querySelector('[data-hearts]').innerHTML = Array.from({ length: DEMO_MAX_HP }, (_, i) => `<span class="pixel-heart${i < hp ? '' : ' is-empty'}">${heartArt}</span>`).join('');
       lab.querySelector('[data-health-count]').textContent = `${hp} / ${DEMO_MAX_HP}`;
-      lab.querySelector('[data-health-hud]').setAttribute('aria-label', `Soldier health: ${hp} of ${DEMO_MAX_HP} HP; armor: ${armorRemaining} slots remaining; Major threshold ${ARMOR_PROFILE.baseMajor + ARMOR_PROFILE.level}; Severe threshold ${ARMOR_PROFILE.baseSevere + ARMOR_PROFILE.level}`);
-      lab.querySelector('[data-major-threshold]').textContent = String(ARMOR_PROFILE.baseMajor + ARMOR_PROFILE.level);
-      lab.querySelector('[data-severe-threshold]').textContent = String(ARMOR_PROFILE.baseSevere + ARMOR_PROFILE.level);
-      lab.querySelector('[data-armor-left]').textContent = `${armorRemaining} / ${ARMOR_PROFILE.slots}`;
+      lab.querySelector('[data-health-hud]').setAttribute('aria-label', `Soldier health: ${hp} of ${DEMO_MAX_HP} HP; ${armorProfile.name}: ${armorRemaining} slots remaining; Major threshold ${armorProfile.baseMajor + armorProfile.level}; Severe threshold ${armorProfile.baseSevere + armorProfile.level}`);
+      lab.querySelector('[data-major-threshold]').textContent = String(armorProfile.baseMajor + armorProfile.level);
+      lab.querySelector('[data-severe-threshold]').textContent = String(armorProfile.baseSevere + armorProfile.level);
+      lab.querySelector('[data-armor-left]').textContent = `${armorRemaining} / ${armorProfile.slots}`;
       lab.querySelector('[data-armor-remaining]').textContent = String(armorRemaining);
       lab.querySelector('[data-shield-count]').textContent = String(selectedShields().length);
+      lab.querySelector('[data-armor-feature]').textContent = `${armorProfile.weight.toUpperCase()} · ${armorProfile.feature}`;
     };
     const restoreSoldier = () => {
       hp = DEMO_MAX_HP;
-      armorRemaining = ARMOR_PROFILE.slots;
-      shields.forEach(button => {
-        button.disabled = false;
+      armorRemaining = armorProfile.slots;
+      lab.querySelector('.shield-row').style.setProperty('--slot-count',String(armorProfile.slots));
+      shields.forEach((button,i) => {
+        button.hidden = i >= armorProfile.slots;
+        button.disabled = i >= armorProfile.slots;
         button.setAttribute('aria-pressed', 'false');
         button.setAttribute('aria-label', `Armor Slot ${button.dataset.shield} not selected`);
       });
@@ -134,10 +144,18 @@ if (typeof document !== 'undefined') {
         button.classList.toggle('is-active', selected);
         button.setAttribute('aria-pressed', String(selected));
       });
+      enemySelect.value = String(index);
       lab.querySelector('[data-arena-message]').textContent = `${enemy.name.toUpperCase()} // ${enemy.count}D${enemy.sides} + ${enemy.bonus}`;
     };
 
     choices.forEach(button => button.addEventListener('click', () => selectEnemy(Number(button.dataset.enemy))));
+    enemySelect.addEventListener('change', () => selectEnemy(Number(enemySelect.value)));
+    armorSelect.addEventListener('change', () => {
+      if (busy) { armorSelect.value = armorProfile.id; return; }
+      armorProfile = ARMOR_PROFILES.find(profile => profile.id === armorSelect.value) || ARMOR_PROFILE;
+      restoreSoldier();
+      lab.querySelector('[data-battle-log]').textContent = `${armorProfile.weight} ${armorProfile.name} equipped. Major ${armorProfile.baseMajor + armorProfile.level} · Severe ${armorProfile.baseSevere + armorProfile.level} · ${armorProfile.slots} Armor Slots. Six hearts ready.`;
+    });
     shields.forEach(button => button.addEventListener('click', () => {
       if (busy || dead || button.disabled) return;
       const selected = button.getAttribute('aria-pressed') !== 'true';
@@ -342,10 +360,13 @@ if (typeof document !== 'undefined') {
       floating.classList.remove('is-visible');
     };
 
-    attack.addEventListener('click', async () => {
+    const triggerAttack = async () => {
       if (busy || dead) return;
       busy = true;
       attack.disabled = true;
+      arena.setAttribute('aria-disabled','true');
+      armorSelect.disabled = true;
+      enemySelect.disabled = true;
       modeInputs.forEach(input => { input.disabled = true; });
       attack.textContent = '● ATTACK IN PROGRESS';
       const enemy = ENCOUNTERS[active];
@@ -354,7 +375,7 @@ if (typeof document !== 'undefined') {
       const roll = rollDamage(enemy);
       lab.querySelector('[data-arena-message]').textContent = enemy.missile ? 'MISSILE LOCK // INCOMING' : 'HOSTILE FIRE // INCOMING';
       await fireWeapon(enemy);
-      const result = applyCombatHit({ hp, armorRemaining }, roll.damage, { deadly: isDeadly, armorSlots: selected.length });
+      const result = applyCombatHit({ hp, armorRemaining }, roll.damage, { profile: armorProfile, deadly: isDeadly, armorSlots: selected.length });
       hp = result.hpAfter;
       armorRemaining = result.armorRemaining;
       selected.forEach(button => {
@@ -377,13 +398,19 @@ if (typeof document !== 'undefined') {
       else await regenerateSoldier();
       busy = false;
       attack.disabled = false;
+      arena.setAttribute('aria-disabled','false');
+      armorSelect.disabled = false;
+      enemySelect.disabled = false;
       attack.textContent = '▶ TRIGGER ENEMY ATTACK';
       modeInputs.forEach(input => { input.disabled = false; });
-    });
+    };
+    attack.addEventListener('click',triggerAttack);
+    arena.addEventListener('click',triggerAttack);
+    arena.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerAttack();}});
 
     selectEnemy(0);
     setStage('ready');
-    renderHealth();
+    restoreSoldier();
     if (!reducedMotion) setInterval(showFrame, 210);
   }
 
