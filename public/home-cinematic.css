@@ -99,6 +99,7 @@ body[data-visual-mode="static"]:not([data-visual-reason="initial"]) .vf-hero{hei
 
 /* Shared manual pagination for the independently dismissible homepage notices. */
 .vf-cta-pagination{display:flex;align-items:center;gap:8px;width:max-content;margin-top:30px;padding-top:17px;border-top:1px solid rgba(225,189,109,.18)}.vf-cta-pagination button{display:grid;place-items:center;height:30px;padding:0;border:0;background:transparent;color:#899199;cursor:pointer;transition:color .2s ease,opacity .2s ease,transform .2s ease}.vf-cta-index{min-width:31px;font-size:9px;font-weight:700;letter-spacing:.18em}.vf-cta-index.is-current,.vf-cta-index[aria-current="page"]{color:var(--vf-gold-pale);text-shadow:0 0 12px rgba(225,189,109,.3);cursor:default}.vf-cta-arrow{min-width:34px;font:300 28px/1 Georgia,"Times New Roman",serif;opacity:.72}.vf-cta-arrow:hover,.vf-cta-arrow:focus-visible,.vf-cta-index:not(.is-current):hover,.vf-cta-index:not(.is-current):focus-visible{color:#fff4d4;opacity:1;transform:translateY(-1px);outline:1px solid rgba(225,189,109,.28);outline-offset:1px}.vf-cta-pagination button:disabled{color:#64696d;opacity:.18;cursor:not-allowed;transform:none;outline:0}
+.vf-cta-pagination[hidden]{display:none!important}
 @media(max-width:680px){.vf-cta-pagination{margin-top:24px;padding-top:13px}.vf-cta-pagination button{height:27px}.vf-cta-arrow{font-size:24px}}
 
 /* Electrical activity at the loose cable ends in the Rust & Steel notice. */

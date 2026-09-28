@@ -8,16 +8,18 @@
   const boundNavigation = new WeakSet();
   let scheduleReady = false;
   let initialOpenHandled = false;
-  let paginationOrder = '';
+  let paginationOrder = null;
 
   function isLive(id) { return window.VFPublication?.isLive('notices', id) === true; }
   function availableNotices() {
     return order.filter(id => states[id]?.ready && isLive(id) && !states[id].deleted);
   }
-  function buildPagination() {
+  function buildPagination(available) {
     for (const nav of document.querySelectorAll('[data-cta-owner]')) {
       nav.replaceChildren();
       const owner = nav.dataset.ctaOwner;
+      nav.hidden = !available.includes(owner);
+      if (nav.hidden) continue;
       const addButton = (text, label, className) => {
         const button = document.createElement('button');
         button.type = 'button'; button.className = className;
@@ -26,7 +28,7 @@
         return button;
       };
       addButton('‹', 'Previous notice', 'vf-cta-arrow').dataset.ctaStep = '-1';
-      order.forEach((id, index) => {
+      available.forEach((id, index) => {
         const button = addButton(String(index + 1).padStart(2, '0'), 'Notice ' + (index + 1) + ': ' + titles[id], 'vf-cta-index');
         button.dataset.ctaTarget = id;
         if (id === owner) { button.setAttribute('aria-current', 'page'); button.classList.add('is-current'); }
@@ -39,8 +41,10 @@
         if (!button || button.disabled) return;
         let target = button.dataset.ctaTarget;
         if (button.dataset.ctaStep) {
-          const available = availableNotices();
-          target = available[(available.indexOf(owner) + Number(button.dataset.ctaStep) + available.length) % available.length];
+          const current = availableNotices();
+          const position = current.indexOf(owner);
+          if (position < 0 || current.length < 2) return;
+          target = current[(position + Number(button.dataset.ctaStep) + current.length) % current.length];
         }
         if (target && target !== owner) requestOpen(target);
       });
@@ -48,6 +52,20 @@
   }
   function syncInterface(animate = false) {
     const available = availableNotices();
+    const nextOrder = available.join(',');
+    if (nextOrder !== paginationOrder) {
+      const focused = document.activeElement;
+      const focusOwner = focused?.closest('[data-cta-owner]')?.dataset.ctaOwner;
+      const focusTarget = focused?.dataset.ctaTarget;
+      const focusStep = focused?.dataset.ctaStep;
+      buildPagination(available);
+      paginationOrder = nextOrder;
+      if (focusOwner && (focusTarget || focusStep)) {
+        const target = focusTarget && available.includes(focusTarget) ? focusTarget : available.includes(focusOwner) ? focusOwner : null;
+        const selector = target ? '[data-cta-target="' + target + '"]' : '[data-cta-step="' + focusStep + '"]';
+        document.querySelector('[data-cta-owner="' + focusOwner + '"] ' + selector)?.focus({ preventScroll: true });
+      }
+    }
     const count = available.filter(id => states[id].active).length;
     const open = available.some(id => states[id].open);
     inbox.classList.toggle('is-active', count > 0);
@@ -87,19 +105,6 @@
     scheduleReady = Boolean(window.VFPublication?.config);
     order.sort((a, b) => (Number(schedule[a]?.priority) || 99) - (Number(schedule[b]?.priority) || 99));
     for (const id of order) states[id].open = Boolean(document.querySelector('[data-cta-notice="' + id + '"]')?.open);
-    const nextOrder = order.join(',');
-    if (nextOrder !== paginationOrder) {
-      const focused = document.activeElement;
-      const focusOwner = focused?.closest('[data-cta-owner]')?.dataset.ctaOwner;
-      const focusTarget = focused?.dataset.ctaTarget;
-      const focusStep = focused?.dataset.ctaStep;
-      buildPagination();
-      paginationOrder = nextOrder;
-      if (focusOwner && (focusTarget || focusStep)) {
-        const selector = '[data-cta-owner="' + focusOwner + '"] [' + (focusTarget ? 'data-cta-target="' + focusTarget : 'data-cta-step="' + focusStep) + '"]';
-        document.querySelector(selector)?.focus({ preventScroll: true });
-      }
-    }
     syncInterface();
     openInitial();
   }

@@ -236,10 +236,8 @@ test('homepage notices share numbered manual navigation without sharing dismissa
 
   assert.match(home, /data-cta-owner="release"/)
   assert.match(home, /data-cta-owner="beta"/)
-  assert.match(home, />01<\/button>/)
-  assert.match(home, />02<\/button>/)
-  assert.match(home, /aria-label="Previous notice"/)
-  assert.match(home, /aria-label="Next notice"/)
+  assert.match(home, /data-cta-owner="release" aria-label="Homepage notices"><\/nav>/)
+  assert.match(home, /data-cta-owner="beta" aria-label="Homepage notices"><\/nav>/)
   assert.match(home, /cta-carousel-scheduled\.js\?v=/)
   assert.match(home, /kryllian-rust-repair-notice\.png\?v=20260901-1/)
   assert.match(home, /Colour sketch of Xirith's four-armed mechanic/)
@@ -255,6 +253,7 @@ test('homepage notices share numbered manual navigation without sharing dismissa
   assert.match(beta, /closeInvitation\('switch', to\)/)
   assert.match(beta, /vf:cta-open/)
   assert.match(styles, /\.vf-cta-pagination/)
+  assert.match(styles, /\.vf-cta-pagination\[hidden\]/)
   assert.match(styles, /\.vf-cta-index\.is-current/)
 })
 
