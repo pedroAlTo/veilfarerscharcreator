@@ -1,5 +1,5 @@
 import {droneSprites} from './drone-sprites.mjs?v=20260927-5';
-import {renderShared,setupShared,positionDroneScan} from './drone-shared.mjs?v=20260928-2';
+import {renderShared,setupShared,positionDroneScan} from './drone-shared.mjs?v=20260928-3';
 import {renderSignal,setupSignal} from './drone-signal-scene.mjs?v=20260927-5';
 
 const es=document.documentElement.lang==='es';
@@ -29,7 +29,7 @@ function sprite(image,name,n){
 }
 function render(s,time){
  const t=time/1000,bob=Math.sin(t*2.5)*2;
- s.images.forEach(img=>{if(s.type==='shared'&&img.dataset.track!=='scout')return;if(!['door','guard'].includes(img.dataset.track)&&!(s.type==='fragility'&&img.dataset.track==='scout'))sprite(img,img.dataset.track,time/170);});
+ s.images.forEach(img=>{if(s.type==='shared')return;if(!['door','guard'].includes(img.dataset.track)&&!(s.type==='fragility'&&img.dataset.track==='scout'))sprite(img,img.dataset.track,time/170);});
  if(s.type==='hero'||s.type==='origin'){
   set(s,'scout',53+Math.sin(t*.65)*10,43+bob,{flip:true});set(s,'pod',76+Math.sin(t*.5)*6,68-bob);
   set(s,'pilot',20,77);say(s,words.pilot);

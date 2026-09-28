@@ -1,5 +1,5 @@
 import {createNeuralPuzzle,chooseNeuralRole,advanceNeuralPuzzle,NEURAL_PUZZLE_ROLES as roles} from './drone-neural-puzzle.mjs?v=20260928-1';
-import {NEURAL_COPY} from './drone-neural-copy.mjs?v=20260928-1';
+import {NEURAL_COPY} from './drone-neural-copy.mjs?v=20260928-2';
 const clamp=(v,min=0,max=1)=>Math.max(min,Math.min(max,v));
 const mix=(a,b,t)=>a+(b-a)*clamp(t);
 
@@ -71,7 +71,12 @@ export function neuralEpilogueFrame(elapsedMs){
  }
  const crashT=volleyT-1950;
  if(crashT<3900)return {phase:'crash',lineIndex:-1,door:7,shots:[],crashProgress:clamp(crashT/1600),broken:crashT>=1600,deathFrame:Math.min(23,Math.floor(Math.max(0,crashT-1600)/1000*11))};
- const closeT=crashT-3900;
+ const aftermathT=crashT-3900;
+ if(aftermathT<2700)return {phase:'aftermath',lineIndex:0,door:7,shots:[]};
+ if(aftermathT<4900)return {phase:'aftermath',lineIndex:1,door:7,shots:[]};
+ const alarmT=aftermathT-4900;
+ if(alarmT<3300)return {phase:'lockdown',lineIndex:-1,door:7,shots:[]};
+ const closeT=alarmT-3300;
  if(closeT<1200)return {phase:'closing',lineIndex:-1,door:Math.round(7*(1-clamp(closeT/950))),shots:[]};
  if(closeT<4400)return {phase:'curse',lineIndex:-1,door:0,shots:[]};
  return {phase:'complete',lineIndex:-1,door:0,shots:[]};
@@ -121,16 +126,17 @@ export function renderShared(s,time,{set,sprite,say,paused=false,downBottoms}) {
   droneY=floor-droneW*.5-Math.sin(Math.PI*ep.crashProgress)*Math.min(125,h*.29);
   if(ep.broken){const scale=droneW/31;droneY-=Math.max(0,droneY+(downBottoms[ep.deathFrame]-18)*scale-floor);}
   droneOpacity=1;
- }else if(ep&&['closing','curse','complete'].includes(ep.phase)){
+ }else if(ep&&['aftermath','lockdown','closing','curse','complete'].includes(ep.phase)){
   droneX=43;droneY=floor-droneW*.5;
   const scale=droneW/31;droneY-=Math.max(0,droneY+(downBottoms[23]-18)*scale-floor);
   droneOpacity=1;
  }
- s.actors.scout.style.width=droneW+'px';actor('scout',droneX,droneY,{opacity:droneOpacity,flip:ep?.phase==='crash'||ep?.phase==='closing'||ep?.phase==='curse'||ep?.phase==='complete',rotate:ep?.phase==='crash'&&!ep.broken?ep.crashProgress*720:0});
+ s.actors.scout.style.width=droneW+'px';actor('scout',droneX,droneY,{opacity:droneOpacity,flip:ep&&['crash','aftermath','lockdown','closing','curse','complete'].includes(ep.phase),rotate:ep?.phase==='crash'&&!ep.broken?ep.crashProgress*720:0});
  if(ep?.phase==='crash'&&ep.broken)sprite(s.actors.scout.querySelector('img'),'down',ep.deathFrame);
- else if(ep&&['closing','curse','complete'].includes(ep.phase))sprite(s.actors.scout.querySelector('img'),'down',23);
+ else if(ep&&['aftermath','lockdown','closing','curse','complete'].includes(ep.phase))sprite(s.actors.scout.querySelector('img'),'down',23);
  else sprite(s.actors.scout.querySelector('img'),'scout',time/170);
  const award=s.el.querySelector('[data-neural-award]');award.hidden=ep?.phase!=='award';
+ const lockdown=s.el.querySelector('[data-neural-lockdown]');lockdown.hidden=!ep||!['lockdown','closing','curse','complete'].includes(ep.phase);
  const wreck=s.el.querySelector('[data-neural-wreck]');wreck.hidden=!(ep?.phase==='crash'&&ep.broken&&ep.deathFrame<13);wreck.style.left=droneX+'%';wreck.style.top=(floor-droneW*.55)+'px';
  for(const img of s.el.querySelectorAll('[data-neural-shot]')){
   const shot=ep?.shots[Number(img.dataset.neuralShot)];img.hidden=!shot?.active;
@@ -167,7 +173,7 @@ export function renderShared(s,time,{set,sprite,say,paused=false,downBottoms}) {
  const speechText=f.speech==='departure'?u.departures[s.departureLine||0]:u[f.speech];
  const departure=ui.transcript.querySelector('[data-departure-transcript]');departure.hidden=f.speech!=='departure'&&p.lastAction?.kind!=='dismiss';departure.textContent=u.guard+': '+u.departures[s.departureLine||0];
  const dialog=s.el.querySelector('[data-neural-dialogue]');
- const epLine=ep?.phase==='dialogue'?u.lines[ep.lineIndex]:null;
+ const epLine=ep?.phase==='dialogue'?u.lines[ep.lineIndex]:ep?.phase==='aftermath'?u.aftermath[ep.lineIndex]:null;
  const epCurse=ep?.phase==='curse';
  dialog.hidden=!f.speech&&!epLine&&!epCurse;
  if(epLine||epCurse){
@@ -194,7 +200,7 @@ export function renderShared(s,time,{set,sprite,say,paused=false,downBottoms}) {
   ui.thought.style.width=bw+'px';ui.thought.style.left=left+'px';ui.thought.style.setProperty('--thought-tail',(anchor-left)+'px');
  }
  for(const button of ui.buttons){button.setAttribute('aria-pressed',String(button.dataset.crew===p.role));button.setAttribute('aria-disabled',String(Boolean(p.pending)));}
- const status=epCurse?u.curse:epLine?epLine[1]:ep?.phase==='award'?u.award:ep?.phase==='crash'?u.ambush:f.speech?speechText:hint||(exitT>=3.5?u.done:p.pending?u.busy:u.results[p.lastAction?.kind]||u.ready);
+ const status=epCurse?u.curse:epLine?epLine[1]:ep?.phase==='award'?u.award:ep?.phase==='crash'?u.droneDown:ep&&['lockdown','closing','complete'].includes(ep.phase)?u.lockdownTitle+' · '+u.lockdownMessage:f.speech?speechText:hint||(exitT>=3.5?u.done:p.pending?u.busy:u.results[p.lastAction?.kind]||u.ready);
  if(ui.status.textContent!==status)ui.status.textContent=status;
  ui.transcript.hidden=!s.radioHeard;
  ui.epilogue.hidden=p.stage!=='done';

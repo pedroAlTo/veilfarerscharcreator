@@ -72,6 +72,15 @@
 .neural-guard-dialogue[data-voice="enemy"] .drone-bubble{border-color:#f79069;}.neural-guard-dialogue[data-voice="enemy"] .drone-bubble::after{border-color:#f79069;}.neural-guard-dialogue[data-voice="enemy"] b{color:#ffaf7a;}
 .neural-guard-dialogue[data-voice="all"] .drone-bubble{border-color:#ffca63;background:#3d1c23;box-shadow:5px 5px 0 #090c15,0 0 20px #ff9b5e55;}.neural-guard-dialogue[data-voice="all"] .drone-bubble::after{border-color:#ffca63;background:#3d1c23;}.neural-guard-dialogue[data-voice="all"] b{color:#ffe2a1;}
 .neural-wreck{position:absolute;z-index:17;transform:translate(-50%,-50%);color:#fff2a7;font:900 24px/1 Consolas,monospace;text-shadow:0 0 10px #fa9238;pointer-events:none;}.neural-wreck i,.neural-wreck b{position:absolute;font-style:normal;font-size:15px;}.neural-wreck i{left:-24px;top:-18px;}.neural-wreck b{left:20px;top:-10px;}
+.neural-lockdown{position:absolute;inset:0;z-index:15;pointer-events:none;}
+.neural-lockdown::before{content:"";position:absolute;inset:0;background:#e22b301c;animation:neural-alarm-wash .72s steps(1,end) infinite;}
+.neural-lockdown>i{position:absolute;top:39%;width:22px;height:22px;border:4px solid #ff9a78;background:#fa3135;box-shadow:0 0 0 5px #3d1720,0 0 24px 12px #ff353588;animation:neural-alarm-light .72s steps(1,end) infinite;}
+.neural-lockdown>i:first-child{left:5%;}.neural-lockdown>i:nth-child(2){right:5%;animation-delay:.36s;}
+.neural-lockdown-message{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:min(530px,78%);box-sizing:border-box;padding:18px 20px;text-align:center;background:#250e18ee;border:4px solid #f04444;outline:3px solid #110c17;box-shadow:7px 7px 0 #050912,0 0 22px #ff424255;color:#ffe4d8;font:900 clamp(14px,2.5vw,22px)/1.23 Consolas,monospace;letter-spacing:.04em;text-shadow:2px 2px #85212a;}
+.neural-lockdown-message strong,.neural-lockdown-message span{display:block;}.neural-lockdown-message span{margin-top:11px;color:#ff9a80;font-size:.66em;line-height:1.35;}
+[data-epilogue="complete"] .neural-lockdown::before,[data-epilogue="complete"] .neural-lockdown>i{animation:none;}
+@keyframes neural-alarm-wash{50%{background:#e22b303c;}}@keyframes neural-alarm-light{50%{background:#742531;box-shadow:0 0 0 5px #3d1720,0 0 5px 2px #ff353544;}}
 @keyframes neural-spark{50%{opacity:.15;transform:scale(.7);}}@keyframes neural-medal-flash{50%{filter:brightness(1.35) drop-shadow(0 0 9px #ffe88a);}}
-@media(prefers-reduced-motion:reduce){.neural-award::before,.neural-award::after,.neural-medal span{animation:none;}}
+@media(prefers-reduced-motion:reduce){.neural-award::before,.neural-award::after,.neural-medal span,.neural-lockdown::before,.neural-lockdown>i{animation:none;}}
 @media(max-width:650px){.neural-award{width:min(290px,78%);font-size:15px;}.neural-projectiles img[data-kind="missile"]{width:75px;}.neural-projectiles img[data-kind="laser"]{width:42px;height:8px;}}
+@media(max-width:650px){.neural-lockdown>i{width:15px;height:15px;border-width:3px;}.neural-lockdown-message{width:80%;padding:13px 10px;font-size:clamp(12px,3vw,16px);}}

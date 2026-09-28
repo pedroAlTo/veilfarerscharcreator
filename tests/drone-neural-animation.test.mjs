@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createNeuralPuzzle, chooseNeuralRole, advanceNeuralPuzzle} from '../public/drone-neural-puzzle.mjs';
 import {neuralSceneFrame,neuralEpilogueFrame,NEURAL_AWARD_HOLD_MS} from '../public/drone-shared.mjs';
+import {NEURAL_COPY} from '../public/drone-neural-copy.mjs';
 
 const finish = (state, role) => {
   const selected = chooseNeuralRole(state, role);
@@ -122,10 +123,10 @@ test('victory holds for seventeen seconds before the doorway conversation',()=>{
  assert.deepEqual([...lines],[0,1,2,3,4,5,6,7]);
 });
 
-test('missiles and lasers precede the drone crash, door closure, and shared curse',()=>{
+test('the crew mourns K3nn1, the base alarms, and only then does the door close',()=>{
  const times={};
  for(let ms=0;ms<60000;ms+=20){const frame=neuralEpilogueFrame(ms);times[frame.phase]??=ms;}
- assert.ok(times.dialogue<times.volley&&times.volley<times.crash&&times.crash<times.closing&&times.closing<times.curse);
+ assert.ok(times.dialogue<times.volley&&times.volley<times.crash&&times.crash<times.aftermath&&times.aftermath<times.lockdown&&times.lockdown<times.closing&&times.closing<times.curse);
  const volley=neuralEpilogueFrame(times.volley+1000);
  assert.equal(volley.door,7);
  assert.equal(volley.shots.filter(s=>s.kind==='missile').length,3);
@@ -140,5 +141,12 @@ test('missiles and lasers precede the drone crash, door closure, and shared curs
  assert.equal(broken.broken,true);
  assert.equal(broken.deathFrame,3,'The crash reuses the eleven-frames-per-second Fragility sequence');
  assert.ok(neuralEpilogueFrame(times.crash+3300).deathFrame>broken.deathFrame);
+ assert.equal(neuralEpilogueFrame(times.aftermath).lineIndex,0);
+ assert.equal(neuralEpilogueFrame(times.aftermath+2700).lineIndex,1);
+ assert.equal(neuralEpilogueFrame(times.aftermath+4800).door,7);
+ assert.equal(neuralEpilogueFrame(times.lockdown).door,7);
+ assert.ok(times.closing-times.lockdown>=3000,'The red lockdown warning holds before the door closes');
  assert.equal(neuralEpilogueFrame(times.curse).door,0);
+ assert.deepEqual(NEURAL_COPY.es.aftermath,[['engineer','¡Han matado a K3nn1!'],['diplomat','¡Cabrones!']]);
+ assert.deepEqual(NEURAL_COPY.en.aftermath,[['engineer','They killed K3nn1!'],['diplomat','Bastards!']]);
 });
