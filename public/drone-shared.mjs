@@ -55,23 +55,26 @@ const epilogueLineDurations=[3400,2700,2800,2600,2500,2700,3200,2600];
 const dialogueEnd=NEURAL_AWARD_HOLD_MS+epilogueLineDurations.reduce((sum,n)=>sum+n,0);
 export function neuralEpilogueFrame(elapsedMs){
  const t=Math.max(0,elapsedMs);
- if(t<NEURAL_AWARD_HOLD_MS)return {phase:'award',lineIndex:-1,door:7,shots:[],hostiles:false};
+ if(t<NEURAL_AWARD_HOLD_MS)return {phase:'award',lineIndex:-1,door:7,shots:[]};
  if(t<dialogueEnd){
   let offset=t-NEURAL_AWARD_HOLD_MS,lineIndex=0;
   while(offset>=epilogueLineDurations[lineIndex])offset-=epilogueLineDurations[lineIndex++];
-  return {phase:'dialogue',lineIndex,door:7,shots:[],hostiles:true};
+  return {phase:'dialogue',lineIndex,door:7,shots:[]};
  }
  const volleyT=t-dialogueEnd;
- if(volleyT<3300){
-  const shots=[0,430,820,1280].map((delay,i)=>({kind:i<2?'missile':'laser',progress:clamp((volleyT-delay)/(i<2?1900:1150)),active:volleyT>=delay&&volleyT<delay+(i<2?1900:1150),index:i}));
-  return {phase:'volley',lineIndex:-1,door:7,shots,hostiles:true};
+ if(volleyT<1950){
+  const shots=[0,350,700,160,560,950].map((delay,i)=>{
+   const missile=i<3,duration=missile?620:280;
+   return {kind:missile?'missile':'laser',progress:clamp((volleyT-delay)/duration),active:volleyT>=delay&&volleyT<delay+duration,index:i};
+  });
+  return {phase:'volley',lineIndex:-1,door:7,shots};
  }
- const crashT=volleyT-3300;
- if(crashT<2600)return {phase:'crash',lineIndex:-1,door:7,shots:[],hostiles:true,crashProgress:clamp(crashT/1600),broken:crashT>=1600,deathFrame:Math.min(23,Math.floor(clamp((crashT-1600)/850)*24))};
- const closeT=crashT-2600;
- if(closeT<1200)return {phase:'closing',lineIndex:-1,door:Math.round(7*(1-clamp(closeT/950))),shots:[],hostiles:closeT<750};
- if(closeT<4400)return {phase:'curse',lineIndex:-1,door:0,shots:[],hostiles:false};
- return {phase:'complete',lineIndex:-1,door:0,shots:[],hostiles:false};
+ const crashT=volleyT-1950;
+ if(crashT<3900)return {phase:'crash',lineIndex:-1,door:7,shots:[],crashProgress:clamp(crashT/1600),broken:crashT>=1600,deathFrame:Math.min(23,Math.floor(Math.max(0,crashT-1600)/1000*11))};
+ const closeT=crashT-3900;
+ if(closeT<1200)return {phase:'closing',lineIndex:-1,door:Math.round(7*(1-clamp(closeT/950))),shots:[]};
+ if(closeT<4400)return {phase:'curse',lineIndex:-1,door:0,shots:[]};
+ return {phase:'complete',lineIndex:-1,door:0,shots:[]};
 }
 
 export function setupShared(s,figure,context){
@@ -89,7 +92,7 @@ export function setupShared(s,figure,context){
  context.rerender();
 }
 
-export function renderShared(s,time,{set,sprite,say,paused=false}) {
+export function renderShared(s,time,{set,sprite,say,paused=false,downBottoms}) {
  const ui=s.sharedUI;if(!ui)return;
  const dt=Math.max(0,time-s.sharedLastTime);s.sharedLastTime=time;
  s.puzzle=advanceNeuralPuzzle(s.puzzle,dt);
@@ -116,9 +119,14 @@ export function renderShared(s,time,{set,sprite,say,paused=false}) {
  if(ep?.phase==='crash'){
   droneX=mix(86,43,ep.crashProgress);
   droneY=floor-droneW*.5-Math.sin(Math.PI*ep.crashProgress)*Math.min(125,h*.29);
+  if(ep.broken){const scale=droneW/31;droneY-=Math.max(0,droneY+(downBottoms[ep.deathFrame]-18)*scale-floor);}
   droneOpacity=1;
- }else if(ep&&['closing','curse','complete'].includes(ep.phase)){droneX=43;droneY=floor-droneW*.5;droneOpacity=1;}
- s.actors.scout.style.width=droneW+'px';actor('scout',droneX,droneY,{opacity:droneOpacity,flip:ep?.phase==='crash'});
+ }else if(ep&&['closing','curse','complete'].includes(ep.phase)){
+  droneX=43;droneY=floor-droneW*.5;
+  const scale=droneW/31;droneY-=Math.max(0,droneY+(downBottoms[23]-18)*scale-floor);
+  droneOpacity=1;
+ }
+ s.actors.scout.style.width=droneW+'px';actor('scout',droneX,droneY,{opacity:droneOpacity,flip:ep?.phase==='crash'||ep?.phase==='closing'||ep?.phase==='curse'||ep?.phase==='complete',rotate:ep?.phase==='crash'&&!ep.broken?ep.crashProgress*720:0});
  if(ep?.phase==='crash'&&ep.broken)sprite(s.actors.scout.querySelector('img'),'down',ep.deathFrame);
  else if(ep&&['closing','curse','complete'].includes(ep.phase))sprite(s.actors.scout.querySelector('img'),'down',23);
  else sprite(s.actors.scout.querySelector('img'),'scout',time/170);
@@ -143,7 +151,6 @@ export function renderShared(s,time,{set,sprite,say,paused=false}) {
  });
  const doorW=Math.min(150,w*.29),doorH=doorW*48/64;s.actors.door.style.width=doorW+'px';actor('door',86,floor-doorH/2);sprite(s.actors.door.querySelector('img'),'door',ep?ep.door:f.door);
  const guardW=Math.min(42,w*.105),guardH=guardW*29/19,guardY=floor-guardH/2;
- s.actors.ambusher.style.width=guardW+'px';actor('ambusher',86,guardY,{flip:true,opacity:ep?.hostiles?1:0});sprite(s.actors.ambusher.querySelector('img'),'guard',time/170);
  s.actors.guard.style.width=guardW+'px';actor('guard',f.guardX,guardY,{flip:f.guardFlip,opacity:f.guardVisible?1:0});
  sprite(s.actors.guard.querySelector('img'),f.guardWalking?'guardRun':'guard',time/(f.guardWalking?100:170));
  const gunW=guardW*.8,gunH=gunW*7/15,dir=f.guardFlip?-1:1;

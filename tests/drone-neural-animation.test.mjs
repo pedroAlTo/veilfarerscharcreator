@@ -126,15 +126,19 @@ test('missiles and lasers precede the drone crash, door closure, and shared curs
  const times={};
  for(let ms=0;ms<60000;ms+=20){const frame=neuralEpilogueFrame(ms);times[frame.phase]??=ms;}
  assert.ok(times.dialogue<times.volley&&times.volley<times.crash&&times.crash<times.closing&&times.closing<times.curse);
- const volley=neuralEpilogueFrame(times.volley+1400);
+ const volley=neuralEpilogueFrame(times.volley+1000);
  assert.equal(volley.door,7);
- assert.equal(volley.shots.filter(s=>s.active&&s.kind==='missile').length,2);
- assert.equal(volley.shots.filter(s=>s.active&&s.kind==='laser').length,2);
+ assert.equal(volley.shots.filter(s=>s.kind==='missile').length,3);
+ assert.equal(volley.shots.filter(s=>s.kind==='laser').length,3);
+ assert.ok(volley.shots.some(s=>s.active&&s.kind==='missile'));
+ assert.ok(volley.shots.some(s=>s.active&&s.kind==='laser'));
+ assert.ok(times.crash-times.volley<2000,'The faster volley ends before two seconds');
  const arc=neuralEpilogueFrame(times.crash+700);
  assert.ok(arc.crashProgress>0&&arc.crashProgress<1);
  assert.equal(arc.broken,false);
  const broken=neuralEpilogueFrame(times.crash+1900);
  assert.equal(broken.broken,true);
- assert.ok(broken.deathFrame>0);
+ assert.equal(broken.deathFrame,3,'The crash reuses the eleven-frames-per-second Fragility sequence');
+ assert.ok(neuralEpilogueFrame(times.crash+3300).deathFrame>broken.deathFrame);
  assert.equal(neuralEpilogueFrame(times.curse).door,0);
 });

@@ -1,5 +1,5 @@
 import {droneSprites} from './drone-sprites.mjs?v=20260927-5';
-import {renderShared,setupShared,positionDroneScan} from './drone-shared.mjs?v=20260928-1';
+import {renderShared,setupShared,positionDroneScan} from './drone-shared.mjs?v=20260928-2';
 import {renderSignal,setupSignal} from './drone-signal-scene.mjs?v=20260927-5';
 
 const es=document.documentElement.lang==='es';
@@ -73,7 +73,7 @@ function render(s,time){
  }else if(s.type==='signal'){
   renderSignal(s,time);
  }else if(s.type==='shared'){
-  renderShared(s,time,{set,sprite,say,words,paused});
+  renderShared(s,time,{set,sprite,say,words,paused,downBottoms:droneSprites.down.bottoms});
  }else if(s.type==='conclusion'){
   set(s,'pod',51+Math.sin(t*.6)*8,37+bob);say(s,words.together);
  }
@@ -93,7 +93,7 @@ motion.addEventListener('change',()=>{if(!userChoice){paused=motion.matches;moti
 document.addEventListener('visibilitychange',schedule);
 const warmed=new Set();
 function warm(s){
- const names=new Set(s.images.map(img=>img.dataset.track));if(s.type==='fragility')names.add('down');if(s.type==='shared')for(const n of ['guardRun','scoundrelRun','pilotRun','engineerRun','diplomatRun'])names.add(n);
+ const names=new Set(s.images.map(img=>img.dataset.track));if(s.type==='fragility'||s.type==='shared')names.add('down');if(s.type==='shared')for(const n of ['guardRun','scoundrelRun','pilotRun','engineerRun','diplomatRun'])names.add(n);
  for(const name of names)for(const src of droneSprites[name]?.frames||[]){if(!warmed.has(src)){warmed.add(src);const image=new Image();image.src=src;}}
 }
 window.addEventListener('resize',()=>{for(const s of states)render(s,s.time||2000);});
