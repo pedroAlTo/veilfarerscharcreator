@@ -117,13 +117,15 @@
   settings.className = 'vf-analytics-settings';
   settings.type = 'button';
   settings.dataset.analyticsSettings = '';
-  settings.textContent = copy.settings;
+  settings.setAttribute('aria-label', copy.settings);
+  settings.title = copy.settings;
+  settings.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2a8.8 8.8 0 1 0 8.8 8.8c0-.6-.1-1.2-.2-1.8a2.5 2.5 0 0 1-3.2-3.2A8.8 8.8 0 0 0 12 3.2Z"/><circle cx="8.1" cy="9" r="1"/><circle cx="11.3" cy="6.8" r=".9"/><circle cx="7.6" cy="13.2" r=".9"/><circle cx="12.1" cy="15.6" r="1"/><circle cx="15.2" cy="11.2" r=".8"/></svg>';
   settings.hidden = true;
 
   document.body.append(banner, settings);
   const style = document.createElement('link');
   style.rel = 'stylesheet';
-  style.href = '/analytics-consent.css?v=20261002-1';
+  style.href = '/analytics-consent.css?v=20261002-2';
   document.head.append(style);
 
   function showSettings() {
