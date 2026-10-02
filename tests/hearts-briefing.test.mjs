@@ -10,7 +10,7 @@ test('Hearts retains its canonical, shared navigation, analytics and both direct
   assert.match(html, /rel="canonical" href="https:\/\/veilfarers.com\/books\/hearts-in-the-void.html"/);
   assert.match(html, /data-site-header/);
   assert.match(html, /public-navigation\.css\?v=20260829-8/);
-  assert.match(html, /simple-analytics\.js/);
+  assert.match(html, /analytics-consent\.js/);
   assert.equal([...html.matchAll(/data-vf-download-title="Hearts in the Void"/g)].length, 2);
   assert.equal([...html.matchAll(/<h1\b/g)].length, 1);
   assert.match(html, /id="adventure"/);

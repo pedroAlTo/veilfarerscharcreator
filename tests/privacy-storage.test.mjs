@@ -7,7 +7,7 @@ const legal=readFileSync(new URL('../public/legal.html',import.meta.url),'utf8')
 const feedback=readFileSync(new URL('../public/feedback.html',import.meta.url),'utf8')
 const downloadsPage=readFileSync(new URL('../public/downloads.html',import.meta.url),'utf8')
 const downloadsRuntime=readFileSync(new URL('../public/downloads.js',import.meta.url),'utf8')
-const analyticsRuntime=readFileSync(new URL('../public/simple-analytics.js',import.meta.url),'utf8')
+const analyticsRuntime=readFileSync(new URL('../public/analytics-consent.js',import.meta.url),'utf8')
 const headers=readFileSync(new URL('../public/_headers',import.meta.url),'utf8')
 const netlify=readFileSync(new URL('../netlify.toml',import.meta.url),'utf8')
 
@@ -27,8 +27,9 @@ test('legal notice inventories essential storage and discloses limited public an
   assert.match(legal,/first-party local storage/)
   assert.match(legal,/Netlify Identity · technical session storage\/cookies/)
   assert.match(legal,/Firebase · technical authentication persistence/)
-  assert.match(legal,/Simple Analytics · public Downloads page only/)
-  assert.match(legal,/No cookies, local storage or persistent visitor ID/)
+  assert.match(legal,/Google Analytics 4 · optional public-site measurement/)
+  assert.match(legal,/180 days/)
+  assert.match(legal,/Cookie settings/)
   assert.match(legal,/No account, character, email or private-tool data is sent/)
   assert.match(legal,/UODO/)
   assert.match(legal,/Google Cloud Data Processing Addendum/)
@@ -43,23 +44,28 @@ test('feedback is collected in-house, with no external form processor',()=>{
 
 test('no behavioural advertising or invasive tracking runtime is present',()=>{
   const runtime=[portal,legal,feedback].join('\n')
-  assert.doesNotMatch(runtime,/getAnalytics\s*\(|gtag\s*\(|googletagmanager|hotjar|clarity\s*\(|posthog|mixpanel/i)
+  assert.doesNotMatch(runtime,/hotjar|clarity\s*\(|posthog|mixpanel/i)
+  assert.match(analyticsRuntime,/analytics_storage: 'denied'/)
+  assert.match(analyticsRuntime,/ad_personalization: 'denied'/)
+  assert.match(analyticsRuntime,/if \(choice\?\.analytics\) \{[\s\S]*?loadGoogleTag\(\)/)
 })
 
-test('downloads use privacy-focused analytics without changing native link behaviour',()=>{
-  assert.match(downloadsPage,/src="simple-analytics\.js\?v=\d+-\d+"/)
-  assert.match(analyticsRuntime,/https:\/\/scripts\.simpleanalyticscdn\.com\/latest\.js/)
+test('downloads use consent-gated analytics without changing native link behaviour',()=>{
+  assert.match(downloadsPage,/src="\/analytics-consent\.js\?v=\d+-\d+"/)
+  assert.match(analyticsRuntime,/https:\/\/www\.googletagmanager\.com\/gtag\/js/)
+  assert.match(analyticsRuntime,/vfTrackEvent/)
   assert.match(downloadsRuntime,/data-vf-download/)
-  assert.match(downloadsRuntime,/sa_event\('download_pdf'/)
+  assert.match(downloadsRuntime,/vfTrackEvent\('download_pdf'/)
   assert.match(downloadsRuntime,/title: link\.dataset\.vfDownloadTitle/)
   assert.match(downloadsRuntime,/version: link\.dataset\.vfDownloadVersion/)
   assert.doesNotMatch(downloadsRuntime,/preventDefault\s*\(/)
 })
 
-test('deployment CSP permits only the Simple Analytics script and collection endpoint',()=>{
+test('deployment CSP permits Google Analytics endpoints without its advertising network',()=>{
   for (const policy of [headers,netlify]) {
-    assert.match(policy,/script-src[^\n"]*https:\/\/scripts\.simpleanalyticscdn\.com/)
-    assert.match(policy,/connect-src[^\n"]*https:\/\/queue\.simpleanalyticscdn\.com/)
-    assert.match(policy,/img-src[^\n"]*https:\/\/queue\.simpleanalyticscdn\.com/)
+    assert.match(policy,/script-src[^\n"]*https:\/\/www\.googletagmanager\.com/)
+    assert.match(policy,/connect-src[^\n"]*https:\/\/\*\.google-analytics\.com/)
+    assert.match(policy,/img-src[^\n"]*https:\/\/\*\.google-analytics\.com/)
+    assert.doesNotMatch(policy,/simpleanalyticscdn|doubleclick\.net/)
   }
 })

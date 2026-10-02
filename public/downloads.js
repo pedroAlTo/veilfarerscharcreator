@@ -6,8 +6,8 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
   list.addEventListener('click', event => {
     const link = event.target.closest('a[data-vf-download]');
-    if (!link || !list.contains(link) || typeof window.sa_event !== 'function') return;
-    window.sa_event('download_pdf', {
+    if (!link || !list.contains(link) || typeof window.vfTrackEvent !== 'function') return;
+    window.vfTrackEvent('download_pdf', {
       title: link.dataset.vfDownloadTitle,
       version: link.dataset.vfDownloadVersion,
       file: new URL(link.href, window.location.href).pathname
