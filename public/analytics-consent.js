@@ -150,6 +150,27 @@
     window.gtag('event', name, parameters);
     return true;
   };
+  const bookPdfFiles = new Set([
+    '/download/VeilFarers_Corebook_12.06.pdf',
+    '/download/VeilFarers_Keepers_Companion_12.06.pdf',
+    '/download/VeilFarers_Hearts_in_the_Void_12.06.pdf',
+    '/download/VeilFarers_Rust_and_Steel_12.06.pdf',
+    '/download/VeilFarers_Alien_Species_12.06.pdf',
+    '/download/VeilFarers_First_Crossing_1.1.pdf'
+  ]);
+  document.addEventListener('click', event => {
+    const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+    if (!link) return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || !url.pathname.startsWith('/download/') || !/\.pdf$/i.test(url.pathname)) return;
+    const file = url.pathname;
+    const group = link.dataset.vfDownloadGroup || (bookPdfFiles.has(file) ? 'books' : 'accessories');
+    const title = link.dataset.vfDownloadTitle || decodeURIComponent(file.split('/').pop()).replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ');
+    const version = link.dataset.vfDownloadVersion || '';
+    const parameters = { title, version, file, download_group: group, source: location.pathname };
+    window.vfTrackEvent('download_pdf', parameters);
+    window.vfTrackEvent(group === 'books' ? 'book_download' : 'accessory_download', parameters);
+  });
   window.VeilFarersAnalytics = Object.freeze({
     open: showSettings,
     get consent() { return choice ? { analytics: choice.analytics } : null; }

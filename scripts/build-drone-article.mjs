@@ -55,7 +55,7 @@ ${c.sections.map(s=>`<section id="${s.id}"><p class="journal-label">${s.label}</
 <div class="pixel-share"><button type="button" data-share-article>${u.share}</button><p class="journal-share-status" role="status" data-share-status></p></div>
 <p class="pixel-art-credit">${u.credit} <a href="https://www.gamedevmarket.net/asset/pixel-art-sci-fi-complete-toolkit" target="_blank" rel="noopener">BarelyApes</a>. ${u.extraCredit}</p><p class="journal-note">${u.note}</p>
 </article></div></main><footer class="book-footer"><span>VeilFarers · ${u.journal}</span><nav><a href="/behind-the-veil/">${u.journal}</a><a href="/downloads.html">${u.footerDownloads}</a><a href="/feedback.html">${u.footerFeedback}</a><a href="/legal.html">${u.footerLegal}</a></nav></footer>
-<script src="/public-navigation.js?v=20260829-2" defer></script><script src="/simple-analytics.js" defer></script><script src="/book-detail.js?v=20260901-1" defer></script><script type="module" src="/drone-scenes.mjs?v=20260928-2"></script><script type="module" src="/theme-player.mjs?v=20260919-3"></script></body></html>`;
+<script src="/public-navigation.js?v=20260829-2" defer></script><script src="/analytics-consent.js?v=20261003-1" defer></script><script src="/book-detail.js?v=20261003-1" defer></script><script type="module" src="/drone-scenes.mjs?v=20260928-2"></script><script type="module" src="/theme-player.mjs?v=20260919-3"></script></body></html>`;
  fs.writeFileSync(new URL(`../public/behind-the-veil/${file}`,import.meta.url),html+'\n');
 }
 console.log('Built English and Spanish Drones articles.');

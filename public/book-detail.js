@@ -24,24 +24,3 @@ if (bookTheme && document.body.dataset.bookBackground !== 'custom') {
   atmosphereScript.src = '/book-background.js?v=20260831-1';
   document.head.append(atmosphereScript);
 }
-
-document.addEventListener('click', event => {
-  const link = event.target.closest('a[data-vf-download]');
-  if (!link || typeof window.vfTrackEvent !== 'function') return;
-  window.vfTrackEvent('download_pdf', {
-    title: link.dataset.vfDownloadTitle,
-    version: link.dataset.vfDownloadVersion,
-    file: new URL(link.href, window.location.href).pathname,
-    source: 'book_detail'
-  });
-  const title = (link.dataset.vfDownloadTitle || '').toLowerCase();
-  if (!/table kit|color maps/.test(title)) {
-    window.vfTrackEvent('book_download', {
-      title: link.dataset.vfDownloadTitle,
-      version: link.dataset.vfDownloadVersion,
-      file: new URL(link.href, window.location.href).pathname,
-      source: 'book_detail'
-    });
-  }
-});
-

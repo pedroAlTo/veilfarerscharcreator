@@ -18,7 +18,7 @@ export function renderDownloads(manifest) {
       <h2>${escapeHtml(item.title)}</h2>
       <p>${escapeHtml(item.description || `Canonical VeilFarers ${item.version} PDF candidate.`)}</p>
       <div class="vf-download-meta"><span>${escapeHtml(item.version)}</span><span>${escapeHtml(size(item.bytes))}</span></div>
-      <a class="vf-button primary" href="${escapeHtml(item.file)}" download data-vf-download${bookTypes.has(item.type) ? ' data-vf-download-book="true"' : ''} data-vf-download-title="${escapeHtml(item.title)}" data-vf-download-version="${escapeHtml(item.version)}">${escapeHtml(item.downloadLabel || 'Download PDF')}</a>
+      <a class="vf-button primary" href="${escapeHtml(item.file)}" download data-vf-download data-vf-download-group="${bookTypes.has(item.type) ? 'books' : 'accessories'}" data-vf-download-title="${escapeHtml(item.title)}" data-vf-download-version="${escapeHtml(item.version)}">${escapeHtml(item.downloadLabel || 'Download PDF')}</a>
     </article>`;
   }).join('\n');
 }

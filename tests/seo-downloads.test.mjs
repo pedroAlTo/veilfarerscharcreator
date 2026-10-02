@@ -80,6 +80,8 @@ test('both header sources keep public indexing open and configure downloads cons
 test('published download cards and all PDF checksums match the current catalogue', () => {
   assert.equal(syncDownloads(page, manifest), page, 'Run npm run sync:downloads after updating the catalogue');
   assert.ok(page.includes(renderDownloads(manifest)));
+  assert.equal((page.match(/data-vf-download-group="books"/g) || []).length, 6);
+  assert.equal((page.match(/data-vf-download-group="accessories"/g) || []).length, 6);
   assert.ok(page.includes(`<strong id="canonical-release">${manifest.release}</strong>`));
   const links = [...page.matchAll(/href="(\/download\/[^"\s]+\.pdf)" download/g)].map(match => match[1]);
   assert.deepEqual(links, manifest.items.map(item => item.file));

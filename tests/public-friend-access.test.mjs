@@ -426,13 +426,14 @@ test('every book page offers its own tracked direct PDF download', () => {
     assert.equal((page.match(/ data-vf-download(?=[ >])/g) || []).length, file === 'hearts-in-the-void.html' ? 5 : 2)
     assert.match(page, /analytics-consent\.js/)
     assert.match(page, /book-detail\.js\?v=\d{8}-\d+/)
+    assert.match(page, /data-vf-download-group="books"/)
     assert.equal(existsSync(new URL(`../public${href}`, import.meta.url)), true)
   }
 
-  const detail = read('../public/book-detail.js')
+  const runtime = read('../public/analytics-consent.js')
   const styles = read('../public/book-detail.css')
-  assert.match(detail, /vfTrackEvent\('download_pdf'/)
-  assert.match(detail, /source: 'book_detail'/)
+  assert.match(runtime, /window\.vfTrackEvent\('download_pdf', parameters\)/)
+  assert.match(runtime, /window\.vfTrackEvent\(group === 'books' \? 'book_download' : 'accessory_download', parameters\)/)
   assert.match(styles, /\.book-actions \.book-download-action/)
 })
 
