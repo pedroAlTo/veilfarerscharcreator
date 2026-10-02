@@ -3,6 +3,7 @@
   "private": true,
   "version": "59.82.0",
   "scripts": {
+    "sync:downloads": "node scripts/sync-downloads.mjs",
     "test": "node --test \"tests/*.mjs\" && node --test --experimental-strip-types \"tests/*.mts\"",
     "verify": "node scripts/verify-deploy.mjs",
     "check": "npm run verify && npm test"

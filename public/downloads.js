@@ -1,10 +1,9 @@
 (function(){
   'use strict';
-  const D = window.VeilFarersData;
   const list = document.querySelector('#downloads-list');
   const release = document.querySelector('#canonical-release');
   const status = document.querySelector('#downloads-status');
-  const esc = D.escapeHtml;
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
   list.addEventListener('click', event => {
     const link = event.target.closest('a[data-vf-download]');
     if (!link || !list.contains(link) || typeof window.sa_event !== 'function') return;
@@ -18,13 +17,16 @@
     const mb = Number(bytes || 0) / 1024 / 1024;
     return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(Number(bytes||0)/1024)} KB`;
   };
-  Promise.all([
-    fetch('/download/downloads.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`Manifest ${r.status}`);return r.json();}),
-    D.manifest()
-  ]).then(([manifest,canonical])=>{
-    release.textContent = manifest.release || canonical.release;
+  fetch('/download/downloads.json',{cache:'no-cache'}).then(response=>{
+    if(!response.ok)throw new Error(`Manifest ${response.status}`);
+    return response.json();
+  }).then(manifest=>{
+    if(!manifest || !Array.isArray(manifest.items))throw new Error('Invalid download catalogue');
+    const currentItems = manifest.items.filter(item => item && item.current !== false && !['deprecated','superseded','withdrawn'].includes(String(item.lifecycle || item.status || '').toLowerCase()));
+    if(!currentItems.length)throw new Error('Empty download catalogue');
+    if(currentItems.some(item => typeof item.file !== 'string' || !/^\/download\/[A-Za-z0-9_.-]+\.pdf$/.test(item.file)))throw new Error('Invalid PDF link');
+    release.textContent = manifest.release || release.textContent;
     status.textContent = manifest.pdfCandidateStatus || '';
-    const currentItems = (manifest.items||[]).filter(item => item && item.current !== false && !['deprecated','superseded','withdrawn'].includes(String(item.lifecycle || item.status || '').toLowerCase()));
     const cover = item => item && item.cover
       ? `<div class="vf-cover"><img src="${esc(item.cover)}" alt="${esc(item.coverAlt || '')}" width="${Number(item.coverWidth) || 600}" height="${Number(item.coverHeight) || 776}" style="aspect-ratio:${Number(item.coverWidth) || 600}/${Number(item.coverHeight) || 776}" loading="lazy" decoding="async"></div>`
       : '';
@@ -36,5 +38,7 @@
       <div class="vf-download-meta"><span>${esc(item.version)}</span><span>${esc(size(item.bytes))}</span></div>
       <a class="vf-button primary" href="${esc(item.file)}" download data-vf-download data-vf-download-title="${esc(item.title)}" data-vf-download-version="${esc(item.version)}">${esc(item.downloadLabel || 'Download PDF')}</a>
     </article>`).join('');
-  }).catch(err=>{ list.innerHTML=`<div class="vf-error">Downloads could not be loaded: ${esc(err.message)}</div>`; });
+  }).catch(()=>{
+    status.textContent = 'The latest catalogue could not be checked. The published PDFs below are still available; reload to try again.';
+  });
 })();
