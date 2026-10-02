@@ -1,7 +1,7 @@
 {
   "name": "veilfarers-portal",
   "private": true,
-  "version": "59.82.0",
+  "version": "59.83.0",
   "scripts": {
     "sync:downloads": "node scripts/sync-downloads.mjs",
     "test": "node --test \"tests/*.mjs\" && node --test --experimental-strip-types \"tests/*.mts\"",

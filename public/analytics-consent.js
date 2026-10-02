@@ -6,7 +6,7 @@
   const spanish = (document.documentElement.lang || '').toLowerCase().startsWith('es');
   const copy = spanish ? {
     title: 'Privacidad y cookies',
-    message: 'Con tu permiso, Google Analytics usará cookies de análisis para medir visitas y descargas de PDF. Es opcional; puedes rechazarlo y seguir usando el sitio.',
+    message: 'Google Analytics sólo usará cookies analíticas si das permiso. Si las rechazas, puede enviar una señal de visita limitada y sin cookies. Puedes cambiar tu decisión cuando quieras.',
     accept: 'Aceptar analítica',
     reject: 'Rechazar analítica',
     details: 'Información de privacidad',
@@ -14,7 +14,7 @@
     label: 'Aviso de cookies y analítica'
   } : {
     title: 'Privacy and cookies',
-    message: 'With your permission, Google Analytics uses analytics cookies to measure visits and PDF downloads. This is optional; you can reject it and keep using the site.',
+    message: 'Google Analytics uses analytics cookies only with your permission. If you reject them, it may still send a limited, cookieless page-view signal. You can change your choice at any time.',
     accept: 'Accept analytics',
     reject: 'Reject analytics',
     details: 'Privacy details',
@@ -25,9 +25,6 @@
   let choice = readChoice();
   let tagInitialized = false;
   let tagLoading = false;
-  const disableKey = 'ga-disable-' + measurementId;
-  window[disableKey] = !choice?.analytics;
-
   function readChoice() {
     try {
       const value = JSON.parse(localStorage.getItem(storageKey) || 'null');
@@ -61,16 +58,9 @@
   function loadGoogleTag() {
     if (tagInitialized || tagLoading) return;
     tagLoading = true;
-    window[disableKey] = false;
     const send = gtag();
     send('consent', 'default', {
-      analytics_storage: 'denied',
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied'
-    });
-    send('consent', 'update', {
-      analytics_storage: 'granted',
+      analytics_storage: choice?.analytics ? 'granted' : 'denied',
       ad_storage: 'denied',
       ad_user_data: 'denied',
       ad_personalization: 'denied'
@@ -135,18 +125,13 @@
   }
 
   function save(analytics) {
-    const wasGranted = choice?.analytics === true;
     storeChoice(analytics);
     banner.hidden = true;
     settings.hidden = false;
+    updateConsent(analytics);
     if (analytics) {
-      window[disableKey] = false;
-      if ((tagInitialized || tagLoading) && !wasGranted) updateConsent(true);
       loadGoogleTag();
-      if (tagInitialized && !wasGranted) window.gtag('event', 'page_view', { page_location: location.origin + location.pathname });
     } else {
-      window[disableKey] = true;
-      if (tagInitialized || tagLoading) updateConsent(false);
       removeAnalyticsCookies();
     }
     settings.focus({ preventScroll: true });
@@ -161,7 +146,7 @@
   document.querySelectorAll('.vf-analytics-inline-settings').forEach(button => button.addEventListener('click', showSettings));
 
   window.vfTrackEvent = (name, parameters = {}) => {
-    if (!choice?.analytics || window[disableKey] || typeof window.gtag !== 'function') return false;
+    if (!choice?.analytics || typeof window.gtag !== 'function') return false;
     window.gtag('event', name, parameters);
     return true;
   };
@@ -170,10 +155,8 @@
     get consent() { return choice ? { analytics: choice.analytics } : null; }
   });
 
-  if (choice?.analytics) {
-    settings.hidden = false;
-    loadGoogleTag();
-  } else if (choice) {
+  loadGoogleTag();
+  if (choice) {
     settings.hidden = false;
   } else {
     banner.hidden = false;

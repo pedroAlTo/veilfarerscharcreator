@@ -1,16 +1,16 @@
 {
   "schema": "veilfarers.deploy/1",
-  "version": "v59.82",
-  "packageVersion": "59.82.0",
-  "date": "2026-09-11",
+  "version": "v59.83",
+  "packageVersion": "59.83.0",
+  "date": "2026-10-02",
   "cspProfile": "wasm-3d-dice-v2",
   "requiredScriptSource": "'wasm-unsafe-eval'",
   "expectedResponseHeaders": {
-    "X-VeilFarers-Release": "v59.82",
+    "X-VeilFarers-Release": "v59.83",
     "X-VeilFarers-CSP-Profile": "wasm-3d-dice-v2"
   },
   "accessibilityProfile": "WCAG-2.2-AA-target",
-  "generatedAt": "2026-09-11",
-  "release": "v59.82",
-  "notes": "Books 12.06 and First Crossing 1.1 PDFs; cinematic release notices; new First Crossing illustrations; interactive Charon's Refuge with individually mapped window lights and particle stars. Nine Signals remains dormant behind Coming soon."
+  "generatedAt": "2026-10-02",
+  "release": "v59.83",
+  "notes": "Consent-aware Google Analytics with advanced Consent Mode; updated Google CSP for Behind the Veil article routes."
 }

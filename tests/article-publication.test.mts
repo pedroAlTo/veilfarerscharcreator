@@ -17,6 +17,9 @@ test('all canonical, extensionless and trailing-slash article variants use the s
     assert.equal(response.status,200,path)
     assert.match(response.headers.get('cache-control')||'',/no-store/)
     assert.equal(response.headers.get('netlify-cdn-cache-control'),'no-store')
+    assert.match(response.headers.get('content-security-policy')||'',/script-src[^;]*https:\/\/www\.googletagmanager\.com/)
+    assert.match(response.headers.get('content-security-policy')||'',/connect-src[^;]*google-analytics\.com/)
+    assert.equal(response.headers.get('x-veilfarers-release'),'v59.83')
   }
   assert.equal(articleForPath('/behind-the-veil/../../admin.html'),null)
 })
