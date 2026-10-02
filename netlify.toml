@@ -2,6 +2,42 @@ functionsDirectory = "netlify/functions"
 functionsDirectoryOrigin = "default"
 plugins = []
 
+[[redirects]]
+from = "https://veilfarers.netlify.app/*"
+to = "https://veilfarers.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "http://veilfarers.netlify.app/*"
+to = "https://veilfarers.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://www.veilfarers.com/*"
+to = "https://veilfarers.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "http://www.veilfarers.com/*"
+to = "https://veilfarers.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "http://veilfarers.com/*"
+to = "https://veilfarers.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "/index.html"
+to = "/"
+status = 301
+force = true
+
 [build]
 publish = "public"
 publishOrigin = "config"
@@ -317,6 +353,40 @@ for = "/admin.html"
 for = "/api/*"
   [headers.values]
   Cache-Control = "no-store"
+
+[[headers]]
+for = "/"
+  [headers.values]
+  Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/robots.txt"
+  [headers.values]
+  Content-Type = "text/plain; charset=utf-8"
+  Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/sitemap.xml"
+  [headers.values]
+  Content-Type = "application/xml; charset=utf-8"
+  Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/download/*.pdf"
+  [headers.values]
+  Content-Type = "application/pdf"
+  Content-Disposition = "attachment"
+  Cache-Control = "public, max-age=86400, must-revalidate"
+
+[[headers]]
+for = "/download/downloads.json"
+  [headers.values]
+  Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/rules-data/downloads.json"
+  [headers.values]
+  Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
 for = "/assets/*"

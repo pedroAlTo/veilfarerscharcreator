@@ -29,6 +29,28 @@
 /api/*
   Cache-Control: no-store
 
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+
+/download/*.pdf
+  Content-Type: application/pdf
+  Content-Disposition: attachment
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/download/downloads.json
+  Cache-Control: public, max-age=0, must-revalidate
+
+/rules-data/downloads.json
+  Cache-Control: public, max-age=0, must-revalidate
+
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
