@@ -34,5 +34,14 @@ document.addEventListener('click', event => {
     file: new URL(link.href, window.location.href).pathname,
     source: 'book_detail'
   });
+  const title = (link.dataset.vfDownloadTitle || '').toLowerCase();
+  if (!/table kit|color maps/.test(title)) {
+    window.vfTrackEvent('book_download', {
+      title: link.dataset.vfDownloadTitle,
+      version: link.dataset.vfDownloadVersion,
+      file: new URL(link.href, window.location.href).pathname,
+      source: 'book_detail'
+    });
+  }
 });
 

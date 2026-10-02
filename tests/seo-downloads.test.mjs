@@ -7,7 +7,7 @@ import { renderDownloads, syncDownloads } from '../scripts/sync-downloads.mjs';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const config = read('netlify.toml');
-const headers = read('public/_headers');
+const headers = read('public/_headers').replace(/\r\n/g, '\n');
 const manifest = JSON.parse(read('public/download/downloads.json'));
 const page = read('public/downloads.html');
 
@@ -25,7 +25,7 @@ test('canonical host redirects precede access gates and do not target previews',
 });
 
 test('robots permits public pages and downloads while retaining private exclusions', () => {
-  const robots = read('public/robots.txt');
+  const robots = read('public/robots.txt').replace(/\r\n/g, '\n');
   assert.match(robots, /^User-agent: \*$/m);
   assert.match(robots, /^Allow: \/$/m);
   assert.match(robots, /^Allow: \/download\/$/m);

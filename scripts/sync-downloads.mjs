@@ -6,6 +6,7 @@ const size = bytes => {
   const megabytes = Number(bytes || 0) / 1024 / 1024;
   return megabytes >= 1 ? `${megabytes.toFixed(1)} MB` : `${Math.round(Number(bytes || 0) / 1024)} KB`;
 };
+const bookTypes = new Set(['rulebook', 'standalone adventure', 'supplement', 'starter session']);
 
 export function renderDownloads(manifest) {
   return manifest.items.filter(item => item && item.current !== false && !['deprecated', 'superseded', 'withdrawn'].includes(String(item.lifecycle || item.status || '').toLowerCase())).map(item => {
@@ -17,7 +18,7 @@ export function renderDownloads(manifest) {
       <h2>${escapeHtml(item.title)}</h2>
       <p>${escapeHtml(item.description || `Canonical VeilFarers ${item.version} PDF candidate.`)}</p>
       <div class="vf-download-meta"><span>${escapeHtml(item.version)}</span><span>${escapeHtml(size(item.bytes))}</span></div>
-      <a class="vf-button primary" href="${escapeHtml(item.file)}" download data-vf-download data-vf-download-title="${escapeHtml(item.title)}" data-vf-download-version="${escapeHtml(item.version)}">${escapeHtml(item.downloadLabel || 'Download PDF')}</a>
+      <a class="vf-button primary" href="${escapeHtml(item.file)}" download data-vf-download${bookTypes.has(item.type) ? ' data-vf-download-book="true"' : ''} data-vf-download-title="${escapeHtml(item.title)}" data-vf-download-version="${escapeHtml(item.version)}">${escapeHtml(item.downloadLabel || 'Download PDF')}</a>
     </article>`;
   }).join('\n');
 }

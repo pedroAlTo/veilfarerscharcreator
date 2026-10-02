@@ -3,6 +3,7 @@
   const list = document.querySelector('#downloads-list');
   const release = document.querySelector('#canonical-release');
   const status = document.querySelector('#downloads-status');
+  const bookTypes = new Set(['rulebook', 'standalone adventure', 'supplement', 'starter session']);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
   list.addEventListener('click', event => {
     const link = event.target.closest('a[data-vf-download]');
@@ -12,6 +13,14 @@
       version: link.dataset.vfDownloadVersion,
       file: new URL(link.href, window.location.href).pathname
     });
+    if (link.dataset.vfDownloadBook === 'true') {
+      window.vfTrackEvent('book_download', {
+        title: link.dataset.vfDownloadTitle,
+        version: link.dataset.vfDownloadVersion,
+        file: new URL(link.href, window.location.href).pathname,
+        source: 'downloads'
+      });
+    }
   });
   const size = bytes => {
     const mb = Number(bytes || 0) / 1024 / 1024;
@@ -36,7 +45,7 @@
       <h2>${esc(item.title)}</h2>
       <p>${esc(item.description || `Canonical VeilFarers ${item.version} PDF candidate.`)}</p>
       <div class="vf-download-meta"><span>${esc(item.version)}</span><span>${esc(size(item.bytes))}</span></div>
-      <a class="vf-button primary" href="${esc(item.file)}" download data-vf-download data-vf-download-title="${esc(item.title)}" data-vf-download-version="${esc(item.version)}">${esc(item.downloadLabel || 'Download PDF')}</a>
+      <a class="vf-button primary" href="${esc(item.file)}" download data-vf-download data-vf-download-title="${esc(item.title)}" data-vf-download-version="${esc(item.version)}"${bookTypes.has(item.type) ? ' data-vf-download-book="true"' : ''}>${esc(item.downloadLabel || 'Download PDF')}</a>
     </article>`).join('');
   }).catch(()=>{
     status.textContent = 'The latest catalogue could not be checked. The published PDFs below are still available; reload to try again.';
