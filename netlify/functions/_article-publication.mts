@@ -6,10 +6,12 @@ import {normalizeCtaConfig,ctaIsLive,type ArticleId} from './_cta-config.mts'
 const variants:Record<string,{article:ArticleId;file:string;lang:'en'|'es'}>={
   overkill:{article:'overkill',file:'overkill.html',lang:'en'},
   drones:{article:'drones',file:'drones.html',lang:'en'},
-  'drones-es':{article:'drones',file:'drones-es.html',lang:'es'}
+  'drones-es':{article:'drones',file:'drones-es.html',lang:'es'},
+  'space-combat':{article:'space-combat',file:'space-combat.html',lang:'en'},
+  'space-combat-es':{article:'space-combat',file:'space-combat-es.html',lang:'es'}
 }
 export function articleForPath(path:string){
-  const match=path.match(/^\/behind-the-veil\/(overkill|drones|drones-es)(?:\.html|\/)?$/)
+  const match=path.match(/^\/behind-the-veil\/(overkill|drones|drones-es|space-combat|space-combat-es)(?:\.html|\/)?$/)
   return match?variants[match[1]]:null
 }
 const htmlHeaders={

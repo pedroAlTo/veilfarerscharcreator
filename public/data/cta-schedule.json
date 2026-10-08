@@ -56,6 +56,12 @@
       "startsAt": null,
       "endsAt": null,
       "priority": 1
+    },
+    "space-combat": {
+      "enabled": true,
+      "startsAt": null,
+      "endsAt": null,
+      "priority": 3
     }
   }
 }

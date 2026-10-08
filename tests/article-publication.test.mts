@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import {readFileSync} from 'node:fs'
 import {createArticleHandler,articleForPath} from '../netlify/functions/_article-publication.mts'
 import {normalizeCtaConfig,mergeCtaConfig,defaultCtaConfig} from '../netlify/functions/_cta-config.mts'
 import {config as routeConfig} from '../netlify/functions/behind-veil-article.mts'
@@ -8,9 +9,19 @@ const now=Date.parse('2026-10-01T12:00:00Z')
 const url=(path:string)=>new Request(`https://veilfarers.com${path}`)
 const setup=(config:any=defaultCtaConfig,overrides:any={})=>createArticleHandler({read:async()=>({data:normalizeCtaConfig(config)}),readHtml:async(file)=>`<!doctype html><main>${file}</main>`,now:()=>now,...overrides})
 
+test('every routed article HTML is included in the deployed publication function',()=>{
+  const configuration=readFileSync(new URL('../netlify.toml',import.meta.url),'utf8')
+  const bundled=configuration.match(/\[functions\."behind-veil-article"\]\s*included_files\s*=\s*\[([^\]]+)\]/)?.[1]||''
+  for(const path of routeConfig.path as string[]){
+    const target=articleForPath(path)
+    assert.ok(target)
+    assert.ok(bundled.includes(`"public/behind-the-veil/${target.file}"`),`${target.file} must be bundled`)
+  }
+})
+
 test('all canonical, extensionless and trailing-slash article variants use the server gate',async()=>{
   assert.equal(routeConfig.preferStatic,false)
-  assert.equal((routeConfig.path as string[]).length,9)
+  assert.equal((routeConfig.path as string[]).length,15)
   for(const path of routeConfig.path as string[]){
     assert.ok(articleForPath(path))
     const response=await setup()(url(path))
@@ -36,6 +47,17 @@ test('disabling Drones blocks English, Spanish and no-JavaScript direct visits',
   }
   assert.equal(htmlReads,0)
   assert.equal((await handler(url('/behind-the-veil/overkill.html'))).status,200)
+})
+
+test('Space Combat English and Spanish share one schedulable publication switch',async()=>{
+  const config=mergeCtaConfig(defaultCtaConfig,{articles:{'space-combat':{enabled:false}}})
+  const handler=setup(config)
+  for(const path of ['/behind-the-veil/space-combat.html','/behind-the-veil/space-combat-es.html']){
+    assert.equal((await handler(url(path))).status,404)
+  }
+  const published=setup()
+  assert.equal((await published(url('/behind-the-veil/space-combat.html'))).status,200)
+  assert.equal((await published(url('/behind-the-veil/space-combat-es.html'))).status,200)
 })
 
 test('article publication starts at the exact start and ends at the exact end server time',async()=>{

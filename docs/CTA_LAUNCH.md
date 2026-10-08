@@ -18,7 +18,7 @@ POST /api/cta-config stores CTA and article settings in the existing Firestore d
 
 Public pages share content-schedule.js: they evaluate start/end boundaries against server time and refresh saved settings every 30 seconds and when a tab becomes visible. Changes do not require a new deploy. Paused/expired CTA dialogs close automatically. The bundled public/data/cta-schedule.json is a read-only fallback only on localhost; a production service failure hides controlled content rather than resurrecting the bundled defaults.
 
-The Behind the Veil section of Admin controls Overkill and Drones (English and Spanish together), including their order in the journal. A Netlify Function gates every article HTML and extensionless URL on the server, so inactive articles return 404 even without JavaScript. A storage outage returns 503; responses are never cached. The article HTML is bundled through functions.behind-veil-article.included_files in netlify.toml.
+The Behind the Veil section of Admin controls Overkill, Drones and Space Combat (English and Spanish together), including their order in the journal. A Netlify Function gates every article HTML and extensionless URL on the server, so inactive articles return 404 even without JavaScript. A storage outage returns 503; responses are never cached. Every article HTML variant is bundled through functions.behind-veil-article.included_files in netlify.toml and covered by a deployment-configuration regression test.
 
 A Python static preview cannot run Netlify Functions or save schedules. Admin explains this and displays only read-only bundled settings there; use Netlify Dev or the deployed site for real administration. The scheduling feature must be deployed once before it is available on the live site.
 

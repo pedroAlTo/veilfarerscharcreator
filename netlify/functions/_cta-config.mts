@@ -1,5 +1,5 @@
 export const CTA_IDS=['pricing','behind','books','crossing','release','beta','minis'] as const
-export const ARTICLE_IDS=['overkill','drones'] as const
+export const ARTICLE_IDS=['overkill','drones','space-combat'] as const
 export type CtaId=(typeof CTA_IDS)[number]
 export type ArticleId=(typeof ARTICLE_IDS)[number]
 export type CtaSettings={enabled:boolean;startsAt:string|null;endsAt:string|null;priority:number}
@@ -20,6 +20,7 @@ export const defaultCtaConfig=Object.freeze({
   articles:{
     overkill:{enabled:true,startsAt:null,endsAt:null,priority:2},
     drones:{enabled:true,startsAt:null,endsAt:null,priority:1},
+    'space-combat':{enabled:true,startsAt:null,endsAt:null,priority:3},
   } satisfies Record<ArticleId,CtaSettings>
 })
 

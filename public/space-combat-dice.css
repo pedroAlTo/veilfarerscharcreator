@@ -1,0 +1,14 @@
+.space-dice-windows { position:absolute; right:8px; bottom:8px; width:210px; display:grid; gap:4px; z-index:2; pointer-events:none; font-family:monospace; }
+.space-dice-panel { min-width:0; padding:4px 6px; border:1px solid #527586; background:rgba(3,14,23,.88); box-shadow:2px 2px 0 #02090d; color:#b6f4ff; }
+.space-dice-panel.is-keeper { color:#ffd3ad; border-color:#987248; }
+.space-dice-heading { display:flex; justify-content:space-between; gap:6px; font-size:9px; line-height:11px; letter-spacing:.08em; }
+.space-dice-panel canvas { display:block; width:100%; height:32px; }
+.space-dice-total { font-size:10px; text-align:center; line-height:12px; white-space:nowrap; }
+.space-canvas-wrap:has(.space-launch:not([hidden])) .space-dice-windows { opacity:.35; }
+@media(max-width:600px) {
+ .space-dice-windows { right:4px; bottom:4px; width:min(252px,calc(100% - 8px)); grid-template-columns:repeat(2,minmax(0,1fr)); gap:3px; }
+ .space-dice-panel { padding:2px 4px; }
+ .space-dice-heading { font-size:7px; line-height:9px; letter-spacing:0; }
+ .space-dice-panel canvas { height:24px; }
+ .space-dice-total { font-size:8px; line-height:10px; }
+}

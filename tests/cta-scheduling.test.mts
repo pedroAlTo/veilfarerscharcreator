@@ -7,12 +7,13 @@ const read=(path:string)=>readFileSync(new URL(path,import.meta.url),'utf8')
 
 test('default content keeps existing campaign order and both published articles',()=>{
   assert.deepEqual(CTA_IDS,['pricing','behind','books','crossing','release','beta','minis'])
-  assert.deepEqual(ARTICLE_IDS,['overkill','drones'])
+  assert.deepEqual(ARTICLE_IDS,['overkill','drones','space-combat'])
   assert.equal(defaultCtaConfig.version,2)
   assert.equal(defaultCtaConfig.notices.pricing.priority,1)
   assert.equal(defaultCtaConfig.notices.behind.priority,2)
   assert.equal(defaultCtaConfig.articles.overkill.enabled,true)
   assert.equal(defaultCtaConfig.articles.drones.enabled,true)
+  assert.equal(defaultCtaConfig.articles['space-combat'].enabled,true)
 })
 
 test('v1 migration preserves disabled CTAs, cleared deadlines and bounded old ordering',()=>{

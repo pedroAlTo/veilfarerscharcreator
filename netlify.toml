@@ -64,7 +64,7 @@ functions = "netlify/functions"
 [functions]
   [functions."*"]
   [functions."behind-veil-article"]
-  included_files = ["public/behind-the-veil/overkill.html", "public/behind-the-veil/drones.html", "public/behind-the-veil/drones-es.html"]
+  included_files = ["public/behind-the-veil/overkill.html", "public/behind-the-veil/drones.html", "public/behind-the-veil/drones-es.html", "public/behind-the-veil/space-combat.html", "public/behind-the-veil/space-combat-es.html"]
 
 # Every authenticated account receives the base member role. It does not grant
 # protected-tool access. Player, keeper and admin are explicit Identity roles.

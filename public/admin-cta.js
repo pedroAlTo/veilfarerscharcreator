@@ -10,7 +10,7 @@
   const reloadButton = document.querySelector('#cta-admin-reload');
   const names = {
     notices: { pricing: 'Important pricing update', behind: 'Behind the Veil', books: 'Books 12.06', crossing: 'First Crossing 1.1', release: 'Rust & Steel correction', beta: 'Beta tester invitation', minis: 'Ancestry mini-expansions' },
-    articles: { overkill: 'Overkill', drones: 'Drones · English & Español' }
+    articles: { overkill: 'Overkill', drones: 'Drones · English & Español', 'space-combat': 'Space Combat · English & Español' }
   };
   let config = null, authorized = false, busy = false, dirty = false, generation = 0;
   const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const local = ['localhost', '127.0.0.1', '[::1]', '::1'].includes(location.hostname);
-  const ids = { notices: ['pricing', 'behind', 'books', 'crossing', 'release', 'beta', 'minis'], articles: ['overkill', 'drones'] };
+  const ids = { notices: ['pricing', 'behind', 'books', 'crossing', 'release', 'beta', 'minis'], articles: ['overkill', 'drones', 'space-combat'] };
   let config = null, ready = false, error = false, offset = 0, boundaryTimer = 0, pending = null;
   function valid(value) {
     return value && value.version === 2 && Object.entries(ids).every(([group, keys]) => keys.every(id => {
